@@ -1,0 +1,80 @@
+CHANGES IN VERSION 0.99.4
+-------------------------
+       o add documentation for example datasets
+       o convert calcVarPart() to S4 from S3 function call
+       o fix typos in vignette
+
+CHANGES IN VERSION 0.99.3
+-------------------------
+       o fitVarPartModel() and fitExractVarPartModel() use S4 instead of S3 calls 
+
+CHANGES IN VERSION 0.99.2
+-------------------------
+	o rename sort.varParFrac to sortCols
+	o support ExpressionSet
+	o change options for plotStratifyBy()
+
+# Before Bioconductor submission
+
+CHANGES IN VERSION 0.0.12
+-------------------------
+	o add plotStratifyBy()
+	o update documentation
+
+CHANGES IN VERSION 0.0.11
+-------------------------
+	o fix sort to work on correct argument
+
+CHANGES IN VERSION 0.0.10
+-------------------------
+	o fitExtractVarPartModel() and fitVarPartModel() now take subset argument
+	o throw warning when no Intercept is specified
+	o if using lmer, warning if categorical variable is modeled as fixed effect
+	o fixed calcVarPart bug with reporting too few variances for multicategory fixed effects
+	o add colinearityScore
+
+CHANGES IN VERSION 0.0.9
+-------------------------
+    o function now use the precision weights when specified
+	o remove warning about unspecified weights, when useWeights=TRUE
+	o fix issue with sort with only one variable
+	o add main argument to plotVarPart
+
+CHANGES IN VERSION 0.0.8
+-------------------------
+        o Bug update to vignette and simulated data
+
+CHANGES IN VERSION 0.0.7
+-------------------------
+	o remove 'variable' from xlab of plotVarPart
+
+CHANGES IN VERSION 0.0.6
+-------------------------
+	o set REML=FALSE to default.  This fixes issues of inaccurate variance estiamtes, and makes lmer() results more concordant with lm() results
+	o Fix residuals function when lm or lmer is used
+	o fix useWeights argument error for fitExtractVarPartModel()
+
+
+CHANGES IN VERSION 0.0.5
+-------------------------
+        o plotVarPart() as ylim=c(0,100) as default, and can be changed by user
+	o fitExtractVarPartModel() labels rows correctly
+
+
+CHANGES IN VERSION 0.0.4
+-------------------------
+	o Add sort() for output of extractVarPart() or fitExtractVarPartModel()
+
+
+CHANGES IN VERSION 0.0.3
+-------------------------
+
+	o add residuals function
+	o add fitExtractVarPartModel()
+	o foreach loops us iterators
+
+
+CHANGES IN VERSION 0.99.0
+-------------------------
+	
+	o Initial version
