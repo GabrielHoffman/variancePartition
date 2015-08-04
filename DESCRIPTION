@@ -1,17 +1,32 @@
 Package: variancePartition
 Type: Package
-Title: Quantify and interpret divers of variation in multilevel gene
-        expression experiments
-Version: 0.99.4
+Title: Quantify and interpret divers of variation in multilevel gene expression experiments
+Version: 0.99.5
 Date: 2015-07-28
 Author: Gabriel Hoffman
 Maintainer: Gabriel Hoffman <gabriel.hoffman@mssm.edu>
-Description: Use linear mixed model to quantify variation in gene
-        expression attributed to Individual, Tissue, or technical
-        variables.
+Description: Use linear mixed model to quantify variation in gene expression attributed to Individual, Tissue, or technical variables.
 VignetteBuilder: knitr
-Suggests: edgeR, knitr, BiocStyle
-biocViews: RNASeq, GeneExpression, Regression, Software
+Suggests: BiocStyle, knitr
+biocViews:
+    RNASeq,
+    GeneExpression,
+    Regression,
+    Software	
 License: GPL (>= 2)
-Depends: lme4, iterators, ggplot2, foreach, Biobase, methods
-Imports: reshape, doParallel, limma, dendextend
+Depends:
+    lme4, 
+    iterators, 
+    ggplot2, 
+    foreach,
+    Biobase, 
+    methods
+Imports:
+    reshape,
+    doParallel, 
+    limma,
+    dendextend
+Suggests:
+    edgeR, 
+    knitr,
+    BiocStyle

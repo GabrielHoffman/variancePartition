@@ -1,3 +1,8 @@
+
+CHANGES IN VERSION 0.99.5
+-------------------------
+	o residuals deals with missing data gracefully and returns a matrix
+
 CHANGES IN VERSION 0.99.4
 -------------------------
        o add documentation for example datasets

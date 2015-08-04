@@ -30,7 +30,9 @@ Violin plot of variance fraction for each gene and each variable
 # optional step to run analysis in parallel on multicore machines
 # Here, we used 4 threads
 library(doParallel)
-registerDoParallel(4)
+cl <- makeCluster(4)
+registerDoParallel(cl)
+# or by using the doSNOW package
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

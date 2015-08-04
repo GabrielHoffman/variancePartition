@@ -55,6 +55,8 @@ fit <- lm( exprObj[j,] ~ a + b + c, data=data)
 In both cases, useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regression model.
 
 Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
+
+The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omited by the underlying call to lm/lmer.
 }
 \examples{
 # load library
@@ -63,11 +65,8 @@ Note: Fitting the model for 20,000 genes can be computationally intensive.  To a
 # optional step to run analysis in parallel on multicore machines
 # Here, we used 4 threads
 library(doParallel)
-registerDoParallel(4)
-
-# Can also be invoked with
-# cl <- makeCluster(2)
-# registerDoParallel(cl)
+cl <- makeCluster(4)
+registerDoParallel(cl)
 # or by using the doSNOW package
 
 # load simulated data:

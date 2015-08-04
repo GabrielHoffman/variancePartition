@@ -71,6 +71,8 @@ NULL
 #'
 #' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
+#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omited by the underlying call to lm/lmer.
+
 #' @examples
 #'
 #' # load library
@@ -79,11 +81,8 @@ NULL
 #' # optional step to run analysis in parallel on multicore machines
 #' # Here, we used 4 threads
 #' library(doParallel)
-#' registerDoParallel(4)
-#'
-#' # Can also be invoked with 
-#' # cl <- makeCluster(2)
-#' # registerDoParallel(cl)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
 #' # or by using the doSNOW package
 #'
 #' # load simulated data:
@@ -287,6 +286,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #'
 #' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
+#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omited by the underlying call to lm/lmer.
 #' @examples
 #'
 #' # load library
@@ -295,11 +295,8 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' # optional step to run analysis in parallel on multicore machines
 #' # Here, we used 4 threads
 #' library(doParallel)
-#' registerDoParallel(4)
-#'
-#' # Can also be invoked with 
-#' # cl <- makeCluster(2)
-#' # registerDoParallel(cl)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
 #' # or by using the doSNOW package
 #'
 #' # load simulated data:
@@ -631,7 +628,9 @@ function(fit, ...)
 #' # optional step to run analysis in parallel on multicore machines
 #' # Here, we used 4 threads
 #' library(doParallel)
-#' registerDoParallel(4)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -701,7 +700,9 @@ extractVarPart <- function( modelList ){
 #' # optional step to run analysis in parallel on multicore machines
 #' # Here, we used 4 threads
 #' library(doParallel)
-#' registerDoParallel(4)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -788,7 +789,9 @@ ggColorHue <- function(n) {
 #' # optional step to run analysis in parallel on multicore machines
 #' # Here, we used 4 threads
 #' library(doParallel)
-#' registerDoParallel(4)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -857,6 +860,10 @@ plotVarPart <- function( obj, col, label.angle=20, ylim=c(0,100), main=""){
 #' @return
 #' Residuals extracted from model fits stored in object
 #' 
+#' @details
+#' If model is fit with missing data, residuals returns NA for entries that were 
+#' missing in the original data
+#'
 #' @examples
 #' # load library
 #' # library(variancePartition)
@@ -864,7 +871,9 @@ plotVarPart <- function( obj, col, label.angle=20, ylim=c(0,100), main=""){
 #' # optional step to run analysis in parallel on multicore machines
 #' # Here, we used 4 threads
 #' library(doParallel)
-#' registerDoParallel(4)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -892,13 +901,68 @@ setMethod("residuals", "VarParFitList",
 			residuals( fit )
 		)
 
-		# convert to matrix, add names
-		resMatrix <- data.frame(matrix(unlist(res), nrow=length(res), byrow=TRUE))
-		colnames(resMatrix) <-  names(fitted.values(object[[1]]))
+		# identify which samples were omitted
+		excludeList <- sapply( object, function(fit)
+			getOmitted( fit )
+		)
+
+		# get total number of samples
+		n_samples = sapply(res, length) + sapply(excludeList, length)
+
+		if( max(n_samples) - min(n_samples)  > 0 ){
+			stop("Samples were dropped from model fit.  Either expression data or metadata contained NA values")
+		}
+
+		# create matrix of total size, including omitted samples
+		resMatrix <- matrix(NA, nrow=length(res), ncol=n_samples[1])
+
+		# fill non-missing entries with residuals
+		for( j in 1:nrow(resMatrix)){
+			excl = excludeList[[j]]
+
+			if( is.null(excl) ){
+				resMatrix[j,] = res[[j]] 
+			}else{				
+				resMatrix[j,-excl] = res[[j]] 
+			}
+		}
+
+		# gene names along rows
 		rownames(resMatrix) <- names(object)
+
+		# get columns names, filling NA values from excludeList
+		sampleNames = rep(NA, ncol(resMatrix))
+		excl = excludeList[[1]]
+
+		if( is.null(excl) ){
+			sampleNames = names(fitted.values(object[[1]])) 
+		}else{				
+			sampleNames[-excl] = names(fitted.values(object[[1]]))
+			sampleNames[excl] = names(excl)
+		}
+		colnames(resMatrix) = sampleNames
 		
-		return( resMatrix )
+		return( as.matrix( resMatrix ) )
 	}
+)
+
+setGeneric("getOmitted", signature="fit",
+  function(fit, ...)
+      standardGeneric("getOmitted")
+)
+
+setMethod("getOmitted", "lm",
+  function(fit, ...)
+  {
+    fit$na.action
+  }
+)
+
+setMethod("getOmitted", "lmerMod",
+  function(fit, ...)
+  {
+    attr(fit@frame, "na.action")
+  }
 )
 
 

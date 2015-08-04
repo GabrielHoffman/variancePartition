@@ -18,6 +18,10 @@ Residuals extracted from model fits stored in object
 \description{
 Extract residuals for each gene from model fit with fitVarPartModel()
 }
+\details{
+If model is fit with missing data, residuals returns NA for entries that were
+missing in the original data
+}
 \examples{
 # load library
 # library(variancePartition)
@@ -25,7 +29,9 @@ Extract residuals for each gene from model fit with fitVarPartModel()
 # optional step to run analysis in parallel on multicore machines
 # Here, we used 4 threads
 library(doParallel)
-registerDoParallel(4)
+cl <- makeCluster(4)
+registerDoParallel(cl)
+# or by using the doSNOW package
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
