@@ -1,4 +1,8 @@
 
+CHANGES IN VERSION 0.99.6
+-------------------------
+	o Update DESCRIPTION information
+
 CHANGES IN VERSION 0.99.5
 -------------------------
 	o residuals deals with missing data gracefully and returns a matrix
