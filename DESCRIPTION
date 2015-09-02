@@ -1,11 +1,11 @@
 Package: variancePartition
 Type: Package
 Title: Quantify and interpret divers of variation in multilevel gene expression experiments
-Version: 0.99.6
+Version: 0.99.7
 Date: 2015-07-28
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
-Description: Use linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.
+Description: Quantify and interpret multiple sources and biological and technical variation in gene expression experiments.  Uses linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr
 biocViews:

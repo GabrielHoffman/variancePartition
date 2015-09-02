@@ -1,3 +1,13 @@
+CHANGES IN VERSION 0.99.7
+-------------------------
+	o added new class varPartResults to store results of fitExtractVarPartModel() and fitExtractVarPartModel()
+	  - the user will not notice any change, only the backend is different
+        o Allow computation of adjusted ICC in addition to ICC.
+	o add warning when categorical variables are modeled as fixed effects
+	o fix computation of variance fractions for varying coefficient models
+	o add getVarianceComponents() to return variances from lmer() or lm() model fit
+	o showWarnings=FALSE suppresses warning messages
+	o add fxn argument to fitVarPartModel to evaluate any function on the model fit
 
 CHANGES IN VERSION 0.99.6
 -------------------------

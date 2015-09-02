@@ -7,14 +7,23 @@
 \alias{calcVarPart,lmerMod-method}
 \title{Compute variance statistics}
 \usage{
-calcVarPart(fit, ...)
+calcVarPart(fit, adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
+  ...)
 
-\S4method{calcVarPart}{lm}(fit, ...)
+\S4method{calcVarPart}{lm}(fit, adjust = NULL, adjustAll = FALSE,
+  showWarnings = TRUE, ...)
 
-\S4method{calcVarPart}{lmerMod}(fit, ...)
+\S4method{calcVarPart}{lmerMod}(fit, adjust = NULL, adjustAll = FALSE,
+  showWarnings = TRUE, ...)
 }
 \arguments{
 \item{fit}{model fit from lm() or lmer()}
+
+\item{adjust}{remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables}
+
+\item{adjustAll}{adjust for all variables.  This computes the adjusted ICC with respect to all variables}
+
+\item{showWarnings}{show warnings about model fit (default TRUE)}
 
 \item{...}{additional arguments (not currently used)}
 }

@@ -10,19 +10,20 @@
 \title{Fit linear (mixed) model}
 \usage{
 fitVarPartModel(exprObj, formula, data, REML = FALSE, useWeights = TRUE,
-  ...)
+  showWarnings = TRUE, fxn = identity(), ...)
 
 \S4method{fitVarPartModel}{matrix}(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, ...)
+  useWeights = TRUE, showWarnings = TRUE, fxn = identity, ...)
 
 \S4method{fitVarPartModel}{data.frame}(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, ...)
+  useWeights = TRUE, showWarnings = TRUE, fxn = identity, ...)
 
 \S4method{fitVarPartModel}{EList}(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, ...)
+  useWeights = TRUE, showWarnings = TRUE, fxn = identity, ...)
 
 \S4method{fitVarPartModel}{ExpressionSet}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, ...)
+  REML = FALSE, useWeights = TRUE, showWarnings = TRUE, fxn = identity,
+  ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -34,6 +35,10 @@ fitVarPartModel(exprObj, formula, data, REML = FALSE, useWeights = TRUE,
 \item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option}
 
 \item{useWeights}{if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
+
+\item{showWarnings}{show warnings about model fit (default TRUE)}
+
+\item{fxn}{apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself}
 
 \item{...}{Additional arguments for lmer() or lm()}
 }

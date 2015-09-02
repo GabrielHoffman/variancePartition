@@ -13,7 +13,7 @@
 library("knitr")
 opts_chunk$set(tidy=FALSE,dev="pdf",fig.show="hide",
                fig.width=4,fig.height=4.5,
-               message=FALSE)
+               message=FALSE, warning=FALSE)
 
 @ 
 
@@ -22,8 +22,9 @@ BiocStyle::latex()
 @
 
 \usepackage[position=top]{subfig}
+\usepackage{blkarray}
 
-\bioctitle[variancePartition]{ \Biocpkg{variancePartition}: Quantifying and interpreting divers of variation in multilevel gene expression experiments}
+\bioctitle[variancePartition]{ \Biocpkg{variancePartition}: Quantifying and interpreting drivers of variation in multilevel gene expression experiments}
 
 \author{Gabriel Hoffman\\ 
 \small{Icahn Institute for Genomics and Multiscale Biology}\\[-.2em]
@@ -37,7 +38,7 @@ BiocStyle::latex()
 
 \begin{abstract}
   \noindent
-  Gene expression datasets are complicated and have multiple sources of biological and technical variation.  These datasets have recently become more complex as it is now feasible to assay gene expression from the same individual in multiple tissues or at multiple time points.  The \Rpackage{variancePartition} package implements a statistical method to quantify the contribution of multiple sources of variation and decouple within/between-individual variation.  Moreover, \Rpackage{variancePartition} produces results at the gene-level so subsequent analysis can examines genes that follow or deviate from the genome-wide trend.
+  Gene expression datasets are complicated and have multiple sources of biological and technical variation.  These datasets have recently become more complex as it is now feasible to assay gene expression from the same individual in multiple tissues or at multiple time points.  The \Rpackage{variancePartition} package implements a statistical method to quantify the contribution of multiple sources of variation and decouple within/between-individual variation.  In addition, \Rpackage{variancePartition} produces results at the gene-level to identity genes that follow or deviate from the genome-wide trend.
 
   \vspace{2cm}
   \noindent
@@ -122,7 +123,7 @@ The core functions of \Rpackage{variancePartition} work seemlessly with gene exp
 
 Advanced users may want to perform the model fit and extract results in separate steps so you can examine the fit of the model for each gene. Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K genes and 1000 experiments).\\    
 
-<<simResult-omit, cache=TRUE, warings=FALSE>>=
+<<simResult-omit, cache=TRUE>>=
 # Fit model
 results = fitVarPartModel( geneExpr, form, info )
 
@@ -222,7 +223,7 @@ Catagorical variables should (almost) always be modeled as a random effect.  The
 
 \Rpackage{variancePartition} fits two types of models: 
 \begin{itemize}
-	\item[1)] linear mixed model where all categorical variables are modeled as random effects and all continuous variables are fixed effects.  The function \Rcode{lmer} from \Rpackage{lme4} is used to fit this model.
+	\item[1)] linear mixed model where \underline{all} categorical variables are modeled as random effects and all continuous variables are fixed effects.  The function \Rcode{lmer} from \Rpackage{lme4} is used to fit this model.
 
 	\item[2)] fixed effected model, where all variables are modeled as fixed effects. The function \Rcode{lm} is used to fit this model.
 
@@ -313,7 +314,7 @@ form = ~ (Tissue+0|Individual) + Age + (1|Tissue)
 varPart = fitExtractVarPartModel( geneExpr, form, info )
 
 # violin plot
-plotVarPart( varPart,  label.angle=50 )
+plotVarPart( varPart, label.angle=50 )
 @
 
 \begin{figure}[h]
@@ -324,6 +325,8 @@ plotVarPart( varPart,  label.angle=50 )
 \end{figure}
 
 This analysis correspnds to a varying coefficient model, where the correlation between individuals varies for each tissue \cite{Pinheiro2000}.  Since the variation across individuals is modeled within each tissue, the total variation explained does not sum to 1 as it does for standard analysis with \Rpackage{variancePartition}.  However, the interpretation in terms of the intra-class correlation still applies.
+
+See Section \ref{sec:variationWithAcross} for statistical details.
 
 \pagebreak
 \section{Normalizing RNA-Seq data}
@@ -423,16 +426,18 @@ sim_data = function( n, p, var_indiv, var_site){
 plotVar = function( geneExpr, info ){
 
   form =  ~ (1|Individual) + (1|Tissue)
-  varPart = suppressWarnings(fitExtractVarPartModel( geneExpr, form, info ))
+  varPart = fitExtractVarPartModel( geneExpr, form, info )
   plotVarPart( varPart, col=rainbow(8)[1:3] )
 }
 
 plotVarCross = function( geneExpr, info, label.angle=30 ){
 
   form =  ~ (Tissue+0|Individual) + (1|Tissue)
-  res = suppressWarnings(fitVarPartModel( geneExpr, form, info ))
 
-  varPart = extractVarPart( res )
+  #res = fitVarPartModel( geneExpr, form, info )
+  #varPart = extractVarPart( res )
+
+  varPart = fitExtractVarPartModel( geneExpr, form, info )
 
   plotVarPart( varPart, label.angle=label.angle )
 }
@@ -549,69 +554,186 @@ plotVarCross( data$geneExpr, data$info, label.angle=60 )
 
 A \Rpackage{variancePartition} analysis evaluates the linear (mixed) model
 \begin{eqnarray}
-	y &=& \sum_j X_j\beta_j + \sum_i Z_i \alpha_i + \varepsilon \\
-	\alpha_i &\sim& \mathcal{N}(0, \sigma^2_{\alpha_i})\\
-	\varepsilon &\sim& \mathcal{N}(0, \sigma^2_\varepsilon)
+  y &=& \sum_j X_j\beta_j + \sum_k Z_k \alpha_k + \varepsilon \\
+  \alpha_k &\sim& \mathcal{N}(0, \sigma^2_{\alpha_k})\\
+  \varepsilon &\sim& \mathcal{N}(0, \sigma^2_\varepsilon)
 \end{eqnarray}
-where $y$ is the expression of one gene, $X_j$ is the matrix of $j^{th}$ fixed effect with coefficents $\beta_j$, $Z_i$ is the matrix corresponding to the $i^{th}$ random effect with coefficients $\alpha_i$ drawn from a normal distrubtion with variance $\sigma^2_{\alpha_i}$.  The noise term, $\varepsilon$, is drawn from a normal distributon with variance $\sigma^2_\varepsilon$.  I use the term ``linear (mixed) model'' here since \Rpackage{variancePartition} works seamlessly when a fixed effects model (i.e. linear model) is specified.
+where $y$ is the expression of a single gene across all samples, $X_j$ is the matrix of $j^{th}$ fixed effect with coefficients $\beta_j$, $Z_k$ is the matrix corresponding to the $k^{th}$ random effect with coefficients $\alpha_k$ drawn from a normal distribution with variance $\sigma^2_{\alpha_k}$.  The noise term, $\varepsilon$, is drawn from a normal distribution with variance $\sigma^2_\varepsilon$.  Parameters are estimated with maximum likelihood, rather than REML, so that fixed effect coefficients, $\beta_j$, are explicitly estimated. \\  
 \\
+I use the term ``linear (mixed) model'' here since \Rpackage{variancePartition} works seamlessly when a fixed effects model (i.e. linear model) is specified.\\
 \\
-An \R{} formula is used to define the terms in the fixed and random effects, and \Rcode{fitVarPartModel} fits the specified model for each gene separately.  If random effects are specified, \Rcode{lmer} from \Rpackage{lme4} is used behind the scenes to fit the model, while \Rcode{lm} is used if there are only fixed effects. \Rcode{fitVarPartModel} returns a list of the model fits, and \Rcode{extractVarPart} returns the variance partition statistics for each model in the list.\\  
-\\
-If a fixed effect model is used, \Rcode{anova} is used to compute the sum of squares attributable to each variable: 
-\begin{eqnarray}
- \frac{SS_k}{\sum_k SS_k}
-\end{eqnarray}
-
-If a mixed model is used, \Rcode{VarCorr} is used to compute variance attributable to each variable.  Since variances are not directly estimated for fixed effects, a {\it post hoc} estimate is used
+Variance terms for the fixed effects are computed using the {\it post hoc} calculation  
 \begin{eqnarray}
  \hat{\sigma}^2_{\beta_j} = var( X_j \hat{\beta}_j).
 \end{eqnarray}
-The percent variance explained by the $j^{th}$ fixed effect is
+For a fixed effects model, this corresponds to the sum of squares for each component of the model.\\
+\\
+For a standard application of the linear mixed model, where the effect of each variable is additive, the fraction of variance explained by the $j^{th}$ fixed effect is
 \begin{eqnarray}
- \frac{\hat{\sigma}^2_{\beta_j}}{\sum_i \hat{\sigma}^2_{\alpha_i} + \sum_j \hat{\sigma}^2_{\beta_j} + \hat{\sigma}^2_\varepsilon}
+ \frac{\hat{\sigma}^2_{\beta_j}}{\sum_j \hat{\sigma}^2_{\beta_j} + \sum_k \hat{\sigma}^2_{\alpha_k} + \hat{\sigma}^2_\varepsilon},
 \end{eqnarray}
-and by the $i^{th}$ random effect is 
+by the $k^{th}$ random effect is 
 \begin{eqnarray}
- \frac{\hat{\sigma}^2_{\alpha_i}}{\sum_i \hat{\sigma}^2_{\alpha_i} + \sum_j \hat{\sigma}^2_{\beta_j} + \hat{\sigma}^2_\varepsilon}.
-\end{eqnarray}
-\noindent
+ \frac{\hat{\sigma}^2_{\alpha_k}}{\sum_j \hat{\sigma}^2_{\beta_j} + \sum_k \hat{\sigma}^2_{\alpha_k} + \hat{\sigma}^2_\varepsilon},
+ \end{eqnarray}
+and the residual variance is 
+\begin{eqnarray}
+ \frac{\hat{\sigma}^2_{\varepsilon}}{\sum_j \hat{\sigma}^2_{\beta_j} + \sum_k \hat{\sigma}^2_{\alpha_k} + \hat{\sigma}^2_\varepsilon}.
+ \end{eqnarray}
+
+\subsection{Implementation in \R{}}
+
+ An \R{} formula is used to define the terms in the fixed and random effects, and \Rcode{fitVarPartModel} fits the specified model for each gene separately.  If random effects are specified, \Rcode{lmer} from \Rpackage{lme4} is used behind the scenes to fit the model, while \Rcode{lm} is used if there are only fixed effects. \Rcode{fitVarPartModel} returns a list of the model fits, and \Rcode{extractVarPart} returns the variance partition statistics for each model in the list.  \Rcode{fitExtractVarPartModel} combines the actions of \Rcode{fitVarPartModel} and \Rcode{extractVarPart} into one function call.  \Rcode{calcVarPart} behind the scenes to compuate variance fractions for both fixed and mixed effects models.
 
 \subsection{Interpretation of percent variance explained}
-The percent variance explained can be interpreted as the intra-class correlation when a special case of Equation 1 is used.  Consider the simplest example of the $i^{th}$ response value from the $j^{th}$ individual 
+The percent variance explained can be interpreted as the intra-class correlation (ICC) when a special case of Equation 1 is used.  Consider the simplest example of the $i^{th}$ sample from the $k^{th}$ individual 
 \begin{eqnarray}
-  y_{i,j} = \mu + Z \alpha_{j} + e_{i,j}
+  y_{i,k} = \mu + Z \alpha_{i,k} + e_{i}
 \end{eqnarray}
-with only an intercept term, one random effect and an error term.  In this case ICC corresponds to the correlation between two samples from the individual $j$ and is the same as the percent variance explained by the variable $Z$:
+with only an intercept term, one random effect corresponding to individual, and an error term.  In this case ICC corresponds to the correlation between two samples from the same individual.  This value is equal to the fraction of variance explained by individual.  For example, consider the correlation between samples from the same individual:
 \begin{eqnarray}
-  ICC &=& cor( y_{1,j}, y_{2,j}) \\
-      &=& cor( \mu + Z \alpha_{j}  + e_{1,j}, \mu + Z \alpha_{j}  + e_{2,j}) \\
-      &=& \frac{cov( \mu + Z \alpha_{j}  + e_{1,j}, \mu + Z \alpha_{j}  + e_{2,j})}{ \sqrt{ var(\mu + Z \alpha_{j}  + e_{1,j}) var( \mu + Z \alpha_{j}  + e_{2,j})}}\\
+  ICC &=& cor( y_{1,k}, y_{2,k}) \\
+      &=& cor( \mu + Z \alpha_{1,k}  + e_{1,k}, \mu + Z \alpha_{2,k}  + e_{2,k}) \\
+      &=& \frac{cov( \mu + Z \alpha_{1,k}  + e_{1,k}, \mu + Z \alpha_{2,k}  + e_{2,k})}{ \sqrt{ var(\mu + Z \alpha_{1,k} + e_{1,k}) var( \mu + Z \alpha_{2,k} + e_{2,k})}}\\
+      &=& \frac{cov(Z \alpha_{1,k}, Z \alpha_{2,k})}{\sigma^2_\alpha + \sigma^2_\varepsilon} \\
       &=& \frac{\sigma^2_\alpha}{\sigma^2_\alpha + \sigma^2_\varepsilon}
 \end{eqnarray}
 The correlation between samples from different individuals is:
 \begin{eqnarray}
   &=& cor( y_{1,1}, y_{1,2}) \\
-      &=& cor( \mu + Z \alpha_{1} + e_{1,1}, \mu + Z \alpha_{2}  + e_{1,2}) \\
+      &=& cor( \mu + Z \alpha_{1,1} + e_{1,1}, \mu + Z \alpha_{1,2}  + e_{1,2}) \\
+      &=& \frac{cov(Z \alpha_{1,1}, Z \alpha_{1,2})}{\sigma^2_\alpha + \sigma^2_\varepsilon} \\
       &=& \frac{0}{\sigma^2_\alpha + \sigma^2_\varepsilon} \\
       &=& 0
 \end{eqnarray}
-This interpretation naturally generalizes to multiple variance components.  Consider two sources of variation, individual and tissue with variances $\sigma^2_I$ and $\sigma^2_T$ respectively.  Applying the previous derivation, two samples are correlated according to:
+This interpretation in terms of fraction of variation explained (FVE) naturally generalizes to multiple variance components.  Consider two sources of variation, individual and cell type with variances $\sigma^2_{id}$ and $\sigma^2_{cell},$ respectively.  Applying a generalization of the the previous derivation, two samples are correlated according to:
 
 \renewcommand{\arraystretch}{1.8}
 \begin{center}
-  \begin{tabular}{|l|c|}
+  \begin{tabular}{cccccc}
     \hline
-     Same individual: &  $\frac{\sigma^2_{I}}{\sigma^2_{I} + \sigma^2_{T} + \sigma^2_\varepsilon }$ \\[0.1cm] \hline
-    Same tissue & $\frac{\sigma^2_{T}}{\sigma^2_{I} + \sigma^2_{T} + \sigma^2_\varepsilon }$ \\[0.1cm] \hline
-    Same individual and tissue & $\frac{\sigma^2_{I} + \sigma^2_{T}}{\sigma^2_{I} + \sigma^2_{T} + \sigma^2_\varepsilon }$  \\[0.1cm] \hline
-    Different tissue and individual & $\frac{0}{\sigma^2_{I} + \sigma^2_{T} + \sigma^2_\varepsilon }$ \\[0.1cm] \hline
+    Individual & cell type & variance & Interpretation & Correlation value\\
+    \hline
+     same & different &  $\frac{\sigma^2_{id}}{\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon }$ & FVE by individual & $ICC_{individual}$\\%\\[0.1cm] 
+    different & same & $\frac{\sigma^2_{cell}}{\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon }$ & FVE by cell type & $ICC_{cell}$\\%\\[0.1cm] 
+    same & same & $\frac{\sigma^2_{id} + \sigma^2_{cell}}{\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon }$ & sum of FVE by individual \& cell type & $ICC_{individual,cell}$\\ %\\[0.1cm] \hline
+    different & different & $\frac{0}{\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon }$ &  sample are independent  \\%\\[0.1cm] \hline
+    \hline
   \end{tabular}
 \end{center}
-This defines ICC for individual and tissue, as well as the combined ICC.
+
+Notice that the correlation between samples from the same individual and same cell type corresponds to the sum of the fraction explained by individual + fraction explained by cell type.  This defines ICC for individual and tissue, as well as the combined ICC and relates these values to FVE.\\
+\\
+In order to illustrate how this FVE and ICC relate to the correlation between samples in multilevel datasets, consider a simple example of 5 samples from 2 individuals and 2 tissues:
+
+\begin{center}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    Sample & Individual & Cell type \\
+    \hline
+    a & 1 & T-Cell \\
+    b & 1 & T-Cell \\
+    c & 1 & monocyte \\
+    d & 2 & T-Cell \\
+    e & 2 & monocyte\\
+    \hline
+  \end{tabular}
+\end{center} 
+
+Modeling the separate effects of individual and tissue gives the following covariace structure between samples when a linear mixed model is used:
+\[
+\begin{blockarray}{ccccccc}
+&& a & b & c & d & e \\
+\begin{block}{cc(ccccc)}
+&a &\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon &  & & &\\
+&b & \sigma^2_{id} + \sigma^2_{cell} & \sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon  & & &\\
+cov(y) =  &c & \sigma^2_{id}  & \sigma^2_{id} &\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon  & &\\
+&d & \sigma^2_{cell} & \sigma^2_{cell} &0 &\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon  &\\
+&e & 0 & 0 &0 & \sigma^2_{id} &\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon \\
+\end{block}
+\end{blockarray}
+ \]
+ The covariance matrix is symmetric so that blank entries take the value on the opposite side of the diagonal.  The covariance can be converted to correlation by dividing by $\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon$, and this gives the results from above.  This example generalizes to any number of variance components \cite{Pinheiro2000}.
 
 
-% Including additional variance components gives Equations 7 for the percent variance explained and is interpreted as``ICC after accounting for all other variables".
+\subsection{Variation with multiple subsets of the data} \label{sec:variationWithAcross}
+
+The linear mixed model underlying \Rpackage{variancePartition} allows the effect of one variable to depend on the value of another variable.  Statistically, this is called a varying coefficient model \cite{Pinheiro2000, Galecki2010}.  This model arises in  \Rpackage{variancePartition} analysis when the variation explained by individual depends on tissue or cell type.\\
+\\
+A given sample is only from one cell type, so this analysis asks a question about a subset of the data.  The the data is implicitly divided into subsets base on cell type and variation explained by individual is evaluated within each subset.    The data isn't actually divided onto subset, but the statistical model essentially examples samples with each cell type.  This subsetting means that the variance fractions don't sum to 1.\\
+\\
+Consider a concrete example with variation from across individual and cell types (T-cells and monocytes).  Modeling the variation across individuals within cell type corresponds to 
+\begin{eqnarray}
+  y_{i,s,c} = \mu + Z^{(sex)} \alpha_{i,s} + Z^{(T-cell| id)} \alpha_{i,c} + Z^{(monocyte| id)} \alpha_{i,c} + e_{i,s,c}
+\end{eqnarray}    
+with corresponding variance components
+\begin{center}
+  \begin{tabular}{cc}
+    \hline
+    Variance component & Interpretation \\
+    \hline
+    $\sigma^2_{sex}$ & variance across sex \\
+    $\sigma^2_{(T-cell| id)}$ & variance across individuals within T-cells \\
+    $\sigma^2_{(monocyte| id)}$ & variance across individuals within monocytes \\
+    $\sigma^2_\varepsilon$ & residual variance \\   
+    \hline
+  \end{tabular}
+\end{center} 
+
+
+\subsection{Relationship between \Rpackage{variancePartition} and differential expression}
+
+Differential expression (DE) is widely used to identify gene which show difference is expression between two subsets of the data (i.e. case versus controls). For a single gene, DE analysis measures the difference in mean expression between the two subsets.  (Since expression is usually analyzed on a log scale, DE results are show in terms of log fold changes between the two subsets ).  In Figure \ref{fig:DEVP}, consider two simulated examples of a gene whose expression differs between males and females.  The mean expression in males is 0 and the mean expression in females is 2 in both cases.  Therefore, the fold change is 2 in both cases.\\
+\\  
+However, the fraction of expression variation explained by sex is very different in these two examples.  In example A, there is very little variation {\it within} each sex, so that variation {\it between} sexes is very high at 91.1\%.  Conversely, Example B show high variation {\it within} sexes, so that variation {\it between} sexes is only 19.4\%.\\
+\\
+Fact that the fold change or the fraction of variation is significantly different from 0 indicates differential expression between the two sexes.  Yet these two statistics have different interpretations.  The fold change from DE analysis tests a difference in means between two sexes.  The fraction of variation explained compares the variation explained by sex to the total variation.\\
+\\
+Thus the fraction of variation explained reported by \Rpackage{variancePartition} reflects as different aspect of the data not captured by DE analysis.
+
+
+<<DE, echo=FALSE, cache=TRUE>>=
+set.seed(1)
+
+library(variancePartition)
+
+n = 500
+data = data.frame(Sex = c(rep('F', n), rep('M', n)))
+data$expression = rnorm(2*n, (as.integer(data$Sex)-1)*2, .3)
+data$Sex = factor(data$Sex)
+
+fit = lm(expression ~ Sex, data)
+# calcVarPart(fit)
+# coef(fit)[2]
+
+plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
+ annotate("text", x = 1, y = 8, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
+ annotate("text", x = 1.5, y = 7.2, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
+
+
+n = 500
+data = data.frame(Sex = c(rep('F', n), rep('M', n)))
+data$expression = rnorm(2*n, (as.integer(data$Sex)-1)*2, 2)
+data$Sex = factor(data$Sex)
+
+fit = lm(expression ~ Sex, data)
+# calcVarPart(fit)
+# coef(fit)[2]
+
+plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
+ annotate("text", x = 1.0, y = 9, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
+ annotate("text", x = 1.5, y = 8.2, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
+@
+
+\begin{figure}[h]
+\centering
+\caption{
+  \textbf{Compare variancePartition and differential expression}}
+\subfloat[Example A]{\includegraphics[width=.5\textwidth]{figure/DE-1}}
+\subfloat[Example B]{\includegraphics[width=.5\textwidth]{figure/DE-2}}
+\label{fig:DEVP}
+\end{figure}
+
 
 
 
@@ -623,35 +745,52 @@ Uncertainty in the measurement of gene expression can be modeled with precision 
 \pagebreak
 \section{Frequently asked questions}
 
+\subsection{Warnings and errors}
+
+Interpreting warnings and errors from \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}:
+\newline
 \begin{itemize}
-  \item \Rcode{fitVarPartModel} / \Rcode{fitExtractVarPartModel} gives a warning:\\
-  \begin{itemize}
-  	\item \Rcode{executing \%dopar\% sequentially: no parallel backend registered}\\
-  \end{itemize}
-  
-  these function are optmized to run in parallel using doParallel/doMC.  This warning indicates that a parallelization was not enabled.  This is not a problem, but analysis will take more time.\\ 
-
-  \begin{itemize}
-  	\item \Rcode{No Intercept term was specified in the formula:\newline The results will not behave as expected and may be very wrong!!}\\
-  \end{itemize}
-
-  An intercept (i.e. mean term) must be specified order for the results to be statistically valid.  Otherwise, the variance percentages will be {\it very} overestimated\\
-  
-  \begin{itemize}
-  	\item \Rcode{Categorical variables modeled as fixed effect:\newline The results will not behave as expected and may be very wrong!!}\\
-  \end{itemize}
-
-  If a linear mixed model is used, all categorical variables must be modeled as a random effect.  Alternatively, a fixed effect model can be used by modeled all variables as fixed. \\ 
-
-\begin{itemize}
-    \item \Rcode{fatal error in wrapper code}\\
-  \end{itemize}
-
-  Occasionally there is an issue in the parallel backend that is out of my control.  Restarting \R{} will solve the problem
-
-
-
+	\item \Rcode{executing \%dopar\% sequentially: no parallel backend registered}
 \end{itemize}
+These functions are optmized to run in parallel using doParallel/doMC.  This warning indicates that a parallelization was not enabled.  This is not a problem, but analysis will take more time.\\
+
+\begin{itemize}
+	\item \Rcode{No Intercept term was specified in the formula:\newline The results will not behave as expected and may be very wrong!!}
+\end{itemize}
+An intercept (i.e. mean term) must be specified order for the results to be statistically valid.  Otherwise, the variance percentages will be {\it very} overestimated.\\
+
+\begin{itemize}
+	\item \Rcode{Categorical variables modeled as fixed effect:\newline The results will not behave as expected and may be very wrong!!}
+\end{itemize}
+If a linear mixed model is used, all categorical variables must be modeled as a random effect.  Alternatively, a fixed effect model can be used by modeled all variables as fixed. \\ 
+
+\begin{itemize}
+  \item \Rcode{fatal error in wrapper code}
+\end{itemize}
+Occasionally there is an issue in the parallel backend that is out of my control.  Restarting \R{} will solve the problem
+
+\subsection{Problems removing samples with NA/NaN/Inf values}
+
+\Rpackage{variancePartition} fits a regression model for each gene and drops samples that have NA/NaN/Inf values in each model fit.  This is generally seamless but can cause an issue when a variable specified in the formula no longer varies within the subset of samples that are retained.  Consider an example with variables for sex and age where age is NA for all males samples.  Dropping samples with invalid values for variables included in the formula will retain only female samples.  This will cause \Rpackage{variancePartition} to throw an error because there is now no variation in sex in the retained subset of the data.  This can be resolved by removing either age or sex from the formula.\\
+\\
+This situtation is indicated by the following errors   
+\begin{itemize}
+  \item \Rcode{Error: grouping factors must have > 1 sampled level}
+  \item \Rcode{Error: Invalid grouping factor specification, Individual}
+  \item \Rcode{Error in `contrasts<-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]): \\
+  contrasts can be applied only to factors with 2 or more levels}
+  \item \Rcode{Error in checkNlevels(reTrms\$flist, n = n, control):\\
+  grouping factors must have > 1 sampled level}
+\end{itemize}
+
+
+
+
+
+
+
+
+
 
 
 \section*{Session Info}

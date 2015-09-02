@@ -24,6 +24,27 @@ exprIter = function( exprObj, weights, useWeights = TRUE){
     it
 }
 
+# results: the variancePartition statistics
+# type: indicate variance fractions or adjusted ICC
+# adjustedFor: variables whose variance were removed from the denominator 
+# type: lmm or anova
+# setClass("varPartResults", representation(results = "data.frame", type = "character", adjustedFor="array", method="character"))
+
+setClass("varPartResults", representation(type = "character", adjustedFor="array", method="character"), contains="data.frame")
+
+# # @export
+# setMethod("print", "varPartResults",
+#   function(x, ...) {
+#   	print( x )
+#   }
+# )
+# setMethod("print", "varPartResults",
+#   function(x, ...) {
+#   	print( x )
+#   }
+# )
+
+
 
 #' Simulation dataset for examples
 #'
@@ -51,6 +72,8 @@ NULL
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option
 #' @param useWeights if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 # @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
+#' @param showWarnings show warnings about model fit (default TRUE)
+#' @param fxn apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return
@@ -129,12 +152,12 @@ NULL
 #' @docType methods
 #' @rdname fitVarPartModel-method
 setGeneric("fitVarPartModel", signature="exprObj",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity(),...)
       standardGeneric("fitVarPartModel")
 )
 
 # internal driver function
-.fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL , ...){ 
+.fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, ...){ 
 
 	exprObj = as.matrix( exprObj )
 
@@ -169,19 +192,15 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# fit the model for testing
 		fit <- lm( eval(parse(text=form)), data=data,...)
 
-		# if no intercept is specified, give warning
-		if( length(which(names(coef(fit)) == "(Intercept)")) == 0 ){
-			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
-		}
-
-		# if any coefficient is NA
-		if( any(is.na(coef(fit))) ){
-			warning("The variables specified in this model are redundant,\nso the design matrix is not full rank:\nThe results will not behave as expected and may be very wrong!!")
-		}
+		# check that model fit is valid, and throw warning if not
+		checkModelStatus( fit, showWarnings=showWarnings )
 
 		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
 			# fit linear mixed model
-			lm( eval(parse(text=form)), data=data, weights=gene$weights,...)
+			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,...)
+
+			# apply function
+			fxn( fit )
 		}
 
 	}else{
@@ -191,20 +210,15 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=lmerControl(calc.derivs=FALSE))
 
-		# if no intercept is specified, give warning
-		if( length(which(colnames(fitInit@pp$X) == "(Intercept)")) == 0 ){
-			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
-		}
-
-		# if a factor|character is modeled as a fixed effect
-		fixedFactors = sapply( attr(terms(fitInit), "term.labels"), function(key) is.factor(fitInit@frame[[key]]) | is.character(fitInit@frame[[key]]))
-		if( length(fixedFactors) > 0 && sum(fixedFactors) > 0 ){
-			warning(paste("Categorical variables modeled as fixed effect:", paste(names(which(fixedFactors)), collapse=', '), "\nThe results will not behave as expected and may be very wrong!!"))
-		}
+		# check that model fit is valid, and throw warning if not
+		checkModelStatus( fitInit, showWarnings=showWarnings )
 
 		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
 			# fit linear mixed model
-			lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene$weights, control=lmerControl(calc.derivs=FALSE), start=fitInit@theta)
+			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene$weights, control=lmerControl(calc.derivs=FALSE), start=fitInit@theta)
+
+			# apply function
+			fxn( fit )
 		}
 	}
 
@@ -219,9 +233,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,matrix-method
 setMethod("fitVarPartModel", "matrix",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, ...)
   {
-    .fitVarPartModel(exprObj, formula, data, REML=REML, useWeights=useWeights, ...)
+    .fitVarPartModel(exprObj, formula, data, REML=REML, useWeights=useWeights, showWarnings=showWarnings, fxn=fxn,...)
   }
 )
 
@@ -230,9 +244,9 @@ setMethod("fitVarPartModel", "matrix",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,data.frame-method
 setMethod("fitVarPartModel", "data.frame",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, ...)
   {
-    .fitVarPartModel( as.matrix(exprObj), formula, data, REML=REML, useWeights=useWeights, ...)
+    .fitVarPartModel( as.matrix(exprObj), formula, data, REML=REML, useWeights=useWeights, showWarnings=showWarnings, fxn=fxn, ...)
   }
 )
 
@@ -241,9 +255,9 @@ setMethod("fitVarPartModel", "data.frame",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,EList-method
 setMethod("fitVarPartModel", "EList",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, ...)
   {
-    .fitVarPartModel( as.matrix(exprObj$E), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights,...)
+    .fitVarPartModel( as.matrix(exprObj$E), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights, showWarnings=showWarnings, fxn=fxn,...)
   }
 )
 
@@ -252,9 +266,9 @@ setMethod("fitVarPartModel", "EList",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,ExpressionSet-method
 setMethod("fitVarPartModel", "ExpressionSet",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, ...)
   {
-    .fitVarPartModel( as.matrix(exprs(exprObj)), formula, data, REML=REML, useWeights=useWeights, ...)
+    .fitVarPartModel( as.matrix(exprs(exprObj)), formula, data, REML=REML, useWeights=useWeights, showWarnings=showWarnings, fxn=fxn, ...)
   }
 )
 
@@ -268,6 +282,9 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option
 #' @param useWeights if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 # @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
+#' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
+#' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables.  This overrides the previous argument, so all variables are include in adjust.
+#' @param showWarnings show warnings about model fit (default TRUE)
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return
@@ -322,9 +339,6 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' # violin plot of contribution of each variable to total variance
 #' plotVarPart( sortCols( varPart ) )
 #'
-#' # plot a subset of variables
-#' plotVarPart( varPart[,c("Individual", "Tissue")] )
-#' 
 #' # Note: fitExtractVarPartModel also accepts ExpressionSet
 #' data(sample.ExpressionSet, package="Biobase")
 #'
@@ -337,12 +351,12 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' @docType methods
 #' @rdname fitExtractVarPartModel-method
 setGeneric("fitExtractVarPartModel", signature="exprObj",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, ...)
       standardGeneric("fitExtractVarPartModel")
 )
 
 # internal driver function
-.fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, ...){ 
+.fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, ...){ 
 
 	exprObj = as.matrix( exprObj )
 
@@ -377,22 +391,16 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# fit the model for testing
 		fit <- lm( eval(parse(text=form)), data=data,...)
 
-		# if no intercept is specified, give warning
-		if( length(which(names(coef(fit)) == "(Intercept)")) == 0 ){
-			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
-		}
-
-		# if any coefficient is NA
-		if( any(is.na(coef(fit))) ){
-			warning("The variables specified in this model are redundant,\nso the design matrix is not full rank:\nThe results will not behave as expected and may be very wrong!!")
-		}
+		# check that model fit is valid, and throw warning if not
+		checkModelStatus( fit, showWarnings=showWarnings )
 
 		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
 			# fit linear mixed model
 			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,...)
 
-			calcVarPart( fit )
+			calcVarPart( fit, adjust, adjustAll, showWarnings=FALSE )
 		}
+		modelType = "anova"
 
 	}else{
 
@@ -401,31 +409,36 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=lmerControl(calc.derivs=FALSE))
 
-		# if no intercept is specified, give warning
-		if( length(which(colnames(fitInit@pp$X) == "(Intercept)")) == 0 ){
-			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
-		}
-
-		# if a factor|character is modeled as a fixed effect
-		fixedFactors = sapply( attr(terms(fitInit), "term.labels"), function(key) is.factor(fitInit@frame[[key]]) | is.character(fitInit@frame[[key]]))
-		if( length(fixedFactors) > 0 && sum(fixedFactors) > 0 ){
-			warning(paste("Categorical variables modeled as fixed effect:", paste(names(which(fixedFactors)), collapse=', '), "\nThe results will not behave as expected and may be very wrong!!"))
-		}
+		# check that model fit is valid, and throw warning if not
+		checkModelStatus( fitInit, showWarnings=showWarnings )
 
 		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
 			# fit linear mixed model
 			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene$weights, control=lmerControl(calc.derivs=FALSE), start=fitInit@theta)
 
-			calcVarPart( fit )
+			calcVarPart( fit, adjust, adjustAll, showWarnings=FALSE )
 		}
+
+		modelType = "linear mixed model"
 	}
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))
 	colnames(varPartMat) <- names(varPart[[1]])
 	rownames(varPartMat) <- rownames(exprObj)
+
+	# get list of variation removed from the denominator
+	adjust = getAdjustVariables( colnames(varPartMat), adjust, adjustAll)
+	if( is.null(adjust) ) adjust = NA
+
+	if( any(!is.na(adjust)) ){
+		method = "adjusted intra-class correlation"
+	}else{
+		method = "Variance explained (%)"
+	}	
+
+	res <- new("varPartResults", varPartMat, type=modelType, adjustedFor=array(adjust), method=method)
 	
-	class(varPartMat) <- c("varParFrac", "data.frame")
-	return( varPartMat )
+	return( res )
 }
 
 # matrix
@@ -433,10 +446,10 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,matrix-method
 setMethod("fitExtractVarPartModel", "matrix",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, ...)
   {
     .fitExtractVarPartModel(exprObj, formula, data,
-                     REML=REML, useWeights=useWeights, ...)
+                     REML=REML, useWeights=useWeights, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, ...)
   }
 )
 
@@ -445,10 +458,10 @@ setMethod("fitExtractVarPartModel", "matrix",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,data.frame-method
 setMethod("fitExtractVarPartModel", "data.frame",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, ...)
   {
     .fitExtractVarPartModel( as.matrix(exprObj), formula, data,
-                     REML=REML, useWeights=useWeights, ...)
+                     REML=REML, useWeights=useWeights, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, ...)
   }
 )
 
@@ -457,10 +470,10 @@ setMethod("fitExtractVarPartModel", "data.frame",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,EList-method
 setMethod("fitExtractVarPartModel", "EList",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, ...)
   {
     .fitExtractVarPartModel( as.matrix(exprObj$E), formula, data,
-                     REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights, ...)
+                     REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, ...)
   }
 )
 
@@ -469,12 +482,173 @@ setMethod("fitExtractVarPartModel", "EList",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,ExpressionSet-method
 setMethod("fitExtractVarPartModel", "ExpressionSet",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, ...)
   {
     .fitExtractVarPartModel( as.matrix(exprs(exprObj)), formula, data,
-                     REML=REML, useWeights=useWeights, ...)
+                     REML=REML, useWeights=useWeights, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings,...)
   }
 )
+
+
+
+# Check that lm/lmer model is valid
+# Throw warning if
+#	1) Intercept is ommited
+#	2) Any coefficient is NA
+#	3) a categorical variable is modeled as a fixed effect
+setGeneric("checkModelStatus", signature="fit",
+  function( fit, showWarnings=TRUE )
+      standardGeneric("checkModelStatus")
+)
+
+setMethod("checkModelStatus", "lm",
+  function( fit, showWarnings=TRUE )
+	{
+		# if no intercept is specified, give warning
+		if( showWarnings && length(which(names(coef(fit)) == "(Intercept)")) == 0 ){
+			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
+		}
+
+		# if any coefficient is NA
+		if( showWarnings && any(is.na(coef(fit))) ){
+			warning("The variables specified in this model are redundant,\nso the design matrix is not full rank:\nThe results will not behave as expected and may be very wrong!!")
+		}
+	}
+)
+
+setMethod("checkModelStatus", "lmerMod",
+  function( fit, showWarnings=TRUE )
+	{
+		# if no intercept is specified, give warning
+		if( showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
+			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
+		}
+
+		# if a factor|character is modeled as a fixed effect
+		fixedFactors = sapply( attr(terms(fit), "term.labels"), function(key) is.factor(fit@frame[[key]]) | is.character(fit@frame[[key]]))
+		if( showWarnings && length(fixedFactors) > 0 && sum(fixedFactors) > 0 ){
+			warning(paste("Categorical variables modeled as fixed effect:", paste(names(which(fixedFactors)), collapse=', '), "\nThe results will not behave as expected and may be very wrong!!"))
+		}
+
+		isMultipleVaryingCoefficientTerms( fit )
+	}
+)
+
+
+
+
+
+#' Violin plot of variance fractions
+#' 
+#' Violin plot of variance fraction for each gene and each variable
+#'
+#' @param obj varParFrac object returned by fitExtractVarPart or extractVarPart
+#' @param col vector of colors
+#' @param label.angle angle of labels on x-axis
+#' @param ylim limits of y-axis
+#' @param main title of plot
+#' @param ... additional arguments
+#' 
+#' @return
+#' Makes violin plots of variance components model
+#'
+#' @examples
+#'
+#' # load library
+#' # library(variancePartition)
+#'
+#' # optional step to run analysis in parallel on multicore machines
+#' # Here, we used 4 threads
+#' library(doParallel)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
+#'
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' # Specify variables to consider
+#' # Age is continuous so we model it as a fixed effect
+#' # Individual and Tissue are both categorical, so we model them as random effects
+#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' 
+#' varPart = fitExtractVarPartModel( geneExpr, form, info )
+#'  
+#' # violin plot of contribution of each variable to total variance
+#' plotVarPart( sortCols( varPart ) )
+#'
+#' @export
+#' @docType methods
+#' @rdname plotVarPart-method
+setGeneric("plotVarPart", signature="obj",
+	function( obj, col=ggColorHue(ncol(obj)), label.angle=20, ylim=c(0,100), main="",...)
+      standardGeneric("plotVarPart")
+)
+
+#' @export
+#' @rdname plotVarPart-method
+#' @aliases plotVarPart,matrix-method
+setMethod("plotVarPart", "matrix",
+	function( obj, col=ggColorHue(ncol(obj)), label.angle=20, ylim=c(0,100), main="", ...){
+ 		.plotVarPart( obj, col, label.angle, ylim, main )
+ 	}
+)
+
+#' @export
+#' @rdname plotVarPart-method
+#' @aliases plotVarPart,varPartResults-method
+setMethod("plotVarPart", "data.frame",
+	function( obj, col=ggColorHue(ncol(obj)), label.angle=20, ylim=c(0,100), main="",...){
+ 		.plotVarPart( obj, col, label.angle, ylim, main )
+ 	}
+)
+
+#' @export
+#' @rdname plotVarPart-method
+#' @aliases plotVarPart,matrix-method
+setMethod("plotVarPart", "varPartResults",
+	function( obj, col=ggColorHue(ncol(obj)), label.angle=20, ylim=c(0,100), main="", ...){
+		
+ 		.plotVarPart( data.frame(obj, check.names=FALSE), col, label.angle, ylim, main, ylab=obj@method)
+ 	}
+)
+
+# internal driver function
+.plotVarPart <- function( obj, col=ggColorHue(ncol(obj)), label.angle=20, ylim=c(0,100), main="", ylab=''){
+
+	# convert to data.frame
+	obj = as.data.frame(obj, check.names=FALSE)
+
+	if( length(col) < ncol(obj) ){
+		stop("Not enough colors specified by col")
+	}
+
+	# get gene name of each row
+	obj$gene <- rownames(obj)
+
+	# convert to data.frame for ggplot
+	data <- melt(obj, id="gene")
+	data$value <- data$value * 100
+
+	# add to pass R CMD check
+	variable <- 1
+	value <- 1
+
+	# violin plot
+	fig = ggplot(data=data, aes(x=variable, y=value)) + geom_violin( scale="width", aes(fill = factor(variable))) + ylab(ylab) + xlab('') + geom_boxplot(width=0.07, fill="grey", outlier.color='black')  + theme_bw() + scale_fill_manual(values=col) + theme(axis.text.x =
+	               element_text(size  = 13,
+	                            angle = label.angle,
+	                            hjust = 1,
+	                            vjust = 1)) + theme(legend.position="none") + ylim(ylim)
+
+	if( main != ""){
+		fig = fig + ggtitle( main ) +  theme(plot.title = element_text(lineheight=.8, face="bold"))
+	}
+
+	return( fig )
+}
 
 
 #' Compute variance statistics
@@ -482,6 +656,9 @@ setMethod("fitExtractVarPartModel", "ExpressionSet",
 #' Compute fraction of variation attributable to each variable in regression model.  Also interpretable as the intra-class correlation after correcting for all other variables in the model
 #'
 #' @param fit model fit from lm() or lmer()
+#' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
+#' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables
+#' @param showWarnings show warnings about model fit (default TRUE)
 #' @param ... additional arguments (not currently used)
 #' 
 #' @return
@@ -505,7 +682,7 @@ setMethod("fitExtractVarPartModel", "ExpressionSet",
 #' @docType methods
 #' @rdname calcVarPart-method
 setGeneric("calcVarPart", signature="fit",
-  function(fit, ...)
+  function(fit, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,...)
       standardGeneric("calcVarPart")
 )
 
@@ -522,27 +699,189 @@ setGeneric("calcVarPart", signature="fit",
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,lm-method
 setMethod("calcVarPart", "lm",
-function(fit, ...)
+function(fit, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,...)
 {
+
+	# check validity of model fit
+	checkModelStatus( fit, showWarnings)
+
+	# Get ANOVA
 	a = anova(fit) 
 
-	# get Sum of Squares
-	varFrac = a[['Sum Sq']] / sum( a[['Sum Sq']] )
-	# wrong : varFrac = a[['Mean Sq']] / sum( a[['Mean Sq']] )
+	# get variables to remove from denominator
+	# also, check variables
+	adjust = getAdjustVariables( rownames(a), adjust, adjustAll)
 
-	# get variable names
+	# get Sum of Squares
+	if( is.null(adjust) ){
+		varFrac = a[['Sum Sq']] / sum( a[['Sum Sq']] )
+	}else{
+
+		v = a[['Sum Sq']]
+		names(v) = rownames(a)
+
+		varFrac = c()
+		for( i in 1:(length(v)-1) ){
+			# total variance minus components to remove, but add back the current variable
+			varFrac[i] = v[i] / get_denom( v, adjust, i)
+		}
+		# Residual variance
+		varFrac[length(v)] = v[["Residuals"]] / sum(v)
+
+	}
+
+	# set names 
 	names(varFrac) = rownames(a)
 
 	return( varFrac )
 }
 )
 
+get_denom = function( v, adjust, i){
+
+	currentSet = setdiff(adjust, names(v)[i])
+
+	if( length(currentSet) > 0){
+		denom = sum(v) - sum(sapply(currentSet, function(x) v[x]))
+	}else{
+		denom = sum(v)
+	}
+	return(denom)
+}
+
+isMultipleVaryingCoefficientTerms = function( fit ){
+
+	# get variance components values
+	varComp = getVarianceComponents( fit )
+
+	# get varying coefficient terms
+	res = which(sapply(varComp, length) > 1)
+
+	# if there are nore than 1
+	if( length(res) > 1){
+		warning(paste("Cannot have more than one varying coefficient term:", paste(names(res), collapse=", "), "\nThe results will not behave as expected and may be very wrong!!"))
+	}
+}
+
 #' @export
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,lmerMod-method
 setMethod("calcVarPart", "lmerMod",
-function(fit, ...)
+function(fit, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,...)
 {
+	# check validity of model fit
+	checkModelStatus( fit, showWarnings)
+
+	# get variance components values
+	varComp = getVarianceComponents( fit )
+
+	# get variables to remove from denominator
+	# also, check variables
+	adjust = getAdjustVariables( names(varComp), adjust, adjustAll)
+
+	variableLevels = list()
+	for(key in colnames(fit@frame)){
+		key2 = paste(paste(key, levels(fit@frame[[key]]), sep=''), collapse=',')
+		variableLevels[[key2]] = key
+	}
+
+ 	# Get variance terms for each variable
+ 	# for standard terms, return the variance
+ 	# for varying coefficient terms return weighted sum of variance
+ 	# 	weighted by the sample sizes corresponding to the subsets of the data
+	get_total_variance = function(varComp){
+		sapply(varComp, function(x){
+		if( length(x) == 1){
+			return( x )
+		}else{			
+			key = variableLevels[[paste(names(x), collapse=',')]]
+
+			# get total variance from varying coefficient model
+			weights = (table(fit@frame[[key]]) / nrow(fit@frame))
+			x %*% weights / sum(weights)
+		}
+		})
+	}
+
+	varPart = c()
+
+	for( key in names(varComp) ){
+		for( i in 1:length(varComp[[key]]) ){
+
+			# get variance contributed by other variables
+			varOtherVariables = varComp[-which(names(varComp) == key)]
+
+			# remove this variance from the denominator
+			currentSet = setdiff(adjust, key)
+
+			if( length(currentSet) > 0 && key != "Residuals"){
+				adjustVariance = sum(sapply(currentSet, function(x) varComp[[x]]))
+			}else{
+				adjustVariance = 0
+			}
+
+			# demoninator: remove variables in this class (i.e. same key)
+			# from the variables in the current class, only consider 1 variable
+			denom = sum(get_total_variance(varOtherVariables)) + varComp[[key]][i] - adjustVariance
+
+			# compute fraction
+			frac = varComp[[key]][i] / denom 
+
+			# name variable based on two levels
+			if( names(varComp[[key]])[i] %in% c("(Intercept)", '') ){
+				names(frac) = key
+			}else{
+				names(frac) = paste( names(varComp[[key]])[i], key, sep='/')
+			}
+
+			# save result
+			varPart = c(varPart, frac)
+		}
+	}
+
+	return( varPart )
+}
+)
+
+
+#' Extract variance terms
+#' 
+#' Extract variance terms from a model fit with lm() or lmer()
+#'
+#' @param fit list of lmer() model fits
+#'  
+#' @return 
+#'  variance explained by each variable
+# @details
+#' @examples
+#' # library(variancePartition)
+#'
+#' # optional step to run analysis in parallel on multicore machines
+#' # Here, we used 4 threads
+#' library(doParallel)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
+#'
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' # Specify variables to consider
+#' # Age is continuous so we model it as a fixed effect
+#' # Individual and Tissue are both categorical, so we model them as random effects
+#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' 
+#' # Fit model and extract variance in two separate steps
+#' # Step 1: fit model for each gene, store model fit for each gene in a list
+#' modelList = fitVarPartModel( geneExpr, form, info )
+#' 
+#' fit = modelList[[1]]
+#' getVarianceComponents( fit )
+#' 
+#' @export
+getVarianceComponents = function( fit ){
 	# compute ICC, but don't divide by variances in the same class
 	varComp <- lapply(VarCorr(fit), function(fit) attr(fit, "stddev")^2)
 
@@ -581,36 +920,30 @@ function(fit, ...)
 	varComp$Residuals = attr(VarCorr(fit), 'sc')^2
 	names(varComp$Residuals) = ''
 
-	varPart = c()
+	return( varComp )
+}
 
-	for( key in names(varComp) ){
-		for( i in 1:length(varComp[[key]]) ){
+# Construct list of variable names to remove from the denominator
+getAdjustVariables = function( variables, adjust, adjustAll){
 
-			# get variance contributed by other variables
-			varOtherVariables = varComp[-which(names(varComp) == key)]
-
-			# demoninator: remove variables in this class (i.e. same key)
-			# from the variables in the current class, only consider 1 variable
-			denom =  sum(unlist(varOtherVariables)) + varComp[[key]][i]
-
-			# compute fraction
-			frac = varComp[[key]][i] / denom 
-
-			# name variable based on two levels
-			if( names(varComp[[key]])[i] %in% c("(Intercept)", '') ){
-				names(frac) = key
-			}else{
-				names(frac) = paste( names(varComp[[key]])[i], key, sep='/')
-			}
-
-			# save result
-			varPart = c(varPart, frac)
-		}
+	if( adjustAll ){
+		adjust = variables
 	}
 
-	return( varPart )
+	# Check that variables in adjust array are present
+	idx = match(adjust, variables)
+
+	if( any(is.na(idx)) ){
+		stop(paste("The following variables cannot be used in the 'adjust' argument\nbecause they are not present in the model fit:", paste(adjust[which(is.na(idx))], collapse='; ')))
+	}
+
+		# remove Residuals from the adjust list
+	if( "Residuals" %in% adjust){
+		adjust = adjust[-match("Residuals", adjust)]
+	}
+
+	return( adjust )
 }
-)
 
 
 #' Extract variance statistics
@@ -618,6 +951,9 @@ function(fit, ...)
 #' Extract variance statistics from list of models fit with lm() or lmer()
 #'
 #' @param modelList list of lmer() model fits
+#' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
+#' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables. This overrides the previous argument, so all variables are include in adjust.
+#' @param showWarnings show warnings about model fit (default TRUE)
 #'  
 #' @return 
 #' data.frame of fraction of variance explained by each variable, after correcting for all others.
@@ -664,89 +1000,40 @@ function(fit, ...)
 #' varPart = extractVarPart( results )
 #'
 #' @export
-extractVarPart <- function( modelList ){
+extractVarPart <- function( modelList, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE ){
+
+	# get results from first model to enumerate all variables present
+	singleResult = calcVarPart( modelList[[1]], adjust, adjustAll, showWarnings=showWarnings )
+
+	# get variables to remove from denominator
+	# also, check variables
+	adjust = getAdjustVariables( names(singleResult), adjust, adjustAll)
 
 	# for each model fit, get R^2 values
 	entry <- 1
 	varPart <- lapply( modelList, function( entry ) 
-		calcVarPart( entry )
+		calcVarPart( entry, adjust, adjustAll, showWarnings=showWarnings )
 	)
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))
 	colnames(varPartMat) <- names(varPart[[1]])
 	rownames(varPartMat) <- names(modelList)
 
-	class(varPartMat) = c("varParFrac", "data.frame")
-	
-	return( varPartMat )
-}
+	modelType = ifelse(class(modelList[[1]])[1] == "lm", "anova", "linear mixed model")
 
-#' Sort variance parition statistics
-#' 
-#' Sort columns returned by extractVarPart() or fitExtractVarPartModel()
-#'
-#' @param x object returned by extractVarPart() or fitExtractVarPartModel()
-#' @param FUN function giving summary statistic to sort by.  Defaults to median
-#' @param decreasing  logical.  Should the sort be increasing or decreasing?  
-#' @param ... other arguments to sort 
-#'
-#' @return
-#' data.frame with columns sorted by mean value, with Residuals in last column
-#' 
-#' @export
-#' @examples
-#' # library(variancePartition)
-#'
-#' # optional step to run analysis in parallel on multicore machines
-#' # Here, we used 4 threads
-#' library(doParallel)
-#' cl <- makeCluster(4)
-#' registerDoParallel(cl)
-#' # or by using the doSNOW package
-#'
-#' # load simulated data:
-#' # geneExpr: matrix of gene expression values
-#' # info: information/metadata about each sample
-#' data(varPartData)
-#' 
-#' # Specify variables to consider
-#' # Age is continuous so we model it as a fixed effect
-#' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
-#' 
-#' # Step 1: fit linear mixed model on gene expresson
-#' # If categoritical variables are specified, a linear mixed model is used
-#' # If all variables are modeled as continuous, a linear model is used
-#' # each entry in results is a regression model fit on a single gene
-#' # Step 2: extract variance fractions from each model fit
-#' # for each gene, returns fraction of variation attributable to each variable 
-#' # Interpretation: the variance explained by each variable
-#' # after correction for all other variables
-#' varPart = fitExtractVarPartModel( geneExpr, form, info )
-#'  
-#' # violin plot of contribution of each variable to total variance
-#' # sort columns by median value
-#' plotVarPart( sortCols( varPart ) )
-sortCols <- function( x, FUN=median, decreasing = TRUE, ... ){
+	if( is.null(adjust) ) adjust = NA
 
-	# sort by column mean
-	i = order(apply(x, 2, FUN), decreasing=decreasing)
-
-	# apply sorting
-	x = x[,i,drop=FALSE]
-
-	# find column with Residuals
-	i = which(colnames(x) == "Residuals" )
-
-	if( length(i) > 0 ){
-		# put residuals at right-most column
-		res = cbind(x[,-i,drop=FALSE], Residuals=x[,"Residuals" ])
+	if( any(!is.na(adjust)) ){
+		method = "adjusted intra-class correlation"
 	}else{
-		res = x[,,drop=FALSE]
-	}
+		method = "Variance explained (%)"
+	}	
 
-	return( res)
+	res <- new("varPartResults", varPartMat, type=modelType, adjustedFor=array(adjust), method=method)
+	
+	return( res )
 }
+
 
 
 
@@ -766,87 +1053,6 @@ sortCols <- function( x, FUN=median, decreasing = TRUE, ... ){
 ggColorHue <- function(n) {
   hues <- seq(15, 375, length=n+1)
   hcl(h=hues, l=65, c=100)[1:n]
-}
-
-#' Violin plot of variance fractions
-#' 
-#' Violin plot of variance fraction for each gene and each variable
-#'
-#' @param obj varParFrac object returned by fitExtractVarPart or extractVarPart
-#' @param col vector of colors
-#' @param label.angle angle of labels on x-axis
-#' @param ylim limits of y-axis
-#' @param main title of plot
-#' 
-#' @return
-#' Makes violin plots of variance components model
-#'
-#' @examples
-#'
-#' # load library
-#' # library(variancePartition)
-#'
-#' # optional step to run analysis in parallel on multicore machines
-#' # Here, we used 4 threads
-#' library(doParallel)
-#' cl <- makeCluster(4)
-#' registerDoParallel(cl)
-#' # or by using the doSNOW package
-#'
-#' # load simulated data:
-#' # geneExpr: matrix of gene expression values
-#' # info: information/metadata about each sample
-#' data(varPartData)
-#' 
-#' # Specify variables to consider
-#' # Age is continuous so we model it as a fixed effect
-#' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
-#' 
-#' varPart = fitExtractVarPartModel( geneExpr, form, info )
-#'  
-#' # violin plot of contribution of each variable to total variance
-#' plotVarPart( sortCols( varPart ) )
-#'
-#' @export
-plotVarPart <- function( obj, col, label.angle=20, ylim=c(0,100), main=""){
-
-	# convert to data.frame
-	obj = as.data.frame(obj)
-
-	# if col is not specified
-	if( missing( col ) ){
-		# get c 
-		col = ggColorHue(ncol(obj))
-	}
-
-	if( length(col) < ncol(obj) ){
-		stop("Not enough colors specified by col")
-	}
-
-	# get gene name of each row
-	obj$gene <- rownames(obj)
-
-	# convert to data.frame for ggplot
-	data <- melt(obj, id="gene")
-	data$value <- data$value * 100
-
-	# add to pass R CMD check
-	variable <- 1
-	value <- 1
-
-	# violin plot
-	fig = ggplot(data=data, aes(x=variable, y=value)) + geom_violin( scale="width", aes(fill = factor(variable))) + ylab("Variance explained (%)") + xlab('') + geom_boxplot(width=0.07, fill="grey", outlier.color='black')  + theme_bw() + scale_fill_manual(values=col) + theme(axis.text.x =
-	               element_text(size  = 13,
-	                            angle = label.angle,
-	                            hjust = 1,
-	                            vjust = 1)) + theme(legend.position="none") + ylim(ylim)
-
-	if( main != ""){
-		fig = fig + ggtitle( main ) +  theme(plot.title = element_text(lineheight=.8, face="bold"))
-	}
-
-	return( fig )
 }
 
 
@@ -1134,5 +1340,114 @@ plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL
     pOut = pOut + geom_jitter(size=pts.cex,height=0, width=0, col="black")
 
     return( pOut )
+}
+
+
+
+#' Sort variance parition statistics
+#' 
+#' Sort columns returned by extractVarPart() or fitExtractVarPartModel()
+#'
+#' @param x object returned by extractVarPart() or fitExtractVarPartModel()
+#' @param FUN function giving summary statistic to sort by.  Defaults to median
+#' @param decreasing  logical.  Should the sorting be increasing or decreasing?  
+#' @param ... other arguments to sort 
+#'
+#' @return
+#' data.frame with columns sorted by mean value, with Residuals in last column
+#' 
+#' @examples
+#' # library(variancePartition)
+#'
+#' # optional step to run analysis in parallel on multicore machines
+#' # Here, we used 4 threads
+#' library(doParallel)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
+#'
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' # Specify variables to consider
+#' # Age is continuous so we model it as a fixed effect
+#' # Individual and Tissue are both categorical, so we model them as random effects
+#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' 
+#' # Step 1: fit linear mixed model on gene expresson
+#' # If categoritical variables are specified, a linear mixed model is used
+#' # If all variables are modeled as continuous, a linear model is used
+#' # each entry in results is a regression model fit on a single gene
+#' # Step 2: extract variance fractions from each model fit
+#' # for each gene, returns fraction of variation attributable to each variable 
+#' # Interpretation: the variance explained by each variable
+#' # after correction for all other variables
+#' varPart = fitExtractVarPartModel( geneExpr, form, info )
+#'  
+#' # violin plot of contribution of each variable to total variance
+#' # sort columns by median value
+#' plotVarPart( sortCols( varPart ) )
+#'
+#' @export
+#' @docType methods
+#' @rdname sortCols-method
+setGeneric("sortCols", signature="x",
+	function( x, FUN=median, decreasing = TRUE, ... )
+      standardGeneric("sortCols")
+)
+
+#' @export
+#' @rdname sortCols-method
+#' @aliases sortCols,matrix-method
+setMethod("sortCols", "matrix",
+	function( x, FUN=median, decreasing = TRUE, ... ){
+ 		.sortCols(x, FUN, decreasing, ... )
+ 	}
+)
+
+#' @export
+#' @rdname sortCols-method
+#' @aliases sortCols,data.frame-method
+setMethod("sortCols", "data.frame",
+	function( x, FUN=median, decreasing = TRUE, ... ){
+ 		.sortCols(x, FUN, decreasing, ... )
+ 	}
+)
+
+#' @export
+#' @rdname sortCols-method
+#' @aliases sortCols,varPartResults-method
+setMethod("sortCols", "varPartResults",
+	function( x, FUN=median, decreasing = TRUE, ... ){
+ 		res = .sortCols( data.frame(x, check.names=FALSE), FUN, decreasing, ... )
+
+ 		vp = new( "varPartResults", res, type=x@type, adjustedFor=x@adjustedFor, method=x@method)
+
+ 		return( vp )
+ 	}
+)
+
+# internal driver function
+.sortCols = function( x, FUN=median, decreasing = TRUE, ... ){
+
+	# sort by column mean
+	i = order(apply(x, 2, FUN), decreasing=decreasing)
+
+	# apply sorting
+	x = x[,i,drop=FALSE]
+
+	# find column with Residuals
+	i = which(colnames(x) == "Residuals" )
+
+	if( length(i) > 0 ){
+		# put residuals at right-most column
+		res = cbind(x[,-i,drop=FALSE], Residuals=x[,"Residuals" ])
+	}else{
+		res = x[,,drop=FALSE]
+	}
+
+	return( res)
 }
 

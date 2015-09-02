@@ -10,19 +10,24 @@
 \title{Fit linear (mixed) model, report variance fractions}
 \usage{
 fitExtractVarPartModel(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, ...)
+  useWeights = TRUE, adjust = NULL, adjustAll = FALSE,
+  showWarnings = TRUE, ...)
 
 \S4method{fitExtractVarPartModel}{matrix}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, ...)
+  REML = FALSE, useWeights = TRUE, adjust = NULL, adjustAll = FALSE,
+  showWarnings = TRUE, ...)
 
 \S4method{fitExtractVarPartModel}{data.frame}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, ...)
+  REML = FALSE, useWeights = TRUE, adjust = NULL, adjustAll = FALSE,
+  showWarnings = TRUE, ...)
 
 \S4method{fitExtractVarPartModel}{EList}(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, ...)
+  useWeights = TRUE, adjust = NULL, adjustAll = FALSE,
+  showWarnings = TRUE, ...)
 
 \S4method{fitExtractVarPartModel}{ExpressionSet}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, ...)
+  REML = FALSE, useWeights = TRUE, adjust = NULL, adjustAll = FALSE,
+  showWarnings = TRUE, ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -34,6 +39,12 @@ fitExtractVarPartModel(exprObj, formula, data, REML = FALSE,
 \item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option}
 
 \item{useWeights}{if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
+
+\item{adjust}{remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables}
+
+\item{adjustAll}{adjust for all variables.  This computes the adjusted ICC with respect to all variables.  This overrides the previous argument, so all variables are include in adjust.}
+
+\item{showWarnings}{show warnings about model fit (default TRUE)}
 
 \item{...}{Additional arguments for lmer() or lm()}
 }
@@ -91,9 +102,6 @@ varPart = fitExtractVarPartModel( geneExpr, form, info )
 
 # violin plot of contribution of each variable to total variance
 plotVarPart( sortCols( varPart ) )
-
-# plot a subset of variables
-plotVarPart( varPart[,c("Individual", "Tissue")] )
 
 # Note: fitExtractVarPartModel also accepts ExpressionSet
 data(sample.ExpressionSet, package="Biobase")
