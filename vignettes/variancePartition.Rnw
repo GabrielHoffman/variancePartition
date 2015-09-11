@@ -121,7 +121,7 @@ The core functions of \Rpackage{variancePartition} work seemlessly with gene exp
 
 \subsection{Advanced}
 
-Advanced users may want to perform the model fit and extract results in separate steps so you can examine the fit of the model for each gene. Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K genes and 1000 experiments).\\    
+Advanced users may want to perform the model fit and extract results in separate steps so you can examine the fit of the model for each gene. Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K genes and 1000 experiments).  I recommend using the one step \Rcode{fitExtractVarPart} unless you have a specific need for the two step approach: \\    
 
 <<simResult-omit, cache=TRUE>>=
 # Fit model
@@ -238,8 +238,12 @@ In my experience, it is useful to include all variables in the first analysis an
 In general, including variables in the model that do not vary within individual will reduce the apparent contribution of individual as estimated by \Rpackage{variancePartition}.  For example, sex and ethnicity never vary between multiple samples from the same individual and will always reduce the apparent contribution of individual.  However, disease state and age may or may not vary depending on the study design.
 
 \subsection{Detecting problems caused by colinearity of variables}
-
-Including variables that are highly correlated can produce misleading results and overestimate the contribition of variables modeled as fixed effects.  This is usually not an issue, but can arise when statistically redundant variables are included in the model.  The \Rcode{colinearityScore} function can evaluate whether this a an issue in an analysis:   
+\label{sec:colinearity}
+Including variables that are highly correlated can produce misleading results and overestimate the contribition of variables modeled as fixed effects.  This is usually not an issue, but can arise when statistically redundant variables are included in the model.   In this case, the model is ``degenerate'' or ``computationally singular'' and parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.\\
+\\
+A check of colinearity is built into \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}, so the user will be warned if this is an issue.\\
+\\
+Alternatively, the user can use the \Rcode{colinearityScore} function to evaluate whether this a an issue for a single model fit:  
 
 <<echo=TRUE, cache=TRUE>>=
 form = ~ (1|Individual) + (1|Tissue) + Age + Height
@@ -749,10 +753,14 @@ Uncertainty in the measurement of gene expression can be modeled with precision 
 
 Interpreting warnings and errors from \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}:
 \newline
+
 \begin{itemize}
-	\item \Rcode{executing \%dopar\% sequentially: no parallel backend registered}
+  \item \Rcode{Colinear score > .99: Covariates in the formula are so strongly\\correlated that the parameter estimates from this model are not\\ meaningful.  Dropping one or more of the covariates will fix this problem}
+  \item \Rcode{Error in asMethod(object) : not a positive definite matrix}
+  \item \Rcode{In vcov.merMod(fit) : Computed variance-covariance matrix problem: not a positive definite matrix; returning NA matrix}
+  \item \Rcode{fixed-effect model matrix is rank deficient so dropping 26 columns / coefficients}
 \end{itemize}
-These functions are optmized to run in parallel using doParallel/doMC.  This warning indicates that a parallelization was not enabled.  This is not a problem, but analysis will take more time.\\
+Including variables that are highly correlated can produce misleading results (see Section \ref{sec:colinearity}).  In this case, parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.\\
 
 \begin{itemize}
 	\item \Rcode{No Intercept term was specified in the formula:\newline The results will not behave as expected and may be very wrong!!}
@@ -764,10 +772,19 @@ An intercept (i.e. mean term) must be specified order for the results to be stat
 \end{itemize}
 If a linear mixed model is used, all categorical variables must be modeled as a random effect.  Alternatively, a fixed effect model can be used by modeled all variables as fixed. \\ 
 
+
+\begin{itemize}
+  \item \Rcode{executing \%dopar\% sequentially: no parallel backend registered}
+\end{itemize}
+These functions are optmized to run in parallel using doParallel/doMC.  This warning indicates that a parallelization was not enabled.  This is not a problem, but analysis will take more time.\\
+
+
 \begin{itemize}
   \item \Rcode{fatal error in wrapper code}
+  \item \Rcode{Error in mcfork() : unable to fork, possible reason: Cannot allocate memory}
+  \item \Rcode{Error: cannot allocate buffer}
 \end{itemize}
-Occasionally there is an issue in the parallel backend that is out of my control.  Restarting \R{} will solve the problem
+ This error occurs when \Rcode{fitVarPartModel} uses too many threads and takes up too much memory.  The easiest solution is to use \Rcode{fitExtractVarPartModel} instead.  Occasionally there is an issue in the parallel backend that is out of my control.  Using fewer threads or restarting \R{} will solve the problem. 
 
 \subsection{Problems removing samples with NA/NaN/Inf values}
 

@@ -1,3 +1,7 @@
+CHANGES IN VERSION 0.99.8
+-------------------------
+	o improve warnings / errors when design matrix is close to or exactly singular
+
 CHANGES IN VERSION 0.99.7
 -------------------------
 	o added new class varPartResults to store results of fitExtractVarPartModel() and fitExtractVarPartModel()

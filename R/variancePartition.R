@@ -511,7 +511,13 @@ setMethod("checkModelStatus", "lm",
 
 		# if any coefficient is NA
 		if( showWarnings && any(is.na(coef(fit))) ){
-			warning("The variables specified in this model are redundant,\nso the design matrix is not full rank:\nThe results will not behave as expected and may be very wrong!!")
+			stop("The variables specified in this model are redundant,\nso the design matrix is not full rank")
+		}
+
+		# check colinearity
+		score = colinearityScore(fit)
+		if( score > .99 ){
+			stop("Colinear score > .99: Covariates in the formula are so strongly\ncorrelated that the parameter estimates from this model are not meaningful.\nDropping one or more of the covariates will fix this problem")
 		}
 	}
 )
@@ -522,6 +528,17 @@ setMethod("checkModelStatus", "lmerMod",
 		# if no intercept is specified, give warning
 		if( showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
 			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
+		}
+
+		# if any coefficient is NA
+		if( showWarnings && any(is.na(coef(fit))) ){
+			stop("The variables specified in this model are redundant,\nso the design matrix is not full rank")
+		}
+
+		# check colinearity
+		score = colinearityScore(fit)
+		if( score > .99 ){
+			stop("Colinear score > .99: Covariates in the formula are so strongly\ncorrelated that the parameter estimates from this model are not meaningful.\nDropping one or more of the covariates will fix this problem")
 		}
 
 		# if a factor|character is modeled as a fixed effect
@@ -1211,9 +1228,16 @@ setMethod("getOmitted", "lmerMod",
 #' 
 colinearityScore = function(fit){
 	 # get correlation matrix
-	 C = cov2cor(vcov(fit)); 
+	 V = vcov(fit)
+	 if( any(is.na(vcov(fit))) ){
+	 	C = NA
+	 }else{
+	 	C = cov2cor(V)
+	 } 
 
-	 if( nrow(C) > 1 ){
+	 if( any(is.na(vcov(fit))) ){
+	 	score = 1
+	 }else if( nrow(C) > 1 ){
 	 	 # return largest off-diagonal absolute correlation
 	 	score = max(abs(C[lower.tri(C)]))
 	 }else{
