@@ -56,7 +56,7 @@ options(digits=3, width=80, prompt=" ", continue=" ")
 \pagebreak
 \section{Overview}
 
-The \Rpackage{variancePartition} provides a general framework for understanding drivers of variation in gene expression in experiments with complex designs.  A typical application would consider a dataset of gene expression from individuals sampled in multiple tissues or multiple time points where the goal is to understand variation within versus between individuals and tissues.  \Rpackage{variancePartition} use a linear mixed model to partition the variance attributable to multiple variables in the data.  The analysis is built on top of the \Rpackage{lme4} package \cite{Bates2014}, and some basic knowledge about linear mixed models will give you some intution about the behavior of \Rpackage{variancePartition} \cite{Pinheiro2000, Galecki2010}
+The \Rpackage{variancePartition} provides a general framework for understanding drivers of variation in gene expression in experiments with complex designs.  A typical application would consider a dataset of gene expression from individuals sampled in multiple tissues or multiple time points where the goal is to understand variation within versus between individuals and tissues.  \Rpackage{variancePartition} use a linear mixed model to partition the variance attributable to multiple variables in the data.  The analysis is built on top of the \Rpackage{lme4} package \cite{Bates2015}, and some basic knowledge about linear mixed models will give you some intution about the behavior of \Rpackage{variancePartition} \cite{Pinheiro2000, Galecki2010}
 
 There are two components to an analysis: 1) gene expression data, 2) meta-data about each sample such as patient ID, tissue, sex, disease state, etc.  \Rpackage{variancePartition} will assess the contribution of each meta-data variable to variation in gene expression and can report the intra-class correlation for each variable.   
 
@@ -112,23 +112,14 @@ form = ~ Age + (1|Individual) + (1|Tissue)
 varPart = fitExtractVarPartModel( geneExpr, form, info )
 
 # Figure 1a
+# Bar plot of variance fractions for the first 12 genes
+plotPercentBars( varPart[1:12,] )
+
+
+# Figure 1b
 # violin plot of contribution of each variable to total variance
 # sort variables by median fraction of variance explained
 plotVarPart( sortCols(varPart) )
-@
-
-The core functions of \Rpackage{variancePartition} work seemlessly with gene expression data stored as a \Robject{matrix}, \Robject{data.frame}, \Robject{EList} from \Rpackage{limma} or \Robject{ExpressionSet} from \Rpackage{Biobase}. 
-
-\subsection{Advanced}
-
-Advanced users may want to perform the model fit and extract results in separate steps so you can examine the fit of the model for each gene. Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K genes and 1000 experiments).  I recommend using the one step \Rcode{fitExtractVarPart} unless you have a specific need for the two step approach: \\    
-
-<<simResult-omit, cache=TRUE>>=
-# Fit model
-results = fitVarPartModel( geneExpr, form, info )
-
-# Extract results
-varPart = extractVarPart( results )
 @
 
 % include single figure
@@ -136,11 +127,30 @@ varPart = extractVarPart( results )
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=.45\textwidth]{figure/simResult-1}
+\subfloat[]{\includegraphics[width=.45\textwidth]{figure/simResult-1}}
+\subfloat[]{\includegraphics[width=.45\textwidth]{figure/simResult-2}}
 \caption{
  \Rpackage{variancePartition} example on simulated data}
 \label{fig:lab}
 \end{figure}
+
+The core functions of \Rpackage{variancePartition} work seemlessly with gene expression data stored as a \Robject{matrix}, \Robject{data.frame}, \Robject{EList} from \Rpackage{limma} or \Robject{ExpressionSet} from \Rpackage{Biobase}.  \Rcode{fitExtractVarPartModel()} returns an object that stores the variance fractions for each gene and each variable in the formula specified.  These scores can accessed just like a \Rcode{data.frame}:
+
+<<accessResults, cache=TRUE, warning=FALSE>>=
+# Access first entries
+head(varPart)
+
+# Access first 10 entries for Individual
+head(varPart$Individual)
+
+# sort genes based on variance explained by Individual
+head(varPart[order(varPart$Individual, decreasing=TRUE),])
+@
+
+
+
+
+
 
 \pagebreak
 \subsection{Plot expression stratified by other variables}
@@ -179,6 +189,21 @@ plotStratifyBy( GE, "Individual", "Expression", colorBy=NULL, text=label, main=m
 
 For gene141, variation across tissues explains 52.9\% of variance in gene expression.
 For gene43, variation across Individuals explains 91.4\% of variance in gene expression.  
+
+
+\subsection{Intuition about the backend}
+
+At the heart of \Rcode{variancePartition}, a regression model is fit for each gene separately and summary statistics are extracted and reported to the user for visualization and downstream analysis.  For a single model fit, \Rcode{calcVarPart} computes the fraction of variance explained by each variable.  \Rcode{calcVarPart} computes these statistics from either a fixed effects model fit with \Rcode{lm} or a linear mixed model fit with \Rcode{lmer}.  \Rcode{fitExtractVarPart} loops over each gene, fits the regress model and returns the variance fractions reported by \Rcode{calcVarPart}.
+
+Fitting the regression model and extracting variance statistics can also be done directly:
+<<cache=TRUE>>=
+# fit regression model for the first gene 
+fit = lmer(geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue), info )
+
+# extract variance statistics
+calcVarPart(fit)
+@
+
 
 \section{Interpretation}
 
@@ -237,33 +262,33 @@ In my experience, it is useful to include all variables in the first analysis an
 
 In general, including variables in the model that do not vary within individual will reduce the apparent contribution of individual as estimated by \Rpackage{variancePartition}.  For example, sex and ethnicity never vary between multiple samples from the same individual and will always reduce the apparent contribution of individual.  However, disease state and age may or may not vary depending on the study design.
 
-\subsection{Detecting problems caused by colinearity of variables}
-\label{sec:colinearity}
-Including variables that are highly correlated can produce misleading results and overestimate the contribition of variables modeled as fixed effects.  This is usually not an issue, but can arise when statistically redundant variables are included in the model.   In this case, the model is ``degenerate'' or ``computationally singular'' and parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.\\
-\\
-A check of colinearity is built into \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}, so the user will be warned if this is an issue.\\
-\\
-Alternatively, the user can use the \Rcode{colinearityScore} function to evaluate whether this a an issue for a single model fit:  
-
-<<echo=TRUE, cache=TRUE>>=
-form = ~ (1|Individual) + (1|Tissue) + Age + Height
-
-# fit model
-res = fitVarPartModel( geneExpr[1:4,], form, info )
-
-# evaluate the colinearity score on the first model fit
-# this reports the correlation matrix between coefficients estimates
-# for fixed effects
-# the colinearity score is the maximum absolute correlation value
-# If the colinearity score > .99 then the variance parition 
-# estimates may be problematic
-# In that case, a least one variable should be omitted
-colinearityScore(res[[1]])
-@
-
-
 
 \section{Advanced analysis}
+
+\subsection{Extracting additional information from model fits}
+
+Advanced users may want to perform the model fit and extract results in separate steps in order to examine the fit of the model for each gene.  Thus the work of \Rcode{fitExtractVarPart} can be divided into two steps: 1) fit the regression model, and 2) extracting variance statistics. \\    
+
+<<simResult-omit, cache=TRUE>>=
+# Fit model
+results = fitVarPartModel( geneExpr, form, info )
+
+# Extract results
+varPart = extractVarPart( results )
+@
+
+Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K genes and 1000 experiments). I do not recommand unless you have a specific need for storing the entire model fit.
+
+Instead, \Rcode{fitVarPartModel} can extract any desired information using any function that accepts the model fit from \Rcode{lm}/\Rcode{lmer}.  The results are stored in a \Rcode{list} and can be used for downstream analysis.
+
+<<simResult-fast-two-step, cache=TRUE>>=
+# Fit model and run summary() function on each model fit 
+vpSummaries = fitVarPartModel( geneExpr, form, info, fxn=summary )
+
+# Show results of summary() for the first gene
+vpSummaries[[1]]
+@
+
 
 \subsection{Removing batch effects before fitting model}
 
@@ -300,10 +325,9 @@ form = ~ (1|Tissue) + (1|Individual) + Age
 varPartResid = fitExtractVarPartModel( res, form, info )
 @
 
-
-
 \pagebreak
 \subsection{Variation within multiple subsets of the data}
+\label{sec:withinSubset}
 
 So far, we have focused on interpreting one variable at a time. But the linear mixed model behind \Rpackage{variancePartition} is a very powerful framework for analyzing variation at multiple levels.  We can easily extend the previous analysis of the contribution of individual and tissue on variation in gene expression to examine the contribution of individual {\it within} each tissue.  This analysis is as easy as specifying a new formula and rerunning  \Rpackage{variancePartition}.  Note that is analysis will only work when each individual is observed in each tissue and when there are multiple replicates within each tissue.
 
@@ -332,6 +356,51 @@ This analysis correspnds to a varying coefficient model, where the correlation b
 
 See Section \ref{sec:variationWithAcross} for statistical details.
 
+
+\subsection{Detecting problems caused by colinearity of variables}
+\label{sec:colinearity}
+Including variables that are highly correlated can produce misleading results and overestimate the contribition of variables modeled as fixed effects.  This is usually not an issue, but can arise when statistically redundant variables are included in the model.   In this case, the model is ``degenerate'' or ``computationally singular'' and parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.\\
+\\
+A check of colinearity is built into \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}, so the user will be warned if this is an issue.\\
+\\
+Alternatively, the user can use the \Rcode{colinearityScore} function to evaluate whether this is an issue for a single model fit:  
+
+<<echo=TRUE, cache=TRUE>>=
+form = ~ (1|Individual) + (1|Tissue) + Age + Height
+
+# fit model
+res = fitVarPartModel( geneExpr[1:4,], form, info )
+
+# evaluate the colinearity score on the first model fit
+# this reports the correlation matrix between coefficients estimates
+# for fixed effects
+# the colinearity score is the maximum absolute correlation value
+# If the colinearity score > .99 then the variance parition 
+# estimates may be problematic
+# In that case, a least one variable should be omitted
+colinearityScore(res[[1]])
+@
+
+\subsection{Including weights computed separately}
+
+\Rpackage{variancePartition} automatically used precision weights computed by \Rpackage{voom}, but the user can also specify custom weights using the \Rcode{weightsMatrix} argument.
+
+<<echo=TRUE, cache=TRUE>>=
+
+form = ~ (1|Individual) + (1|Tissue) + Age + Height
+
+# Specify custom weights
+# In this example the weights are simulated from a uniform distribution
+# and are not meaningful.
+weights = matrix(runif(length(geneExpr)), nrow=nrow(geneExpr))
+
+# Specify custom weights
+res = fitExtractVarPartModel( geneExpr[1:4,], form, info, weightsMatrix=weights[1:4,] )
+@
+
+In addition, setting the \Rcode{useWeights=FALSE} will suppress usage of the weights in all cases, i.e. when the weights are specified manually or implicitly with the results of \Rcode{voom}.
+
+
 \pagebreak
 \section{Normalizing RNA-Seq data}
 \label{sec:normalize_RNA_Seq}
@@ -341,7 +410,6 @@ See Section \ref{sec:variationWithAcross} for statistical details.
 Read RNA-Seq counts into \R{}, normalize for library size within and between experiments with TMM \cite{Robinson2010c}, estimates precision weights with limma/voom \cite{Law2014}
 
 <<echo=TRUE, cache=TRUE>>=
-## not run
 library(limma)
 library(edgeR)
 
@@ -349,10 +417,10 @@ library(edgeR)
 isexpr = rowSums(cpm(geneCounts)>.1) >= 0.5 * ncol(geneCounts)
 
 # create data structure with only expressed genes
-geneExpr = DGEList(counts=geneCounts[isexpr,])
+gExpr = DGEList(counts=geneCounts[isexpr,])
 
 # Perform TMM normalization
-geneExpr = calcNormFactors(geneExpr)
+gExpr = calcNormFactors(gExpr)
 
 # Specify variables to be included in the voom() estimates of uncertainty
 # recommand including variables with a small number of categories 
@@ -361,7 +429,7 @@ design = model.matrix( ~ Batch, info)
 
 # Estimate precision weights for each gene and sample
 # This models uncertainty in expression measurements
-vobjGenes = voom(geneExpr, design )
+vobjGenes = voom(gExpr, design )
 
 # fit variancePartition
 form = ~ (1|Individual) + (1|Tissue) + Age
@@ -371,6 +439,8 @@ form = ~ (1|Individual) + (1|Tissue) + Age
 # This can be turned off with useWeights=FALSE
 varPart = fitExtractVarPartModel( vobjGenes, form, info )
 @
+
+
 
 
 \pagebreak
@@ -587,7 +657,7 @@ and the residual variance is
 
 \subsection{Implementation in \R{}}
 
- An \R{} formula is used to define the terms in the fixed and random effects, and \Rcode{fitVarPartModel} fits the specified model for each gene separately.  If random effects are specified, \Rcode{lmer} from \Rpackage{lme4} is used behind the scenes to fit the model, while \Rcode{lm} is used if there are only fixed effects. \Rcode{fitVarPartModel} returns a list of the model fits, and \Rcode{extractVarPart} returns the variance partition statistics for each model in the list.  \Rcode{fitExtractVarPartModel} combines the actions of \Rcode{fitVarPartModel} and \Rcode{extractVarPart} into one function call.  \Rcode{calcVarPart} behind the scenes to compuate variance fractions for both fixed and mixed effects models.
+ An \R{} formula is used to define the terms in the fixed and random effects, and \Rcode{fitVarPartModel} fits the specified model for each gene separately.  If random effects are specified, \Rcode{lmer} from \Rpackage{lme4} is used behind the scenes to fit the model, while \Rcode{lm} is used if there are only fixed effects. \Rcode{fitVarPartModel} returns a list of the model fits, and \Rcode{extractVarPart} returns the variance partition statistics for each model in the list.  \Rcode{fitExtractVarPartModel} combines the actions of \Rcode{fitVarPartModel} and \Rcode{extractVarPart} into one function call.  \Rcode{calcVarPart} is called behind the scenes to compute variance fractions for both fixed and mixed effects models, but the user can also call this function directly on a model fit with \Rcode{lm}/\Rcode{lmer}.
 
 \subsection{Interpretation of percent variance explained}
 The percent variance explained can be interpreted as the intra-class correlation (ICC) when a special case of Equation 1 is used.  Consider the simplest example of the $i^{th}$ sample from the $k^{th}$ individual 
@@ -668,7 +738,7 @@ A given sample is only from one cell type, so this analysis asks a question abou
 \\
 Consider a concrete example with variation from across individual and cell types (T-cells and monocytes).  Modeling the variation across individuals within cell type corresponds to 
 \begin{eqnarray}
-  y_{i,s,c} = \mu + Z^{(sex)} \alpha_{i,s} + Z^{(T-cell| id)} \alpha_{i,c} + Z^{(monocyte| id)} \alpha_{i,c} + e_{i,s,c}
+  y_{i,s,c} = \mu + Z^{(sex)} \alpha_{i,s} + Z^{(Tcell| id)} \alpha_{i,c} + Z^{(monocyte| id)} \alpha_{i,c} + e_{i,s,c}
 \end{eqnarray}    
 with corresponding variance components
 \begin{center}
@@ -677,7 +747,7 @@ with corresponding variance components
     Variance component & Interpretation \\
     \hline
     $\sigma^2_{sex}$ & variance across sex \\
-    $\sigma^2_{(T-cell| id)}$ & variance across individuals within T-cells \\
+    $\sigma^2_{(Tcell| id)}$ & variance across individuals within T-cells \\
     $\sigma^2_{(monocyte| id)}$ & variance across individuals within monocytes \\
     $\sigma^2_\varepsilon$ & residual variance \\   
     \hline
@@ -689,9 +759,9 @@ with corresponding variance components
 
 Differential expression (DE) is widely used to identify gene which show difference is expression between two subsets of the data (i.e. case versus controls). For a single gene, DE analysis measures the difference in mean expression between the two subsets.  (Since expression is usually analyzed on a log scale, DE results are show in terms of log fold changes between the two subsets ).  In Figure \ref{fig:DEVP}, consider two simulated examples of a gene whose expression differs between males and females.  The mean expression in males is 0 and the mean expression in females is 2 in both cases.  Therefore, the fold change is 2 in both cases.\\
 \\  
-However, the fraction of expression variation explained by sex is very different in these two examples.  In example A, there is very little variation {\it within} each sex, so that variation {\it between} sexes is very high at 91.1\%.  Conversely, Example B show high variation {\it within} sexes, so that variation {\it between} sexes is only 19.4\%.\\
+However, the fraction of expression variation explained by sex is very different in these two examples.  In example A, there is very little variation {\it within} each sex, so that variation {\it between} sexes is very high at 91.1\%.  Conversely, example B shows high variation {\it within} sexes, so that variation {\it between} sexes is only 19.4\%.\\
 \\
-Fact that the fold change or the fraction of variation is significantly different from 0 indicates differential expression between the two sexes.  Yet these two statistics have different interpretations.  The fold change from DE analysis tests a difference in means between two sexes.  The fraction of variation explained compares the variation explained by sex to the total variation.\\
+The fact that the fold change or the fraction of variation is significantly different from 0 indicates differential expression between the two sexes.  Yet these two statistics have different interpretations.  The fold change from DE analysis tests a difference in means between two sexes.  The fraction of variation explained compares the variation explained by sex to the total variation.\\
 \\
 Thus the fraction of variation explained reported by \Rpackage{variancePartition} reflects as different aspect of the data not captured by DE analysis.
 
@@ -743,34 +813,30 @@ plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
 
 
 \subsection{Modelling error in gene expression measurements}
-Uncertainty in the measurement of gene expression can be modeled with precision weights and tests of differentially expression using \Rcode{voom} in \Rpackage{limma} model this uncertainty directly with a heteroskadastic linear regression \cite{Law2014}.  \Rpackage{variancePartition} can use these precision weights in a heteroskadastic linear mixed model implemented in \Rpackage{lme4} \cite{Bates2014}.  These precision weights are used seamlessly by calling \Rcode{fitVarPartModel} or \Rcode{fitExtractVarPartModel} on the output of \Rcode{voom}.  Otherwise the user can specify the weights with the \Rcode{weightsMatrix} parameter.
+Uncertainty in the measurement of gene expression can be modeled with precision weights and tests of differentially expression using \Rcode{voom} in \Rpackage{limma} model this uncertainty directly with a heteroskadastic linear regression \cite{Law2014}.  \Rpackage{variancePartition} can use these precision weights in a heteroskadastic linear mixed model implemented in \Rpackage{lme4} \cite{Bates2015}.  These precision weights are used seamlessly by calling \Rcode{fitVarPartModel} or \Rcode{fitExtractVarPartModel} on the output of \Rcode{voom}.  Otherwise the user can specify the weights with the \Rcode{weightsMatrix} parameter.
 
 
 \pagebreak
 \section{Frequently asked questions}
 
-\subsection{Warnings and errors}
-
 Interpreting warnings and errors from \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}:
-\newline
+
+\subsection{Warnings}
 
 \begin{itemize}
-  \item \Rcode{Colinear score > .99: Covariates in the formula are so strongly\\correlated that the parameter estimates from this model are not\\ meaningful.  Dropping one or more of the covariates will fix this problem}
-  \item \Rcode{Error in asMethod(object) : not a positive definite matrix}
-  \item \Rcode{In vcov.merMod(fit) : Computed variance-covariance matrix problem: not a positive definite matrix; returning NA matrix}
-  \item \Rcode{fixed-effect model matrix is rank deficient so dropping 26 columns / coefficients}
-\end{itemize}
-Including variables that are highly correlated can produce misleading results (see Section \ref{sec:colinearity}).  In this case, parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.\\
-
-\begin{itemize}
-	\item \Rcode{No Intercept term was specified in the formula:\newline The results will not behave as expected and may be very wrong!!}
+  \item \Rcode{No Intercept term was specified in the formula:\newline The results will not behave as expected and may be very wrong!!}
 \end{itemize}
 An intercept (i.e. mean term) must be specified order for the results to be statistically valid.  Otherwise, the variance percentages will be {\it very} overestimated.\\
 
 \begin{itemize}
-	\item \Rcode{Categorical variables modeled as fixed effect:\newline The results will not behave as expected and may be very wrong!!}
+  \item \Rcode{Categorical variables modeled as fixed effect:\newline The results will not behave as expected and may be very wrong!!}
 \end{itemize}
-If a linear mixed model is used, all categorical variables must be modeled as a random effect.  Alternatively, a fixed effect model can be used by modeled all variables as fixed. \\ 
+If a linear mixed model is used, all categorical variables must be modeled as a random effect.  Alternatively, a fixed effect model can be used by modeling all variables as fixed. \\ 
+
+\begin{itemize}
+  \item \Rcode{Cannot have more than one varying coefficient term:\newline The results will not behave as expected and may be very wrong!!}
+\end{itemize}
+Only one varying coefficient term can be specified.  For example, the formula $\sim$\Rcode{(Tissue+0|Individual) + (Batch+0|Individual)} contains two varying coefficient terms and the results from this analysis are not easily interpretable.  Only a formula with one term like \Rcode{(Tissue+0|Individual)} is allowed. \\ 
 
 
 \begin{itemize}
@@ -778,6 +844,25 @@ If a linear mixed model is used, all categorical variables must be modeled as a 
 \end{itemize}
 These functions are optmized to run in parallel using doParallel/doMC.  This warning indicates that a parallelization was not enabled.  This is not a problem, but analysis will take more time.\\
 
+\subsection{Errors}
+
+\begin{itemize}
+  \item \Rcode{Colinear score > .99: Covariates in the formula are so strongly\\correlated that the parameter estimates from this model are not\\ meaningful.  Dropping one or more of the covariates will fix this problem}
+  \item \Rcode{Error in asMethod(object) : not a positive definite matrix}
+  \item \Rcode{In vcov.merMod(fit) : Computed variance-covariance matrix problem:\\not a positive definite matrix; returning NA matrix}
+  \item \Rcode{fixed-effect model matrix is rank deficient so dropping 26 columns / coefficients}
+\end{itemize}
+Including variables that are highly correlated can produce misleading results (see Section \ref{sec:colinearity}).  In this case, parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.\\
+
+\begin{itemize}
+  \item \Rcode{Error in checkNlevels(reTrms\$flist, n = n, control) : \newline number of levels of each grouping factor must be < number of observations}
+\end{itemize}
+This arises when using a varying coefficient model that examimes the effect of one variable inside subsets of the data defined by another: $\sim$\Rcode{(A+0|B)}.  See Section \ref{sec:withinSubset}. There must be enough observations of each level of the variable B with each level of variable A.  Consider an example with samples from multiple tissues from a set of individual where we are interested in the variation across individuals within each tissue using the formula: $\sim$ \Rcode{(Tissue+0|Individual)}.  This analysis will only work if there are multiple samples from the same individual in at least one tissue.  If all tisses only have one sample per individual, the analysis will fail and \Rcode{variancePartition} will give this error.\\
+
+\begin{itemize}
+  \item \Rcode{Problem with varying coefficient model in formula: should have form (A+0|B)}
+\end{itemize}
+When analyzing the variation of one variable inside another (Section \ref{sec:withinSubset}), the formula most be specified as \Rcode{(Tissue+0|Individual)}.  This error occurs when the formula contains \Rcode{(Tissue|Individual)} instead.\\
 
 \begin{itemize}
   \item \Rcode{fatal error in wrapper code}
@@ -786,7 +871,7 @@ These functions are optmized to run in parallel using doParallel/doMC.  This war
 \end{itemize}
  This error occurs when \Rcode{fitVarPartModel} uses too many threads and takes up too much memory.  The easiest solution is to use \Rcode{fitExtractVarPartModel} instead.  Occasionally there is an issue in the parallel backend that is out of my control.  Using fewer threads or restarting \R{} will solve the problem. 
 
-\subsection{Problems removing samples with NA/NaN/Inf values}
+\subsubsection{Errors: Problems removing samples with NA/NaN/Inf values}
 
 \Rpackage{variancePartition} fits a regression model for each gene and drops samples that have NA/NaN/Inf values in each model fit.  This is generally seamless but can cause an issue when a variable specified in the formula no longer varies within the subset of samples that are retained.  Consider an example with variables for sex and age where age is NA for all males samples.  Dropping samples with invalid values for variables included in the formula will retain only female samples.  This will cause \Rpackage{variancePartition} to throw an error because there is now no variation in sex in the retained subset of the data.  This can be resolved by removing either age or sex from the formula.\\
 \\

@@ -1,10 +1,32 @@
+
+CHANGES IN VERSION 1.1.2
+-------------------------
+	o Add details to vignette
+
+CHANGES IN VERSION 1.1.1
+-------------------------
+	o add plotPercentBars() to vizualize variance fractions for a subset of genes
+	o add ESS() to compute effective sample	size
+	o fix x.labels argument in plotStratifyBy().  Previously, this argument was not used correctly
+
+CHANGES IN VERSION 1.0.0
+-------------------------
+	o Release to Bioconductor 3.2
+
+CHANGES IN VERSION 0.99.9
+-------------------------
+	o add legend argument to plotStratifyBy()
+	o improve warnings / errors for varying coefficient models
+	o allow user to manually adjust cutoff for determining when design matrix is singular
+	  - changed default cutoff to 0.999 from 0.99
+
 CHANGES IN VERSION 0.99.8
 -------------------------
 	o improve warnings / errors when design matrix is close to or exactly singular
 
 CHANGES IN VERSION 0.99.7
 -------------------------
-	o added new class varPartResults to store results of fitExtractVarPartModel() and fitExtractVarPartModel()
+	o added new class varPartResults to store results of fitExtractVarPartModel() and extractVarPart()
 	  - the user will not notice any change, only the backend is different
         o Allow computation of adjusted ICC in addition to ICC.
 	o add warning when categorical variables are modeled as fixed effects
