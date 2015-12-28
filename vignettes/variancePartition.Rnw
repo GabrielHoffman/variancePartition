@@ -56,7 +56,7 @@ options(digits=3, width=80, prompt=" ", continue=" ")
 \pagebreak
 \section{Overview}
 
-The \Rpackage{variancePartition} provides a general framework for understanding drivers of variation in gene expression in experiments with complex designs.  A typical application would consider a dataset of gene expression from individuals sampled in multiple tissues or multiple time points where the goal is to understand variation within versus between individuals and tissues.  \Rpackage{variancePartition} use a linear mixed model to partition the variance attributable to multiple variables in the data.  The analysis is built on top of the \Rpackage{lme4} package \cite{Bates2015}, and some basic knowledge about linear mixed models will give you some intution about the behavior of \Rpackage{variancePartition} \cite{Pinheiro2000, Galecki2010}
+The \Rpackage{variancePartition} package provides a general framework for understanding drivers of variation in gene expression in experiments with complex designs.  A typical application would consider a dataset of gene expression from individuals sampled in multiple tissues or multiple time points where the goal is to understand variation within versus between individuals and tissues.  \Rpackage{variancePartition} use a linear mixed model to partition the variance attributable to multiple variables in the data.  The analysis is built on top of the \Rpackage{lme4} package \cite{Bates2015}, and some basic knowledge about linear mixed models will give you some intution about the behavior of \Rpackage{variancePartition} \cite{Pinheiro2000, Galecki2010}
 
 There are two components to an analysis: 1) gene expression data, 2) meta-data about each sample such as patient ID, tissue, sex, disease state, etc.  \Rpackage{variancePartition} will assess the contribution of each meta-data variable to variation in gene expression and can report the intra-class correlation for each variable.   
 
@@ -65,15 +65,10 @@ There are two components to an analysis: 1) gene expression data, 2) meta-data a
 
 A typical analysis with \Rpackage{variancePartition} is only a few lines of \R{} code, assuming the expression data has already been normalized.  Normalization is a separate topic, and I address it briefly 
 in Section \ref{sec:normalize_RNA_Seq}.
-% 
-  % \Rpackage{variancePartition} gives better understanding about the relationship between expression data and meta-data.  So it is most usefull for complex datasets with rich metad-data
-% 
-% This document provides a tutorial for using the \Biocpkg{variancePartition} package \CRANpkg{lme4} 
-% 
-% 
- % The tutorial includes information on (1) how to estimate the number of latent sources of variation, (2) how to apply the\Rpackage{sva} package to estimate latent variables such as batch effects, (3) how to directly remove known batch effects using the \Rfunction{ComBat} function, (4) how to perform differential expression analysis using surrogate variables either directly or with the \Biocpkg{limma} package, and (4) how to apply ``frozen'' \Rfunction{sva} to improve prediction and clustering.  
-%
-\subsection{Standard}
+
+The simulated dataset included as an example contains measurements of 200 genes from 100 samples.  These samples include assays from 3 tissues across 25 individuals processed in 4 batches.  The individuals range in age from 36 to 73.  A typical \Rpackage{variancePartition} analysis will assess the contribution of each aspect of the study design (i.e. individual, tissue, batch, age) to the expression variation of each gene.  The analysis will prioritize these axes of variation based on a genome-wide summary and give results at the gene-level to identity genes that follow or deviate from this genome-wide trend.   The results can be visualized using custom plots and can be used for downstream analysis.
+
+\subsection{Standard application}
 
 <<simResult, cache=TRUE>>=
 # load library
@@ -96,7 +91,7 @@ data(varPartData)
 # Age is continuous so model it as a fixed effect
 # Individual and Tissue are both categorical, so model them as random effects
 # Note the syntax used to specify random effects
-form = ~ Age + (1|Individual) + (1|Tissue) 
+form = ~ Age + (1|Individual) + (1|Tissue) + (1|Batch) 
 
 # Fit model and extract results
 # 1) fit linear mixed model on gene expresson
@@ -108,24 +103,26 @@ form = ~ Age + (1|Individual) + (1|Tissue)
 # Interpretation: the variance explained by each variables after correcting 
 # for all other variables
 # Note that geneExpr can either be a matrix, 
-# or the output of voom() in the limma package
+# and EList output by voom() in the limma package, 
+# or an ExpressionSet
 varPart = fitExtractVarPartModel( geneExpr, form, info )
 
+# sort variables (i.e. columns) by median fraction of variance explained
+vp = sortCols( varPart )
+
 # Figure 1a
-# Bar plot of variance fractions for the first 12 genes
-plotPercentBars( varPart[1:12,] )
+# Bar plot of variance fractions for the first 10 genes
+plotPercentBars( vp[1:10,] )
 
-
+#
 # Figure 1b
 # violin plot of contribution of each variable to total variance
-# sort variables by median fraction of variance explained
-plotVarPart( sortCols(varPart) )
+plotVarPart( vp )
 @
 
-% include single figure
-% \incfig{figure/simResult-1}{0.25\textwidth}{A curve.}{The code that creates this figure is shown in the code chunk.}
-
-\begin{figure}[h]
+\Rpackage{variancePartition} includes a number of custom plots to visualize the results.  Since \Rpackage{variancePartition} attributes the fraction of total variation attributable to each aspect of the study design, these fractions naturally sum to 1.  \Rcode{plotPercentBars} plots the partitioning results for a subset of genes (Figure 1a), and \Rcode{plotVarPart} shows a genome-wide violin plot of the distribtion of variance explained by each variable across all genes (Figure 1b).  (Note that these plots show results in terms of \underline{percentage} of variance explained, while the results are stored in terms of the \underline{fraction}.)
+  
+\begin{figure}[hb]
 \centering
 \subfloat[]{\includegraphics[width=.45\textwidth]{figure/simResult-1}}
 \subfloat[]{\includegraphics[width=.45\textwidth]{figure/simResult-2}}
@@ -134,13 +131,13 @@ plotVarPart( sortCols(varPart) )
 \label{fig:lab}
 \end{figure}
 
-The core functions of \Rpackage{variancePartition} work seemlessly with gene expression data stored as a \Robject{matrix}, \Robject{data.frame}, \Robject{EList} from \Rpackage{limma} or \Robject{ExpressionSet} from \Rpackage{Biobase}.  \Rcode{fitExtractVarPartModel()} returns an object that stores the variance fractions for each gene and each variable in the formula specified.  These scores can accessed just like a \Rcode{data.frame}:
+The core functions of \Rpackage{variancePartition} work seemlessly with gene expression data stored as a \Robject{matrix}, \Robject{data.frame}, \Robject{EList} from \Rpackage{limma} or \Robject{ExpressionSet} from \Rpackage{Biobase}.  \Rcode{fitExtractVarPartModel()} returns an object that stores the variance fractions for each gene and each variable in the formula specified.  These fractions can be accessed just like a \Rcode{data.frame}:
 
 <<accessResults, cache=TRUE, warning=FALSE>>=
 # Access first entries
 head(varPart)
 
-# Access first 10 entries for Individual
+# Access first entries for Individual
 head(varPart$Individual)
 
 # sort genes based on variance explained by Individual
@@ -149,13 +146,10 @@ head(varPart[order(varPart$Individual, decreasing=TRUE),])
 
 
 
-
-
-
 \pagebreak
 \subsection{Plot expression stratified by other variables}
 
-Users can also plot a gene expression trait stratified by Tissue or Individual.
+\Rpackage{variancePartition} also includes plotting functions to visualize the variation across a variable of interest. \Rcode{plotStratifyBy} plots the expression of a gene stratified by the specified variable.  In the example dataset, users can plot a gene expression trait stratified by Tissue (Figure 2a) or Individual (Figure 2b).
 
 <<plotStratifyBy, cache=TRUE, warning=FALSE>>=
 # get gene with the highest variation across Tissues
@@ -193,7 +187,7 @@ For gene43, variation across Individuals explains 91.4\% of variance in gene exp
 
 \subsection{Intuition about the backend}
 
-At the heart of \Rcode{variancePartition}, a regression model is fit for each gene separately and summary statistics are extracted and reported to the user for visualization and downstream analysis.  For a single model fit, \Rcode{calcVarPart} computes the fraction of variance explained by each variable.  \Rcode{calcVarPart} computes these statistics from either a fixed effects model fit with \Rcode{lm} or a linear mixed model fit with \Rcode{lmer}.  \Rcode{fitExtractVarPart} loops over each gene, fits the regress model and returns the variance fractions reported by \Rcode{calcVarPart}.
+At the heart of \Rcode{variancePartition}, a regression model is fit for each gene separately and summary statistics are extracted and reported to the user for visualization and downstream analysis.  For a single model fit, \Rcode{calcVarPart} computes the fraction of variance explained by each variable.  \Rcode{calcVarPart} is defined by this package, and computes these statistics from either a fixed effects model fit with \Rcode{lm} or a linear mixed model fit with \Rcode{lmer}.  \Rcode{fitExtractVarPart} loops over each gene, fits the regression model and returns the variance fractions reported by \Rcode{calcVarPart}.
 
 Fitting the regression model and extracting variance statistics can also be done directly:
 <<cache=TRUE>>=
@@ -204,35 +198,37 @@ fit = lmer(geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue), info )
 calcVarPart(fit)
 @
 
-
 \section{Interpretation}
 
-\Rpackage{variancePartition} fits a linear (mixed) model thats jointly considers the contribution of all specified variables on the expression of each gene.  It is similar to multiple regression in that the effect of each variable is assessed while correcting for all others.  Therefore, fitting the model with each variable separtely will give very different results from the considering all variables jointly.  I have found joint analysis the best option in most cases.  
+\Rpackage{variancePartition} fits a linear (mixed) model thats jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while correcting for all others.  Therefore, fitting the model with each variable separtely will give very different results from the considering all variables jointly.  I have found joint analysis the best option in most cases.  
 
-The results of \Rpackage{variancePartition} give insight into the expression data at multiple levels.  Moreover, a single statistic often has multiple equivalent interpretations while only one is relevant to the biological question.  Here I give a description of the data from the previous section based on the results in Figure 1a, but these conclusions are applicable to standard analyses with \Rpackage{variancePartition}.
+The results of \Rpackage{variancePartition} give insight into the expression data at multiple levels.  Moreover, a single statistic often has multiple equivalent interpretations while only one is relevant to the biological question.  Analysis of the example data in Figure 1 give some strong interpretations. 
 
-Averaging across all genes,
+Considering the median across all genes,
 \begin{itemize}
-\item[1)] variation between individuals explains 78\% of the variation in expression, after correcting for tissue and age
-\item[2)] variation between tissues explains 12\% of the variation in expression, after correcting for individual and age
-\item[3)] after correcting for individual and tissue, the effect of age is negligible. 
-\item[4)] correcting for individual, tissue and age leaves 10\% of the total variance in expression.
+\item[1)] variation across individuals explains a median of 81.5\% of the variation in expression, after correcting for tissue, batch and age
+\item[2)] variation across tissues explains a median of 8.2\% of the variation in expression, after correcting for other the variables
+\item[3)] variation across batches is negligible after correcting for variation due to other variables
+\item[4)] the effect of age is negligible after correcting for other variables 
+\item[5)] correcting for individual, tissue, batch and age leaves a median of 9.3\% of the total variance in expression.
 \end{itemize} 
 
 These statistics also have a natural interpretation in terms of the intra-class correlation (ICC), the correlation between observations made from samples in the same group.  
 
-On average across all genes and all experiments,
+Considering the median across across all genes and all experiments,
 \begin{itemize}
-\item[1)] the ICC for \underline{individual} is 78\%.
-\item[2)] the ICC for \underline{tissue} is 12\%.
-\item[3)] two randomly selected gene measurements from same \underline{individual}, but regardless of \underline{tissue} or \underline{age}, have a correlation of 78\%. 
-\item[4)] two randomly selected gene measurements from same \underline{tissue}, but regardless of \underline{individual} or {age}, have a correlation of 12\%.
-\item[5)] two randomly selected gene measurements from the same \underline{individual} {\it and} same \underline{tissue}, but regardless of \underline{age}, have an correlation of 78\% + 12\% = 90\%.
+\item[1)] the ICC for \underline{individual} is 81.5\%.
+\item[2)] the ICC for \underline{tissue} is 8.2\%.
+\item[3)] two randomly selected gene measurements from same \underline{individual}, but regardless of \underline{tissue}, \underline{batch} or \underline{age}, have a correlation of 81.5\%. 
+\item[4)] two randomly selected gene measurements from same \underline{tissue}, but regardless of \underline{individual}, \underline{batch} or \underline{age}, have a correlation of 8.2\%.
+\item[5)] two randomly selected gene measurements from the same \underline{individual} {\it and} same \underline{tissue}, but regardless of \underline{batch} and \underline{age}, have an correlation of 81.5\% + 8.2\% = 89.7\%.
 \end{itemize} 
 
 Note that that the ICC here is interpretated as the ICC after correcting for all other variables in the model.
 
-These conclusions have been averaged across all genes, but the real power of \Rpackage{variancePartition} is to identify specific genes that follow or deviate from the genome-wide trend.  The gene-level statistics can be used to identify a subset of genes that are enriched for specific biological functions.  For example, we can ask if the 500 genes with the highest variation in expression across tissues (i.e. the long tail for tissue in Figure 1a) are enriched for genes known to have high tissue-specificity.
+These conclusions are based on the genome-wide median across all genes, but the same type of statements can be made at the gene-level.  Moreover, care must be taken in the interpretation of nested variables.  For example, \Rcode{Age} is nested within \Rcode{Individual} since the multiple samples from each individual are taken at the same age.  Thus the effect of \Rcode{Age} removes some variation from being explained by \Rcode{Individual}.  This often arises when considering variation across individuals and across sexes: any cross-sex variation is a component of the cross-individual variation.  So the total variation across individuals is the sum of the fraction of variance explained by \Rcode{Sex} and \Rcode{Individual}.  This nesting/summing of effects is common for variables that are properties of the individual rather than the sample.  For example, sex and ethnicity are always properties of the individual.  Variables like age and disease state can be properties of the individual, but could also vary in time-course or longitudinal  experiments.  The the interpretation depends on the experimental design.
+
+The real power of \Rpackage{variancePartition} is to identify specific genes that follow or deviate from the genome-wide trend.  The gene-level statistics can be used to identify a subset of genes that are enriched for specific biological functions.  For example, we can ask if the 500 genes with the highest variation in expression across tissues (i.e. the long tail for tissue in Figure 1a) are enriched for genes known to have high tissue-specificity.
 
 % {\it Note:} The precent variance explained is equivalent to the ICC only when the formula takes the simple form $$ \sim (1|A) + (1|B) + C + ...$$  
 
@@ -242,7 +238,7 @@ These conclusions have been averaged across all genes, but the real power of \Rp
 
 \subsection{Should a variable be modeled as fixed or random effect?}
  
-Catagorical variables should (almost) always be modeled as a random effect.  The difference between modeling a catagorical variable as a fixed versus random effect is minimal when the sample size is large compared to the number of categories (i.e. levels).  So variables like disease status, sex or time point will not be sensitive to modeling as a fixed versus random effect.  However, variables with many categories like Individual {\it must} be modeled as a random effect in order to obtain statistically valid results.  So to be on the safe side, categorical variable should be modeled as a random effect.  
+Catagorical variables should (almost) always be modeled as a random effect.  The difference between modeling a catagorical variable as a fixed versus random effect is minimal when the sample size is large compared to the number of categories (i.e. levels).  So variables like disease status, sex or time point will not be sensitive to modeling as a fixed versus random effect.  However, variables with many categories like \Rcode{Individual} {\it must} be modeled as a random effect in order to obtain statistically valid results.  So to be on the safe side, categorical variable should be modeled as a random effect.  
 
 % \R{} and \Rpackage{variancePartition} handle catagorical variables stored as a \Rcode{factor} very naturally.  If categorical variables are stored as an \Rcode{integer} or \Rcode{character}, they must be converted to a \Rcode{factor} before being used with \Rpackage{variancePartition}
 
@@ -261,6 +257,10 @@ In my experience, it is useful to include all variables in the first analysis an
 \Rpackage{variancePartition} can naturally assess the contribution of both individual and sex in a dataset.  As expected, genes for which sex explains a large fraction of variation are located on chrX and chrY.  If the goal is to interpret the impact of sex, then there is no issue.  But recall the issue with correlated variables and note that individual is correlated with sex, because each individual is only one sex regardless of how many samples are taken from a individual. It follows that including sex in the model reduces the \underline{apparent} contribution of individual to gene expression.  In other words, the ICC for individual will be different if sex is included in the model.
 
 In general, including variables in the model that do not vary within individual will reduce the apparent contribution of individual as estimated by \Rpackage{variancePartition}.  For example, sex and ethnicity never vary between multiple samples from the same individual and will always reduce the apparent contribution of individual.  However, disease state and age may or may not vary depending on the study design.
+
+In biological datasets technical variability (i.e. batch effects) can often reduce the apparent biological signal.  In RNA-seq analysis, it is common for the the impact of this technical variability to be removed before downstream analysis.  Instead of including these batch variable in the \Rpackage{variancePartition} analysis, it is simple to complete the expression residuals with the batch effects removed and then feeds these residuals to \Rpackage{variancePartition}.  This will increase the fraction of variation explained by biological variables since technical variability is reduced.
+
+
 
 
 \section{Advanced analysis}
@@ -329,20 +329,20 @@ varPartResid = fitExtractVarPartModel( res, form, info )
 \subsection{Variation within multiple subsets of the data}
 \label{sec:withinSubset}
 
-So far, we have focused on interpreting one variable at a time. But the linear mixed model behind \Rpackage{variancePartition} is a very powerful framework for analyzing variation at multiple levels.  We can easily extend the previous analysis of the contribution of individual and tissue on variation in gene expression to examine the contribution of individual {\it within} each tissue.  This analysis is as easy as specifying a new formula and rerunning  \Rpackage{variancePartition}.  Note that is analysis will only work when each individual is observed in each tissue and when there are multiple replicates within each tissue.
+So far, we have focused on interpreting one variable at a time. But the linear mixed model behind \Rpackage{variancePartition} is a very powerful framework for analyzing variation at multiple levels.  We can easily extend the previous analysis of the contribution of individual and tissue on variation in gene expression to examine the contribution of individual {\it within} each tissue.  This analysis is as easy as specifying a new formula and rerunning  \Rpackage{variancePartition}.  Note that is analysis will only work when there are replicates for at least some individuals within each tissue in order to assess cross-individual variance with in a tissue.
 
 <<withinTissue, echo=TRUE, cache=TRUE>>=
 # specify formula to model within/between individual variance 
 # separately for each tissue
 # Note that including +0 ensures each tissue is modeled explicitly
 # Otherwise, the first tissue would be used as baseline
-form = ~ (Tissue+0|Individual) + Age + (1|Tissue)
+form = ~ (Tissue+0|Individual) + Age + (1|Tissue) + (1|Batch)
 
 # fit model and extract variance percents
 varPart = fitExtractVarPartModel( geneExpr, form, info )
 
 # violin plot
-plotVarPart( varPart, label.angle=50 )
+plotVarPart( sortCols(varPart), label.angle=60 )
 @
 
 \begin{figure}[h]
@@ -352,9 +352,7 @@ plotVarPart( varPart, label.angle=50 )
 \label{fig:withinTissue}
 \end{figure}
 
-This analysis correspnds to a varying coefficient model, where the correlation between individuals varies for each tissue \cite{Pinheiro2000}.  Since the variation across individuals is modeled within each tissue, the total variation explained does not sum to 1 as it does for standard analysis with \Rpackage{variancePartition}.  However, the interpretation in terms of the intra-class correlation still applies.
-
-See Section \ref{sec:variationWithAcross} for statistical details.
+This analysis corresponds to a varying coefficient model, where the correlation between individuals varies for each tissue \cite{Pinheiro2000}.  Since the variation across individuals is modeled within each tissue, the total variation explained does not sum to 1 as it does for standard application of \Rpackage{variancePartition}.  So interpretation as intra-class does not strictly apply and use of \Rcode{plotPercentBars} is no longer applicable.  Yet the variables in the study design are still ranked in terms of their genome-wide contribution to expression variation, and results can still be analyzed at the gene level.  See Section \ref{sec:variationWithAcross} for statistical details.
 
 
 \subsection{Detecting problems caused by colinearity of variables}
@@ -414,7 +412,7 @@ library(limma)
 library(edgeR)
 
 # identify genes that pass expression cutoff
-isexpr = rowSums(cpm(geneCounts)>.1) >= 0.5 * ncol(geneCounts)
+isexpr = rowSums(cpm(geneCounts)>1) >= 0.5 * ncol(geneCounts)
 
 # create data structure with only expressed genes
 gExpr = DGEList(counts=geneCounts[isexpr,])
@@ -432,7 +430,7 @@ design = model.matrix( ~ Batch, info)
 vobjGenes = voom(gExpr, design )
 
 # fit variancePartition
-form = ~ (1|Individual) + (1|Tissue) + Age
+form = ~ (1|Individual) + (1|Tissue) + (1|Batch) + Age
 
 # variancePartition seamlessly deals with the result of voom()
 # by default, it seamlessly models the precision weights
@@ -734,19 +732,20 @@ cov(y) =  &c & \sigma^2_{id}  & \sigma^2_{id} &\sigma^2_{id} + \sigma^2_{cell} +
 
 The linear mixed model underlying \Rpackage{variancePartition} allows the effect of one variable to depend on the value of another variable.  Statistically, this is called a varying coefficient model \cite{Pinheiro2000, Galecki2010}.  This model arises in  \Rpackage{variancePartition} analysis when the variation explained by individual depends on tissue or cell type.\\
 \\
-A given sample is only from one cell type, so this analysis asks a question about a subset of the data.  The the data is implicitly divided into subsets base on cell type and variation explained by individual is evaluated within each subset.    The data isn't actually divided onto subset, but the statistical model essentially examples samples with each cell type.  This subsetting means that the variance fractions don't sum to 1.\\
+A given sample is only from one cell type, so this analysis asks a question about a subset of the data.  The the data is implicitly divided into subsets base on cell type and variation explained by individual is evaluated within each subset.    The data is not actually divided onto subset, but the statistical model essentially examples samples with each cell type.  This subsetting means that the variance fractions do not sum to 1.\\
 \\
-Consider a concrete example with variation from across individual and cell types (T-cells and monocytes).  Modeling the variation across individuals within cell type corresponds to 
+Consider a concrete example with variation from across individual and cell types (T-cells and monocytes) with data from the $i^{th}$ sample from the $k^{th}$ individual, sex of $s$ and cell type $c$.  Modeling the variation across individuals within cell type corresponds to 
 \begin{eqnarray}
-  y_{i,s,c} = \mu + Z^{(sex)} \alpha_{i,s} + Z^{(Tcell| id)} \alpha_{i,c} + Z^{(monocyte| id)} \alpha_{i,c} + e_{i,s,c}
+  y_{i,k,s,c} = \mu + Z^{(sex)} \alpha_{i,s} + Z^{(Tcell| id)} \alpha_{i,k,c} + Z^{(monocyte| id)} \alpha_{i,k,c} + e_{i,k,s,c}
 \end{eqnarray}    
-with corresponding variance components
+
+with corresponding variance components:
 \begin{center}
   \begin{tabular}{cc}
     \hline
     Variance component & Interpretation \\
     \hline
-    $\sigma^2_{sex}$ & variance across sex \\
+    $\sigma^2_{sex}$ & variance across sex (which is the same for all cell types)\\
     $\sigma^2_{(Tcell| id)}$ & variance across individuals within T-cells \\
     $\sigma^2_{(monocyte| id)}$ & variance across individuals within monocytes \\
     $\sigma^2_\varepsilon$ & residual variance \\   
@@ -754,12 +753,14 @@ with corresponding variance components
   \end{tabular}
 \end{center} 
 
+Since the dataset is now divided into multiple subsets, direct interpretation of the fraction of variation explained (FVE) as intra-class correlation does not apply.  Instead, we compute a ``pseudo-FVE" by approximating the total variance atributable to cell type by using a weighted average of the within cell type variances weighted by the sample size within each cell type.  Thus the values of pseudo-FVE do not have the simple interpretation as in the standard application of \Rpackage{variancePartition}, but allows ranking of variables based on genome-wide contribution to variance and analysis of gene-level results.
+
 
 \subsection{Relationship between \Rpackage{variancePartition} and differential expression}
 
-Differential expression (DE) is widely used to identify gene which show difference is expression between two subsets of the data (i.e. case versus controls). For a single gene, DE analysis measures the difference in mean expression between the two subsets.  (Since expression is usually analyzed on a log scale, DE results are show in terms of log fold changes between the two subsets ).  In Figure \ref{fig:DEVP}, consider two simulated examples of a gene whose expression differs between males and females.  The mean expression in males is 0 and the mean expression in females is 2 in both cases.  Therefore, the fold change is 2 in both cases.\\
+Differential expression (DE) is widely used to identify gene which show difference is expression between two subsets of the data (i.e. case versus controls). For a single gene, DE analysis measures the difference in mean expression between the two subsets.  (Since expression is usually analyzed on a log scale, DE results are usually shown in terms of log fold changes between the two subsets ).  In Figure \ref{fig:DEVP}, consider two simulated examples of a gene whose expression differs between males and females.  The mean expression in males is 0 and the mean expression in females is 2 in both cases.  Therefore, the fold change is 2 in both cases.\\
 \\  
-However, the fraction of expression variation explained by sex is very different in these two examples.  In example A, there is very little variation {\it within} each sex, so that variation {\it between} sexes is very high at 91.1\%.  Conversely, example B shows high variation {\it within} sexes, so that variation {\it between} sexes is only 19.4\%.\\
+However, the fraction of expression variation explained by sex is very different in these two examples.  In example A, there is very little variation {\it within} each sex, so that variation {\it between} sexes is very high at 91.1\%.  Conversely, example B shows high variation {\it within} sexes, so that variation {\it between} sexes is only 17.8\%.\\
 \\
 The fact that the fold change or the fraction of variation is significantly different from 0 indicates differential expression between the two sexes.  Yet these two statistics have different interpretations.  The fold change from DE analysis tests a difference in means between two sexes.  The fraction of variation explained compares the variation explained by sex to the total variation.\\
 \\
@@ -781,22 +782,22 @@ fit = lm(expression ~ Sex, data)
 # coef(fit)[2]
 
 plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
- annotate("text", x = 1, y = 8, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
- annotate("text", x = 1.5, y = 7.2, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
+ annotate("text", x = 0.5, y = 9, hjust=0, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
+ annotate("text", x = 0.5, y = 8.2, hjust=0, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
 
 
 n = 500
 data = data.frame(Sex = c(rep('F', n), rep('M', n)))
-data$expression = rnorm(2*n, (as.integer(data$Sex)-1)*2, 2)
+data$expression = rnorm(2*n, (as.integer(data$Sex)-1)*2, 2.01)
 data$Sex = factor(data$Sex)
 
 fit = lm(expression ~ Sex, data)
 # calcVarPart(fit)
-# coef(fit)[2]
+# coef(fit)[2] 
 
 plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
- annotate("text", x = 1.0, y = 9, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
- annotate("text", x = 1.5, y = 8.2, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
+ annotate("text", x = 0.5, y = 9, hjust=0, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
+ annotate("text", x = 0.5, y = 8.2, hjust=0, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
 @
 
 \begin{figure}[h]
@@ -807,9 +808,6 @@ plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
 \subfloat[Example B]{\includegraphics[width=.5\textwidth]{figure/DE-2}}
 \label{fig:DEVP}
 \end{figure}
-
-
-
 
 
 \subsection{Modelling error in gene expression measurements}

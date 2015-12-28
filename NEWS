@@ -1,4 +1,9 @@
 
+CHANGES IN VERSION 1.1.3
+-------------------------
+        o Add details to vignette
+	o Fix ggplot2 compatibility issues
+
 CHANGES IN VERSION 1.1.2
 -------------------------
 	o Add details to vignette
