@@ -593,6 +593,10 @@ plotVar( data$geneExpr, data$info )
 plotVarCross( data$geneExpr, data$info, label.angle=60 )
 @
 
+<<echo=FALSE, cache=FALSE>>=
+stopCluster(cl)
+@
+
 \begin{figure}[h]
 \centering
 \caption{
