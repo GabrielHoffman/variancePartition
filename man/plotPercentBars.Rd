@@ -33,15 +33,18 @@ registerDoParallel(cl)
 data(varPartData)
 
 # Specify variables to consider
-form = ~ Age + (1|Individual) + (1|Tissue)
+form <- ~ Age + (1|Individual) + (1|Tissue)
 
 # Fit model
-varPart = fitExtractVarPartModel( geneExpr, form, info )
+varPart <- fitExtractVarPartModel( geneExpr, form, info )
 
 # Bar plot for a subset of genes showing variance fractions
 plotPercentBars( varPart[1:5,] )
 
 # Move the legend to the top
 plotPercentBars( varPart[1:5,] ) + theme(legend.position="top") 
+
+# stop cluster
+stopCluster(cl)
 }
 

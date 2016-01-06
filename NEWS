@@ -1,6 +1,12 @@
+CHANGES IN VERSION 1.1.6
+-------------------------
+	o Move packages from Depends to Imports
+	o For clarity, replace = with <- in parts of examples and vignette
+	o Stop cluster in examples to solve error on Windows machines
+
 CHANGES IN VERSION 1.1.5
 -------------------------
-	o Stop cluster in vignette to to solve error on Windows machines
+	o Stop cluster in vignette to solve error on Windows machines
 
 CHANGES IN VERSION 1.1.4
 -------------------------

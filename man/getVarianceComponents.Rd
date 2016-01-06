@@ -33,14 +33,17 @@ data(varPartData)
 # Specify variables to consider
 # Age is continuous so we model it as a fixed effect
 # Individual and Tissue are both categorical, so we model them as random effects
-form = ~ Age + (1|Individual) + (1|Tissue) 
+form <- ~ Age + (1|Individual) + (1|Tissue) 
 
 # Fit model and extract variance in two separate steps
 # Step 1: fit model for each gene, store model fit for each gene in a list
-modelList = fitVarPartModel( geneExpr, form, info )
+modelList <- fitVarPartModel( geneExpr, form, info )
 
-fit = modelList[[1]]
+fit <- modelList[[1]]
 getVarianceComponents( fit )
+
+# stop cluster
+stopCluster(cl)
 
 }
 

@@ -22,9 +22,9 @@ Colinearity score for a regression model indicating if variables are too highly 
 
 # load simulated data:
 data(varPartData)
-form = ~ Age + (1|Individual) + (1|Tissue) 
+form <- ~ Age + (1|Individual) + (1|Tissue) 
 
-res = fitVarPartModel( geneExpr[1:10,], form, info )
+res <- fitVarPartModel( geneExpr[1:10,], form, info )
  
 # evaluate the colinearity score on the first model fit
 # this reports the correlation matrix between coefficients estimates

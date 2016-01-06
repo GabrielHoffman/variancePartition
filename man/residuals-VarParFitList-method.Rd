@@ -42,13 +42,16 @@ data(varPartData)
 # Specify variables to consider
 # Age is continuous so we model it as a fixed effect
 # Individual and Tissue are both categorical, so we model them as random effects
-form = ~ Age + (1|Individual) + (1|Tissue) 
+form <- ~ Age + (1|Individual) + (1|Tissue) 
 
 # Fit model
-modelFit = fitVarPartModel( geneExpr, form, info )
+modelFit <- fitVarPartModel( geneExpr, form, info )
 
 # Extract residuals of model fit
-res = residuals( modelFit )
+res <- residuals( modelFit )
+
+# stop cluster
+stopCluster(cl)
 
 }
 

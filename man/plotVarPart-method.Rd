@@ -59,12 +59,15 @@ data(varPartData)
 # Specify variables to consider
 # Age is continuous so we model it as a fixed effect
 # Individual and Tissue are both categorical, so we model them as random effects
-form = ~ Age + (1|Individual) + (1|Tissue) 
+form <- ~ Age + (1|Individual) + (1|Tissue) 
 
-varPart = fitExtractVarPartModel( geneExpr, form, info )
+varPart <- fitExtractVarPartModel( geneExpr, form, info )
  
 # violin plot of contribution of each variable to total variance
 plotVarPart( sortCols( varPart ) )
+
+# stop cluster
+stopCluster(cl)
 
 }
 

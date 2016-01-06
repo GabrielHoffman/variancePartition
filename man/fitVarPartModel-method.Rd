@@ -90,7 +90,7 @@ data(varPartData)
 # Specify variables to consider
 # Age is continuous so we model it as a fixed effect
 # Individual and Tissue are both categorical, so we model them as random effects
-form = ~ Age + (1|Individual) + (1|Tissue) 
+form <- ~ Age + (1|Individual) + (1|Tissue) 
 
 # Step 1: fit linear mixed model on gene expresson
 # If categoritical variables are specified, a linear mixed model is used
@@ -100,7 +100,7 @@ form = ~ Age + (1|Individual) + (1|Tissue)
 # for each gene, returns fraction of variation attributable to each variable 
 # Interpretation: the variance explained by each variable
 # after correction for all other variables
-varPart = fitExtractVarPartModel( geneExpr, form, info )
+varPart <- fitExtractVarPartModel( geneExpr, form, info )
  
 # violin plot of contribution of each variable to total variance
 # also sort columns
@@ -109,18 +109,20 @@ plotVarPart( sortCols( varPart ) )
 # Advanced: 
 # Fit model and extract variance in two separate steps
 # Step 1: fit model for each gene, store model fit for each gene in a list
-results = fitVarPartModel( geneExpr, form, info )
+results <- fitVarPartModel( geneExpr, form, info )
 
 # Step 2: extract variance fractions
-varPart = extractVarPart( results )
+varPart <- extractVarPart( results )
 
 # Note: fitVarPartModel also accepts ExpressionSet
 data(sample.ExpressionSet, package="Biobase")
 
 # ExpressionSet example
-form = ~ (1|sex) + (1|type) + score
-info2 = pData(sample.ExpressionSet)
-results2 = fitVarPartModel( sample.ExpressionSet, form, info2 )
+form <- ~ (1|sex) + (1|type) + score
+info2 <- pData(sample.ExpressionSet)
+results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 
+# stop cluster
+stopCluster(cl)
 }
 

@@ -34,17 +34,18 @@ fraction of variance explained / ICC for each variable in the model
 Compute fraction of variation attributable to each variable in regression model.  Also interpretable as the intra-class correlation after correcting for all other variables in the model.
 }
 \examples{
+library(lme4)
 data(varPartData)
 
 # Linear mixed model
-fit = lmer( geneExpr[1,] ~ (1|Tissue) + Age, info)
+fit <- lmer( geneExpr[1,] ~ (1|Tissue) + Age, info)
 calcVarPart( fit )
 
 # Linear model
 # Note that the two models produce slightly different results
 # This is expected: they are different statistical estimates 
 # of the same underlying value
-fit = lm( geneExpr[1,] ~ Tissue + Age, info)
+fit <- lm( geneExpr[1,] ~ Tissue + Age, info)
 calcVarPart( fit )
 
 }

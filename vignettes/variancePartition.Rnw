@@ -91,7 +91,7 @@ data(varPartData)
 # Age is continuous so model it as a fixed effect
 # Individual and Tissue are both categorical, so model them as random effects
 # Note the syntax used to specify random effects
-form = ~ Age + (1|Individual) + (1|Tissue) + (1|Batch) 
+form <- ~ Age + (1|Individual) + (1|Tissue) + (1|Batch) 
 
 # Fit model and extract results
 # 1) fit linear mixed model on gene expresson
@@ -105,10 +105,10 @@ form = ~ Age + (1|Individual) + (1|Tissue) + (1|Batch)
 # Note that geneExpr can either be a matrix, 
 # and EList output by voom() in the limma package, 
 # or an ExpressionSet
-varPart = fitExtractVarPartModel( geneExpr, form, info )
+varPart <- fitExtractVarPartModel( geneExpr, form, info )
 
 # sort variables (i.e. columns) by median fraction of variance explained
-vp = sortCols( varPart )
+vp <- sortCols( varPart )
 
 # Figure 1a
 # Bar plot of variance fractions for the first 10 genes
@@ -154,8 +154,8 @@ head(varPart[order(varPart$Individual, decreasing=TRUE),])
 <<plotStratifyBy, cache=TRUE, warning=FALSE>>=
 # get gene with the highest variation across Tissues
 # create data.frame with expression of gene i and Tissue type for each sample
-i = which.max( varPart$Tissue )
-GE = data.frame( Expression = geneExpr[i,], Tissue = info$Tissue)
+i <-which.max( varPart$Tissue )
+GE <- data.frame( Expression = geneExpr[i,], Tissue = info$Tissue)
 
 # Figure 2a 
 # plot expression statified by Tissue 
@@ -163,13 +163,13 @@ plotStratifyBy( GE, "Tissue", "Expression", main=rownames(geneExpr)[i])
 #
 # get gene with the highest variation across Individuals
 # create data.frame with expression of gene i and Tissue type for each sample
-i = which.max( varPart$Individual )
-GE = data.frame( Expression = geneExpr[i,], Individual = info$Individual)
+i <- which.max( varPart$Individual )
+GE <- data.frame( Expression = geneExpr[i,], Individual = info$Individual)
 
 # Figure 2b
 # plot expression statified by Tissue 
-label = paste("Individual:", format(varPart$Individual[i]*100, digits=3), "%")
-main = rownames(geneExpr)[i]
+label <- paste("Individual:", format(varPart$Individual[i]*100, digits=3), "%")
+main <- rownames(geneExpr)[i]
 plotStratifyBy( GE, "Individual", "Expression", colorBy=NULL, text=label, main=main)
 @
 
@@ -191,8 +191,10 @@ At the heart of \Rcode{variancePartition}, a regression model is fit for each ge
 
 Fitting the regression model and extracting variance statistics can also be done directly:
 <<cache=TRUE>>=
+library(lme4)
+
 # fit regression model for the first gene 
-fit = lmer(geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue), info )
+fit <- lmer(geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue), info )
 
 # extract variance statistics
 calcVarPart(fit)
@@ -271,10 +273,10 @@ Advanced users may want to perform the model fit and extract results in separate
 
 <<simResult-omit, cache=TRUE>>=
 # Fit model
-results = fitVarPartModel( geneExpr, form, info )
+results <- fitVarPartModel( geneExpr, form, info )
 
 # Extract results
-varPart = extractVarPart( results )
+varPart <- extractVarPart( results )
 @
 
 Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K genes and 1000 experiments). I do not recommand unless you have a specific need for storing the entire model fit.
@@ -283,7 +285,7 @@ Instead, \Rcode{fitVarPartModel} can extract any desired information using any f
 
 <<simResult-fast-two-step, cache=TRUE>>=
 # Fit model and run summary() function on each model fit 
-vpSummaries = fitVarPartModel( geneExpr, form, info, fxn=summary )
+vpSummaries <- fitVarPartModel( geneExpr, form, info, fxn=summary )
 
 # Show results of summary() for the first gene
 vpSummaries[[1]]
@@ -296,33 +298,33 @@ Gene expression studies often have substantial batch effects, and \Rpackage{vari
 
 Standard analysis:
 <<echo=TRUE, cache=TRUE>>=
-form = ~ (1|Tissue) + (1|Individual) + (1|Batch) + Age
-varPart = fitExtractVarPartModel( geneExpr, form, info )
+form <- ~ (1|Tissue) + (1|Individual) + (1|Batch) + Age
+varPart <- fitExtractVarPartModel( geneExpr, form, info )
 @
 
 Analysis on residuals:
 <<echo=TRUE, cache=TRUE>>=
 library(limma)
 # subtract out effect of Batch
-fit = lmFit( geneExpr, model.matrix(~ Batch, info))
-res = residuals( fit, geneExpr)
+fit <- lmFit( geneExpr, model.matrix(~ Batch, info))
+res <- residuals( fit, geneExpr)
 
 # fit model on residuals
-form = ~ (1|Tissue) + (1|Individual) + Age
+form <- ~ (1|Tissue) + (1|Individual) + Age
 
-varPartResid = fitExtractVarPartModel( res, form, info )
+varPartResid <- fitExtractVarPartModel( res, form, info )
 @
 
 Remove batch effect with linear mixed model
 <<echo=TRUE, cache=TRUE>>=
 # subtract out effect of Batch with linear mixed model
-modelFit = fitVarPartModel( geneExpr, ~ (1|Batch), info )
-res = residuals( modelFit )
+modelFit <- fitVarPartModel( geneExpr, ~ (1|Batch), info )
+res <- residuals( modelFit )
 
 # fit model on residuals
-form = ~ (1|Tissue) + (1|Individual) + Age
+form <- ~ (1|Tissue) + (1|Individual) + Age
 
-varPartResid = fitExtractVarPartModel( res, form, info )
+varPartResid <- fitExtractVarPartModel( res, form, info )
 @
 
 \pagebreak
@@ -336,10 +338,10 @@ So far, we have focused on interpreting one variable at a time. But the linear m
 # separately for each tissue
 # Note that including +0 ensures each tissue is modeled explicitly
 # Otherwise, the first tissue would be used as baseline
-form = ~ (Tissue+0|Individual) + Age + (1|Tissue) + (1|Batch)
+form <- ~ (Tissue+0|Individual) + Age + (1|Tissue) + (1|Batch)
 
 # fit model and extract variance percents
-varPart = fitExtractVarPartModel( geneExpr, form, info )
+varPart <- fitExtractVarPartModel( geneExpr, form, info )
 
 # violin plot
 plotVarPart( sortCols(varPart), label.angle=60 )
@@ -364,10 +366,10 @@ A check of colinearity is built into \Rcode{fitVarPartModel} and \Rcode{fitExtra
 Alternatively, the user can use the \Rcode{colinearityScore} function to evaluate whether this is an issue for a single model fit:  
 
 <<echo=TRUE, cache=TRUE>>=
-form = ~ (1|Individual) + (1|Tissue) + Age + Height
+form <- ~ (1|Individual) + (1|Tissue) + Age + Height
 
 # fit model
-res = fitVarPartModel( geneExpr[1:4,], form, info )
+res <- fitVarPartModel( geneExpr[1:4,], form, info )
 
 # evaluate the colinearity score on the first model fit
 # this reports the correlation matrix between coefficients estimates
@@ -385,15 +387,15 @@ colinearityScore(res[[1]])
 
 <<echo=TRUE, cache=TRUE>>=
 
-form = ~ (1|Individual) + (1|Tissue) + Age + Height
+form <- ~ (1|Individual) + (1|Tissue) + Age + Height
 
 # Specify custom weights
 # In this example the weights are simulated from a uniform distribution
 # and are not meaningful.
-weights = matrix(runif(length(geneExpr)), nrow=nrow(geneExpr))
+weights <- matrix(runif(length(geneExpr)), nrow=nrow(geneExpr))
 
 # Specify custom weights
-res = fitExtractVarPartModel( geneExpr[1:4,], form, info, weightsMatrix=weights[1:4,] )
+res <- fitExtractVarPartModel( geneExpr[1:4,], form, info, weightsMatrix=weights[1:4,] )
 @
 
 In addition, setting the \Rcode{useWeights=FALSE} will suppress usage of the weights in all cases, i.e. when the weights are specified manually or implicitly with the results of \Rcode{voom}.
@@ -412,30 +414,30 @@ library(limma)
 library(edgeR)
 
 # identify genes that pass expression cutoff
-isexpr = rowSums(cpm(geneCounts)>1) >= 0.5 * ncol(geneCounts)
+isexpr <- rowSums(cpm(geneCounts)>1) >= 0.5 * ncol(geneCounts)
 
 # create data structure with only expressed genes
-gExpr = DGEList(counts=geneCounts[isexpr,])
+gExpr <- DGEList(counts=geneCounts[isexpr,])
 
 # Perform TMM normalization
-gExpr = calcNormFactors(gExpr)
+gExpr <- calcNormFactors(gExpr)
 
 # Specify variables to be included in the voom() estimates of uncertainty
 # recommand including variables with a small number of categories 
 # that explain a substantial amount of variation
-design = model.matrix( ~ Batch, info)
+design <- model.matrix( ~ Batch, info)
 
 # Estimate precision weights for each gene and sample
 # This models uncertainty in expression measurements
-vobjGenes = voom(gExpr, design )
+vobjGenes <- voom(gExpr, design )
 
 # fit variancePartition
-form = ~ (1|Individual) + (1|Tissue) + (1|Batch) + Age
+form <- ~ (1|Individual) + (1|Tissue) + (1|Batch) + Age
 
 # variancePartition seamlessly deals with the result of voom()
 # by default, it seamlessly models the precision weights
 # This can be turned off with useWeights=FALSE
-varPart = fitExtractVarPartModel( vobjGenes, form, info )
+varPart <- fitExtractVarPartModel( vobjGenes, form, info )
 @
 
 

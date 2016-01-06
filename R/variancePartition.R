@@ -119,7 +119,7 @@ NULL
 #' # Specify variables to consider
 #' # Age is continuous so we model it as a fixed effect
 #' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
 #' # Step 1: fit linear mixed model on gene expresson
 #' # If categoritical variables are specified, a linear mixed model is used
@@ -129,7 +129,7 @@ NULL
 #' # for each gene, returns fraction of variation attributable to each variable 
 #' # Interpretation: the variance explained by each variable
 #' # after correction for all other variables
-#' varPart = fitExtractVarPartModel( geneExpr, form, info )
+#' varPart <- fitExtractVarPartModel( geneExpr, form, info )
 #'  
 #' # violin plot of contribution of each variable to total variance
 #' # also sort columns
@@ -138,19 +138,21 @@ NULL
 #' # Advanced: 
 #' # Fit model and extract variance in two separate steps
 #' # Step 1: fit model for each gene, store model fit for each gene in a list
-#' results = fitVarPartModel( geneExpr, form, info )
+#' results <- fitVarPartModel( geneExpr, form, info )
 #' 
 #' # Step 2: extract variance fractions
-#' varPart = extractVarPart( results )
+#' varPart <- extractVarPart( results )
 #'
 #' # Note: fitVarPartModel also accepts ExpressionSet
 #' data(sample.ExpressionSet, package="Biobase")
 #'
 #' # ExpressionSet example
-#' form = ~ (1|sex) + (1|type) + score
-#' info2 = pData(sample.ExpressionSet)
-#' results2 = fitVarPartModel( sample.ExpressionSet, form, info2 )
+#' form <- ~ (1|sex) + (1|type) + score
+#' info2 <- pData(sample.ExpressionSet)
+#' results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 #' 
+#' # stop cluster
+#' stopCluster(cl)
 #' @export
 #' @docType methods
 #' @rdname fitVarPartModel-method
@@ -329,7 +331,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' # Specify variables to consider
 #' # Age is continuous so we model it as a fixed effect
 #' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
 #' # Step 1: fit linear mixed model on gene expresson
 #' # If categoritical variables are specified, a linear mixed model is used
@@ -339,7 +341,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' # for each gene, returns fraction of variation attributable to each variable 
 #' # Interpretation: the variance explained by each variable
 #' # after correction for all other variables
-#' varPart = fitExtractVarPartModel( geneExpr, form, info )
+#' varPart <- fitExtractVarPartModel( geneExpr, form, info )
 #'  
 #' # violin plot of contribution of each variable to total variance
 #' plotVarPart( sortCols( varPart ) )
@@ -348,9 +350,12 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' data(sample.ExpressionSet, package="Biobase")
 #'
 #' # ExpressionSet example
-#' form = ~ (1|sex) + (1|type) + score
-#' info2 = pData(sample.ExpressionSet)
-#' varPart2 = fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
+#' form <- ~ (1|sex) + (1|type) + score
+#' info2 <- pData(sample.ExpressionSet)
+#' varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
+#' 
+#' # stop cluster
+#' stopCluster(cl)
 #'
 #' @export
 #' @docType methods
@@ -604,12 +609,15 @@ setMethod("checkModelStatus", "lmerMod",
 #' # Specify variables to consider
 #' # Age is continuous so we model it as a fixed effect
 #' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
-#' varPart = fitExtractVarPartModel( geneExpr, form, info )
+#' varPart <- fitExtractVarPartModel( geneExpr, form, info )
 #'  
 #' # violin plot of contribution of each variable to total variance
 #' plotVarPart( sortCols( varPart ) )
+#' 
+#' # stop cluster
+#' stopCluster(cl)
 #'
 #' @export
 #' @docType methods
@@ -702,17 +710,18 @@ setMethod("plotVarPart", "varPartResults",
 #' fraction of variance explained / ICC for each variable in the model
 #' 
 #' @examples
+#' library(lme4)
 #' data(varPartData)
 #'
 #' # Linear mixed model
-#' fit = lmer( geneExpr[1,] ~ (1|Tissue) + Age, info)
+#' fit <- lmer( geneExpr[1,] ~ (1|Tissue) + Age, info)
 #' calcVarPart( fit )
 #'
 #' # Linear model
 #' # Note that the two models produce slightly different results
 #' # This is expected: they are different statistical estimates 
 #' # of the same underlying value
-#' fit = lm( geneExpr[1,] ~ Tissue + Age, info)
+#' fit <- lm( geneExpr[1,] ~ Tissue + Age, info)
 #' calcVarPart( fit )
 #' 
 #' @export
@@ -918,14 +927,17 @@ function(fit, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,...)
 #' # Specify variables to consider
 #' # Age is continuous so we model it as a fixed effect
 #' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
 #' # Fit model and extract variance in two separate steps
 #' # Step 1: fit model for each gene, store model fit for each gene in a list
-#' modelList = fitVarPartModel( geneExpr, form, info )
+#' modelList <- fitVarPartModel( geneExpr, form, info )
 #' 
-#' fit = modelList[[1]]
+#' fit <- modelList[[1]]
 #' getVarianceComponents( fit )
+#' 
+#' # stop cluster
+#' stopCluster(cl)
 #' 
 #' @export
 getVarianceComponents = function( fit ){
@@ -1024,7 +1036,7 @@ getAdjustVariables = function( variables, adjust, adjustAll){
 #' # Specify variables to consider
 #' # Age is continuous so we model it as a fixed effect
 #' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
 #' # Step 1: fit linear mixed model on gene expresson
 #' # If categoritical variables are specified, a linear mixed model is used
@@ -1034,7 +1046,7 @@ getAdjustVariables = function( variables, adjust, adjustAll){
 #' # for each gene, returns fraction of variation attributable to each variable 
 #' # Interpretation: the variance explained by each variable
 #' # after correction for all other variables
-#' varPart = fitExtractVarPartModel( geneExpr, form, info )
+#' varPart <- fitExtractVarPartModel( geneExpr, form, info )
 #'  
 #' # violin plot of contribution of each variable to total variance
 #' plotVarPart( sortCols( varPart ) )
@@ -1042,10 +1054,13 @@ getAdjustVariables = function( variables, adjust, adjustAll){
 #' # Advanced: 
 #' # Fit model and extract variance in two separate steps
 #' # Step 1: fit model for each gene, store model fit for each gene in a list
-#' results = fitVarPartModel( geneExpr, form, info )
+#' results <- fitVarPartModel( geneExpr, form, info )
 #' 
 #' # Step 2: extract variance fractions
-#' varPart = extractVarPart( results )
+#' varPart <- extractVarPart( results )
+#' 
+#' # stop cluster
+#' stopCluster(cl)
 #'
 #' @export
 extractVarPart <- function( modelList, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,... ){
@@ -1137,13 +1152,16 @@ ggColorHue <- function(n) {
 #' # Specify variables to consider
 #' # Age is continuous so we model it as a fixed effect
 #' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #'
 #' # Fit model
-#' modelFit = fitVarPartModel( geneExpr, form, info )
+#' modelFit <- fitVarPartModel( geneExpr, form, info )
 #' 
 #' # Extract residuals of model fit
-#' res = residuals( modelFit )
+#' res <- residuals( modelFit )
+#' 
+#' # stop cluster
+#' stopCluster(cl)
 #'
 #' @export
 #' @docType methods
@@ -1241,9 +1259,9 @@ setMethod("getOmitted", "lmerMod",
 #' # load simulated data:
 #' data(varPartData)
 #
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
-#' res = fitVarPartModel( geneExpr[1:10,], form, info )
+#' res <- fitVarPartModel( geneExpr[1:10,], form, info )
 #'  
 #' # evaluate the colinearity score on the first model fit
 #' # this reports the correlation matrix between coefficients estimates
@@ -1436,7 +1454,7 @@ plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL
 #' # Specify variables to consider
 #' # Age is continuous so we model it as a fixed effect
 #' # Individual and Tissue are both categorical, so we model them as random effects
-#' form = ~ Age + (1|Individual) + (1|Tissue) 
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
 #' # Step 1: fit linear mixed model on gene expresson
 #' # If categoritical variables are specified, a linear mixed model is used
@@ -1446,11 +1464,14 @@ plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL
 #' # for each gene, returns fraction of variation attributable to each variable 
 #' # Interpretation: the variance explained by each variable
 #' # after correction for all other variables
-#' varPart = fitExtractVarPartModel( geneExpr, form, info )
+#' varPart <- fitExtractVarPartModel( geneExpr, form, info )
 #'  
 #' # violin plot of contribution of each variable to total variance
 #' # sort columns by median value
 #' plotVarPart( sortCols( varPart ) )
+#' 
+#' # stop cluster
+#' stopCluster(cl)
 #'
 #' @export
 #' @docType methods
@@ -1539,10 +1560,11 @@ setMethod("sortCols", "varPartResults",
 # #' Note that these values are equal when there are exactly m samples in each group.  If m is only an average then this an approximation.
 # #'
 # #' @examples
+# #' library(lme4)
 # #' data(varPartData)
 # #'
 # #' # Linear mixed model
-# #' fit = lmer( geneExpr[1,] ~ (1|Individual) + (1|Tissue) + Age, info)
+# #' fit <- lmer( geneExpr[1,] ~ (1|Individual) + (1|Tissue) + Age, info)
 # #'
 # #' # Effective sample size
 # #' ESS( fit )
@@ -1625,16 +1647,19 @@ setMethod("sortCols", "varPartResults",
 #' data(varPartData)
 #'
 #' # Specify variables to consider
-#' form = ~ Age + (1|Individual) + (1|Tissue)
+#' form <- ~ Age + (1|Individual) + (1|Tissue)
 #'
 #' # Fit model
-#' varPart = fitExtractVarPartModel( geneExpr, form, info )
+#' varPart <- fitExtractVarPartModel( geneExpr, form, info )
 #'
 #' # Bar plot for a subset of genes showing variance fractions
 #' plotPercentBars( varPart[1:5,] )
 #'
 #' # Move the legend to the top
 #' plotPercentBars( varPart[1:5,] ) + theme(legend.position="top") 
+#' 
+#' # stop cluster
+#' stopCluster(cl)
 #' @export
 plotPercentBars = function( varPart, col = ggColorHue(ncol(varPart)) ){
 
