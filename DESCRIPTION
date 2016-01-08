@@ -20,7 +20,6 @@ biocViews: RNASeq,
     GeneExpression,
     Regression,
     Software
-License: GPL (>= 2)
 Depends:
     ggplot2,
     foreach,
