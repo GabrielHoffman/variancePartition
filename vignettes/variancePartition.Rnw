@@ -595,8 +595,11 @@ plotVar( data$geneExpr, data$info )
 plotVarCross( data$geneExpr, data$info, label.angle=60 )
 @
 
-<<echo=FALSE, cache=FALSE>>=
-stopCluster(cl)
+<<echo=FALSE, cache=TRUE>>=
+#if( "cluster" %in% class(cl) ){
+#	library(doParallel)
+	stopCluster(cl)
+#}
 @
 
 \begin{figure}[h]

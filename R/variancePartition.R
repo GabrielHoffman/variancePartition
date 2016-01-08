@@ -1,3 +1,6 @@
+# (C) 2016 Gabriel E. Hoffman
+# Icahn School of Medicine at Mount Sinai
+
 
 # define classes
 setClass("varParFrac")

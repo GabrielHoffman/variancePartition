@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.1.7
+-------------------------
+	o GPL License
+
 CHANGES IN VERSION 1.1.6
 -------------------------
 	o Move packages from Depends to Imports
