@@ -1,3 +1,22 @@
+CHANGES IN VERSION 1.3.3
+-------------------------
+	o Improve documentation
+
+CHANGES IN VERSION 1.1.9
+-------------------------
+	o Update sortCols to handle Measurement.error
+	o change backend package structure
+	o set Residuals to be grey by default in plotVarPart() and plotPercentBars()
+	o add control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" )
+	o add plotCorrStructure
+
+CHANGES IN VERSION 1.1.8
+-------------------------
+	o Add ESS.R
+	o Add fitVarTest.R
+	o use lmerTest by default
+	o fix bug checkModelStatus() for variables with backticks in name
+
 CHANGES IN VERSION 1.1.7
 -------------------------
 	o GPL License

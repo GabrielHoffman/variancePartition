@@ -2,7 +2,7 @@ Package: variancePartition
 Type: Package
 Title: Quantify and interpret divers of variation in multilevel gene expression
     experiments
-Version: 1.3.2
+Version: 1.3.3
 Date: 2015-12-28
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
@@ -26,11 +26,13 @@ Depends:
     Biobase,
     methods
 Imports:
-    lme4,
     MASS,
-    pbkrtest,
+    pbkrtest (>= 0.4-4),
     iterators,
-    reshape,
+    colorRamps,
+    gplots,
+    reshape2,
+    lme4 (>= 1.1-10),
     doParallel,
     limma,
     dendextend

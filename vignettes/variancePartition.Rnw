@@ -1,5 +1,5 @@
-%\VignetteIndexEntry{variancePartition}
-%\VignettePackage{variancePartition}
+%\VignetteIndexEntry{variancePartition Tutorial}
+%\VignettePackage{variancePartition Tutorial}
 %\VignetteEngine{knitr::knitr}
 
 % To compile this document
@@ -24,7 +24,7 @@ BiocStyle::latex()
 \usepackage[position=top]{subfig}
 \usepackage{blkarray}
 
-\bioctitle[variancePartition]{ \Biocpkg{variancePartition}: Quantifying and interpreting drivers of variation in multilevel gene expression experiments}
+\bioctitle[Vignette for variancePartition]{ \Biocpkg{variancePartition}: Quantifying and interpreting drivers of variation in multilevel gene expression experiments}
 
 \author{Gabriel Hoffman\\ 
 \small{Icahn Institute for Genomics and Multiscale Biology}\\[-.2em]
@@ -58,7 +58,31 @@ options(digits=3, width=80, prompt=" ", continue=" ")
 
 The \Rpackage{variancePartition} package provides a general framework for understanding drivers of variation in gene expression in experiments with complex designs.  A typical application would consider a dataset of gene expression from individuals sampled in multiple tissues or multiple time points where the goal is to understand variation within versus between individuals and tissues.  \Rpackage{variancePartition} use a linear mixed model to partition the variance attributable to multiple variables in the data.  The analysis is built on top of the \Rpackage{lme4} package \cite{Bates2015}, and some basic knowledge about linear mixed models will give you some intution about the behavior of \Rpackage{variancePartition} \cite{Pinheiro2000, Galecki2010}
 
-There are two components to an analysis: 1) gene expression data, 2) meta-data about each sample such as patient ID, tissue, sex, disease state, etc.  \Rpackage{variancePartition} will assess the contribution of each meta-data variable to variation in gene expression and can report the intra-class correlation for each variable.   
+
+\subsection{Inputs}
+
+There are three components to an analysis: 
+\begin{itemize}
+ \item[1)] {\bf Gene expression data:}
+ 	In general, this is a matrix of normalized gene expression values with genes as rows and experiments as columns.\\  
+
+ 	For RNA-seq data, this can be the $\log_2$ counts per million (CPM) from \Rcode{cpm()} in the \Rpackage{edgeR}.  Or the output of \Rcode{voom()} in the \Rpackage{limma} can be used to model the precision of each observation.  Other normalzation methods such as $\log_2$ RPKM can also be used.  For microarray data, any standard normalization such as \Rcode{rma} can be used.    \\   
+
+ \item[2)] {\bf Meta-data about each experiment:}  A \Rcode{data.frame} with information about each experiment such as patient ID, tissue, sex, disease state, time point, batch, etc.\\ 
+
+ \item[2)] {\bf Formula indicating which meta-data variables to consider:} An R{} formula such as\\ 
+ \Rcode{$\sim$ Age + (1|Individual) + (1|Tissue) + (1|Batch) }
+ indicating which meta-data variables should be used in the analysis.
+\end{itemize}
+
+
+
+
+
+ \Rpackage{variancePartition} will assess the contribution of each meta-data variable to variation in gene expression and can report the intra-class correlation for each variable.   
+
+
+
 
 \pagebreak
 \section{Running an analysis}
@@ -194,7 +218,7 @@ Fitting the regression model and extracting variance statistics can also be done
 library(lme4)
 
 # fit regression model for the first gene 
-fit <- lmer(geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue), info )
+fit <- lmer(geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue), info, REML=FALSE )
 
 # extract variance statistics
 calcVarPart(fit)
@@ -669,7 +693,7 @@ and the residual variance is
 \subsection{Interpretation of percent variance explained}
 The percent variance explained can be interpreted as the intra-class correlation (ICC) when a special case of Equation 1 is used.  Consider the simplest example of the $i^{th}$ sample from the $k^{th}$ individual 
 \begin{eqnarray}
-  y_{i,k} = \mu + Z \alpha_{i,k} + e_{i}
+  y_{i,k} = \mu + Z \alpha_{i,k} + e_{i,k}
 \end{eqnarray}
 with only an intercept term, one random effect corresponding to individual, and an error term.  In this case ICC corresponds to the correlation between two samples from the same individual.  This value is equal to the fraction of variance explained by individual.  For example, consider the correlation between samples from the same individual:
 \begin{eqnarray}
@@ -730,7 +754,7 @@ Modeling the separate effects of individual and tissue gives the following covar
 &b & \sigma^2_{id} + \sigma^2_{cell} & \sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon  & & &\\
 cov(y) =  &c & \sigma^2_{id}  & \sigma^2_{id} &\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon  & &\\
 &d & \sigma^2_{cell} & \sigma^2_{cell} &0 &\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon  &\\
-&e & 0 & 0 &0 & \sigma^2_{id} &\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon \\
+&e & 0 & 0 &\sigma^2_{cell} & \sigma^2_{id} &\sigma^2_{id} + \sigma^2_{cell} + \sigma^2_\varepsilon \\
 \end{block}
 \end{blockarray}
  \]
