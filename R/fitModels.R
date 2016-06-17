@@ -7,7 +7,7 @@
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
 #' @param data data.frame with columns corresponding to formula 
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option
-#' @param useWeights if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
+#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 #' @param showWarnings show warnings about model fit (default TRUE)
 #' @param fxn apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself
@@ -38,7 +38,7 @@
 #'
 #' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
-#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omited by the underlying call to lm/lmer.
+#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lm/lmer.
 #'
 #' Since this function returns a list of each model fit, using this function is slower and uses more memory than fitExtractVarPartModel().
 #' @examples
@@ -63,8 +63,8 @@
 #' # Individual and Tissue are both categorical, so we model them as random effects
 #' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
-#' # Step 1: fit linear mixed model on gene expresson
-#' # If categoritical variables are specified, a linear mixed model is used
+#' # Step 1: fit linear mixed model on gene expression
+#' # If categorical variables are specified, a linear mixed model is used
 #' # If all variables are modeled as continuous, a linear model is used
 #' # each entry in results is a regression model fit on a single gene
 #' # Step 2: extract variance fractions from each model fit
@@ -240,7 +240,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
 #' @param data data.frame with columns corresponding to formula 
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option
-#' @param useWeights if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
+#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 #' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
 #' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables.  This overrides the previous argument, so all variables are include in adjust.
@@ -264,7 +264,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #'
 #' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
-#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omited by the underlying call to lm/lmer.
+#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lm/lmer.
 #' @examples
 #'
 #' # load library
@@ -287,8 +287,8 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' # Individual and Tissue are both categorical, so we model them as random effects
 #' form <- ~ Age + (1|Individual) + (1|Tissue) 
 #' 
-#' # Step 1: fit linear mixed model on gene expresson
-#' # If categoritical variables are specified, a linear mixed model is used
+#' # Step 1: fit linear mixed model on gene expression
+#' # If categorical variables are specified, a linear mixed model is used
 #' # If all variables are modeled as continuous, a linear model is used
 #' # each entry in results is a regression model fit on a single gene
 #' # Step 2: extract variance fractions from each model fit

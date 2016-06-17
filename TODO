@@ -1,0 +1,32 @@
+
+# June 16, 2016
+Improve warnings in fitVarPart and fitExtractVarPartto show which gene give a warning
+
+
+# April 16, 2016
+ Make correlation matrix and linear mixed model equantions in vignette
+ the same as in supplement.  The vignette examples are wrong
+
+Add canCorPairs to the vignette
+
+
+# Feb 18, 2015
+add e_{i,k} in ICC correlation equation
+
+
+# December 14, 2015
+
+# Add strong warning to fitVarPartModel() that estimates memory usage.  In vignette, users should be discoraged from using this interface.
+
+# use refit() to fit the model for each gene:
+#  cannot do this because refit() doesn't accept new weights
+
+# DE test: show increased power when correlation is overestimated, and decrease false positive rate when correlation is underestimated.  (order is correct?)  
+
+
+
+
+
+# adjust doesn't work with varying coefficient model, but it throwings an error now
+
+# run simulations with varying coefficient model

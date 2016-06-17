@@ -1,0 +1,143 @@
+%\VignetteIndexEntry{Additional vizualizations}
+%\VignettePackage{variancePartition}
+%\VignetteEngine{knitr::knitr}
+
+% To compile this document
+% library('knitr'); rm(list=ls()); knit('variancePartition.Rnw')
+
+\documentclass[12pt]{article}
+
+\newcommand{\lowtilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
+
+<<knitr, echo=FALSE, results='hide'>>=
+library("knitr")
+opts_chunk$set(tidy=FALSE,dev="pdf",fig.show="hide",
+               fig.width=4,fig.height=4.5,
+               message=FALSE, warning=FALSE)
+
+@ 
+
+<<style, eval=TRUE, echo=FALSE, results="asis">>=
+BiocStyle::latex()
+@
+
+\usepackage[position=top]{subfig}
+\usepackage{blkarray}
+
+\bioctitle[Additional visualizations]{Additional visualizations for \Biocpkg{variancePartition}}
+
+\author{Gabriel Hoffman\\ 
+\small{Icahn Institute for Genomics and Multiscale Biology}\\[-.2em]
+\small{Department of Genetics and Genomic Sciences}\\[-.2em]
+\small{Icahn School of Medicine at Mount Sinai}}
+
+
+\begin{document}
+
+\maketitle
+
+
+<<options, results="hide", echo=FALSE>>=
+options(digits=3, width=80, prompt=" ", continue=" ")
+opts_chunk$set(comment=NA, fig.width=7, fig.height=7)
+@
+
+<<initialize, cache=FALSE, echo=FALSE>>=
+# load library
+library(variancePartition)
+
+# optional step to run analysis in parallel on multicore machines
+# Here use 4 threads
+# This is strongly recommended since the analysis 
+# can be computationally intensive 
+library(doParallel)
+cl <- makeCluster(4)
+registerDoParallel(cl)
+@
+
+The correlation structure between samples in complex study designs can be decomposed into the contribution of multiple dimensions of variation.  \Rpackage{variancePartition} provides a statistical and visualization framework to interpret sources of variation.  Here I describe a visualization of the correlation structure between samples for a single gene.  In the example dataset described in the main vignette, samples are correlated because they can come from the same individual or the same tissue.  The function \Rfunction{plotCorrStructure} shows the correlation structure caused by each variable as well and the joint correlation structure.  Figure \ref{fig:plotCorr}a,b shows the correlation between samples from the same individual where (a) shows the samples sorted based on clustering of the correlation matrix and (b) shows the original order.  Figure \ref{fig:plotCorr}c,d shows the same type of plot except demonstrating the effect of tissue.  The total correlation structure from summing individual and tissue correlation matricies is shown in \ref{fig:plotCorrAll}a,b.  The code to generate these plots is shown below. 
+
+
+\pagebreak
+
+<<corStruct, cache=TRUE>>=
+# Fit linear mixed model and examine correlation stucture
+# for one gene
+data(varPartData)
+
+form <- ~ Age + (1|Individual) + (1|Tissue)
+
+fitList <- fitVarPartModel( geneExpr[1:2,], form, info )
+
+# focus on one gene
+fit = fitList[[1]]
+@
+
+
+<<corStructa, cache=TRUE>>=
+# Figure 1a
+# correlation structure based on similarity within Individual
+# reorder samples based on clustering
+plotCorrStructure( fit, "Individual" )
+@
+
+<<corStructb, cache=TRUE>>=
+# Figure 1b
+# use original order of samples
+plotCorrStructure( fit, "Individual", reorder=FALSE )
+@
+
+<<corStructc, cache=TRUE>>=
+# Figure 1c
+# correlation structure based on similarity within Tissue
+# reorder samples based on clustering
+plotCorrStructure( fit, "Tissue" )
+@
+
+<<corStructd, cache=TRUE>>=
+# Figure 1d
+# use original order of samples
+plotCorrStructure( fit, "Tissue", reorder=FALSE )
+@
+
+<<corStructe, cache=TRUE>>=
+# Figure 2a
+# correlation structure based on similarity within Individual *and* Tissue
+# reorder samples based on clustering
+plotCorrStructure( fit )
+@
+
+<<corStructf, cache=TRUE>>=
+# Figure 2b
+# use original order of samples
+plotCorrStructure( fit, reorder=FALSE )
+@
+
+
+\begin{figure}[hb]
+\centering
+\caption{Visualizing correlation structure caused by variables modeled as random effects}
+\subfloat[clustered]{\includegraphics[width=.5\textwidth]{figure/corStructa-1}}
+\subfloat[original]{\includegraphics[width=.5\textwidth]{figure/corStructb-1}}\\
+\subfloat[clustered]{\includegraphics[width=.5\textwidth]{figure/corStructc-1}}
+\subfloat[original]{\includegraphics[width=.5\textwidth]{figure/corStructd-1}}
+\label{fig:plotCorr}
+\end{figure}
+
+\begin{figure}[hb]
+\centering
+\caption{Visualizing correlation structure caused by multiple variables}
+\subfloat[clustered]{\includegraphics[width=.5\textwidth]{figure/corStructe-1}}
+\subfloat[original]{\includegraphics[width=.5\textwidth]{figure/corStructf-1}}
+\label{fig:plotCorrAll}
+\end{figure}
+
+
+<<resetOptions, results="hide", echo=FALSE>>=
+options(prompt="> ", continue="+ ")
+@ 
+
+
+% \bibliography{library}
+
+\end{document}

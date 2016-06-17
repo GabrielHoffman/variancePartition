@@ -7,12 +7,12 @@
 #'
 #' @param fit linear mixed model fit of a gene produced by lmer() or fitVarPartModel()
 #' @param varNames variables in the metadata for which the correlation structure should be shown.  Variables must be random effects
-#' @param reorder how to reorder the rows/columns of the correlation matrix.  reorder=FALSE gives no reorder.  reorder=TRUE reorders based on hclust.  reorder can also be an array of indeces to reorder the samples manually
+#' @param reorder how to reorder the rows/columns of the correlation matrix.  reorder=FALSE gives no reorder.  reorder=TRUE reorders based on hclust.  reorder can also be an array of indices to reorder the samples manually
 #' @param pal color palette  
 #' @param hclust.method clustering methods for hclust
 #'
 #' @return
-#' Image of correlation structure beteen each pair of experiments for a single gene
+#' Image of correlation structure between each pair of experiments for a single gene
 #'
 #' @examples
 #'

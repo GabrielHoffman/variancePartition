@@ -3,13 +3,13 @@
 
 #' plotCorrMatrix
 #'
-#' Plot corrleation matrix
+#' Plot correlation matrix
 #'
 #' @param C correlation matrix: R or R^2 matrix
 #' @param sort sort rows and columns based on clustering
 #' @param margins spacing of plot
 #' @param key.xlab label of color gradient
-#' @param ... additional arguments to headmap.2
+#' @param ... additional arguments to heatmap.2
 #'
 #' @details
 #' Plots image of correlation matrix using customized call to heatmap.2

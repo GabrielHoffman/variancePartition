@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{variancePartition Tutorial}
-%\VignettePackage{variancePartition Tutorial}
+%\VignettePackage{variancePartition}
 %\VignetteEngine{knitr::knitr}
 
 % To compile this document
@@ -56,7 +56,7 @@ options(digits=3, width=80, prompt=" ", continue=" ")
 \pagebreak
 \section{Overview}
 
-The \Rpackage{variancePartition} package provides a general framework for understanding drivers of variation in gene expression in experiments with complex designs.  A typical application would consider a dataset of gene expression from individuals sampled in multiple tissues or multiple time points where the goal is to understand variation within versus between individuals and tissues.  \Rpackage{variancePartition} use a linear mixed model to partition the variance attributable to multiple variables in the data.  The analysis is built on top of the \Rpackage{lme4} package \cite{Bates2015}, and some basic knowledge about linear mixed models will give you some intution about the behavior of \Rpackage{variancePartition} \cite{Pinheiro2000, Galecki2010}
+The \Rpackage{variancePartition} package provides a general framework for understanding drivers of variation in gene expression in experiments with complex designs.  A typical application would consider a dataset of gene expression from individuals sampled in multiple tissues or multiple time points where the goal is to understand variation within versus between individuals and tissues.  \Rpackage{variancePartition} use a linear mixed model to partition the variance attributable to multiple variables in the data.  The analysis is built on top of the \Rpackage{lme4} package \cite{Bates2015}, and some basic knowledge about linear mixed models will give you some intuition about the behavior of \Rpackage{variancePartition} \cite{Pinheiro2000, Galecki2010}
 
 
 \subsection{Inputs}
@@ -66,7 +66,7 @@ There are three components to an analysis:
  \item[1)] {\bf Gene expression data:}
  	In general, this is a matrix of normalized gene expression values with genes as rows and experiments as columns.\\  
 
- 	For RNA-seq data, this can be the $\log_2$ counts per million (CPM) from \Rcode{cpm()} in the \Rpackage{edgeR}.  Or the output of \Rcode{voom()} in the \Rpackage{limma} can be used to model the precision of each observation.  Other normalzation methods such as $\log_2$ RPKM can also be used.  For microarray data, any standard normalization such as \Rcode{rma} can be used.    \\   
+ 	For RNA-seq data, this can be the $\log_2$ counts per million (CPM) from \Rcode{cpm()} in the \Rpackage{edgeR}.  Or the output of \Rcode{voom()} in \Rpackage{limma} can be used to model the precision of each observation.  Other normalization methods such as $\log_2$ RPKM can also be used.  For microarray data, any standard normalization such as \Rcode{rma} can be used.    \\   
 
  \item[2)] {\bf Meta-data about each experiment:}  A \Rcode{data.frame} with information about each experiment such as patient ID, tissue, sex, disease state, time point, batch, etc.\\ 
 
@@ -118,7 +118,7 @@ data(varPartData)
 form <- ~ Age + (1|Individual) + (1|Tissue) + (1|Batch) 
 
 # Fit model and extract results
-# 1) fit linear mixed model on gene expresson
+# 1) fit linear mixed model on gene expression
 # If categorical variables are specified, a linear mixed model is used
 # If all variables are modeled as fixed effects, a linear model is used
 # each entry in results is a regression model fit on a single gene
@@ -144,7 +144,7 @@ plotPercentBars( vp[1:10,] )
 plotVarPart( vp )
 @
 
-\Rpackage{variancePartition} includes a number of custom plots to visualize the results.  Since \Rpackage{variancePartition} attributes the fraction of total variation attributable to each aspect of the study design, these fractions naturally sum to 1.  \Rcode{plotPercentBars} plots the partitioning results for a subset of genes (Figure 1a), and \Rcode{plotVarPart} shows a genome-wide violin plot of the distribtion of variance explained by each variable across all genes (Figure 1b).  (Note that these plots show results in terms of \underline{percentage} of variance explained, while the results are stored in terms of the \underline{fraction}.)
+\Rpackage{variancePartition} includes a number of custom plots to visualize the results.  Since \Rpackage{variancePartition} attributes the fraction of total variation attributable to each aspect of the study design, these fractions naturally sum to 1.  \Rcode{plotPercentBars} plots the partitioning results for a subset of genes (Figure 1a), and \Rcode{plotVarPart} shows a genome-wide violin plot of the distribution of variance explained by each variable across all genes (Figure 1b).  (Note that these plots show results in terms of \underline{percentage} of variance explained, while the results are stored in terms of the \underline{fraction}.)
   
 \begin{figure}[hb]
 \centering
@@ -182,7 +182,7 @@ i <-which.max( varPart$Tissue )
 GE <- data.frame( Expression = geneExpr[i,], Tissue = info$Tissue)
 
 # Figure 2a 
-# plot expression statified by Tissue 
+# plot expression stratified by Tissue 
 plotStratifyBy( GE, "Tissue", "Expression", main=rownames(geneExpr)[i])
 #
 # get gene with the highest variation across Individuals
@@ -191,7 +191,7 @@ i <- which.max( varPart$Individual )
 GE <- data.frame( Expression = geneExpr[i,], Individual = info$Individual)
 
 # Figure 2b
-# plot expression statified by Tissue 
+# plot expression stratified by Tissue 
 label <- paste("Individual:", format(varPart$Individual[i]*100, digits=3), "%")
 main <- rownames(geneExpr)[i]
 plotStratifyBy( GE, "Individual", "Expression", colorBy=NULL, text=label, main=main)
@@ -201,8 +201,8 @@ plotStratifyBy( GE, "Individual", "Expression", colorBy=NULL, text=label, main=m
 \centering
 \subfloat[Tissue]{\includegraphics[width=.45\textwidth]{figure/plotStratifyBy-1}}
 \subfloat[Individual]{\includegraphics[width=.45\textwidth]{figure/plotStratifyBy-2}}
-\caption{ Plot gene expression statified by {\bf a)} Tissue and {\bf b)} Individual}
-\label{fig:Statify}
+\caption{ Plot gene expression stratified by {\bf a)} Tissue and {\bf b)} Individual}
+\label{fig:Stratify}
 \end{figure}
 
 For gene141, variation across tissues explains 52.9\% of variance in gene expression.
@@ -226,9 +226,9 @@ calcVarPart(fit)
 
 \section{Interpretation}
 
-\Rpackage{variancePartition} fits a linear (mixed) model thats jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while correcting for all others.  Therefore, fitting the model with each variable separtely will give very different results from the considering all variables jointly.  I have found joint analysis the best option in most cases.  
+\Rpackage{variancePartition} fits a linear (mixed) model thats jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while correcting for all others.  Therefore, fitting the model with each variable separately will give very different results from the considering all variables jointly.  I have found joint analysis the best option in most cases.  
 
-The results of \Rpackage{variancePartition} give insight into the expression data at multiple levels.  Moreover, a single statistic often has multiple equivalent interpretations while only one is relevant to the biological question.  Analysis of the example data in Figure 1 give some strong interpretations. 
+The results of \Rpackage{variancePartition} give insight into the expression data at multiple levels.  Moreover, a single statistic often has multiple equivalent interpretations while only one is relevant to the biological question.  Analysis of the example data in Figure 1 gives some strong interpretations. 
 
 Considering the median across all genes,
 \begin{itemize}
@@ -250,21 +250,21 @@ Considering the median across across all genes and all experiments,
 \item[5)] two randomly selected gene measurements from the same \underline{individual} {\it and} same \underline{tissue}, but regardless of \underline{batch} and \underline{age}, have an correlation of 81.5\% + 8.2\% = 89.7\%.
 \end{itemize} 
 
-Note that that the ICC here is interpretated as the ICC after correcting for all other variables in the model.
+Note that that the ICC here is interpreted as the ICC after correcting for all other variables in the model.
 
 These conclusions are based on the genome-wide median across all genes, but the same type of statements can be made at the gene-level.  Moreover, care must be taken in the interpretation of nested variables.  For example, \Rcode{Age} is nested within \Rcode{Individual} since the multiple samples from each individual are taken at the same age.  Thus the effect of \Rcode{Age} removes some variation from being explained by \Rcode{Individual}.  This often arises when considering variation across individuals and across sexes: any cross-sex variation is a component of the cross-individual variation.  So the total variation across individuals is the sum of the fraction of variance explained by \Rcode{Sex} and \Rcode{Individual}.  This nesting/summing of effects is common for variables that are properties of the individual rather than the sample.  For example, sex and ethnicity are always properties of the individual.  Variables like age and disease state can be properties of the individual, but could also vary in time-course or longitudinal  experiments.  The the interpretation depends on the experimental design.
 
 The real power of \Rpackage{variancePartition} is to identify specific genes that follow or deviate from the genome-wide trend.  The gene-level statistics can be used to identify a subset of genes that are enriched for specific biological functions.  For example, we can ask if the 500 genes with the highest variation in expression across tissues (i.e. the long tail for tissue in Figure 1a) are enriched for genes known to have high tissue-specificity.
 
-% {\it Note:} The precent variance explained is equivalent to the ICC only when the formula takes the simple form $$ \sim (1|A) + (1|B) + C + ...$$  
+% {\it Note:} The percent variance explained is equivalent to the ICC only when the formula takes the simple form $$ \sim (1|A) + (1|B) + C + ...$$  
 
-%For complex formulas using varying coefficient models $$\sim (1|A/B)+...$$ or correlated random intercepts $$\sim (A|B) + ...$$ the precent variance explained is a useful statistical, but does not correspond to ICC. 
+%For complex formulas using varying coefficient models $$\sim (1|A/B)+...$$ or correlated random intercepts $$\sim (A|B) + ...$$ the percent variance explained is a useful statistical, but does not correspond to ICC. 
 
 
 
 \subsection{Should a variable be modeled as fixed or random effect?}
  
-Catagorical variables should (almost) always be modeled as a random effect.  The difference between modeling a catagorical variable as a fixed versus random effect is minimal when the sample size is large compared to the number of categories (i.e. levels).  So variables like disease status, sex or time point will not be sensitive to modeling as a fixed versus random effect.  However, variables with many categories like \Rcode{Individual} {\it must} be modeled as a random effect in order to obtain statistically valid results.  So to be on the safe side, categorical variable should be modeled as a random effect.  
+Categorical variables should (almost) always be modeled as a random effect.  The difference between modeling a categorical variable as a fixed versus random effect is minimal when the sample size is large compared to the number of categories (i.e. levels).  So variables like disease status, sex or time point will not be sensitive to modeling as a fixed versus random effect.  However, variables with many categories like \Rcode{Individual} {\it must} be modeled as a random effect in order to obtain statistically valid results.  So to be on the safe side, categorical variable should be modeled as a random effect.  
 
 % \R{} and \Rpackage{variancePartition} handle catagorical variables stored as a \Rcode{factor} very naturally.  If categorical variables are stored as an \Rcode{integer} or \Rcode{character}, they must be converted to a \Rcode{factor} before being used with \Rpackage{variancePartition}
 
@@ -303,7 +303,7 @@ results <- fitVarPartModel( geneExpr, form, info )
 varPart <- extractVarPart( results )
 @
 
-Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K genes and 1000 experiments). I do not recommand unless you have a specific need for storing the entire model fit.
+Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K genes and 1000 experiments). I do not recommend unless you have a specific need for storing the entire model fit.
 
 Instead, \Rcode{fitVarPartModel} can extract any desired information using any function that accepts the model fit from \Rcode{lm}/\Rcode{lmer}.  The results are stored in a \Rcode{list} and can be used for downstream analysis.
 
@@ -381,11 +381,11 @@ plotVarPart( sortCols(varPart), label.angle=60 )
 This analysis corresponds to a varying coefficient model, where the correlation between individuals varies for each tissue \cite{Pinheiro2000}.  Since the variation across individuals is modeled within each tissue, the total variation explained does not sum to 1 as it does for standard application of \Rpackage{variancePartition}.  So interpretation as intra-class does not strictly apply and use of \Rcode{plotPercentBars} is no longer applicable.  Yet the variables in the study design are still ranked in terms of their genome-wide contribution to expression variation, and results can still be analyzed at the gene level.  See Section \ref{sec:variationWithAcross} for statistical details.
 
 
-\subsection{Detecting problems caused by colinearity of variables}
-\label{sec:colinearity}
-Including variables that are highly correlated can produce misleading results and overestimate the contribition of variables modeled as fixed effects.  This is usually not an issue, but can arise when statistically redundant variables are included in the model.   In this case, the model is ``degenerate'' or ``computationally singular'' and parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.\\
+\subsection{Detecting problems caused by collinearity of variables}
+\label{sec:collinearity}
+Including variables that are highly correlated can produce misleading results and overestimate the contribution of variables modeled as fixed effects.  This is usually not an issue, but can arise when statistically redundant variables are included in the model.   In this case, the model is ``degenerate'' or ``computationally singular'' and parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.\\
 \\
-A check of colinearity is built into \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}, so the user will be warned if this is an issue.\\
+A check of collinearity is built into \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}, so the user will be warned if this is an issue.\\
 \\
 Alternatively, the user can use the \Rcode{colinearityScore} function to evaluate whether this is an issue for a single model fit:  
 
@@ -395,11 +395,11 @@ form <- ~ (1|Individual) + (1|Tissue) + Age + Height
 # fit model
 res <- fitVarPartModel( geneExpr[1:4,], form, info )
 
-# evaluate the colinearity score on the first model fit
+# evaluate the collinearity score on the first model fit
 # this reports the correlation matrix between coefficients estimates
 # for fixed effects
-# the colinearity score is the maximum absolute correlation value
-# If the colinearity score > .99 then the variance parition 
+# the collinearity score is the maximum absolute correlation value
+# If the collinearity score > .99 then the variance partition 
 # estimates may be problematic
 # In that case, a least one variable should be omitted
 colinearityScore(res[[1]])
@@ -447,7 +447,7 @@ gExpr <- DGEList(counts=geneCounts[isexpr,])
 gExpr <- calcNormFactors(gExpr)
 
 # Specify variables to be included in the voom() estimates of uncertainty
-# recommand including variables with a small number of categories 
+# recommend including variables with a small number of categories 
 # that explain a substantial amount of variation
 design <- model.matrix( ~ Batch, info)
 
@@ -471,9 +471,9 @@ varPart <- fitExtractVarPartModel( vobjGenes, form, info )
 \section{Comparison with other methods on simulated data}
 
 Characterizing drivers of variation in gene expression data has typically relied on 
-principal components analysis (PCA) and hierarchical clustering.  Here I apply these methods to two simulated datasets to demonstrate the additional insight from an analysis with \Rpackage{variancePartition}.  Each simulated dataset comprises 60 experiments from 10 individuals and 3 tissues wih 2 biological replicates.  In the first dataset, tissue is the major driver of variation in gene expression(Figure \ref{fig:siteDominant}).  In the second dataset, individual is the major driver of variation in gene expression (Figures \ref{fig:IndivDominant}).
+principal components analysis (PCA) and hierarchical clustering.  Here I apply these methods to two simulated datasets to demonstrate the additional insight from an analysis with \Rpackage{variancePartition}.  Each simulated dataset comprises 60 experiments from 10 individuals and 3 tissues with 2 biological replicates.  In the first dataset, tissue is the major driver of variation in gene expression(Figure \ref{fig:siteDominant}).  In the second dataset, individual is the major driver of variation in gene expression (Figures \ref{fig:IndivDominant}).
 
-Analysis of simulated data illustrates that PCA identifies the major driver of variation when tissue is dominant and there are only 3 catagories.  But the results are less clear when individual is dominant because there are now 10 categories.  Meanwhile, hierarchical clustering identifies the major driver of variation in both cases, but does not give insight into the second leading contributor.
+Analysis of simulated data illustrates that PCA identifies the major driver of variation when tissue is dominant and there are only 3 categories.  But the results are less clear when individual is dominant because there are now 10 categories.  Meanwhile, hierarchical clustering identifies the major driver of variation in both cases, but does not give insight into the second leading contributor.
 
 Analysis with \Rpackage{variancePartition} has a number of advantages over these standard methods: 
 \begin{itemize}
@@ -745,7 +745,7 @@ In order to illustrate how this FVE and ICC relate to the correlation between sa
   \end{tabular}
 \end{center} 
 
-Modeling the separate effects of individual and tissue gives the following covariace structure between samples when a linear mixed model is used:
+Modeling the separate effects of individual and tissue gives the following covariance structure between samples when a linear mixed model is used:
 \[
 \begin{blockarray}{ccccccc}
 && a & b & c & d & e \\
@@ -786,7 +786,7 @@ with corresponding variance components:
   \end{tabular}
 \end{center} 
 
-Since the dataset is now divided into multiple subsets, direct interpretation of the fraction of variation explained (FVE) as intra-class correlation does not apply.  Instead, we compute a ``pseudo-FVE" by approximating the total variance atributable to cell type by using a weighted average of the within cell type variances weighted by the sample size within each cell type.  Thus the values of pseudo-FVE do not have the simple interpretation as in the standard application of \Rpackage{variancePartition}, but allows ranking of variables based on genome-wide contribution to variance and analysis of gene-level results.
+Since the dataset is now divided into multiple subsets, direct interpretation of the fraction of variation explained (FVE) as intra-class correlation does not apply.  Instead, we compute a ``pseudo-FVE" by approximating the total variance attributable to cell type by using a weighted average of the within cell type variances weighted by the sample size within each cell type.  Thus the values of pseudo-FVE do not have the simple interpretation as in the standard application of \Rpackage{variancePartition}, but allows ranking of variables based on genome-wide contribution to variance and analysis of gene-level results.
 
 
 \subsection{Relationship between \Rpackage{variancePartition} and differential expression}
@@ -873,7 +873,7 @@ Only one varying coefficient term can be specified.  For example, the formula $\
 \begin{itemize}
   \item \Rcode{executing \%dopar\% sequentially: no parallel backend registered}
 \end{itemize}
-These functions are optmized to run in parallel using doParallel/doMC.  This warning indicates that a parallelization was not enabled.  This is not a problem, but analysis will take more time.\\
+These functions are optimized to run in parallel using doParallel/doMC.  This warning indicates that a parallelization was not enabled.  This is not a problem, but analysis will take more time.\\
 
 \subsection{Errors}
 
@@ -888,7 +888,7 @@ Including variables that are highly correlated can produce misleading results (s
 \begin{itemize}
   \item \Rcode{Error in checkNlevels(reTrms\$flist, n = n, control) : \newline number of levels of each grouping factor must be < number of observations}
 \end{itemize}
-This arises when using a varying coefficient model that examimes the effect of one variable inside subsets of the data defined by another: $\sim$\Rcode{(A+0|B)}.  See Section \ref{sec:withinSubset}. There must be enough observations of each level of the variable B with each level of variable A.  Consider an example with samples from multiple tissues from a set of individual where we are interested in the variation across individuals within each tissue using the formula: $\sim$ \Rcode{(Tissue+0|Individual)}.  This analysis will only work if there are multiple samples from the same individual in at least one tissue.  If all tisses only have one sample per individual, the analysis will fail and \Rcode{variancePartition} will give this error.\\
+This arises when using a varying coefficient model that examines the effect of one variable inside subsets of the data defined by another: $\sim$\Rcode{(A+0|B)}.  See Section \ref{sec:withinSubset}. There must be enough observations of each level of the variable B with each level of variable A.  Consider an example with samples from multiple tissues from a set of individual where we are interested in the variation across individuals within each tissue using the formula: $\sim$ \Rcode{(Tissue+0|Individual)}.  This analysis will only work if there are multiple samples from the same individual in at least one tissue.  If all tissues only have one sample per individual, the analysis will fail and \Rcode{variancePartition} will give this error.\\
 
 \begin{itemize}
   \item \Rcode{Problem with varying coefficient model in formula: should have form (A+0|B)}

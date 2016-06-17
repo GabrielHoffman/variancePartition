@@ -16,13 +16,13 @@ plotCorrMatrix(C, sort = TRUE, margins = c(13, 13),
 
 \item{key.xlab}{label of color gradient}
 
-\item{...}{additional arguments to headmap.2}
+\item{...}{additional arguments to heatmap.2}
 }
 \value{
 Image of correlation matrix
 }
 \description{
-Plot corrleation matrix
+Plot correlation matrix
 }
 \details{
 Plots image of correlation matrix using customized call to heatmap.2

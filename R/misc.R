@@ -211,14 +211,14 @@ setMethod("getOmitted", "lmerMod",
 
 
 
-#' Colinearity score
+#' Collinearity score
 #' 
-#' Colinearity score for a regression model indicating if variables are too highly correlated to give meaningful results
+#' Collinearity score for a regression model indicating if variables are too highly correlated to give meaningful results
 #'
 #' @param fit regression model fit from lm() or lmer()
 #' 
 #' @return
-#' Returns the colinearity score between 0 and 1, where a score > 0.999 means the degree of colinearity is too high.  This function reports the correlation matrix between coefficient estimates for fixed effects.  The colinearity score is the maximum absolute correlation value of this matrix. Note that the values are the correlation between the parameter estimates, and not between the variables themselves.
+#' Returns the collinearity score between 0 and 1, where a score > 0.999 means the degree of collinearity is too high.  This function reports the correlation matrix between coefficient estimates for fixed effects.  The collinearity score is the maximum absolute correlation value of this matrix. Note that the values are the correlation between the parameter estimates, and not between the variables themselves.
 #' @export
 #' @examples
 #' 
@@ -233,11 +233,11 @@ setMethod("getOmitted", "lmerMod",
 #' 
 #' res <- fitVarPartModel( geneExpr[1:10,], form, info )
 #'  
-#' # evaluate the colinearity score on the first model fit
+#' # evaluate the collinearity score on the first model fit
 #' # this reports the correlation matrix between coefficients estimates
 #' # for fixed effects
-#' # the colinearity score is the maximum absolute correlation value
-#' # If the colinearity score > .999 then the variance parition 
+#' # the collinearity score is the maximum absolute correlation value
+#' # If the collinearity score > .999 then the variance partition 
 #' # estimates may be problematic
 #' # In that case, a least one variable should be omitted
 #' colinearityScore(res[[1]])

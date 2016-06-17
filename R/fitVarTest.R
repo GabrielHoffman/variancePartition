@@ -11,11 +11,11 @@
 # #' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
 # #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
 # #' @param data data.frame with columns corresponding to formula 
-# #' @param useWeights if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
+# #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 # #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 # #' @param showWarnings show warnings about model fit (default TRUE)
 # #' @param colinearityCutoff cutoff used to determine if model is computationally singular
-# #' @param ddf method to compute degrees of freedom for hpothesis testing in linear mixed model 
+# #' @param ddf method to compute degrees of freedom for hypothesis testing in linear mixed model 
 # #' @param ... Additional arguments for lmer() or lm()
 # #'
 # #' @return
@@ -72,11 +72,11 @@
 # #' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
 # #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
 # #' @param data data.frame with columns corresponding to formula 
-# #' @param useWeights if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
+# #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 # #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 # #' @param showWarnings show warnings about model fit (default TRUE)
 # #' @param colinearityCutoff cutoff used to determine if model is computationally singular
-# #' @param ddf method to compute degrees of freedom for hpothesis testing in linear mixed model 
+# #' @param ddf method to compute degrees of freedom for hypothesis testing in linear mixed model 
 # #' @param ... Additional arguments for lmer() or lm()
 # #'
 # #' @return

@@ -19,7 +19,7 @@ varPartConfInf(exprObj, formula, data, REML = FALSE, useWeights = TRUE,
 
 \item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option}
 
-\item{useWeights}{if TRUE, analysis uses heteroskadatistic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
+\item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
 
 \item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE}
 
@@ -44,7 +44,7 @@ list() of where each entry is the result for a gene.  Each entry is a matrix of 
 Fit linear mixed model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Then perform parametric bootstrap sampling to get a 95\% confidence intervals for each variable for each gene.
 }
 \details{
-A linear mixed model is fit for each gene, and bootMer() is used to generate parametric boostrap confidence intervals.  use.u=TRUE is used so that the \\hat(u) values from the random effects are used as estimated and are not resampled.  This gives confindence intervals as if additional data were generated from these same current samples.  Conversely, use.u=FALSE assumes that  this dataset is a sample from a larger population.   Thus it simulates \\hat(u) based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, use.u=TRUE gives smaller confidence intervals that are appropriate in this case.
+A linear mixed model is fit for each gene, and bootMer() is used to generate parametric bootstrap confidence intervals.  use.u=TRUE is used so that the \\hat(u) values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, use.u=FALSE assumes that  this dataset is a sample from a larger population.   Thus it simulates \\hat(u) based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, use.u=TRUE gives smaller confidence intervals that are appropriate in this case.
 }
 \examples{
 

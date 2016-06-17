@@ -13,14 +13,14 @@ plotCorrStructure(fit, varNames = names(coef(fit)), reorder = TRUE,
 
 \item{varNames}{variables in the metadata for which the correlation structure should be shown.  Variables must be random effects}
 
-\item{reorder}{how to reorder the rows/columns of the correlation matrix.  reorder=FALSE gives no reorder.  reorder=TRUE reorders based on hclust.  reorder can also be an array of indeces to reorder the samples manually}
+\item{reorder}{how to reorder the rows/columns of the correlation matrix.  reorder=FALSE gives no reorder.  reorder=TRUE reorders based on hclust.  reorder can also be an array of indices to reorder the samples manually}
 
 \item{pal}{color palette}
 
 \item{hclust.method}{clustering methods for hclust}
 }
 \value{
-Image of correlation structure beteen each pair of experiments for a single gene
+Image of correlation structure between each pair of experiments for a single gene
 }
 \description{
 Plot correlation structure of a gene based on random effects

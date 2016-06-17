@@ -6,7 +6,7 @@
 \alias{sortCols,data.frame-method}
 \alias{sortCols,matrix-method}
 \alias{sortCols,varPartResults-method}
-\title{Sort variance parition statistics}
+\title{Sort variance partition statistics}
 \usage{
 sortCols(x, FUN = median, decreasing = TRUE, last = c("Residuals",
   "Measurement.error"), ...)
@@ -57,8 +57,8 @@ data(varPartData)
 # Individual and Tissue are both categorical, so we model them as random effects
 form <- ~ Age + (1|Individual) + (1|Tissue) 
 
-# Step 1: fit linear mixed model on gene expresson
-# If categoritical variables are specified, a linear mixed model is used
+# Step 1: fit linear mixed model on gene expression
+# If categorical variables are specified, a linear mixed model is used
 # If all variables are modeled as continuous, a linear model is used
 # each entry in results is a regression model fit on a single gene
 # Step 2: extract variance fractions from each model fit

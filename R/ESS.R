@@ -6,7 +6,7 @@
 #' Compute effective sample size based on correlation structure in linear mixed model
 #'
 #' @param fit model fit from lmer()
-#' @param method "full" uses the full correlation structure of the model. The "approximate" method makes the simplifying assuption that the study has a mean of m samples in each of k groups, and computes m based on the study design.  When the study design is evenly balanced (i.e. the assumption is met), this gives the same results as the "full" method.  
+#' @param method "full" uses the full correlation structure of the model. The "approximate" method makes the simplifying assumption that the study has a mean of m samples in each of k groups, and computes m based on the study design.  When the study design is evenly balanced (i.e. the assumption is met), this gives the same results as the "full" method.  
 #' 
 #' @return
 #' effective sample size for each random effect in the model
@@ -17,7 +17,7 @@
 
 #' Liu, G., and Liang, K. Y. (1997). Sample size calculations for studies with correlated observations. Biometrics, 53(3), 937-47.
 #'
-#' "full" method: if V_x = var(Y;x) is the variance-covariance matrix of Y, the respose, based on the covariate x, then the effective sample size corresponding to this covariate is \\Sigma_\{i,j\} (V_x^\{-1\})_\{i,j\}.  In R notation, this is: sum(solve(V_x)).
+#' "full" method: if V_x = var(Y;x) is the variance-covariance matrix of Y, the response, based on the covariate x, then the effective sample size corresponding to this covariate is \\Sigma_\{i,j\} (V_x^\{-1\})_\{i,j\}.  In R notation, this is: sum(solve(V_x)).
 #'
 #' "approximate" method: Letting m be the mean number of samples per group, k be the number of groups, and rho be the intraclass correlation, the effective sample size is m*k / (1+rho*(m-1))
 #'
