@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{variancePartition Tutorial}
+%\VignetteIndexEntry{1) Tutorial on using variancePartition}
 %\VignettePackage{variancePartition}
 %\VignetteEngine{knitr::knitr}
 

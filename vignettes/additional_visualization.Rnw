@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{Additional vizualizations}
+%\VignetteIndexEntry{2) Additional visualizations}
 %\VignettePackage{variancePartition}
 %\VignetteEngine{knitr::knitr}
 
