@@ -130,6 +130,11 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		 stop( "exprObj and weightsMatrix must be the same dimensions" )
 	}
 
+	# If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
+	if( ! identical(colnames(exprObj), rownames(data)) ){
+		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
+	}
+
 	# add response (i.e. exprObj[,j] to formula
 	form = paste( "gene$E", paste(as.character( formula), collapse=''))
 
@@ -151,7 +156,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
 			# fit linear mixed model
-			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,...)
+			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,na.action=stats::na.exclude,...)
 
 			# apply function
 			fxn( fit )
@@ -180,7 +185,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			data2$expr = gene$E
  
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene$weights, start=fitInit@theta, control=control)
+			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
 			# apply function
 			fxn( fit )
@@ -370,7 +375,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
 			# fit linear mixed model
-			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,...)
+			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,na.action=stats::na.exclude,...)
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
@@ -381,14 +386,14 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
 		gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
-		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control,)
+		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control)
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
 
 		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene$weights, start=fitInit@theta, control=control,)
+			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}

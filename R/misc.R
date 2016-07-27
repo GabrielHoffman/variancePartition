@@ -136,6 +136,7 @@ ggColorHue <- function(n) {
 #' @export
 #' @docType methods
 #' @aliases residuals
+
 setMethod("residuals", "VarParFitList",
   function(object, ...) {
 
@@ -144,46 +145,61 @@ setMethod("residuals", "VarParFitList",
 			residuals( fit )
 		)
 
-		# identify which samples were omitted
-		excludeList <- sapply( object, function(fit)
-			getOmitted( fit )
-		)
-
-		# get total number of samples
-		n_samples = sapply(res, length) + sapply(excludeList, length)
-
-		if( max(n_samples) - min(n_samples)  > 0 ){
-			stop("Samples were dropped from model fit.  Either expression data or metadata contained NA values")
-		}
-
-		# create matrix of total size, including omitted samples
-		resMatrix <- matrix(NA, nrow=length(res), ncol=n_samples[1])
+		resMatrix <- matrix(NA, nrow=length(res), ncol=length(res[[1]]))
+		colnames(resMatrix) = names(res[[1]])
 
 		# fill non-missing entries with residuals
 		for( j in 1:nrow(resMatrix)){
-			excl = excludeList[[j]]
-
-			if( is.null(excl) ){
-				resMatrix[j,] = res[[j]] 
-			}else{				
-				resMatrix[j,-excl] = res[[j]] 
-			}
+			resMatrix[j,] = res[[j]] 
 		}
 
-		# gene names along rows
-		rownames(resMatrix) <- names(object)
+		# get total number of samples
+		n_samples = sapply(res, length)
 
-		# get columns names, filling NA values from excludeList
-		sampleNames = rep(NA, ncol(resMatrix))
-		excl = excludeList[[1]]
-
-		if( is.null(excl) ){
-			sampleNames = names(fitted.values(object[[1]])) 
-		}else{				
-			sampleNames[-excl] = names(fitted.values(object[[1]]))
-			sampleNames[excl] = names(excl)
+		if( max(n_samples) - min(n_samples) > 0 ){
+			stop("Samples were dropped from model fit.  Either expression data or metadata contained NA values")
 		}
-		colnames(resMatrix) = sampleNames
+
+		# identify which samples were omitted
+		# excludeList <- sapply( object, function(fit)
+		# 	getOmitted( fit )
+		# )
+
+		# # get total number of samples
+		# n_samples = sapply(res, length)# + sapply(excludeList, length)
+
+		# if( max(n_samples) - min(n_samples) > 0 ){
+		# 	stop("Samples were dropped from model fit.  Either expression data or metadata contained NA values")
+		# }
+
+		# # create matrix of total size, including omitted samples
+		# resMatrix <- matrix(NA, nrow=length(res), ncol=n_samples[1])
+
+		# # fill non-missing entries with residuals
+		# for( j in 1:nrow(resMatrix)){
+		# 	excl = excludeList[[j]]
+
+		# 	if( is.null(excl) ){
+		# 		resMatrix[j,] = res[[j]] 
+		# 	}else{				
+		# 		resMatrix[j,-excl] = res[[j]] 
+		# 	}
+		# }
+
+		# # gene names along rows
+		# rownames(resMatrix) <- names(object)
+
+		# # get columns names, filling NA values from excludeList
+		# sampleNames = rep(NA, ncol(resMatrix))
+		# excl = excludeList[[1]]
+
+		# if( is.null(excl) ){
+		# 	sampleNames = names(fitted.values(object[[1]])) 
+		# }else{				
+		# 	sampleNames[-excl] = names(fitted.values(object[[1]]))
+		# 	sampleNames[excl] = names(excl)
+		# }
+		# colnames(resMatrix) = sampleNames
 		
 		return( as.matrix( resMatrix ) )
 	}
