@@ -79,3 +79,149 @@ pmid = {24037425},
 title = {{Reproducibility of high-throughput mRNA and small RNA sequencing across laboratories.}},
 volume = {31},
 year = {2013}}
+
+
+@article{Bray2015,
+abstract = {We present a novel approach to RNA-Seq quantification that is near optimal in speed and accuracy. Software implementing the approach, called kallisto, can be used to analyze 30 million unaligned RNA-Seq reads in less than 5 minutes on a standard laptop computer while providing results as accurate as those of the best existing tools. This removes a major computational bottleneck in RNA-Seq analysis.},
+author = {Bray, Nicolas L and Pimentel, Harold and Melsted, P{\'{a}}ll and Pachter, Lior},
+doi = {10.1038/nbt.3519},
+journal = {Nature Biotechnology},
+title = {{Near-optimal probabilistic RNA-seq quantification}},
+year = {2016},
+pages = {525-527},
+volume = {34},
+issue = {5}
+}
+
+@article{Patro2014,
+abstract = {RNA-seq has rapidly become the de facto technique to measure gene expression. However, the time required for analysis has not kept up with the pace of data generation. Here we introduce Sailfish, a novel computational method for quantifying the abundance of previously annotated RNA isoforms from RNA-seq data. Sailfish entirely avoids mapping reads, which is a time-consuming step in all current methods. Sailfish provides quantification estimates much faster than existing approaches (typically 20-times faster) without loss of accuracy.},
+author = {Patro, Rob and Mount, Stephen M and Kingsford, Carl},
+doi = {10.1038/nbt.2862},
+file = {:home/ghoffman/Documents/articles/nbt.2862.pdf:pdf},
+isbn = {1308.3700},
+issn = {1087-0156},
+journal = {Nature Biotechnology},
+month = {apr},
+number = {5},
+pages = {462--464},
+pmid = {24752080},
+publisher = {Nature Publishing Group},
+title = {{Sailfish enables alignment-free isoform quantification from RNA-seq reads using lightweight algorithms}},
+volume = {32},
+year = {2014}
+}
+@article{Anders2015,
+abstract = {MOTIVATION: A large choice of tools exists for many standard tasks in the analysis of high-throughput sequencing (HTS) data. However, once a project deviates from standard work flows, custom scripts are needed.$\backslash$n$\backslash$nRESULTS: We present HTSeq, a Python library to facilitate the rapid development of such scripts. HTSeq offers parsers for many common data formats in HTS projects, as well as classes to represent data such as genomic coordinates, sequences, sequencing reads, alignments, gene model information, variant calls, and provides data structures that allow for querying via genomic coordinates. We also present htseq-count, a tool developed with HTSeq that preprocesses RNA-Seq data for differential expression analysis by counting the overlap of reads with genes. Availability: HTSeq is released as open-source software under the GNU General Public Licence and available from http://www-huber.embl.de/HTSeq or from the Python Package Index https://pypi.python.org/pypi/HTSeq.$\backslash$n$\backslash$nCONTACT: sanders@fs.tum.de.},
+author = {Anders, Simon and Pyl, Paul Theodor and Huber, Wolfgang},
+doi = {10.1093/bioinformatics/btu638},
+file = {:home/ghoffman/Documents/articles/Bioinformatics-2015-Anders-166-9.pdf:pdf},
+isbn = {1367-4811 (Electronic) 1367-4803 (Linking)},
+issn = {14602059},
+journal = {Bioinformatics},
+number = {2},
+pages = {166--169},
+pmid = {25260700},
+title = {{HTSeq-A Python framework to work with high-throughput sequencing data}},
+volume = {31},
+year = {2015}
+}
+
+@article{Liao2014,
+abstract = {Motivation: Next-generation sequencing technologies generate millions of short sequence reads, which are usually aligned to a reference genome. In many applications, the key information required for downstream analysis is the number of reads mapping to each genomic feature, for example to each exon or each gene. The process of counting reads is called read summarization. Read summarization is required for a great variety of genomic analyses but has so far received relatively little attention in the literature.$\backslash$nResults: We present featureCounts, a read summarization program suitable for counting reads generated from either RNA or genomic DNA sequencing experiments. featureCounts implements highly efficient chromosome hashing and feature blocking techniques. It is considerably faster than existing methods (by an order of magnitude for gene-level summarization) and requires far less computer memory. It works with either single or paired-end reads and provides a wide range of options appropriate for different sequencing applications.$\backslash$nAvailability and implementation: featureCounts is available under GNU General Public License as part of the Subread (http://subread.sourceforge.net) or Rsubread (http://www.bioconductor.org) software packages.$\backslash$nContact: shi@wehi.edu.au},
+author = {Liao, Yang and Smyth, Gordon K. and Shi, Wei},
+doi = {10.1093/bioinformatics/btt656},
+file = {:home/ghoffman/Documents/articles/923.full.pdf:pdf},
+issn = {14602059},
+journal = {Bioinformatics},
+number = {7},
+pages = {923--930},
+pmid = {24227677},
+title = {{FeatureCounts: An efficient general purpose program for assigning sequence reads to genomic features}},
+volume = {30},
+year = {2014}
+}
+
+@article{Patro2015,
+author = {Patro, Rob and Duggal, Geet and Kingsford, Carl},
+journal = {bioarxiv},
+doi = {10.1101/021592},
+file = {:home/ghoffman/Documents/articles/021592.full.pdf:pdf},
+title = {{Accurate, fast, and model-aware transcript expression quantification with Salmon}},
+year = {2015}
+}
+
+@article{Li2011f,
+abstract = {BACKGROUND: RNA-Seq is revolutionizing the way transcript abundances are measured. A key challenge in transcript quantification from RNA-Seq data is the handling of reads that map to multiple genes or isoforms. This issue is particularly important for quantification with de novo transcriptome assemblies in the absence of sequenced genomes, as it is difficult to determine which transcripts are isoforms of the same gene. A second significant issue is the design of RNA-Seq experiments, in terms of the number of reads, read length, and whether reads come from one or both ends of cDNA fragments. RESULTS: We present RSEM, an user-friendly software package for quantifying gene and isoform abundances from single-end or paired-end RNA-Seq data. RSEM outputs abundance estimates, 95{\%} credibility intervals, and visualization files and can also simulate RNA-Seq data. In contrast to other existing tools, the software does not require a reference genome. Thus, in combination with a de novo transcriptome assembler, RSEM enables accurate transcript quantification for species without sequenced genomes. On simulated and real data sets, RSEM has superior or comparable performance to quantification methods that rely on a reference genome. Taking advantage of RSEM's ability to effectively use ambiguously-mapping reads, we show that accurate gene-level abundance estimates are best obtained with large numbers of short single-end reads. On the other hand, estimates of the relative frequencies of isoforms within single genes may be improved through the use of paired-end reads, depending on the number of possible splice forms for each gene. CONCLUSIONS: RSEM is an accurate and user-friendly software tool for quantifying transcript abundances from RNA-Seq data. As it does not rely on the existence of a reference genome, it is particularly useful for quantification with de novo transcriptome assemblies. In addition, RSEM has enabled valuable guidance for cost-efficient design of quantification experiments with RNA-Seq, which is currently relatively expensive.},
+author = {Li, Bo and Dewey, Colin N},
+doi = {10.1186/1471-2105-12-323},
+file = {:home/ghoffman/Documents/articles/1471-2105-12-323.pdf:pdf},
+issn = {1471-2105},
+journal = {BMC Bioinformatics},
+keywords = {Animals,Computer Simulation,Gene Expression Profiling,Gene Expression Profiling: methods,Humans,Mice,Protein Isoforms,Protein Isoforms: genetics,RNA,RNA: genetics,RNA: methods,Sequence Analysis,Software},
+month = {jan},
+number = {1},
+pages = {323},
+pmid = {21816040},
+title = {{RSEM: accurate transcript quantification from RNA-Seq data with or without a reference genome}},
+volume = {12},
+year = {2011}
+}
+
+@article{Trapnell2010,
+abstract = {High-throughput mRNA sequencing (RNA-Seq) promises simultaneous transcript discovery and abundance estimation. However, this would require algorithms that are not restricted by prior gene annotations and that account for alternative transcription and splicing. Here we introduce such algorithms in an open-source software program called Cufflinks. To test Cufflinks, we sequenced and analyzed {\textgreater}430 million paired 75-bp RNA-Seq reads from a mouse myoblast cell line over a differentiation time series. We detected 13,692 known transcripts and 3,724 previously unannotated ones, 62{\%} of which are supported by independent expression data or by homologous genes in other species. Over the time series, 330 genes showed complete switches in the dominant transcription start site (TSS) or splice isoform, and we observed more subtle shifts in 1,304 other genes. These results suggest that Cufflinks can illuminate the substantial regulatory flexibility and complexity in even this well-studied model of muscle development and that it can improve transcriptome-based genome annotation.},
+author = {Trapnell, Cole and Williams, Brian a and Pertea, Geo and Mortazavi, Ali and Kwan, Gordon and van Baren, Marijke J and Salzberg, Steven L and Wold, Barbara J and Pachter, Lior},
+doi = {10.1038/nbt.1621},
+file = {:home/ghoffman/.local/share/data/Mendeley Ltd./Mendeley Desktop/Downloaded/Trapnell et al. - 2010 - Transcript assembly and quantification by RNA-Seq reveals unannotated transcripts and isoform switching during.pdf:pdf},
+issn = {1087-0156},
+journal = {Nature Biotechnology},
+keywords = {Algorithms,Animals,Cell Differentiation,Cell Differentiation: genetics,Cell Line,Gene Expression Profiling,Gene Expression Profiling: methods,Genome,Messenger,Messenger: analysis,Messenger: genetics,Messenger: metabolism,Mice,Oligonucleotide Array Sequence Analysis,Oligonucleotide Array Sequence Analysis: methods,Protein Isoforms,Protein Isoforms: genetics,Protein Isoforms: metabolism,Proto-Oncogene Proteins c-myc,Proto-Oncogene Proteins c-myc: genetics,Proto-Oncogene Proteins c-myc: metabolism,RNA,RNA: methods,Sequence Analysis,Software},
+month = {may},
+number = {5},
+pages = {511--515},
+pmid = {20436464},
+publisher = {Nature Publishing Group},
+title = {{Transcript assembly and quantification by RNA-Seq reveals unannotated transcripts and isoform switching during cell differentiation}},
+volume = {28},
+year = {2010}
+}
+
+@article{Love2014,
+author = {Love, Michael I. and Huber, Wolfgang and Anders, Simon},
+doi = {10.1186/s13059-014-0550-8},
+file = {:home/ghoffman/Documents/articles/art{\%}3A10.1186{\%}2Fs13059-014-0550-8.pdf:pdf},
+issn = {1474-760X},
+journal = {Genome Biology},
+number = {12},
+pages = {550},
+title = {{Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2}},
+volume = {15},
+year = {2014}
+}
+
+@article{Frazee2015,
+author = {Frazee, Alyssa C and Pertea, Geo and Jaffe, Andrew E and Langmead, Ben and Salzberg, Steven L and Leek, Jeffrey T},
+doi = {10.1038/nbt.3172},
+file = {:home/ghoffman/Documents/articles/nbt.3172.pdf:pdf},
+issn = {1087-0156},
+journal = {Nature Biotechnology},
+number = {3},
+pages = {243--246},
+title = {{Ballgown bridges the gap between transcriptome assembly and expression analysis}},
+volume = {33},
+year = {2015}
+}
+
+
+@article{Soneson2015,
+author = {Soneson, Charlotte and Love, Michael I. and Robinson, Mark D.},
+doi = {10.12688/f1000research.7563.1},
+file = {:home/ghoffman/Documents/articles/5d8e28fb-f42e-433d-9b30-ddfd05f7be5a{\_}7563{\_}-{\_}mark{\_}robinson{\_}v2.pdf:pdf},
+issn = {2046-1402},
+journal = {F1000Research},
+number = {0},
+pages = {1521},
+pmid = {26925227},
+title = {{Differential analyses for RNA-seq: transcript-level estimates improve gene-level inferences}},
+volume = {4},
+year = {2015}
+}

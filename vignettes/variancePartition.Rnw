@@ -64,9 +64,17 @@ The \Rpackage{variancePartition} package provides a general framework for unders
 There are three components to an analysis: 
 \begin{itemize}
  \item[1)] {\bf Gene expression data:}
- 	In general, this is a matrix of normalized gene expression values with genes as rows and experiments as columns.\\  
+ 	In general, this is a matrix of normalized gene expression values with genes as rows and experiments as columns. \\
 
- 	For RNA-seq data, this can be the $\log_2$ counts per million (CPM) from \Rcode{cpm()} in the \Rpackage{edgeR}.  Or the output of \Rcode{voom()} in \Rpackage{limma} can be used to model the precision of each observation.  Other normalization methods such as $\log_2$ RPKM can also be used.  For microarray data, any standard normalization such as \Rcode{rma} can be used.    \\   
+ 	\begin{itemize}[align=left]
+ 		\item[-- Count-based quantification:] \Rcode{featureCounts} \cite{Liao2014}, \Rcode{HTSeq} \cite{Anders2015}\\ 
+ 			Counts mapping to each gene can be normalized using counts per million (CPM), reads per kilobase per million (RPKM) or fragments per kilobase per million (FPKM).  These count results can be processed with \Rpackage{limma}/\Rcode{voom} \cite{Law2014} to model the precision of each observation or \Rpackage{DESeq2} \cite{Love2014}.\\
+
+ 		\item[-- Isoform quantification:] \Rcode{kallisto} \cite{Bray2015}, \Rcode{sailfish} \cite{Patro2014}, \Rcode{salmon} \cite{Patro2015}, \Rcode{RSEM} \cite{Li2011f}, \Rcode{cufflinks} \cite{Trapnell2010}\\
+ 				These perform isoform-level quantification using reads that map to multiple transcripts.  Quantification values can be read directly into \R{}, or processed with \Rpackage{ballgown} \cite{Frazee2015} or \Rpackage{tximport} \cite{Soneson2015}.\\
+ 		
+ 		\item[-- Microarray data:] any standard normalization such as \Rcode{rma} in the \Rpackage{oligo} package can be used.    \\   
+ 	\end{itemize}
 
  \item[2)] {\bf Meta-data about each experiment:}  A \Rcode{data.frame} with information about each experiment such as patient ID, tissue, sex, disease state, time point, batch, etc.\\ 
 
@@ -76,12 +84,7 @@ There are three components to an analysis:
 \end{itemize}
 
 
-
-
-
  \Rpackage{variancePartition} will assess the contribution of each meta-data variable to variation in gene expression and can report the intra-class correlation for each variable.   
-
-
 
 
 \pagebreak
@@ -105,6 +108,7 @@ library(variancePartition)
 library(doParallel)
 cl <- makeCluster(4)
 registerDoParallel(cl)
+on.exit(rm(cl))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
@@ -168,7 +172,13 @@ head(varPart$Individual)
 head(varPart[order(varPart$Individual, decreasing=TRUE),])
 @
 
+\subsubsection{Saving plot to file}
 
+In order to save the plot to a file, use the \Rcode{ggsave} function:
+<<savePlot, cache=TRUE, eval=FALSE>>=
+fig = plotVarPart( vp )
+ggsave(file, fig)
+@
 
 \pagebreak
 \subsection{Plot expression stratified by other variables}
@@ -426,12 +436,16 @@ In addition, setting the \Rcode{useWeights=FALSE} will suppress usage of the wei
 
 
 \pagebreak
-\section{Normalizing RNA-Seq data}
+\section{Applying \Rpackage{variancePartition} to RNA-seq expression data}
 \label{sec:normalize_RNA_Seq}
 
-\Rpackage{variancePartition} works with gene expression data that has already been normalized.  Expression should be normalized in exactly the same way as for differential expression analysis.  Here I discuss normalization specifically for RNA-Seq data, while the process for microarray data may depend on the platform and manufacturer
+\Rpackage{variancePartition} works with gene expression data that has already been processed and normalized as for differential expression analysis.
 
-Read RNA-Seq counts into \R{}, normalize for library size within and between experiments with TMM \cite{Robinson2010c}, estimates precision weights with limma/voom \cite{Law2014}
+\subsection{Gene-level counts}
+\Rcode{featureCounts} \cite{Liao2014} and \Rcode{HTSeq} \cite{Anders2015} report the number of reads mapping to each gene (or exon).  These results are easily read into \R{}.  \Rpackage{limma}/\Rcode{voom} and \Rpackage{DESeq2} are widely used for differential expression analysis of gene- and exon-level counts and can be used to process data before analysis with \Rpackage{variancePartition}.  This section addresses processing and normalization of gene-level counts, but the analysis is the same for exon-level counts.
+
+\subsubsection{\Rpackage{limma}/\Rcode{voom}}
+Read RNA-seq counts into \R{}, normalize for library size within and between experiments with TMM \cite{Robinson2010c}, estimate precision weights with \Rpackage{limma}/\Rcode{voom}.
 
 <<echo=TRUE, cache=TRUE>>=
 library(limma)
@@ -455,7 +469,7 @@ design <- model.matrix( ~ Batch, info)
 # This models uncertainty in expression measurements
 vobjGenes <- voom(gExpr, design )
 
-# fit variancePartition
+# Define formula
 form <- ~ (1|Individual) + (1|Tissue) + (1|Batch) + Age
 
 # variancePartition seamlessly deals with the result of voom()
@@ -464,14 +478,133 @@ form <- ~ (1|Individual) + (1|Tissue) + (1|Batch) + Age
 varPart <- fitExtractVarPartModel( vobjGenes, form, info )
 @
 
+\subsubsection{\Rpackage{DESeq2}}
 
+Process and normalize the gene-level counts before running \Rpackage{variancePartition} analysis.
+<<echo=TRUE, cache=TRUE>>=
+library(DESeq2)
+
+# create DESeq2 object from gene-level counts and metadata
+dds <- DESeqDataSetFromMatrix(countData = geneCounts,
+	colData = info,
+	design = ~ 1)
+
+# Estimate library size correction scaling factors
+dds = estimateSizeFactors(dds)
+
+# identify genes that pass expression cutoff
+isexpr <- rowSums(fpm(dds)>1) >= 0.5 * ncol(dds)
+
+# compute log2 Fragments Per Million
+# Alternatively, fpkm(), vst() or rlog() could be used
+quantLog = log2( fpm( dds )[isexpr,] + 1)
+
+# Define formula
+form <- ~ (1|Individual) + (1|Tissue) + (1|Batch) + Age
+
+# Run variancePartition analysis
+varPart <- fitExtractVarPartModel( quantLog, form, info)
+@
+
+Note that DESeq2 does not compute precision weights like \Rpackage{limma}/\Rcode{voom}, so they are not used in this version of the analysis.
+
+\subsection{Isoform quantification}
+	Other software performs isoform-level quantification using reads that map to multiple transcripts.  These include \Rcode{kallisto} \cite{Bray2015}, \Rcode{sailfish} \cite{Patro2014}, \Rcode{salmon} \cite{Patro2015}, \Rcode{RSEM} \cite{Li2011f} and \Rcode{cufflinks} \cite{Trapnell2010}.
+
+\subsubsection{\Rpackage{tximport}}
+Quantifications from \Rcode{kallisto}, \Rcode{salmon}, \Rcode{sailfish} and \Rcode{RSEM} can be read into \R{} and processed with the Bioconductor package \Rpackage{tximport}.  The gene- or transcript-level quantifications can be used directly in \Rpackage{variancePartition}.  
+
+<<echo=TRUE, cache=TRUE>>=
+library(tximportData)
+library(tximport)
+library(readr)
+
+# Get data from folder where tximportData is installed
+dir <- system.file("extdata", package = "tximportData")
+samples <- read.table(file.path(dir, "samples.txt"), header = TRUE)
+files <- file.path(dir, "kallisto", samples$run, "abundance.tsv")
+names(files) <- paste0("sample", 1:6)
+
+tx2gene <- read.csv(file.path(dir, "tx2gene.csv"))
+
+# reads results from kallisto
+txi <- tximport(files, type = "kallisto", tx2gene = tx2gene, reader = read_tsv, 
+    countsFromAbundance = "lengthScaledTPM")
+
+# define metadata (usually read from external source)
+info_tximport = data.frame( Sample = sprintf("sample%d", 1:6), 
+	Disease=c("case", "control")[c(rep(1, 3), rep(2, 3) )] )
+
+# Extract counts from kallisto
+y <- DGEList( txi$counts )
+
+# compute library size normalization
+y <- calcNormFactors(y)
+
+# apply voom to estimate precision weights
+design <- model.matrix( ~ Disease, data = info_tximport)
+vobj <- voom(y, design)
+
+# define formula
+form = ~ (1|Disease)
+
+# Run variancePartition analysis (on only 10 genes)
+varPart_tx = fitExtractVarPartModel( vobj[1:10,], form, info_tximport)
+
+@
+
+Code to process results from \Rcode{sailfish}, \Rcode{salmon}, \Rcode{RSEM} is very similar.\\
+\\
+See tutorial at \url{http://bioconductor.org/packages/release/bioc/vignettes/tximport/inst/doc/tximport.html} for more details.
+
+
+
+\subsubsection{\Rpackage{ballgown}}
+
+Quantifications from Cufflinks/Tablemaker and RSEM can be processed and read into \R{} with the Bioconductor package \Rpackage{ballgown}.  
+
+<<echo=TRUE, cache=TRUE>>=
+library(ballgown)
+
+# Get data from folder where ballgown is installed
+data_directory = system.file('extdata', package='ballgown') 
+
+# Load results of Cufflinks/Tablemaker
+bg = ballgown(dataDir=data_directory, samplePattern='sample', meas='all')
+
+# extract gene-level FPKM quantification
+# Expression can be convert to log2-scale if desired
+gene_expression = gexpr(bg)
+
+# extract transcript-level FPKM quantification
+# Expression can be convert to log2-scale if desired
+transcript_fpkm = texpr(bg, 'FPKM')
+
+# define metadata (usually read from external source)
+info_ballgown = data.frame( Sample = sprintf("sample%02d", 1:20), 
+	Batch = rep(letters[1:4], 5), 
+	Disease=c("case", "control")[c(rep(1, 10), rep(2, 10) )] )
+
+# define formula
+form = ~ (1|Batch) + (1|Disease)
+
+# Run variancePartition analysis 
+# Gene-level analysis
+varPart_gene = fitExtractVarPartModel( gene_expression, form, info_ballgown)
+
+# Transcript-level analysis
+varPart_transcript = fitExtractVarPartModel( transcript_fpkm, form, info_ballgown)
+@
+
+Note that \Rcode{ballgownrsem} can be used for a similar analysis of \Rcode{RSEM} results.\\
+\\
+See tutorial at \url{http://bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html} for more details.
 
 
 \pagebreak
 \section{Comparison with other methods on simulated data}
 
-Characterizing drivers of variation in gene expression data has typically relied on 
-principal components analysis (PCA) and hierarchical clustering.  Here I apply these methods to two simulated datasets to demonstrate the additional insight from an analysis with \Rpackage{variancePartition}.  Each simulated dataset comprises 60 experiments from 10 individuals and 3 tissues with 2 biological replicates.  In the first dataset, tissue is the major driver of variation in gene expression(Figure \ref{fig:siteDominant}).  In the second dataset, individual is the major driver of variation in gene expression (Figures \ref{fig:IndivDominant}).
+Characterizing drivers of variation in gene expression data has typically relied on principal components analysis (PCA) and hierarchical clustering.  Here I apply these methods to two simulated datasets to demonstrate the additional insight from an analysis with \Rpackage{variancePartition}.  Each simulated dataset comprises 60 experiments from 10 individuals and 3 tissues with 2 biological replicates.  In the first dataset, tissue is the major driver of variation in gene expression(Figure \ref{fig:siteDominant}).  In the second dataset, individual is the major driver of variation in gene expression (Figures \ref{fig:IndivDominant}).
 
 Analysis of simulated data illustrates that PCA identifies the major driver of variation when tissue is dominant and there are only 3 categories.  But the results are less clear when individual is dominant because there are now 10 categories.  Meanwhile, hierarchical clustering identifies the major driver of variation in both cases, but does not give insight into the second leading contributor.
 
@@ -619,11 +752,12 @@ plotVar( data$geneExpr, data$info )
 plotVarCross( data$geneExpr, data$info, label.angle=60 )
 @
 
-<<echo=FALSE, cache=TRUE>>=
-#if( "cluster" %in% class(cl) ){
-#	library(doParallel)
+<<echo=FALSE, cache=FALSE>>=Rpackage
+# if( "cluster" %in% class(cl) ){
+if( exists("cl") ){
+	library(doParallel)
 	stopCluster(cl)
-#}
+}
 @
 
 \begin{figure}[h]
@@ -844,7 +978,7 @@ plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
 
 
 \subsection{Modelling error in gene expression measurements}
-Uncertainty in the measurement of gene expression can be modeled with precision weights and tests of differentially expression using \Rcode{voom} in \Rpackage{limma} model this uncertainty directly with a heteroskadastic linear regression \cite{Law2014}.  \Rpackage{variancePartition} can use these precision weights in a heteroskadastic linear mixed model implemented in \Rpackage{lme4} \cite{Bates2015}.  These precision weights are used seamlessly by calling \Rcode{fitVarPartModel} or \Rcode{fitExtractVarPartModel} on the output of \Rcode{voom}.  Otherwise the user can specify the weights with the \Rcode{weightsMatrix} parameter.
+Uncertainty in the measurement of gene expression can be modeled with precision weights and tests of differentially expression using \Rcode{voom} in \Rpackage{limma} model this uncertainty directly with a heteroskedastic linear regression \cite{Law2014}.  \Rpackage{variancePartition} can use these precision weights in a heteroskedastic linear mixed model implemented in \Rpackage{lme4} \cite{Bates2015}.  These precision weights are used seamlessly by calling \Rcode{fitVarPartModel} or \Rcode{fitExtractVarPartModel} on the output of \Rcode{voom}.  Otherwise the user can specify the weights with the \Rcode{weightsMatrix} parameter.
 
 
 \pagebreak

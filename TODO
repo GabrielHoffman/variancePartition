@@ -1,7 +1,5 @@
-
 # June 16, 2016
-Improve warnings in fitVarPart and fitExtractVarPartto show which gene give a warning
-
+Improve warnings in fitVarPart and fitExtractVarPart to show which gene give a warning
 
 # April 16, 2016
  Make correlation matrix and linear mixed model equantions in vignette

@@ -17,12 +17,13 @@
 #' @return
 #' list() of where each entry is a model fit produced by lmer() or lm()
 #' 
-#' @import gplots colorRamps lme4 pbkrtest ggplot2 limma foreach reshape2 iterators dendextend doParallel Biobase methods
+#' @import gplots colorRamps lme4 pbkrtest ggplot2 limma foreach reshape2 iterators doParallel Biobase methods 
+# dendextend
 #' @importFrom MASS ginv
 #' @importFrom grDevices colorRampPalette hcl
 #' @importFrom graphics abline axis hist image layout lines mtext par plot plot.new rect text title
 #' @importFrom stats anova as.dendrogram as.dist cancor coef cov2cor density dist fitted.values hclust lm median model.matrix order.dendrogram quantile reorder residuals sd terms var vcov
-#' @importFrom utils combn
+#' @importFrom utils combn object.size
 
 
 
@@ -170,6 +171,11 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# this make the other models converge faster
 		gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
+
+		# check size of stored objects
+		objSize = object.size( fxn(fitInit) ) * nrow(exprObj)
+
+		cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )

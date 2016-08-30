@@ -2,8 +2,8 @@ Package: variancePartition
 Type: Package
 Title: Quantify and interpret divers of variation in multilevel gene expression
     experiments
-Version: 1.3.7
-Date: 2016-6-20
+Version: 1.3.8
+Date: 2016-8-30
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
 Description: Quantify and interpret multiple sources of biological and technical
@@ -14,6 +14,12 @@ VignetteBuilder: knitr
 License: GPL (>= 2)
 Suggests:
     edgeR,
+    dendextend,
+    tximport,
+    tximportData,
+    ballgown,
+    DESeq2,
+    readr,
     knitr,
     BiocStyle
 biocViews: RNASeq,
@@ -38,6 +44,5 @@ Imports:
     grDevices,
     graphics,
     utils,
-    stats,
-    dendextend
+    stats
 RoxygenNote: 5.0.1
