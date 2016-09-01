@@ -108,7 +108,6 @@ library(variancePartition)
 library(doParallel)
 cl <- makeCluster(4)
 registerDoParallel(cl)
-on.exit(rm(cl))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
@@ -752,11 +751,17 @@ plotVar( data$geneExpr, data$info )
 plotVarCross( data$geneExpr, data$info, label.angle=60 )
 @
 
-<<echo=FALSE, cache=FALSE>>=Rpackage
+<<echo=FALSE, cache=FALSE>>=
 # if( "cluster" %in% class(cl) ){
 if( exists("cl") ){
 	library(doParallel)
-	stopCluster(cl)
+	
+	# stop cluster and catch warning if invalid
+	res = tryCatch( {stopCluster(cl)}, warning = function(x) {
+	}, error = function(x) {
+	}, finally={
+	})
+	# warning("STOP CLUSTER!!!!!!!!!!!!!!!!!\n")
 }
 @
 
