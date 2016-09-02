@@ -73,7 +73,7 @@ There are three components to an analysis:
  		\item[-- Isoform quantification:] \Rcode{kallisto} \cite{Bray2015}, \Rcode{sailfish} \cite{Patro2014}, \Rcode{salmon} \cite{Patro2015}, \Rcode{RSEM} \cite{Li2011f}, \Rcode{cufflinks} \cite{Trapnell2010}\\
  				These perform isoform-level quantification using reads that map to multiple transcripts.  Quantification values can be read directly into \R{}, or processed with \Rpackage{ballgown} \cite{Frazee2015} or \Rpackage{tximport} \cite{Soneson2015}.\\
  		
- 		\item[-- Microarray data:] any standard normalization such as \Rcode{rma} in the \Rpackage{oligo} package can be used.    \\   
+ 		\item[-- Microarray data:] any standard normalization such as \Rcode{rma} in the \Rpackage{oligo} \cite{oligoBioc} package can be used.    \\   
  	\end{itemize}
 
  \item[2)] {\bf Meta-data about each experiment:}  A \Rcode{data.frame} with information about each experiment such as patient ID, tissue, sex, disease state, time point, batch, etc.\\ 
@@ -175,24 +175,24 @@ head(varPart[order(varPart$Individual, decreasing=TRUE),])
 
 In order to save the plot to a file, use the \Rcode{ggsave} function:
 <<savePlot, cache=TRUE, eval=FALSE>>=
-fig = plotVarPart( vp )
+fig <- plotVarPart( vp )
 ggsave(file, fig)
 @
 
 \pagebreak
 \subsection{Plot expression stratified by other variables}
 
-\Rpackage{variancePartition} also includes plotting functions to visualize the variation across a variable of interest. \Rcode{plotStratifyBy} plots the expression of a gene stratified by the specified variable.  In the example dataset, users can plot a gene expression trait stratified by Tissue (Figure 2a) or Individual (Figure 2b).
+\Rpackage{variancePartition} also includes plotting functions to visualize the variation across a variable of interest. \Rcode{plotStratify} plots the expression of a gene stratified by the specified variable.  In the example dataset, users can plot a gene expression trait stratified by Tissue (Figure 2a) or Individual (Figure 2b).
 
-<<plotStratifyBy, cache=TRUE, warning=FALSE>>=
+<<plotStratify, cache=TRUE, warning=FALSE>>=
 # get gene with the highest variation across Tissues
 # create data.frame with expression of gene i and Tissue type for each sample
-i <-which.max( varPart$Tissue )
+i <- which.max( varPart$Tissue )
 GE <- data.frame( Expression = geneExpr[i,], Tissue = info$Tissue)
 
 # Figure 2a 
 # plot expression stratified by Tissue 
-plotStratifyBy( GE, "Tissue", "Expression", main=rownames(geneExpr)[i])
+plotStratify( Expression ~ Tissue, GE, main=rownames(geneExpr)[i])
 #
 # get gene with the highest variation across Individuals
 # create data.frame with expression of gene i and Tissue type for each sample
@@ -203,13 +203,13 @@ GE <- data.frame( Expression = geneExpr[i,], Individual = info$Individual)
 # plot expression stratified by Tissue 
 label <- paste("Individual:", format(varPart$Individual[i]*100, digits=3), "%")
 main <- rownames(geneExpr)[i]
-plotStratifyBy( GE, "Individual", "Expression", colorBy=NULL, text=label, main=main)
+plotStratify(  Expression ~ Individual, GE, colorBy=NULL, text=label, main=main)
 @
 
 \begin{figure}[h]
 \centering
-\subfloat[Tissue]{\includegraphics[width=.45\textwidth]{figure/plotStratifyBy-1}}
-\subfloat[Individual]{\includegraphics[width=.45\textwidth]{figure/plotStratifyBy-2}}
+\subfloat[Tissue]{\includegraphics[width=.45\textwidth]{figure/plotStratify-1}}
+\subfloat[Individual]{\includegraphics[width=.45\textwidth]{figure/plotStratify-2}}
 \caption{ Plot gene expression stratified by {\bf a)} Tissue and {\bf b)} Individual}
 \label{fig:Stratify}
 \end{figure}
@@ -233,6 +233,7 @@ fit <- lmer(geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue), info, REML=FALSE )
 calcVarPart(fit)
 @
 
+\pagebreak
 \section{Interpretation}
 
 \Rpackage{variancePartition} fits a linear (mixed) model thats jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while correcting for all others.  Therefore, fitting the model with each variable separately will give very different results from the considering all variables jointly.  I have found joint analysis the best option in most cases.  
@@ -297,7 +298,7 @@ In biological datasets technical variability (i.e. batch effects) can often redu
 
 
 
-
+\pagebreak
 \section{Advanced analysis}
 
 \subsection{Extracting additional information from model fits}
@@ -360,7 +361,15 @@ form <- ~ (1|Tissue) + (1|Individual) + Age
 varPartResid <- fitExtractVarPartModel( res, form, info )
 @
 
-\pagebreak
+If the two-step process requires too much memory, the residuals can be computed more efficiently.  Here, run the \Rcode{residuals} function inside the call to \Rcode{fitVarPartModel} to avoid storing the large intermediate results.
+<<echo=TRUE, cache=TRUE>>=
+# extract residuals directly without storing intermediate results
+residList <- fitVarPartModel( geneExpr, ~ (1|Batch), info, fxn=residuals )
+
+# convert list to matrix
+residMatrix = do.call(rbind, residList)
+@
+
 \subsection{Variation within multiple subsets of the data}
 \label{sec:withinSubset}
 
@@ -411,7 +420,7 @@ res <- fitVarPartModel( geneExpr[1:4,], form, info )
 # If the collinearity score > .99 then the variance partition 
 # estimates may be problematic
 # In that case, a least one variable should be omitted
-colinearityScore(res[[1]])
+colinearityScore( res[[1]] )
 @
 
 \subsection{Including weights computed separately}
@@ -489,14 +498,14 @@ dds <- DESeqDataSetFromMatrix(countData = geneCounts,
 	design = ~ 1)
 
 # Estimate library size correction scaling factors
-dds = estimateSizeFactors(dds)
+dds <- estimateSizeFactors(dds)
 
 # identify genes that pass expression cutoff
 isexpr <- rowSums(fpm(dds)>1) >= 0.5 * ncol(dds)
 
 # compute log2 Fragments Per Million
 # Alternatively, fpkm(), vst() or rlog() could be used
-quantLog = log2( fpm( dds )[isexpr,] + 1)
+quantLog <- log2( fpm( dds )[isexpr,] + 1)
 
 # Define formula
 form <- ~ (1|Individual) + (1|Tissue) + (1|Batch) + Age
@@ -531,7 +540,7 @@ txi <- tximport(files, type = "kallisto", tx2gene = tx2gene, reader = read_tsv,
     countsFromAbundance = "lengthScaledTPM")
 
 # define metadata (usually read from external source)
-info_tximport = data.frame( Sample = sprintf("sample%d", 1:6), 
+info_tximport <- data.frame( Sample = sprintf("sample%d", 1:6), 
 	Disease=c("case", "control")[c(rep(1, 3), rep(2, 3) )] )
 
 # Extract counts from kallisto
@@ -545,10 +554,10 @@ design <- model.matrix( ~ Disease, data = info_tximport)
 vobj <- voom(y, design)
 
 # define formula
-form = ~ (1|Disease)
+form <- ~ (1|Disease)
 
 # Run variancePartition analysis (on only 10 genes)
-varPart_tx = fitExtractVarPartModel( vobj[1:10,], form, info_tximport)
+varPart_tx <- fitExtractVarPartModel( vobj[1:10,], form, info_tximport)
 
 @
 
@@ -566,33 +575,33 @@ Quantifications from Cufflinks/Tablemaker and RSEM can be processed and read int
 library(ballgown)
 
 # Get data from folder where ballgown is installed
-data_directory = system.file('extdata', package='ballgown') 
+data_directory <- system.file('extdata', package='ballgown') 
 
 # Load results of Cufflinks/Tablemaker
-bg = ballgown(dataDir=data_directory, samplePattern='sample', meas='all')
+bg <- ballgown(dataDir=data_directory, samplePattern='sample', meas='all')
 
 # extract gene-level FPKM quantification
 # Expression can be convert to log2-scale if desired
-gene_expression = gexpr(bg)
+gene_expression <- gexpr(bg)
 
 # extract transcript-level FPKM quantification
 # Expression can be convert to log2-scale if desired
-transcript_fpkm = texpr(bg, 'FPKM')
+transcript_fpkm <- texpr(bg, 'FPKM')
 
 # define metadata (usually read from external source)
-info_ballgown = data.frame( Sample = sprintf("sample%02d", 1:20), 
+info_ballgown <- data.frame( Sample = sprintf("sample%02d", 1:20), 
 	Batch = rep(letters[1:4], 5), 
 	Disease=c("case", "control")[c(rep(1, 10), rep(2, 10) )] )
 
 # define formula
-form = ~ (1|Batch) + (1|Disease)
+form <- ~ (1|Batch) + (1|Disease)
 
 # Run variancePartition analysis 
 # Gene-level analysis
-varPart_gene = fitExtractVarPartModel( gene_expression, form, info_ballgown)
+varPart_gene <- fitExtractVarPartModel( gene_expression, form, info_ballgown)
 
 # Transcript-level analysis
-varPart_transcript = fitExtractVarPartModel( transcript_fpkm, form, info_ballgown)
+varPart_transcript <- fitExtractVarPartModel( transcript_fpkm, form, info_ballgown)
 @
 
 Note that \Rcode{ballgownrsem} can be used for a similar analysis of \Rcode{RSEM} results.\\
@@ -953,7 +962,7 @@ fit = lm(expression ~ Sex, data)
 # calcVarPart(fit)
 # coef(fit)[2]
 
-plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
+plotStratify( expression ~ Sex, data, ylim=c(-6, 9)) +
  annotate("text", x = 0.5, y = 9, hjust=0, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
  annotate("text", x = 0.5, y = 8.2, hjust=0, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
 
@@ -967,7 +976,7 @@ fit = lm(expression ~ Sex, data)
 # calcVarPart(fit)
 # coef(fit)[2] 
 
-plotStratifyBy( data, "Sex", "expression", ylim=c(-6, 9)) +
+plotStratify( expression ~ Sex, data, ylim=c(-6, 9)) +
  annotate("text", x = 0.5, y = 9, hjust=0, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
  annotate("text", x = 0.5, y = 8.2, hjust=0, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
 @
