@@ -114,6 +114,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 .fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
 
 	exprObj = as.matrix( exprObj )
+	formula = stats::as.formula( formula )
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
@@ -340,6 +341,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 .fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),...){ 
 
 	exprObj = as.matrix( exprObj )
+	formula = stats::as.formula( formula )
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		

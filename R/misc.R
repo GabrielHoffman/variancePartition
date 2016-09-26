@@ -292,10 +292,12 @@ colinearityScore = function(fit){
 # 
 .isMixedModelFormula = function(formula, data ){
 
+	formula = stats::as.formula( formula )
+
     # don't throw an error if the LHS is missing
     control = lme4::lmerControl(check.formula.LHS = "ignore")
 
-    possibleError <- tryCatch( lFormula( formula, data, control=control), error = function(e) e)
+    possibleError <- tryCatch(lme4::lFormula( formula, data, control=control), error = function(e) e)
 
     mesg <- "No random effects terms specified in formula"
     result = inherits(possibleError, "error") && identical(possibleError$message, mesg)

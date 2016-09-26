@@ -40,13 +40,19 @@
 #' @export
 canCorPairs = function(formula, data){
 
-	if(.isMixedModelFormula(formula, data)) {
-		stop("Cannot handle mixed effects models with (1|x) terms.\nUse ~ x instead of ~ (1|x) in formula")
+	formula = stats::as.formula( formula )
+
+	if( .isMixedModelFormula(formula, data) ){
+		stop("Invalid formula.\nSuggestion: this function does not handle random effects.\nUse ~ x instead of ~ (1|x) in formula\nBut may be due to other issue")
 	}
 
 	X = model.matrix(formula, data)
 
 	varLabels = attr(terms(formula),"term.labels")
+
+	if( length(varLabels) < 2 ){
+		stop("Must include at least 2 variables in the formula")
+	}
 
 	# get grouping
 	idx = attr(X, "assign")
@@ -59,6 +65,12 @@ canCorPairs = function(formula, data){
 		variableList[[varLabels[i]]] = X[,idx==i,drop=FALSE]
 	}
 	
+	# Check that variables in formula are not constant
+	checkNames = names(which(sapply(variableList, sd) == 0))
+	if( length(checkNames) != 0 ){
+		stop(paste("These variables have zero variance so cannot be analyzed:\n", paste(checkNames, collapse=', ' )))
+	}
+
 	C = matrix(NA, length(varLabels), length(varLabels))
 	colnames(C) = varLabels
 	rownames(C) = varLabels

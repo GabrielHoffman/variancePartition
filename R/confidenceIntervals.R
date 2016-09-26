@@ -63,6 +63,8 @@ varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE,
 		stop("Must specify nsim as positive number")
 	}
 
+	formula = stats::as.formula( formula )
+
 	# define bootstrap function
 	bootStrapFxn = local(function( fit ){
 
