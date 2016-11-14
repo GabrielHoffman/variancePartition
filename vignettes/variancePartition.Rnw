@@ -97,7 +97,7 @@ The simulated dataset included as an example contains measurements of 200 genes 
 
 \subsection{Standard application}
 
-<<simResult, cache=TRUE>>=
+<<simResult, cache=TRUE, results='hide'>>=
 # load library
 library(variancePartition)
 
@@ -305,7 +305,7 @@ In biological datasets technical variability (i.e. batch effects) can often redu
 
 Advanced users may want to perform the model fit and extract results in separate steps in order to examine the fit of the model for each gene.  Thus the work of \Rcode{fitExtractVarPart} can be divided into two steps: 1) fit the regression model, and 2) extracting variance statistics. \\    
 
-<<simResult-omit, cache=TRUE>>=
+<<simResult-omit, cache=TRUE, results='hide'>>=
 # Fit model
 results <- fitVarPartModel( geneExpr, form, info )
 
@@ -317,10 +317,12 @@ Note that storing the model fits can use a lot of memory ($\sim$10Gb with 20K ge
 
 Instead, \Rcode{fitVarPartModel} can extract any desired information using any function that accepts the model fit from \Rcode{lm}/\Rcode{lmer}.  The results are stored in a \Rcode{list} and can be used for downstream analysis.
 
-<<simResult-fast-two-step, cache=TRUE>>=
+<<simResult-fast-two-step, cache=TRUE, results='hide'>>=
 # Fit model and run summary() function on each model fit 
 vpSummaries <- fitVarPartModel( geneExpr, form, info, fxn=summary )
+@
 
+<<simResult-fast-two-step1, cache=TRUE>>=
 # Show results of summary() for the first gene
 vpSummaries[[1]]
 @
@@ -331,13 +333,13 @@ vpSummaries[[1]]
 Gene expression studies often have substantial batch effects, and \Rpackage{variancePartition} can be used to understand the magnitude of the effects.  However, we often want to focus on biological variables (i.e. individual, tissue, disease, sex) after removing the effect of technical variables.  Depending on the size of the batch effect, I have found it useful to correct for the batch effect first and then perform a \Rpackage{variancePartition} analysis afterward.  Subtracting this batch effect can reduce the total variation in the data, so that the contribution of other variables become clearer.  
 
 Standard analysis:
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 form <- ~ (1|Tissue) + (1|Individual) + (1|Batch) + Age
 varPart <- fitExtractVarPartModel( geneExpr, form, info )
 @
 
 Analysis on residuals:
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 library(limma)
 # subtract out effect of Batch
 fit <- lmFit( geneExpr, model.matrix(~ Batch, info))
@@ -350,7 +352,7 @@ varPartResid <- fitExtractVarPartModel( res, form, info )
 @
 
 Remove batch effect with linear mixed model
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 # subtract out effect of Batch with linear mixed model
 modelFit <- fitVarPartModel( geneExpr, ~ (1|Batch), info )
 res <- residuals( modelFit )
@@ -362,7 +364,7 @@ varPartResid <- fitExtractVarPartModel( res, form, info )
 @
 
 If the two-step process requires too much memory, the residuals can be computed more efficiently.  Here, run the \Rcode{residuals} function inside the call to \Rcode{fitVarPartModel} to avoid storing the large intermediate results.
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 # extract residuals directly without storing intermediate results
 residList <- fitVarPartModel( geneExpr, ~ (1|Batch), info, fxn=residuals )
 
@@ -375,7 +377,7 @@ residMatrix = do.call(rbind, residList)
 
 So far, we have focused on interpreting one variable at a time. But the linear mixed model behind \Rpackage{variancePartition} is a very powerful framework for analyzing variation at multiple levels.  We can easily extend the previous analysis of the contribution of individual and tissue on variation in gene expression to examine the contribution of individual {\it within} each tissue.  This analysis is as easy as specifying a new formula and rerunning  \Rpackage{variancePartition}.  Note that is analysis will only work when there are replicates for at least some individuals within each tissue in order to assess cross-individual variance with in a tissue.
 
-<<withinTissue, echo=TRUE, cache=TRUE>>=
+<<withinTissue, echo=TRUE, cache=TRUE, results='hide'>>=
 # specify formula to model within/between individual variance 
 # separately for each tissue
 # Note that including +0 ensures each tissue is modeled explicitly
@@ -407,12 +409,13 @@ A check of collinearity is built into \Rcode{fitVarPartModel} and \Rcode{fitExtr
 \\
 Alternatively, the user can use the \Rcode{colinearityScore} function to evaluate whether this is an issue for a single model fit:  
 
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 form <- ~ (1|Individual) + (1|Tissue) + Age + Height
 
 # fit model
 res <- fitVarPartModel( geneExpr[1:4,], form, info )
-
+@
+<<echo=TRUE, cache=TRUE>>=
 # evaluate the collinearity score on the first model fit
 # this reports the correlation matrix between coefficients estimates
 # for fixed effects
@@ -427,7 +430,7 @@ colinearityScore( res[[1]] )
 
 \Rpackage{variancePartition} automatically used precision weights computed by \Rpackage{voom}, but the user can also specify custom weights using the \Rcode{weightsMatrix} argument.
 
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 
 form <- ~ (1|Individual) + (1|Tissue) + Age + Height
 
@@ -455,7 +458,7 @@ In addition, setting the \Rcode{useWeights=FALSE} will suppress usage of the wei
 \subsubsection{\Rpackage{limma}/\Rcode{voom}}
 Read RNA-seq counts into \R{}, normalize for library size within and between experiments with TMM \cite{Robinson2010c}, estimate precision weights with \Rpackage{limma}/\Rcode{voom}.
 
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 library(limma)
 library(edgeR)
 
@@ -489,7 +492,7 @@ varPart <- fitExtractVarPartModel( vobjGenes, form, info )
 \subsubsection{\Rpackage{DESeq2}}
 
 Process and normalize the gene-level counts before running \Rpackage{variancePartition} analysis.
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 library(DESeq2)
 
 # create DESeq2 object from gene-level counts and metadata
@@ -522,7 +525,7 @@ Note that DESeq2 does not compute precision weights like \Rpackage{limma}/\Rcode
 \subsubsection{\Rpackage{tximport}}
 Quantifications from \Rcode{kallisto}, \Rcode{salmon}, \Rcode{sailfish} and \Rcode{RSEM} can be read into \R{} and processed with the Bioconductor package \Rpackage{tximport}.  The gene- or transcript-level quantifications can be used directly in \Rpackage{variancePartition}.  
 
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 library(tximportData)
 library(tximport)
 library(readr)
@@ -571,7 +574,7 @@ See tutorial at \url{http://bioconductor.org/packages/release/bioc/vignettes/txi
 
 Quantifications from Cufflinks/Tablemaker and RSEM can be processed and read into \R{} with the Bioconductor package \Rpackage{ballgown}.  
 
-<<echo=TRUE, cache=TRUE>>=
+<<echo=TRUE, cache=TRUE, results='hide'>>=
 library(ballgown)
 
 # Get data from folder where ballgown is installed
@@ -635,7 +638,7 @@ Analysis with \Rpackage{variancePartition} has a number of advantages over these
   \item \Rpackage{variancePartition} can assess contribution of one variable (i.e. Individual) separately in subset of the data defined by another variable (i.e. Tissue)
 \end{itemize}
 
-<<echo=FALSE, cache=TRUE>>=
+<<echo=FALSE, cache=TRUE, results='hide'>>=
 library(variancePartition)
 
 sim_data = function( n, p, var_indiv, var_site){
@@ -702,7 +705,7 @@ plotTree = function(geneExpr, col){
 }
 @
 
-<<siteDominant, echo=FALSE, cache=TRUE>>=
+<<siteDominant, echo=FALSE, cache=TRUE, results='hide'>>=
 set.seed(1)
 
 n = 60
@@ -731,7 +734,7 @@ plotVar( data$geneExpr, data$info )
 plotVarCross( data$geneExpr, data$info, label.angle=60 )
 @
 
-<<IndivDominant, echo=FALSE, cache=TRUE>>=
+<<IndivDominant, echo=FALSE, cache=TRUE, results='hide'>>=
 set.seed(1)
 
 n = 60

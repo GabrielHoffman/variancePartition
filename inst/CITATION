@@ -1,0 +1,13 @@
+
+citEntry(entry="article",
+   title = "variancePartition: Interpreting drivers of variation in complex gene expression studies",
+   author = personList( as.person("Gabriel E. Hoffman"), as.person("Eric E. Schadt")),
+   year = 2016,
+   journal = "BMC Bioinformatics",
+   doi = "",
+   volume = "In press",
+   issue = "",
+   pages = "",
+   textVersion = 
+   paste("Hoffman GE, Schadt EE (2016). variancePartition: Interpreting drivers of variation in complex gene expression studies. BMC Bioinformatics, In press"))
+

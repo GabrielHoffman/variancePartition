@@ -1,4 +1,15 @@
 
+CHANGES IN VERSION 1.5.1
+-------------------------
+	o add CITATION information 
+	o plotCorrMatrix now shows dendrogram by default 
+	o Estimate run time for fitExtractVarPartModel() / fitVarPartModel()
+	o improve warnings for plotPercentBar()
+	o improve warnings for plotCorrStructure()
+	o define ylab for plotVarPart()
+	- add as.matrix.varPartResults() (hidden)
+	- define isVaryingCoefficientModel() (hidden)	     
+
 CHANGES IN VERSION 1.3.11
 -------------------------
 	o in canCorPairs() and other functions, convert formula with as.formula()

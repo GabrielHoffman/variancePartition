@@ -6,7 +6,6 @@
 setClass("varParFrac")
 setClass("VarParFitList", representation(method="character"), contains="list")
 
-
 # Iterator over genes
 exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
     xit <- icountn( nrow(exprObj) )
@@ -51,6 +50,16 @@ setClass("varPartResults", representation(type = "character", adjustedFor="array
 #   }
 # )
 
+
+setMethod("as.matrix", "varPartResults",
+function(x, ...)
+{
+	df = as.data.frame( x@.Data )
+	colnames(df) = colnames(x)
+	rownames(df) = rownames(x)
+
+	return( df )
+})
 
 
 #' Simulation dataset for examples

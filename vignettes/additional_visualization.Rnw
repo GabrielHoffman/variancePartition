@@ -60,7 +60,7 @@ The correlation structure between samples in complex study designs can be decomp
 
 \pagebreak
 
-<<corStruct, cache=TRUE>>=
+<<corStruct, cache=TRUE, results='hide'>>=
 # Fit linear mixed model and examine correlation stucture
 # for one gene
 data(varPartData)

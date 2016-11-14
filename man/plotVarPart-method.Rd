@@ -9,16 +9,19 @@
 \title{Violin plot of variance fractions}
 \usage{
 plotVarPart(obj, col = c(ggColorHue(ncol(obj) - 1), "#bebebe99"),
-  label.angle = 20, main = "", convertToPercent = TRUE, ...)
+  label.angle = 20, main = "", ylab = "", convertToPercent = TRUE, ...)
 
 \S4method{plotVarPart}{matrix}(obj, col = c(ggColorHue(ncol(obj) - 1),
-  "#bebebe99"), label.angle = 20, main = "", convertToPercent = TRUE, ...)
+  "#bebebe99"), label.angle = 20, main = "", ylab = "",
+  convertToPercent = TRUE, ...)
 
 \S4method{plotVarPart}{data.frame}(obj, col = c(ggColorHue(ncol(obj) - 1),
-  "#bebebe99"), label.angle = 20, main = "", convertToPercent = TRUE, ...)
+  "#bebebe99"), label.angle = 20, main = "", ylab = "",
+  convertToPercent = TRUE, ...)
 
 \S4method{plotVarPart}{varPartResults}(obj, col = c(ggColorHue(ncol(obj) - 1),
-  "#bebebe99"), label.angle = 20, main = "", convertToPercent = TRUE, ...)
+  "#bebebe99"), label.angle = 20, main = "", ylab = "",
+  convertToPercent = TRUE, ...)
 }
 \arguments{
 \item{obj}{varParFrac object returned by fitExtractVarPart or extractVarPart}
@@ -28,6 +31,8 @@ plotVarPart(obj, col = c(ggColorHue(ncol(obj) - 1), "#bebebe99"),
 \item{label.angle}{angle of labels on x-axis}
 
 \item{main}{title of plot}
+
+\item{ylab}{text on y-axis}
 
 \item{convertToPercent}{multiply fractions by 100 to convert to percent values}
 

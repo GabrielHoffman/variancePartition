@@ -8,6 +8,7 @@
 #' @param col vector of colors
 #' @param label.angle angle of labels on x-axis
 #' @param main title of plot
+#' @param ylab text on y-axis
 #' @param convertToPercent multiply fractions by 100 to convert to percent values
 #' @param ... additional arguments
 #' 
@@ -48,7 +49,7 @@
 #' @docType methods
 #' @rdname plotVarPart-method
 setGeneric("plotVarPart", signature="obj",
-	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", convertToPercent=TRUE,...)
+	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab="", convertToPercent=TRUE,...)
       standardGeneric("plotVarPart")
 )
 
@@ -56,8 +57,8 @@ setGeneric("plotVarPart", signature="obj",
 #' @rdname plotVarPart-method
 #' @aliases plotVarPart,matrix-method
 setMethod("plotVarPart", "matrix",
-	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", convertToPercent=TRUE, ...){
- 		.plotVarPart( obj, col, label.angle, main, convertToPercent,...)
+	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab="", convertToPercent=TRUE, ...){
+ 		.plotVarPart( obj, col, label.angle, main, ylab, convertToPercent,...)
  	}
 )
 
@@ -65,8 +66,8 @@ setMethod("plotVarPart", "matrix",
 #' @rdname plotVarPart-method
 #' @aliases plotVarPart,varPartResults-method
 setMethod("plotVarPart", "data.frame",
-	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", convertToPercent=TRUE,...){
- 		.plotVarPart( obj, col, label.angle, main, convertToPercent,... )
+	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab="", convertToPercent=TRUE,...){
+ 		.plotVarPart( obj, col, label.angle, main, ylab, convertToPercent,... )
  	}
 )
 
@@ -74,12 +75,17 @@ setMethod("plotVarPart", "data.frame",
 #' @rdname plotVarPart-method
 #' @aliases plotVarPart,matrix-method
 setMethod("plotVarPart", "varPartResults",
-	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", convertToPercent=TRUE, ...){
+	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab="", convertToPercent=TRUE, ...){
 		
 		# don't convert if values are actual variances
 		convertToPercent = !(obj@method == "Variance (log2 CPM scale)")
 
- 		.plotVarPart( data.frame(obj, check.names=FALSE), col, label.angle, main, ylab=obj@method, convertToPercent,...)
+		# if ylab is not specified, set it based on method
+		if( ylab == ""){
+			ylab = obj@method
+		}
+
+ 		.plotVarPart( data.frame(obj, check.names=FALSE), col, label.angle, main, ylab, convertToPercent,...)
  	}
 )
 
@@ -181,6 +187,11 @@ plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "#bebe
 
 	if( length(col) < ncol(varPart) ){
 		stop("Number of colors is less than number of variables")
+	}
+
+	# check row sums
+	if( any(abs(rowSums(as.matrix(varPart)) -1) > 1e-4)){
+		warning("Variance fractions don't sum to 100%: This plot may not be meaningful")
 	}
 
 	# convert matrix to tall data.frame

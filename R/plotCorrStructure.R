@@ -71,6 +71,10 @@ plotCorrStructure = function( fit, varNames = names(coef(fit)), reorder=TRUE,
 		stop("fit must be a linear mixed model fit of class lmerMod")
 	}
 
+	if( isVaryingCoefficientModel( fit) ){
+		stop("Plot does not work with varying coefficient model")
+	}
+
 	# If any variable names are not in fit
 	if( any(!varNames %in% names(coef(fit))) ){
 

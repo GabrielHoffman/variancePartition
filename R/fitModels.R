@@ -171,12 +171,23 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
 		gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+
+		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
+
+		timediff = proc.time() - timeStart
 
 		# check size of stored objects
 		objSize = object.size( fxn(fitInit) ) * nrow(exprObj)
 
+		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
+		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
+
 		cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
+
+		if( showTime > .01 ){
+			cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
+		}
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
@@ -394,7 +405,17 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
 		gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+
+		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control)
+		timediff = proc.time() - timeStart
+
+		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
+		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
+
+		if( showTime > .01 ){
+			cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
+		}
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )

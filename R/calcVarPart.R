@@ -113,6 +113,16 @@ isMultipleVaryingCoefficientTerms = function( fit ){
 	}
 }
 
+
+isVaryingCoefficientModel = function( fit ){
+
+	# get variance components values
+	varComp = getVarianceComponents( fit )
+
+	# get varying coefficient terms
+	any(which(sapply(varComp, length) > 1))
+}
+
 #' @export
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,lmerMod-method

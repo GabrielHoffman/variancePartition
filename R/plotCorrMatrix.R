@@ -6,6 +6,7 @@
 #' Plot correlation matrix
 #'
 #' @param C correlation matrix: R or R^2 matrix
+#' @param dendrogram character string indicating whether to draw 'both' or none'
 #' @param sort sort rows and columns based on clustering
 #' @param margins spacing of plot
 #' @param key.xlab label of color gradient
@@ -29,10 +30,14 @@
 #' plotCorrMatrix( C )
 #' 
 #' # plot squared correlations
-#' plotCorrMatrix( C^2 )
+#' plotCorrMatrix( C^2, dendrogram="none" )
 #' 
 #' @export
-plotCorrMatrix = function(C, sort=TRUE, margins=c(13,13), key.xlab="correlation", ...){
+plotCorrMatrix = function(C, dendrogram="both", sort=TRUE, margins=c(13,13), key.xlab="correlation", ...){
+
+	if( any(is.na(C)) ){
+		stop("Matrix most not have NA entries")
+	}
 
 	C = round(C, digits=5)
 
@@ -53,7 +58,7 @@ plotCorrMatrix = function(C, sort=TRUE, margins=c(13,13), key.xlab="correlation"
 	ncolors = 100
 
 # Rowv=FALSE, Colv=FALSE,
-	heatmap.2(C, symm=TRUE, col=pal(ncolors), dendrogram="none", trace="none", keysize=.8, density.info='none', margins=margins, key.title='', key.xlab=key.xlab, key.par=list(mgp=c(1.5, 0.5, 0), mar=c(2, 2.5, 1, 0), fig = c(0.7, 0.9, 0.1, 0.2), new=TRUE), breaks=seq(lim[1], lim[2],length.out=ncolors+1), key.xtickfun=function(){
+	heatmap.2(C, symm=TRUE, col=pal(ncolors), dendrogram=dendrogram, trace="none", keysize=.8, density.info='none', margins=margins, key.title='', key.xlab=key.xlab, key.par=list(mgp=c(1.5, 0.5, 0), mar=c(2, 2.5, 1, 0), fig = c(0.7, 0.9, 0.1, 0.2), new=TRUE), breaks=seq(lim[1], lim[2],length.out=ncolors+1), key.xtickfun=function(){
 		at = seq(0, 1, length.out=5)
 		lab = seq(lim[1], lim[2], length.out=5)
 		list(at = at, labels=lab)
