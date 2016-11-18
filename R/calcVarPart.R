@@ -198,7 +198,7 @@ function(fit, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,...)
 			frac = varComp[[key]][i] / denom 
 
 			# name variable based on two levels
-			if( names(varComp[[key]])[i] %in% c("(Intercept)", '') ){
+			if( is.null(names(varComp[[key]])[i]) || names(varComp[[key]])[i] %in% c("(Intercept)", '') ){
 				names(frac) = key
 			}else{
 				names(frac) = paste( names(varComp[[key]])[i], key, sep='/')
@@ -254,46 +254,110 @@ function(fit, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,...)
 #' stopCluster(cl)
 #' 
 #' @export
+# getVarianceComponents = function( fit ){
+# 	# compute ICC, but don't divide by variances in the same class
+# 	varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
+
+# 	# order variables by name
+# 	# essential so that all models are ordered the same
+# 	varComp = varComp[order(names(varComp))]
+
+# 	# get residual variance
+# 	resid = attr(lme4::VarCorr(fit), 'sc')^2
+	
+# 	# computing remaining variance after random and residuals are considered
+# 	# fixed effects absorb the remaining variance
+# 	# if remaining variance is positive, 
+# 	# 	fixed effects variances are scaled to sum to the remianing varialce
+# 	# if remaining variance is negative
+# 	# 	fixed effects are set to zero
+# 	# GEH: Nov 16, 2016
+# 	rndVariables = unlist(varComp)
+# 	varRemaining = var( fit@resp$y ) - sum(unlist(rndVariables)) - resid
+
+# 	# variance of fixed effects, if they exist
+# 	# including fixed effects in the sum of variances makes a big difference, 
+# 	#	especially when the fixed effect makes a big contribution
+# 	# this approach minimized the difference between modelling
+# 	# 	as a fixed or random effect
+# 	# although, there is many be a substantial difference in estimates
+
+# 	idx = which(colnames(fit@pp$X) != "(Intercept)")
+# 	if( length(idx) > 0){
+
+# 		# get predicted fixed effects
+# 		fxeff = sapply( idx, function(i){
+# 			fit@pp$X[,i] * lme4::fixef(fit)[i]
+# 		})
+# 		colnames(fxeff) = colnames(fit@pp$X)[idx]
+
+# 		fixedVar = apply(fxeff, 2, var)
+
+# 	    # scale based on variance left to explain
+# 		# GEH: Nov 16, 2016
+# 		if( varRemaining > 0){
+# 	    	fixedVar = fixedVar / sum(fixedVar) * varRemaining
+# 	    }else{
+# 	    	fixedVar[] = 0
+# 	    }
+
+# 		for( i in 1:length(fixedVar) ){
+
+# 			key = names(fixedVar)[i]
+# 			varComp[[key]] = fixedVar[i]
+# 			names(varComp[[key]]) = ''
+# 		}
+# 	}
+
+# 	# include residual variance here
+# 	varComp$Residuals = resid
+# 	names(varComp$Residuals) = ''
+
+# 	return( varComp )
+# }
+
+
 getVarianceComponents = function( fit ){
-	# compute ICC, but don't divide by variances in the same class
+	
 	varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
 
 	# order variables by name
 	# essential so that all models are ordered the same
 	varComp = varComp[order(names(varComp))]
 
-	# variance of fixed effects, if they exist
-	# including fixed effects in the sum of variances makes a big difference, 
-	#	especially when the fixed effect makes a big contribution
-	# this approach minimized the difference between modelling
-	# 	as a fixed or random effect
-	# although, there is many be a substantial difference in estimates
-
+	# extract predictor for each fixed effect
 	idx = which(colnames(fit@pp$X) != "(Intercept)")
+
+	# if there are fixed effects
 	if( length(idx) > 0){
 
-		# get predicted fixed effects
+		# this part is now in 1.5.2
+		# better estimates of fixed effects
 		fxeff = sapply( idx, function(i){
 			fit@pp$X[,i] * lme4::fixef(fit)[i]
 		})
 		colnames(fxeff) = colnames(fit@pp$X)[idx]
 
-		fixedVar = apply(fxeff, 2, var)
+		# compute variance of each fixed effect
+		N = nrow(fxeff)
 
-		for( i in 1:length(fixedVar) ){
+		# variance of eahc term
+		fixedVar = apply(fxeff, 2, var) * (N-1) / N
 
-			key = names(fixedVar)[i]
-			varComp[[key]] = fixedVar[i]
-			names(varComp[[key]]) = ''
+		# variance of sum of terms
+		varFixedTotal = var(rowSums(fxeff)) * (N-1) / N
+
+		# scale variance by the sum  and the total variance
+		for( key in names(fixedVar)){
+			varComp[[key]] = as.array(fixedVar[[key]] / sum(fixedVar) * varFixedTotal)
 		}
-
 	}
 
-	# get residual variance
+	# get residuals
 	varComp$Residuals = attr(lme4::VarCorr(fit), 'sc')^2
 	names(varComp$Residuals) = ''
-
-	return( varComp )
+	
+	return(varComp)
 }
 
 # Construct list of variable names to remove from the denominator

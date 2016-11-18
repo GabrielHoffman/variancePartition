@@ -1,4 +1,15 @@
 
+CHANGES IN VERSION 1.5.2
+-------------------------
+	o Fix bug for getVarianceComponents() when correlated continous variables are included
+	o compatibility with ggplot2 2.2.0
+		o center plot titles 
+		o fix order of bars in plotPercentBars()
+		o legend background to transparent
+		o set text to be black
+	o include lme4 in foreach .packages
+	o change residuals color to not be transparent
+
 CHANGES IN VERSION 1.5.1
 -------------------------
 	o add CITATION information 

@@ -49,7 +49,7 @@
 #' @docType methods
 #' @rdname plotVarPart-method
 setGeneric("plotVarPart", signature="obj",
-	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab="", convertToPercent=TRUE,...)
+	function( obj, col=c(ggColorHue(ncol(obj)-1), "grey85"), label.angle=20, main="", ylab="", convertToPercent=TRUE,...)
       standardGeneric("plotVarPart")
 )
 
@@ -57,7 +57,7 @@ setGeneric("plotVarPart", signature="obj",
 #' @rdname plotVarPart-method
 #' @aliases plotVarPart,matrix-method
 setMethod("plotVarPart", "matrix",
-	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab="", convertToPercent=TRUE, ...){
+	function( obj, col=c(ggColorHue(ncol(obj)-1), "grey85"), label.angle=20, main="", ylab="", convertToPercent=TRUE, ...){
  		.plotVarPart( obj, col, label.angle, main, ylab, convertToPercent,...)
  	}
 )
@@ -66,7 +66,7 @@ setMethod("plotVarPart", "matrix",
 #' @rdname plotVarPart-method
 #' @aliases plotVarPart,varPartResults-method
 setMethod("plotVarPart", "data.frame",
-	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab="", convertToPercent=TRUE,...){
+	function( obj, col=c(ggColorHue(ncol(obj)-1), "grey85"), label.angle=20, main="", ylab="", convertToPercent=TRUE,...){
  		.plotVarPart( obj, col, label.angle, main, ylab, convertToPercent,... )
  	}
 )
@@ -75,7 +75,7 @@ setMethod("plotVarPart", "data.frame",
 #' @rdname plotVarPart-method
 #' @aliases plotVarPart,matrix-method
 setMethod("plotVarPart", "varPartResults",
-	function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab="", convertToPercent=TRUE, ...){
+	function( obj, col=c(ggColorHue(ncol(obj)-1), "grey85"), label.angle=20, main="", ylab="", convertToPercent=TRUE, ...){
 		
 		# don't convert if values are actual variances
 		convertToPercent = !(obj@method == "Variance (log2 CPM scale)")
@@ -90,7 +90,7 @@ setMethod("plotVarPart", "varPartResults",
 )
 
 # internal driver function
-.plotVarPart <- function( obj, col=c(ggColorHue(ncol(obj)-1), "#bebebe99"), label.angle=20, main="", ylab='', convertToPercent=TRUE, ylim,...){
+.plotVarPart <- function( obj, col=c(ggColorHue(ncol(obj)-1), "grey85"), label.angle=20, main="", ylab='', convertToPercent=TRUE, ylim,...){
 
 	# convert to data.frame
 	obj = as.data.frame(obj, check.names=FALSE)
@@ -104,6 +104,10 @@ setMethod("plotVarPart", "varPartResults",
 
 	# convert to data.frame for ggplot
 	data <- melt(obj, id="gene")
+
+	if( min(data$value) < 0 ){
+		warning("Some values are less than zero")
+	}
 
 	if( convertToPercent ){
 		data$value <- data$value * 100
@@ -129,10 +133,15 @@ setMethod("plotVarPart", "varPartResults",
 		geom_boxplot(width=0.07, fill="grey", outlier.colour='black') + 
 		scale_fill_manual(values=col) +
 		theme(legend.position="none") +
+		theme(plot.title=element_text(hjust=0.5)) +
 		theme(axis.text.x = element_text(size  = 13,
 	                            angle = label.angle,
 	                            hjust = 1,
 	                            vjust = 1)) 
+
+	fig = fig + theme(text 		= element_text(colour="black"), 
+				axis.text 	= element_text(colour="black"),
+				legend.text = element_text(colour="black")) 
 
 	if( main != ""){
 		fig = fig + ggtitle( main ) + theme(plot.title = element_text(lineheight=.8, face="bold"))
@@ -179,7 +188,7 @@ setMethod("plotVarPart", "varPartResults",
 #' # stop cluster
 #' stopCluster(cl)
 #' @export
-plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "#bebebe99") ){
+plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey85") ){
 
 	if( !is.matrix(varPart) && !is.data.frame(varPart)){
 		stop("Argument must be a matrix or data.frame")
@@ -204,20 +213,24 @@ plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "#bebe
 	# plotted on top
 	df$gene = factor(df$gene, rev(rownames(varPart)))
 
+	# plot residuals on right
+	df$variable = factor(df$variable, colnames(varPart))
+
 	# convert values from [0-1] to [0-100]
 	df$value = 100*df$value
 
 	# Initialize variables to satisfy R CMD check
 	gene = value = variable = 0
 
-	# plot
+	# Flip order of columns for use with ggplot2 2.2.0
+	# Nov 17, 2016
 	fig = ggplot(df, aes(x = gene, y = value, fill = variable)) + 
 		geom_bar(stat = "identity") + theme_bw() + 
 		theme(panel.grid.major = element_blank(), 
 		panel.grid.minor = element_blank()) + coord_flip() + 
-		ylab("Variance explained (%)") + xlab("")
+		xlab("") + theme(plot.title=element_text(hjust=0.5)) 
 
-	fig = fig + theme(axis.line = element_line(colour = "white"),
+	fig = fig + theme(axis.line = element_line(colour = "transparent"),
 		axis.line.x = element_line(colour = "black"),
 		panel.grid.major = element_blank(),
 		panel.grid.minor = element_blank(),
@@ -226,9 +239,15 @@ plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "#bebe
 		axis.ticks.y = element_blank(), 
 		legend.key = element_blank()) +
 		guides(fill=guide_legend(title=NULL)) +
-		scale_fill_manual( values = col) + scale_y_continuous(expand=c(0,0.03))
+		scale_fill_manual( values = col) + 
+		scale_y_reverse(breaks=seq(0, 100, by=20), label=seq(100, 0, by=-20), expand=c(0,0.03)) + 
+		ylab("Variance explained (%)")
 
-	fig		
+	fig = fig + theme(text 		= element_text(colour="black"), 
+					axis.text 	= element_text(colour="black"),
+					legend.text = element_text(colour="black")) 
+
+	fig	
 }
 
 

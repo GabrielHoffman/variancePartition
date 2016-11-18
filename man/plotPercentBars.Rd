@@ -4,7 +4,7 @@
 \alias{plotPercentBars}
 \title{Bar plot of variance fractions}
 \usage{
-plotPercentBars(varPart, col = c(ggColorHue(ncol(varPart) - 1), "#bebebe99"))
+plotPercentBars(varPart, col = c(ggColorHue(ncol(varPart) - 1), "grey85"))
 }
 \arguments{
 \item{varPart}{object returned by extractVarPart() or fitExtractVarPartModel()}

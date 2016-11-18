@@ -8,19 +8,19 @@
 \alias{plotVarPart,varPartResults-method}
 \title{Violin plot of variance fractions}
 \usage{
-plotVarPart(obj, col = c(ggColorHue(ncol(obj) - 1), "#bebebe99"),
+plotVarPart(obj, col = c(ggColorHue(ncol(obj) - 1), "grey85"),
   label.angle = 20, main = "", ylab = "", convertToPercent = TRUE, ...)
 
 \S4method{plotVarPart}{matrix}(obj, col = c(ggColorHue(ncol(obj) - 1),
-  "#bebebe99"), label.angle = 20, main = "", ylab = "",
+  "grey85"), label.angle = 20, main = "", ylab = "",
   convertToPercent = TRUE, ...)
 
 \S4method{plotVarPart}{data.frame}(obj, col = c(ggColorHue(ncol(obj) - 1),
-  "#bebebe99"), label.angle = 20, main = "", ylab = "",
+  "grey85"), label.angle = 20, main = "", ylab = "",
   convertToPercent = TRUE, ...)
 
 \S4method{plotVarPart}{varPartResults}(obj, col = c(ggColorHue(ncol(obj) - 1),
-  "#bebebe99"), label.angle = 20, main = "", ylab = "",
+  "grey85"), label.angle = 20, main = "", ylab = "",
   convertToPercent = TRUE, ...)
 }
 \arguments{

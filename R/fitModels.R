@@ -197,7 +197,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		data2 = data.frame(data, expr=gene$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
-		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
+		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages="lme4" ) %dopar% {
 
 			# modify data2 for this gene
 			data2$expr = gene$E
@@ -420,7 +420,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
 
-		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
+		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages="lme4" ) %dopar% {
 			# fit linear mixed model
 			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 

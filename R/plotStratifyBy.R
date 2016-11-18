@@ -94,7 +94,7 @@ plotStratify = function( formula, data, xlab, ylab, main, sortBy, colorBy, sort=
     	ord = xval
     }
    
-    pOut = ggplot( data.st, aes_string(x=ord, y=yval)) + theme_bw() + theme( plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab(ylab) + xlab(xlab) 
+    pOut = ggplot( data.st, aes_string(x=ord, y=yval)) + theme_bw() + theme( plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab(ylab) + xlab(xlab) + theme(plot.title=element_text(hjust=0.5)) 
 
     if(  is.null(colorBy) || is.na(colorBy) ){
         pOut = pOut + geom_boxplot(color="grey", fill="grey", outlier.colour='black',outlier.shape = 20)
@@ -113,7 +113,7 @@ plotStratify = function( formula, data, xlab, ylab, main, sortBy, colorBy, sort=
 
 	    # add legend
 	    if( legend ){
-	    	pOut = pOut + theme(legend.justification=c(1,0), legend.position=c(1,0), legend.key = element_rect(color = 'white'), axis.text.x=element_text(angle=30))
+	    	pOut = pOut + theme(legend.justification=c(1,0), legend.position=c(1,0), legend.key = element_rect(fill="transparent"), axis.text.x=element_text(angle=30), legend.background = element_rect(fill="transparent"))
 	    }else{
 	    	pOut = pOut + theme(legend.position="none", axis.text.x=element_text(angle=30))
 	    }
@@ -223,7 +223,7 @@ plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL
     	ord = xval
     }
    
-    pOut = ggplot( geneExpr, aes_string(x=ord, y=yval)) + theme_bw() + theme( plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab(ylab) + xlab(xlab) 
+    pOut = ggplot( geneExpr, aes_string(x=ord, y=yval)) + theme_bw() + theme( plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab(ylab) + xlab(xlab) + theme(plot.title=element_text(hjust=0.5))
 
     if(  is.null(colorBy) || is.na(colorBy) ){
         pOut = pOut + geom_boxplot(color="grey", fill="grey", outlier.colour='black',outlier.shape = 20)
@@ -242,7 +242,7 @@ plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL
 
 	    # add legend
 	    if( legend ){
-	    	pOut = pOut + theme(legend.justification=c(1,0), legend.position=c(1,0), legend.key = element_rect(color = 'white'), axis.text.x=element_text(angle=30))
+	    	pOut = pOut + theme(legend.justification=c(1,0), legend.position=c(1,0), legend.key = element_rect(fill="transparent"), axis.text.x=element_text(angle=30), legend.background = element_rect(fill="transparent"))
 	    }else{
 	    	pOut = pOut + theme(legend.position="none", axis.text.x=element_text(angle=30))
 	    }
