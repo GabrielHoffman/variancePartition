@@ -2,7 +2,7 @@ Package: variancePartition
 Type: Package
 Title: Quantify and interpret divers of variation in multilevel gene expression
     experiments
-Version: 1.5.2
+Version: 1.5.3
 Date: 2016-9-2
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
@@ -39,6 +39,7 @@ Imports:
     gplots,
     reshape2,
     lme4 (>= 1.1-10),
+    RSpectra,
     doParallel,
     limma,
     grDevices,

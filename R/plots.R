@@ -237,7 +237,8 @@ plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey8
 		panel.border = element_blank(),
 		panel.background = element_blank(), 
 		axis.ticks.y = element_blank(), 
-		legend.key = element_blank()) +
+		legend.key = element_blank(),
+		plot.margin = unit(c(0,.3,0,.8), "cm")) +
 		guides(fill=guide_legend(title=NULL)) +
 		scale_fill_manual( values = col) + 
 		scale_y_reverse(breaks=seq(0, 100, by=20), label=seq(100, 0, by=-20), expand=c(0,0.03)) + 

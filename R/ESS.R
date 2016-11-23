@@ -6,7 +6,7 @@
 #' Compute effective sample size based on correlation structure in linear mixed model
 #'
 #' @param fit model fit from lmer()
-#' @param method "full" uses the full correlation structure of the model. The "approximate" method makes the simplifying assumption that the study has a mean of m samples in each of k groups, and computes m based on the study design.  When the study design is evenly balanced (i.e. the assumption is met), this gives the same results as the "full" method.  
+#' @param method "full" uses the full correlation structure of the model. "fast" is exact and is much faster for > 500 samples. The "approximate" method makes the simplifying assumption that the study has a mean of m samples in each of k groups, and computes m based on the study design.  When the study design is evenly balanced (i.e. the assumption is met), this gives the same results as the "full" method.  
 #' 
 #' @return
 #' effective sample size for each random effect in the model
@@ -18,6 +18,8 @@
 #' Liu, G., and Liang, K. Y. (1997). Sample size calculations for studies with correlated observations. Biometrics, 53(3), 937-47.
 #'
 #' "full" method: if V_x = var(Y;x) is the variance-covariance matrix of Y, the response, based on the covariate x, then the effective sample size corresponding to this covariate is \\Sigma_\{i,j\} (V_x^\{-1\})_\{i,j\}.  In R notation, this is: sum(solve(V_x)).
+#'
+#' "fast" method: takes advantage of the fact that the eigen decompostion of a sparse, low rank, symmetric matrix is orders of magnitude faster than a generic matrix  
 #'
 #' "approximate" method: Letting m be the mean number of samples per group, k be the number of groups, and rho be the intraclass correlation, the effective sample size is m*k / (1+rho*(m-1))
 #'
@@ -37,7 +39,7 @@
 #' @docType methods
 #' @rdname ESS-method
 setGeneric("ESS", signature="fit",
-  function(fit, method="full")
+  function(fit, method="fast")
       standardGeneric("ESS")
 )
 
@@ -45,9 +47,9 @@ setGeneric("ESS", signature="fit",
 #' @rdname ESS-method
 #' @aliases ESS,lmerMod-method
 setMethod("ESS", "lmerMod",
-	function( fit, method="full" ){
+	function( fit, method="fast" ){
 
-		if( !(method %in% c("full", "approximate")) ){
+		if( !(method %in% c("full", "fast", "approximate")) ){
 			stop(paste("method is not valid:", method))
 		}
 
@@ -56,7 +58,7 @@ setMethod("ESS", "lmerMod",
 
 		n_eff = c()
 
-		if( method == 'full'){
+		if( method %in% c('full', 'fast') ){
 
 			# get structure of study design
 			sigG = get_SigmaG( fit )
@@ -64,11 +66,26 @@ setMethod("ESS", "lmerMod",
 			ids = names(coef(fit))
 			for( key in ids){
 				i = which( key == ids)
-				C = as.matrix(sigG$G[[i]]) * vp[[key]]
-				diag(C) = 1 # set diagonals to 1
-				n_eff[i] = sum(ginv(as.matrix(C)))
+
+				# guarantee that fraction is positive
+				# by adding small value
+				# the fast sum_of_ginv() fails if this value is exactly zero
+				fraction = vp[[key]] + 1e-10
+
+				if( method == "full" ){
+					C = sigG$G[[i]] * fraction
+					diag(C) = 1 # set diagonals to 1
+					n_eff[i] = sum(ginv(as.matrix(C)))
+				}else{
+					# November 22, 2016
+					A = sigG$G[[i]] * fraction
+					value = 1 - A[1,1]
+					k = nlevels(fit@frame[[key]])
+					n_eff[i] = sum_of_ginv( A, value, k)
+				}
 			}
 			names(n_eff) = ids
+
 		}else{
 
 			ids = names(coef(fit))
@@ -90,3 +107,21 @@ setMethod("ESS", "lmerMod",
 	}
 )
 
+
+
+# Compute sum( solve(A) + diag(value)) for low rank, sparse, symmetric A
+# sum( solve(A + diag(value, nrow(A)))) 
+sum_of_ginv = function(A, value, k){
+
+	# # full rank
+	# decompg = svd(A)
+	# sum((decompg$u) %*% (((1/(decompg$d +value)))* t(decompg$v)))
+
+	# # low rank, dense matrix
+	# decompg = svd(A, nu=k, nv=k)
+	# sum((decompg$u[,1:k]) %*% (((1/(decompg$d[1:k] +value)))* t(decompg$v[,1:k])))
+
+	# low rank, sparse matrix
+	decomp = eigs_sym(A, k)
+	sum((decomp$vectors) %*% ((1/(decomp$values +value))* t(decomp$vectors)))
+}
