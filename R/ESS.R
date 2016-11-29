@@ -58,7 +58,7 @@ setMethod("ESS", "lmerMod",
 
 		n_eff = c()
 
-		if( method %in% c('full', 'fast') ){
+		if( method %in% c('full') ){
 
 			# get structure of study design
 			sigG = get_SigmaG( fit )
@@ -90,13 +90,15 @@ setMethod("ESS", "lmerMod",
 					# November 29th, 2016
 					n_eff[i] = sum(solve(C, One))
 
-				}else{
-					# November 22, 2016
-					A = sigG$G[[i]] * fraction
-					value = 1 - A[1,1]
-					k = nlevels(fit@frame[[key]])
-					n_eff[i] = sum_of_ginv( A, value, k)
 				}
+				# Disabled in this version 
+				# else{
+				# 	# November 22, 2016
+				# 	A = sigG$G[[i]] * fraction
+				# 	value = 1 - A[1,1]
+				# 	k = nlevels(fit@frame[[key]])
+				# 	n_eff[i] = sum_of_ginv( A, value, k)
+				# }
 			}
 			names(n_eff) = ids
 
@@ -123,19 +125,19 @@ setMethod("ESS", "lmerMod",
 
 
 
-# Compute sum( solve(A) + diag(value)) for low rank, sparse, symmetric A
-# sum( solve(A + diag(value, nrow(A)))) 
-sum_of_ginv = function(A, value, k){
+# # Compute sum( solve(A) + diag(value)) for low rank, sparse, symmetric A
+# # sum( solve(A + diag(value, nrow(A)))) 
+# sum_of_ginv = function(A, value, k){
 
-	# # full rank
-	# decompg = svd(A)
-	# sum((decompg$u) %*% (((1/(decompg$d +value)))* t(decompg$v)))
+# 	# # full rank
+# 	# decompg = svd(A)
+# 	# sum((decompg$u) %*% (((1/(decompg$d +value)))* t(decompg$v)))
 
-	# # low rank, dense matrix
-	# decompg = svd(A, nu=k, nv=k)
-	# sum((decompg$u[,1:k]) %*% (((1/(decompg$d[1:k] +value)))* t(decompg$v[,1:k])))
+# 	# # low rank, dense matrix
+# 	# decompg = svd(A, nu=k, nv=k)
+# 	# sum((decompg$u[,1:k]) %*% (((1/(decompg$d[1:k] +value)))* t(decompg$v[,1:k])))
 
-	# low rank, sparse matrix
-	decomp = eigs_sym(A, k)
-	sum((decomp$vectors) %*% ((1/(decomp$values +value))* t(decomp$vectors)))
-}
+# 	# low rank, sparse matrix
+# 	decomp = eigs_sym(A, k)
+# 	sum((decomp$vectors) %*% ((1/(decomp$values +value))* t(decomp$vectors)))
+# }

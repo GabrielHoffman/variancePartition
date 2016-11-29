@@ -1,16 +1,8 @@
 
-CHANGES IN VERSION 1.5.4
+CHANGES IN VERSION 1.3.12
 -------------------------
 	o Decrease computing time of effective sample size with ESS() by additional ~10x with sparse solver
-
-CHANGES IN VERSION 1.5.3
--------------------------
-	o Decrease computing time of effective sample size with ESS() by ~10x
-		o Add RSpectra to Imports
 	o  fix margins for plotPercentBars()
-
-CHANGES IN VERSION 1.5.2
--------------------------
 	o Fix bug for getVarianceComponents() when correlated continous variables are included
 	o compatibility with ggplot2 2.2.0
 		o center plot titles 
@@ -19,9 +11,6 @@ CHANGES IN VERSION 1.5.2
 		o set text to be black
 	o include lme4 in foreach .packages
 	o change residuals color to not be transparent
-
-CHANGES IN VERSION 1.5.1
--------------------------
 	o add CITATION information 
 	o plotCorrMatrix now shows dendrogram by default 
 	o Estimate run time for fitExtractVarPartModel() / fitVarPartModel()
