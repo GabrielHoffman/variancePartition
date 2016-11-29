@@ -6,7 +6,7 @@
 #' Compute effective sample size based on correlation structure in linear mixed model
 #'
 #' @param fit model fit from lmer()
-#' @param method "full" uses the full correlation structure of the model. "fast" is exact and is much faster for > 500 samples. The "approximate" method makes the simplifying assumption that the study has a mean of m samples in each of k groups, and computes m based on the study design.  When the study design is evenly balanced (i.e. the assumption is met), this gives the same results as the "full" method.  
+#' @param method "full" uses the full correlation structure of the model. "fast" is exact and can be much faster for > 500 samples. The "approximate" method makes the simplifying assumption that the study has a mean of m samples in each of k groups, and computes m based on the study design.  When the study design is evenly balanced (i.e. the assumption is met), this gives the same results as the "full" method.  
 #' 
 #' @return
 #' effective sample size for each random effect in the model
@@ -17,9 +17,9 @@
 
 #' Liu, G., and Liang, K. Y. (1997). Sample size calculations for studies with correlated observations. Biometrics, 53(3), 937-47.
 #'
-#' "full" method: if V_x = var(Y;x) is the variance-covariance matrix of Y, the response, based on the covariate x, then the effective sample size corresponding to this covariate is \\Sigma_\{i,j\} (V_x^\{-1\})_\{i,j\}.  In R notation, this is: sum(solve(V_x)).
+#' "full" method: if V_x = var(Y;x) is the variance-covariance matrix of Y, the response, based on the covariate x, then the effective sample size corresponding to this covariate is \\Sigma_\{i,j\} (V_x^\{-1\})_\{i,j\}.  In R notation, this is: sum(solve(V_x)).  In practice, this can be evaluted as sum(w), where R %*% w == One and One is a column vector of 1's
 #'
-#' "fast" method: takes advantage of the fact that the eigen decompostion of a sparse, low rank, symmetric matrix is orders of magnitude faster than a generic matrix  
+#' "fast" method: takes advantage of the fact that the eigen decompostion of a sparse, low rank, symmetric matrix. May be faster for large datasets.
 #'
 #' "approximate" method: Letting m be the mean number of samples per group, k be the number of groups, and rho be the intraclass correlation, the effective sample size is m*k / (1+rho*(m-1))
 #'
@@ -39,7 +39,7 @@
 #' @docType methods
 #' @rdname ESS-method
 setGeneric("ESS", signature="fit",
-  function(fit, method="fast")
+  function(fit, method="full")
       standardGeneric("ESS")
 )
 
@@ -47,7 +47,7 @@ setGeneric("ESS", signature="fit",
 #' @rdname ESS-method
 #' @aliases ESS,lmerMod-method
 setMethod("ESS", "lmerMod",
-	function( fit, method="fast" ){
+	function( fit, method="full" ){
 
 		if( !(method %in% c("full", "fast", "approximate")) ){
 			stop(paste("method is not valid:", method))
@@ -63,6 +63,12 @@ setMethod("ESS", "lmerMod",
 			# get structure of study design
 			sigG = get_SigmaG( fit )
 
+			# number of samples 
+			N = nrow(sigG$Sigma)
+
+			# create vector of ones
+			One = matrix(1, N, 1)
+
 			ids = names(coef(fit))
 			for( key in ids){
 				i = which( key == ids)
@@ -75,7 +81,15 @@ setMethod("ESS", "lmerMod",
 				if( method == "full" ){
 					C = sigG$G[[i]] * fraction
 					diag(C) = 1 # set diagonals to 1
-					n_eff[i] = sum(ginv(as.matrix(C)))
+					# n_eff[i] = sum(ginv(as.matrix(C)))
+
+					# Following derivation at https://golem.ph.utexas.edu/category/2014/12/effective_sample_size.html
+					# sum(solve(R)) is equivalent to sum(w) where R %*% w = 1
+					# This uses sparse linear algebra and is extremely fast: ~10 x faster than 
+					# sum_of_ginv with sparse pseudo inverse
+					# November 29th, 2016
+					n_eff[i] = sum(solve(C, One))
+
 				}else{
 					# November 22, 2016
 					A = sigG$G[[i]] * fraction

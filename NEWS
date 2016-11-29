@@ -1,4 +1,8 @@
 
+CHANGES IN VERSION 1.5.4
+-------------------------
+	o Decrease computing time of effective sample size with ESS() by additional ~10x with sparse solver
+
 CHANGES IN VERSION 1.5.3
 -------------------------
 	o Decrease computing time of effective sample size with ESS() by ~10x
