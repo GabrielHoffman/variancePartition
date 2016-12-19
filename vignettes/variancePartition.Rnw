@@ -539,8 +539,8 @@ names(files) <- paste0("sample", 1:6)
 tx2gene <- read.csv(file.path(dir, "tx2gene.csv"))
 
 # reads results from kallisto
-txi <- tximport(files, type = "kallisto", tx2gene = tx2gene, reader = read_tsv, 
-    countsFromAbundance = "lengthScaledTPM")
+txi <- tximport(files, type = "kallisto", tx2gene = tx2gene, 
+	countsFromAbundance = "lengthScaledTPM")
 
 # define metadata (usually read from external source)
 info_tximport <- data.frame( Sample = sprintf("sample%d", 1:6), 

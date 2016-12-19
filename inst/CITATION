@@ -6,8 +6,8 @@ citEntry(entry="article",
    journal = "BMC Bioinformatics",
    doi = "10.1186/s12859-016-1323-z",
    volume = "17",
-   issue = "",
-   pages = "483",
+   issue = "483",
+   pages = "",
    textVersion = 
    paste("Hoffman GE, Schadt EE (2016). variancePartition: Interpreting drivers of variation in complex gene expression studies. BMC Bioinformatics, 17:483, doi:10.1186/s12859-016-1323-z"))
 

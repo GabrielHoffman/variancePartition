@@ -1,5 +1,10 @@
 
-CHANGES IN VERSION 1.3.12
+CHANGES IN VERSION 1.5.6
+-------------------------
+	o compatibility with tximport v1.3.5
+
+
+CHANGES IN VERSION 1.5.5
 -------------------------
 	o Decrease computing time of effective sample size with ESS() by additional ~10x with sparse solver
 	o  fix margins for plotPercentBars()
