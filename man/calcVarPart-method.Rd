@@ -49,4 +49,3 @@ fit <- lm( geneExpr[1,] ~ Tissue + Age, info)
 calcVarPart( fit )
 
 }
-

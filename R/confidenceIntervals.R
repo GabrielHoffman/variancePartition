@@ -23,7 +23,7 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return
-#' list() of where each entry is the result for a gene.  Each entry is a matrix of the 95% confidence interval of the variance fraction for each variable 
+#' list() of where each entry is the result for a gene.  Each entry is a matrix of the 95\% confidence interval of the variance fraction for each variable 
 #'
 #' @details 
 #' A linear mixed model is fit for each gene, and bootMer() is used to generate parametric bootstrap confidence intervals.  use.u=TRUE is used so that the \\hat(u) values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, use.u=FALSE assumes that  this dataset is a sample from a larger population.   Thus it simulates \\hat(u) based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, use.u=TRUE gives smaller confidence intervals that are appropriate in this case.

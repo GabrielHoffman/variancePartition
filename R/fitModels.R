@@ -17,7 +17,7 @@
 #' @return
 #' list() of where each entry is a model fit produced by lmer() or lm()
 #' 
-#' @import gplots colorRamps lme4 pbkrtest ggplot2 limma foreach reshape2 iterators doParallel Biobase methods utils
+#' @import splines gplots colorRamps lme4 pbkrtest ggplot2 limma foreach reshape2 iterators doParallel Biobase methods utils
 # dendextend
 #' @importFrom MASS ginv
 # @importFrom RSpectra eigs_sym
@@ -157,7 +157,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff )
 
-		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
+		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
 			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,na.action=stats::na.exclude,...)
 
@@ -198,7 +198,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		data2 = data.frame(data, expr=gene$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
-		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages="lme4" ) %dopar% {
+		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 
 			# modify data2 for this gene
 			data2$expr = gene$E
@@ -393,7 +393,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff )
 
-		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights) ) %dopar% {
+		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
 			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,na.action=stats::na.exclude,...)
 
@@ -421,7 +421,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
 
-		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages="lme4" ) %dopar% {
+		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
 			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 

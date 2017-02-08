@@ -19,7 +19,6 @@ A simulated dataset of gene expression and metadata
 }
 }
 \keyword{datasets}
-
 \alias{geneCounts}
 \alias{geneExpr}
 \alias{info}

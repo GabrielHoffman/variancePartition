@@ -42,4 +42,3 @@ fit <- lmer( geneExpr[1,] ~ (1|Individual) + (1|Tissue) + Age, info)
 ESS( fit )
 
 }
-

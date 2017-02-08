@@ -3,10 +3,10 @@
 \docType{methods}
 \name{fitVarPartModel}
 \alias{fitVarPartModel}
+\alias{fitVarPartModel,matrix-method}
+\alias{fitVarPartModel,data.frame-method}
 \alias{fitVarPartModel,EList-method}
 \alias{fitVarPartModel,ExpressionSet-method}
-\alias{fitVarPartModel,data.frame-method}
-\alias{fitVarPartModel,matrix-method}
 \title{Fit linear (mixed) model}
 \usage{
 fitVarPartModel(exprObj, formula, data, REML = FALSE, useWeights = TRUE,
@@ -134,4 +134,3 @@ results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 # stop cluster
 stopCluster(cl)
 }
-

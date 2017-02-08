@@ -70,4 +70,3 @@ col = c( B="green", A="red", C="yellow")
 plotStratifyBy( GE, "Tissue", "Expression", colorBy=col, sort=FALSE)
 
 }
-

@@ -38,7 +38,7 @@ varPartConfInf(exprObj, formula, data, REML = FALSE, useWeights = TRUE,
 \item{...}{Additional arguments for lmer() or lm()}
 }
 \value{
-list() of where each entry is the result for a gene.  Each entry is a matrix of the 95% confidence interval of the variance fraction for each variable
+list() of where each entry is the result for a gene.  Each entry is a matrix of the 95\% confidence interval of the variance fraction for each variable
 }
 \description{
 Fit linear mixed model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Then perform parametric bootstrap sampling to get a 95\% confidence intervals for each variable for each gene.
@@ -75,4 +75,3 @@ resCI <- varPartConfInf( geneExpr[1:5,], form, info, nsim=100 )
 stopCluster(cl)
 
 }
-
