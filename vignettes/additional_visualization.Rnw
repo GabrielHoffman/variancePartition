@@ -1,9 +1,16 @@
-%\VignetteIndexEntry{2) Additional visualizations}
-%\VignettePackage{variancePartition}
-%\VignetteEngine{knitr::knitr}
+---
+title: "2) Additional visualizations"
+author: "Gabriel Hoffman"
+package: variancePartition
+output: 
+  BiocStyle::pdf_document
+vignette: >
+  	%\VignetteIndexEntry{2) Additional visualizations}
+	%\VignettePackage{variancePartition}
+	%\VignetteEngine{knitr::knit}
+	%\VignetteEncoding{UTF-8}   
+---
 
-% To compile this document
-% library('knitr'); rm(list=ls()); knit('variancePartition.Rnw')
 
 \documentclass[12pt]{article}
 
@@ -24,12 +31,12 @@ BiocStyle::latex()
 \usepackage[position=top]{subfig}
 \usepackage{blkarray}
 
-\bioctitle[Additional visualizations]{Additional visualizations for \Biocpkg{variancePartition}}
+\bioctitle[Additional visualizations]{Additional visualizations for\\\Biocpkg{variancePartition}}
 
 \author{Gabriel Hoffman\\ 
-\small{Icahn Institute for Genomics and Multiscale Biology}\\[-.2em]
-\small{Department of Genetics and Genomic Sciences}\\[-.2em]
-\small{Icahn School of Medicine at Mount Sinai}}
+\small{Icahn Institute for Genomics and Multiscale Biology}\\
+\small{Department of Genetics and Genomic Sciences}\\
+\small{Icahn School of Medicine at Mount Sinai}}\\
 
 
 \begin{document}

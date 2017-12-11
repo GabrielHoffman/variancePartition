@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.9.1
+-------------------------
+        o Fix formatting of vignette
+        o add description of canCorPairs() function
 
 CHANGES IN VERSION 1.5.7
 -------------------------
