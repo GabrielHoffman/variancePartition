@@ -5,7 +5,7 @@
 
 \documentclass[12pt]{article}
 
-<<style, eval=TRUE, echo=FALSE, results=tex>>=
+<<style, eval=TRUE, echo=FALSE, results='asis'>>=
 BiocStyle::latex()
 @
 
@@ -14,7 +14,7 @@ BiocStyle::latex()
 
 \newcommand{\lowtilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
 
-<<knitr, echo=FALSE, results=hide>>=
+<<knitr, echo=FALSE, results='hide'>>=
 library("knitr")
 opts_chunk$set(tidy=TRUE,dev=c("png", "pdf"), fig.show='hide', fig.path='figure/',
                fig.width=4,fig.height=4.5,
@@ -35,7 +35,7 @@ opts_chunk$set(tidy=TRUE,dev=c("png", "pdf"), fig.show='hide', fig.path='figure/
 
 \maketitle
 
-<<options, results=hide, echo=FALSE>>=
+<<options, results='hide', echo=FALSE>>=
 options(digits=3, width=80, prompt=" ", continue=" ")
 opts_chunk$set(comment=NA, fig.width=7, fig.height=7)
 @
@@ -58,7 +58,7 @@ The correlation structure between samples in complex study designs can be decomp
 
 \pagebreak
 
-<<corStruct, cache=TRUE, results=hide>>=
+<<corStruct, cache=TRUE, results='hide'>>=
 # Fit linear mixed model and examine correlation stucture
 # for one gene
 data(varPartData)
@@ -132,7 +132,7 @@ plotCorrStructure( fit, reorder=FALSE )
 
 
 
-<<resetOptions, results=hide, echo=FALSE>>=
+<<resetOptions, results='hide', echo=FALSE>>=
 options(prompt="> ", continue="+ ")
 @ 
 
