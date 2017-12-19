@@ -1,31 +1,33 @@
 %\VignetteIndexEntry{2) Additional visualizations}
-%\VignetteDepends{}
-%\VignetteEncoding[utf8]{inputenc}
 %\VignettePackage{variancePartition}
+%\VignetteEngine{knitr::knitr}
+
+% To compile this document
+% library('knitr'); rm(list=ls()); knit('variancePartition.Rnw')
 
 \documentclass[12pt]{article}
 
-<<style, eval=TRUE, echo=FALSE, results=tex>>=
+\newcommand{\lowtilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
+
+<<knitr, echo=FALSE, results='hide'>>=
+library("knitr")
+opts_chunk$set(tidy=FALSE,dev="pdf",fig.show="hide",
+               fig.width=4,fig.height=4.5,
+               message=FALSE, warning=FALSE)
+
+@ 
+
+<<style, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex()
 @
 
 \usepackage[position=top]{subfig}
 \usepackage{blkarray}
 
-\newcommand{\lowtilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
-
-<<knitr, echo=FALSE, results=hide>>=
-library("knitr")
-opts_chunk$set(tidy=TRUE,dev=c("png", "pdf"), fig.show='hide', fig.path='figure/',
-               fig.width=4,fig.height=4.5,
-               message=FALSE, warning=FALSE)
-
-@ 
-
-
 \bioctitle[Additional visualizations]{Additional visualizations for\\\Biocpkg{variancePartition}}
 
 \author{Gabriel Hoffman\\ 
+\small{Pamela Sklar Division of Psychiatric Genomics \& Precision Psychiatry} \\
 \small{Icahn Institute for Genomics and Multiscale Biology}\\
 \small{Department of Genetics and Genomic Sciences}\\
 \small{Icahn School of Medicine at Mount Sinai}}
@@ -35,7 +37,8 @@ opts_chunk$set(tidy=TRUE,dev=c("png", "pdf"), fig.show='hide', fig.path='figure/
 
 \maketitle
 
-<<options, results=hide, echo=FALSE>>=
+
+<<options, results="hide", echo=FALSE>>=
 options(digits=3, width=80, prompt=" ", continue=" ")
 opts_chunk$set(comment=NA, fig.width=7, fig.height=7)
 @
@@ -58,7 +61,7 @@ The correlation structure between samples in complex study designs can be decomp
 
 \pagebreak
 
-<<corStruct, cache=TRUE, results=hide>>=
+<<corStruct, cache=TRUE, results='hide'>>=
 # Fit linear mixed model and examine correlation stucture
 # for one gene
 data(varPartData)
@@ -70,6 +73,7 @@ fitList <- fitVarPartModel( geneExpr[1:2,], form, info )
 # focus on one gene
 fit = fitList[[1]]
 @
+
 
 <<corStructa, cache=TRUE>>=
 # Figure 1a
@@ -99,8 +103,8 @@ plotCorrStructure( fit, "Tissue", reorder=FALSE )
 
 <<corStructe, cache=TRUE>>=
 # Figure 2a
-# correlation structure based on similarity within Individual *and* Tissue
-# reorder samples based on clustering
+# correlation structure based on similarity within 
+# Individual *and* Tissue, reorder samples based on clustering
 plotCorrStructure( fit )
 @
 
@@ -130,9 +134,7 @@ plotCorrStructure( fit, reorder=FALSE )
 \end{figure}
 
 
-
-
-<<resetOptions, results=hide, echo=FALSE>>=
+<<resetOptions, results="hide", echo=FALSE>>=
 options(prompt="> ", continue="+ ")
 @ 
 
