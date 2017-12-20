@@ -18,7 +18,7 @@ opts_chunk$set(tidy=FALSE,dev="pdf",fig.show="hide",
 @ 
 
 <<style, eval=TRUE, echo=FALSE, results="asis">>=
-BiocStyle::latex()
+BiocStyle::latex(width=90)
 @
 
 \usepackage[position=top]{subfig}
@@ -458,6 +458,28 @@ res <- fitExtractVarPartModel( geneExpr[1:4,], form, info,
 @
 
 In addition, setting the \Rcode{useWeights=FALSE} will suppress usage of the weights in all cases, i.e. when the weights are specified manually or implicitly with the results of \Rcode{voom}.
+
+\subsection{Including interaction terms}
+
+Typical analysis assumes that the effect of each variable on gene expression does not depend on other variables in the model.  Sometimes this assumption is too strict, and we want to model an interaction effect whereby the effect of \Rcode{Batch} depends on \Rcode{Tissue}.  This can be done easly by specifying an interaction term, \Rcode{(1|Batch:Tissue)}.  Since \Rcode{Batch} has 4 categories and \Rcode{Tissue} has 3, this interaction term implicity models a new \Rcode{3*4 = 12} category variable in the analysis.  This new interaction term will absorb some of the variance from the \Rcode{Batch} and \Rcode{Tissue} term, so an interaction model should always include the two constituent variables.    
+
+Here we fit an interaction model, but we observe that interaction between \Rcode{Batch} and \Rcode{Tissue} does not explain much expression variation.
+
+<<vpInteraction, echo=TRUE, cache=TRUE, results='hide'>>=
+form <- ~ (1|Individual) + Age + Height + (1|Tissue) + (1|Batch) + (1|Batch:Tissue)
+
+# fit model
+vpInteraction <- fitExtractVarPartModel( geneExpr, form, info )
+
+plotVarPart( sortCols( vpInteraction ) )
+@
+
+\begin{figure}[h]
+\centering
+\caption{Fit interaction term}
+\includegraphics[width=.5\textwidth]{figure/vpInteraction-1}
+\label{fig:vpInteraction}
+\end{figure}
 
 
 \pagebreak
