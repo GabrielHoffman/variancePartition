@@ -310,6 +310,35 @@ In biological datasets technical variability (i.e. batch effects) can often redu
 
 
 
+\subsubsection{Assess correlation between all pairs of variables}
+
+Evaluating the correlation between variables in a important part in interpreting variancePartition results.  When comparing two continuous variables, Pearson correlation is widely used.  But variancePartition includes categorical variables in the model as well.  In order to accommodate the correlation between a continuous and a categorical variable, or two categorical variables we used canonical correlation analysis.  
+
+Canonical Correlation Analysis (CCA) is similar to correlation between two vectors, except that CCA can accommodate matricies as well.  For a pair of variables, canCorPairs assesses the degree to which they co-vary and contain the same information.  Variables in the formula can be a continuous variable or a discrete variable expanded to a matrix (which is done in the backend of a regression model).  For a pair of variables, canCorPairs uses CCA to compute the correlation between these variables and returns the pairwise correlation matrix.
+
+Statistically, let rho be the array of correlation values returned by the standard R function cancor to compute CCA.  canCorPairs returns rho / sum(rho) which is the fraction of the maximum possible correlation. Note that CCA returns correlations values between 0 and 1
+
+<<canCorPairs, cache=TRUE, results='hide', fig.width=5, fig.height=5>>=
+form <- ~ Individual + Tissue + Batch + Age + Height
+
+# Compute Canonical Correlation Analysis (CCA)
+# between all pairs of variables
+# returns absolute correlation value  
+C = canCorPairs( form, info)
+
+# Plot correlation matrix
+plotCorrMatrix( C )
+@
+
+\begin{figure}[h]
+\centering
+\caption{Assess correlation between all pairs of variables}
+\includegraphics[width=.5\textwidth]{figure/canCorPairs-1}
+\label{fig:canCorPairs}
+\end{figure}
+
+
+
 \pagebreak
 \section{Advanced analysis}
 
@@ -465,7 +494,7 @@ Typical analysis assumes that the effect of each variable on gene expression doe
 
 Here we fit an interaction model, but we observe that interaction between \Rcode{Batch} and \Rcode{Tissue} does not explain much expression variation.
 
-<<vpInteraction, echo=TRUE, cache=TRUE, results='hide'>>=
+<<vpInteraction, echo=TRUE, cache=TRUE, results='hide', fig.width=4, fig.height=4>>=
 form <- ~ (1|Individual) + Age + Height + (1|Tissue) + (1|Batch) + (1|Batch:Tissue)
 
 # fit model
