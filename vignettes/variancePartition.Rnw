@@ -591,7 +591,7 @@ Note that DESeq2 does not compute precision weights like \Rpackage{limma}/\Rcode
 \subsubsection{\Rpackage{tximport}}
 Quantifications from \Rcode{kallisto}, \Rcode{salmon}, \Rcode{sailfish} and \Rcode{RSEM} can be read into \R{} and processed with the Bioconductor package \Rpackage{tximport}.  The gene- or transcript-level quantifications can be used directly in \Rpackage{variancePartition}.  
 
-<<echo=TRUE, cache=TRUE, results='hide'>>=
+<<echo=TRUE, cache=TRUE, results='hide', eval=FALSE>>=
 library(tximportData)
 library(tximport)
 library(readr)
