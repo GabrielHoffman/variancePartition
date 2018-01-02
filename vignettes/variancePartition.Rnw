@@ -347,6 +347,9 @@ plotCorrMatrix( C )
 Advanced users may want to perform the model fit and extract results in separate steps in order to examine the fit of the model for each gene.  Thus the work of \Rcode{fitExtractVarPart} can be divided into two steps: 1) fit the regression model, and 2) extracting variance statistics. \\    
 
 <<simResult-omit, cache=TRUE, results='hide'>>=
+
+form <- ~ Age + (1|Individual) + (1|Tissue) + (1|Batch)
+
 # Fit model
 results <- fitVarPartModel( geneExpr, form, info )
 
@@ -495,7 +498,8 @@ Typical analysis assumes that the effect of each variable on gene expression doe
 Here we fit an interaction model, but we observe that interaction between \Rcode{Batch} and \Rcode{Tissue} does not explain much expression variation.
 
 <<vpInteraction, echo=TRUE, cache=TRUE, results='hide', fig.width=4, fig.height=4>>=
-form <- ~ (1|Individual) + Age + Height + (1|Tissue) + (1|Batch) + (1|Batch:Tissue)
+form <- ~ (1|Individual) + Age + Height + (1|Tissue) + (1|Batch) + 
+  (1|Batch:Tissue)
 
 # fit model
 vpInteraction <- fitExtractVarPartModel( geneExpr, form, info )
