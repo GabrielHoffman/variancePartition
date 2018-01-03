@@ -18,17 +18,18 @@ opts_chunk$set(tidy=FALSE,dev="pdf",fig.show="hide",
 @ 
 
 <<style, eval=TRUE, echo=FALSE, results="asis">>=
-BiocStyle::latex()
+BiocStyle::latex(width=90)
 @
 
 \usepackage[position=top]{subfig}
 \usepackage{blkarray}
 
-\bioctitle[Vignette for variancePartition]{ \Biocpkg{variancePartition}: Quantifying and interpreting drivers of variation in multilevel gene expression experiments}
+\bioctitle[Vignette for variancePartition]{ \Biocpkg{variancePartition}:\\Quantifying and interpreting drivers\\of variation in multilevel gene\\expression experiments}
 
 \author{Gabriel Hoffman\\ 
-\small{Icahn Institute for Genomics and Multiscale Biology}\\[-.2em]
-\small{Department of Genetics and Genomic Sciences}\\[-.2em]
+\small{Pamela Sklar Division of Psychiatric Genomics \& Precision Psychiatry} \\
+\small{Icahn Institute for Genomics and Multiscale Biology}\\
+\small{Department of Genetics and Genomic Sciences}\\
 \small{Icahn School of Medicine at Mount Sinai}}
 
 
@@ -97,7 +98,7 @@ The simulated dataset included as an example contains measurements of 200 genes 
 
 \subsection{Standard application}
 
-<<simResult, cache=TRUE, results='hide'>>=
+<<simResult, cache=TRUE, results='hide', fig.height=4, fig.width=4>>=
 # load library
 library(variancePartition)
 
@@ -116,25 +117,30 @@ data(varPartData)
 
 # Specify variables to consider
 # Age is continuous so model it as a fixed effect
-# Individual and Tissue are both categorical, so model them as random effects
+# Individual and Tissue are both categorical, 
+# so model them as random effects
 # Note the syntax used to specify random effects
 form <- ~ Age + (1|Individual) + (1|Tissue) + (1|Batch) 
 
 # Fit model and extract results
 # 1) fit linear mixed model on gene expression
-# If categorical variables are specified, a linear mixed model is used
-# If all variables are modeled as fixed effects, a linear model is used
+# If categorical variables are specified, 
+#     a linear mixed model is used
+# If all variables are modeled as fixed effects, 
+#		a linear model is used
 # each entry in results is a regression model fit on a single gene
 # 2) extract variance fractions from each model fit
-# for each gene, returns fraction of variation attributable to each variable 
-# Interpretation: the variance explained by each variables after correcting 
-# for all other variables
+# for each gene, returns fraction of variation attributable 
+#		to each variable 
+# Interpretation: the variance explained by each variables 
+# after correcting for all other variables
 # Note that geneExpr can either be a matrix, 
 # and EList output by voom() in the limma package, 
 # or an ExpressionSet
 varPart <- fitExtractVarPartModel( geneExpr, form, info )
 
-# sort variables (i.e. columns) by median fraction of variance explained
+# sort variables (i.e. columns) by median fraction 
+#		of variance explained
 vp <- sortCols( varPart )
 
 # Figure 1a
@@ -151,7 +157,7 @@ plotVarPart( vp )
   
 \begin{figure}[hb]
 \centering
-\subfloat[]{\includegraphics[width=.45\textwidth]{figure/simResult-1}}
+\subfloat[]{\includegraphics[width=.45\textwidth]{figure/simResult-1}}\quad
 \subfloat[]{\includegraphics[width=.45\textwidth]{figure/simResult-2}}
 \caption{
  \Rpackage{variancePartition} example on simulated data}
@@ -184,9 +190,10 @@ ggsave(file, fig)
 
 \Rpackage{variancePartition} also includes plotting functions to visualize the variation across a variable of interest. \Rcode{plotStratify} plots the expression of a gene stratified by the specified variable.  In the example dataset, users can plot a gene expression trait stratified by Tissue (Figure 2a) or Individual (Figure 2b).
 
-<<plotStratify, cache=TRUE, warning=FALSE>>=
+<<plotStratify, cache=TRUE, warning=FALSE, fig.height=4, fig.width=4>>=
 # get gene with the highest variation across Tissues
-# create data.frame with expression of gene i and Tissue type for each sample
+# create data.frame with expression of gene i and Tissue 
+#		type for each sample
 i <- which.max( varPart$Tissue )
 GE <- data.frame( Expression = geneExpr[i,], Tissue = info$Tissue)
 
@@ -195,20 +202,24 @@ GE <- data.frame( Expression = geneExpr[i,], Tissue = info$Tissue)
 plotStratify( Expression ~ Tissue, GE, main=rownames(geneExpr)[i])
 #
 # get gene with the highest variation across Individuals
-# create data.frame with expression of gene i and Tissue type for each sample
+# create data.frame with expression of gene i and Tissue 
+#		type for each sample
 i <- which.max( varPart$Individual )
-GE <- data.frame( Expression = geneExpr[i,], Individual = info$Individual)
+GE <- data.frame( Expression = geneExpr[i,], 
+	Individual = info$Individual)
 
 # Figure 2b
 # plot expression stratified by Tissue 
-label <- paste("Individual:", format(varPart$Individual[i]*100, digits=3), "%")
+label <- paste("Individual:", format(varPart$Individual[i]*100, 
+	digits=3), "%")
 main <- rownames(geneExpr)[i]
-plotStratify(  Expression ~ Individual, GE, colorBy=NULL, text=label, main=main)
+plotStratify(  Expression ~ Individual, GE, colorBy=NULL, 
+	text=label, main=main)
 @
 
 \begin{figure}[h]
 \centering
-\subfloat[Tissue]{\includegraphics[width=.45\textwidth]{figure/plotStratify-1}}
+\subfloat[Tissue]{\includegraphics[width=.45\textwidth]{figure/plotStratify-1}}\quad
 \subfloat[Individual]{\includegraphics[width=.45\textwidth]{figure/plotStratify-2}}
 \caption{ Plot gene expression stratified by {\bf a)} Tissue and {\bf b)} Individual}
 \label{fig:Stratify}
@@ -227,7 +238,8 @@ Fitting the regression model and extracting variance statistics can also be done
 library(lme4)
 
 # fit regression model for the first gene 
-fit <- lmer(geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue), info, REML=FALSE )
+form_test <- geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue)
+fit <- lmer(form_test, info, REML=FALSE )
 
 # extract variance statistics
 calcVarPart(fit)
@@ -298,6 +310,35 @@ In biological datasets technical variability (i.e. batch effects) can often redu
 
 
 
+\subsubsection{Assess correlation between all pairs of variables}
+
+Evaluating the correlation between variables in a important part in interpreting variancePartition results.  When comparing two continuous variables, Pearson correlation is widely used.  But variancePartition includes categorical variables in the model as well.  In order to accommodate the correlation between a continuous and a categorical variable, or two categorical variables we used canonical correlation analysis.  
+
+Canonical Correlation Analysis (CCA) is similar to correlation between two vectors, except that CCA can accommodate matricies as well.  For a pair of variables, canCorPairs assesses the degree to which they co-vary and contain the same information.  Variables in the formula can be a continuous variable or a discrete variable expanded to a matrix (which is done in the backend of a regression model).  For a pair of variables, canCorPairs uses CCA to compute the correlation between these variables and returns the pairwise correlation matrix.
+
+Statistically, let rho be the array of correlation values returned by the standard R function cancor to compute CCA.  canCorPairs returns rho / sum(rho) which is the fraction of the maximum possible correlation. Note that CCA returns correlations values between 0 and 1
+
+<<canCorPairs, cache=TRUE, results='hide', fig.width=5, fig.height=5>>=
+form <- ~ Individual + Tissue + Batch + Age + Height
+
+# Compute Canonical Correlation Analysis (CCA)
+# between all pairs of variables
+# returns absolute correlation value  
+C = canCorPairs( form, info)
+
+# Plot correlation matrix
+plotCorrMatrix( C )
+@
+
+\begin{figure}[h]
+\centering
+\caption{Assess correlation between all pairs of variables}
+\includegraphics[width=.5\textwidth]{figure/canCorPairs-1}
+\label{fig:canCorPairs}
+\end{figure}
+
+
+
 \pagebreak
 \section{Advanced analysis}
 
@@ -306,6 +347,9 @@ In biological datasets technical variability (i.e. batch effects) can often redu
 Advanced users may want to perform the model fit and extract results in separate steps in order to examine the fit of the model for each gene.  Thus the work of \Rcode{fitExtractVarPart} can be divided into two steps: 1) fit the regression model, and 2) extracting variance statistics. \\    
 
 <<simResult-omit, cache=TRUE, results='hide'>>=
+
+form <- ~ Age + (1|Individual) + (1|Tissue) + (1|Batch)
+
 # Fit model
 results <- fitVarPartModel( geneExpr, form, info )
 
@@ -366,7 +410,8 @@ varPartResid <- fitExtractVarPartModel( res, form, info )
 If the two-step process requires too much memory, the residuals can be computed more efficiently.  Here, run the \Rcode{residuals} function inside the call to \Rcode{fitVarPartModel} to avoid storing the large intermediate results.
 <<echo=TRUE, cache=TRUE, results='hide'>>=
 # extract residuals directly without storing intermediate results
-residList <- fitVarPartModel( geneExpr, ~ (1|Batch), info, fxn=residuals )
+residList <- fitVarPartModel( geneExpr, ~ (1|Batch), info, 
+	fxn=residuals )
 
 # convert list to matrix
 residMatrix = do.call(rbind, residList)
@@ -377,7 +422,7 @@ residMatrix = do.call(rbind, residList)
 
 So far, we have focused on interpreting one variable at a time. But the linear mixed model behind \Rpackage{variancePartition} is a very powerful framework for analyzing variation at multiple levels.  We can easily extend the previous analysis of the contribution of individual and tissue on variation in gene expression to examine the contribution of individual {\it within} each tissue.  This analysis is as easy as specifying a new formula and rerunning  \Rpackage{variancePartition}.  Note that is analysis will only work when there are replicates for at least some individuals within each tissue in order to assess cross-individual variance with in a tissue.
 
-<<withinTissue, echo=TRUE, cache=TRUE, results='hide'>>=
+<<withinTissue, echo=TRUE, cache=TRUE, results='hide', fig.height=5, fig.width=4>>=
 # specify formula to model within/between individual variance 
 # separately for each tissue
 # Note that including +0 ensures each tissue is modeled explicitly
@@ -417,7 +462,7 @@ res <- fitVarPartModel( geneExpr[1:4,], form, info )
 @
 <<echo=TRUE, cache=TRUE>>=
 # evaluate the collinearity score on the first model fit
-# this reports the correlation matrix between coefficients estimates
+# this reports the correlation matrix between coefficient estimates
 # for fixed effects
 # the collinearity score is the maximum absolute correlation value
 # If the collinearity score > .99 then the variance partition 
@@ -435,15 +480,39 @@ colinearityScore( res[[1]] )
 form <- ~ (1|Individual) + (1|Tissue) + Age + Height
 
 # Specify custom weights
-# In this example the weights are simulated from a uniform distribution
-# and are not meaningful.
+# In this example the weights are simulated from a 
+# uniform distribution and are not meaningful.
 weights <- matrix(runif(length(geneExpr)), nrow=nrow(geneExpr))
 
 # Specify custom weights
-res <- fitExtractVarPartModel( geneExpr[1:4,], form, info, weightsMatrix=weights[1:4,] )
+res <- fitExtractVarPartModel( geneExpr[1:4,], form, info, 
+	weightsMatrix=weights[1:4,] )
 @
 
 In addition, setting the \Rcode{useWeights=FALSE} will suppress usage of the weights in all cases, i.e. when the weights are specified manually or implicitly with the results of \Rcode{voom}.
+
+\subsection{Including interaction terms}
+
+Typical analysis assumes that the effect of each variable on gene expression does not depend on other variables in the model.  Sometimes this assumption is too strict, and we want to model an interaction effect whereby the effect of \Rcode{Batch} depends on \Rcode{Tissue}.  This can be done easly by specifying an interaction term, \Rcode{(1|Batch:Tissue)}.  Since \Rcode{Batch} has 4 categories and \Rcode{Tissue} has 3, this interaction term implicity models a new \Rcode{3*4 = 12} category variable in the analysis.  This new interaction term will absorb some of the variance from the \Rcode{Batch} and \Rcode{Tissue} term, so an interaction model should always include the two constituent variables.    
+
+Here we fit an interaction model, but we observe that interaction between \Rcode{Batch} and \Rcode{Tissue} does not explain much expression variation.
+
+<<vpInteraction, echo=TRUE, cache=TRUE, results='hide', fig.width=4, fig.height=4>>=
+form <- ~ (1|Individual) + Age + Height + (1|Tissue) + (1|Batch) + 
+  (1|Batch:Tissue)
+
+# fit model
+vpInteraction <- fitExtractVarPartModel( geneExpr, form, info )
+
+plotVarPart( sortCols( vpInteraction ) )
+@
+
+\begin{figure}[h]
+\centering
+\caption{Fit interaction term}
+\includegraphics[width=.5\textwidth]{figure/vpInteraction-1}
+\label{fig:vpInteraction}
+\end{figure}
 
 
 \pagebreak
@@ -471,8 +540,9 @@ gExpr <- DGEList(counts=geneCounts[isexpr,])
 # Perform TMM normalization
 gExpr <- calcNormFactors(gExpr)
 
-# Specify variables to be included in the voom() estimates of uncertainty
-# recommend including variables with a small number of categories 
+# Specify variables to be included in the voom() estimates of 
+# uncertainty.
+# Recommend including variables with a small number of categories 
 # that explain a substantial amount of variation
 design <- model.matrix( ~ Batch, info)
 
@@ -525,7 +595,7 @@ Note that DESeq2 does not compute precision weights like \Rpackage{limma}/\Rcode
 \subsubsection{\Rpackage{tximport}}
 Quantifications from \Rcode{kallisto}, \Rcode{salmon}, \Rcode{sailfish} and \Rcode{RSEM} can be read into \R{} and processed with the Bioconductor package \Rpackage{tximport}.  The gene- or transcript-level quantifications can be used directly in \Rpackage{variancePartition}.  
 
-<<echo=TRUE, cache=TRUE, results='hide'>>=
+<<echo=TRUE, cache=TRUE, results='hide', eval=FALSE>>=
 library(tximportData)
 library(tximport)
 library(readr)
@@ -560,7 +630,8 @@ vobj <- voom(y, design)
 form <- ~ (1|Disease)
 
 # Run variancePartition analysis (on only 10 genes)
-varPart_tx <- fitExtractVarPartModel( vobj[1:10,], form, info_tximport)
+varPart_tx <- fitExtractVarPartModel( vobj[1:10,], form, 
+	info_tximport)
 
 @
 
@@ -581,7 +652,8 @@ library(ballgown)
 data_directory <- system.file('extdata', package='ballgown') 
 
 # Load results of Cufflinks/Tablemaker
-bg <- ballgown(dataDir=data_directory, samplePattern='sample', meas='all')
+bg <- ballgown(dataDir=data_directory, samplePattern='sample', 
+	meas='all')
 
 # extract gene-level FPKM quantification
 # Expression can be convert to log2-scale if desired
@@ -601,10 +673,12 @@ form <- ~ (1|Batch) + (1|Disease)
 
 # Run variancePartition analysis 
 # Gene-level analysis
-varPart_gene <- fitExtractVarPartModel( gene_expression, form, info_ballgown)
+varPart_gene <- fitExtractVarPartModel( gene_expression, form, 
+	info_ballgown)
 
 # Transcript-level analysis
-varPart_transcript <- fitExtractVarPartModel( transcript_fpkm, form, info_ballgown)
+varPart_transcript <- fitExtractVarPartModel( transcript_fpkm, form, 
+	info_ballgown)
 @
 
 Note that \Rcode{ballgownrsem} can be used for a similar analysis of \Rcode{RSEM} results.\\
@@ -705,7 +779,7 @@ plotTree = function(geneExpr, col){
 }
 @
 
-<<siteDominant, echo=FALSE, cache=TRUE, results='hide'>>=
+<<siteDominant, echo=FALSE, cache=TRUE, results='hide', fig.height=5, fig.width=5>>=
 set.seed(1)
 
 n = 60
@@ -734,7 +808,7 @@ plotVar( data$geneExpr, data$info )
 plotVarCross( data$geneExpr, data$info, label.angle=60 )
 @
 
-<<IndivDominant, echo=FALSE, cache=TRUE, results='hide'>>=
+<<IndivDominant, echo=FALSE, cache=TRUE, results='hide', fig.height=5, fig.width=5>>=
 set.seed(1)
 
 n = 60
@@ -781,12 +855,12 @@ if( exists("cl") ){
 \centering
 \caption{
   \textbf{Similarity within Tissue is dominant}}
-\subfloat[PCA - colored by Tissue]{\includegraphics[width=.33\textwidth]{figure/siteDominant-1}}
-\subfloat[PCA - colored by Individual]{\includegraphics[width=.33\textwidth]{figure/siteDominant-2}}
-\subfloat[hclust - colored by Tissue]{\includegraphics[width=.33\textwidth]{figure/siteDominant-3}}\\
-\subfloat[hclust - colored by Individual]{\includegraphics[width=.33\textwidth]{figure/siteDominant-4}}
-\subfloat[variancePartition]{\includegraphics[width=.33\textwidth]{figure/siteDominant-5}}
-\subfloat[variancePartition - within Tissue]{\includegraphics[width=.33\textwidth]{figure/siteDominant-6}}
+\subfloat[PCA - colored by Tissue]{\includegraphics[width=.48\textwidth]{figure/siteDominant-1}}\quad
+\subfloat[PCA - colored by Individual]{\includegraphics[width=.48\textwidth]{figure/siteDominant-2}}\\
+\subfloat[hclust - colored by Tissue]{\includegraphics[width=.48\textwidth]{figure/siteDominant-3}}\quad
+\subfloat[hclust - colored by Individual]{\includegraphics[width=.48\textwidth]{figure/siteDominant-4}}\\
+\subfloat[variancePartition]{\includegraphics[width=.48\textwidth]{figure/siteDominant-5}}\quad
+\subfloat[variancePartition - within Tissue]{\includegraphics[width=.48\textwidth]{figure/siteDominant-6}}
 \label{fig:siteDominant}
 \end{figure}
 
@@ -796,12 +870,12 @@ if( exists("cl") ){
 \centering
 \caption{
   \textbf{Similarity within Individual is dominant}}
-\subfloat[PCA - colored by Tissue]{\includegraphics[width=.33\textwidth]{figure/IndivDominant-1}}
-\subfloat[PCA - colored by Individual]{\includegraphics[width=.33\textwidth]{figure/IndivDominant-2}}
-\subfloat[hclust - colored by Tissue]{\includegraphics[width=.33\textwidth]{figure/IndivDominant-3}}\\
-\subfloat[hclust - colored by Individual]{\includegraphics[width=.33\textwidth]{figure/IndivDominant-4}}
-\subfloat[variancePartition]{\includegraphics[width=.33\textwidth]{figure/IndivDominant-5}}
-\subfloat[variancePartition - within Tissue]{\includegraphics[width=.33\textwidth]{figure/IndivDominant-6}}
+\subfloat[PCA - colored by Tissue]{\includegraphics[width=.48\textwidth]{figure/IndivDominant-1}}\quad
+\subfloat[PCA - colored by Individual]{\includegraphics[width=.48\textwidth]{figure/IndivDominant-2}}\\
+\subfloat[hclust - colored by Tissue]{\includegraphics[width=.48\textwidth]{figure/IndivDominant-3}}\quad
+\subfloat[hclust - colored by Individual]{\includegraphics[width=.48\textwidth]{figure/IndivDominant-4}}\\
+\subfloat[variancePartition]{\includegraphics[width=.48\textwidth]{figure/IndivDominant-5}}\quad
+\subfloat[variancePartition - within Tissue]{\includegraphics[width=.48\textwidth]{figure/IndivDominant-6}}
 \label{fig:IndivDominant}
 \end{figure}
 
@@ -951,8 +1025,8 @@ The fact that the fold change or the fraction of variation is significantly diff
 Thus the fraction of variation explained reported by \Rpackage{variancePartition} reflects as different aspect of the data not captured by DE analysis.
 
 
-<<DE, echo=FALSE, cache=TRUE>>=
-set.seed(1)
+<<DE, echo=FALSE, cache=TRUE, fig.height=5, fig.width=5>>=
+set.seed(1) 
 
 library(variancePartition)
 
@@ -966,8 +1040,8 @@ fit = lm(expression ~ Sex, data)
 # coef(fit)[2]
 
 plotStratify( expression ~ Sex, data, ylim=c(-6, 9)) +
- annotate("text", x = 0.5, y = 9, hjust=0, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
- annotate("text", x = 0.5, y = 8.2, hjust=0, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
+ annotate("text", x = 0.5, y = 9, hjust=0, label = paste("fold change:", format(coef(fit)[2], digits=3)), size=5.5) +
+ annotate("text", x = 0.5, y = 8.2, hjust=0, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"), size=5.5)
 
 
 n = 500
@@ -980,8 +1054,8 @@ fit = lm(expression ~ Sex, data)
 # coef(fit)[2] 
 
 plotStratify( expression ~ Sex, data, ylim=c(-6, 9)) +
- annotate("text", x = 0.5, y = 9, hjust=0, label = paste("fold change:", format(coef(fit)[2], digits=3))) +
- annotate("text", x = 0.5, y = 8.2, hjust=0, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"))
+ annotate("text", x = 0.5, y = 9, hjust=0, label = paste("fold change:", format(coef(fit)[2], digits=3)), size=5.5) +
+ annotate("text", x = 0.5, y = 8.2, hjust=0, label = paste("% variance of expression:", format(calcVarPart(fit)[1]*100, digits=3), "%"), size=5.5)
 @
 
 \begin{figure}[h]

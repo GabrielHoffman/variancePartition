@@ -1,4 +1,9 @@
 
+CHANGES IN VERSION 1.8.1
+-------------------------
+	o improve vignette
+
+
 CHANGES IN VERSION 1.5.7
 -------------------------
 	o include splines in foreach .packages
