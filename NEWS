@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.9.8
+-------------------------
+     o Fix issue where if info data.frame contained a column name "gene", 
+     	fitExtractVarPartModel() would not run
+
 CHANGES IN VERSION 1.9.6
 -------------------------
         o Fix tximport issue with eval=FALSE

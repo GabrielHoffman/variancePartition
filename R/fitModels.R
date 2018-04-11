@@ -139,12 +139,12 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	}
 
 	# add response (i.e. exprObj[,j] to formula
-	form = paste( "gene$E", paste(as.character( formula), collapse=''))
+	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
 
 	# run lmer() to see if the model has random effects
 	# if less run lmer() in the loop
 	# else run lm()
-	gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
 
 	mesg <- "No random effects terms specified in formula"
@@ -157,9 +157,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff )
 
-		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
-			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,na.action=stats::na.exclude,...)
+			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
 
 			# apply function
 			fxn( fit )
@@ -171,7 +171,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+		gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
@@ -195,16 +195,16 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		# specify gene explicitly in data 
 		# required for downstream processing with lmerTest
-		data2 = data.frame(data, expr=gene$E, check.names=FALSE)
+		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
-		res <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 
 			# modify data2 for this gene
-			data2$expr = gene$E
+			data2$expr = gene14643$E
  
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
+			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
 			# apply function
 			fxn( fit )
@@ -372,7 +372,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	}
 
 	# add response (i.e. exprObj[,j] to formula
-	form = paste( "gene$E", paste(as.character( formula), collapse=''))
+	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
 
 	# control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient") 
 
@@ -381,7 +381,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	# run lmer() to see if the model has random effects
 	# if less run lmer() in the loop
 	# else run lm()
-	gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data, control=control,... ), error = function(e) e)
 
 	mesg <- "No random effects terms specified in formula"
@@ -393,9 +393,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff )
 
-		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
-			fit = lm( eval(parse(text=form)), data=data, weights=gene$weights,na.action=stats::na.exclude,...)
+			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
@@ -405,7 +405,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		gene = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+		gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control)
@@ -421,9 +421,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
 
-		varPart <- foreach(gene=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
+			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
