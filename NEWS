@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.9.9
+-------------------------
+	o Fix issue when package is autoloaded when starting R
+
 CHANGES IN VERSION 1.9.8
 -------------------------
      o Fix issue where if info data.frame contained a column name "gene", 

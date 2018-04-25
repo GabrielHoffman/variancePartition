@@ -80,7 +80,14 @@ setMethod("sortCols", "data.frame",
 #' @aliases sortCols,varPartResults-method
 setMethod("sortCols", "varPartResults",
 	function( x, FUN=median, decreasing = TRUE, last=c("Residuals", "Measurement.error"), ... ){
- 		res = .sortCols( data.frame(x, check.names=FALSE), FUN, decreasing, last, ... )
+		# df = suppressWarnings(as.data.frame(x, check.names=FALSE))
+
+		df = as.data.frame( x@.Data )
+		colnames(df) = names(x)
+		rownames(df) = varPart@row.names
+
+
+ 		res = .sortCols( df, FUN, decreasing, last, ... )
 
  		vp = new( "varPartResults", res, type=x@type, adjustedFor=x@adjustedFor, method=x@method)
 

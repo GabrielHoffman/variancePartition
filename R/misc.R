@@ -92,6 +92,48 @@ function(x, ...)
 	return( df )
 })
 
+#' Convert to data.frame
+#' 
+#' Convert varPartResults to data.frame
+#'
+#' @param x varPartResults
+#' @param ... other arguments.
+#' 
+#' @return
+#' data.frame
+#' @examples
+#' # load library
+#' # library(variancePartition)
+#'
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' # Specify variables to consider
+#' # Age is continuous so we model it as a fixed effect
+#' # Individual and Tissue are both categorical, so we model them as random effects
+#' form <- ~ Age + (1|Individual) + (1|Tissue) 
+#'
+#' # Fit model
+#' varPart <- fitExtractVarPartModel( geneExpr[1:5,], form, info )
+#' 
+#' # convert to matrix
+#' as.matrix(varPart)
+#'
+#' @export
+#' @docType methods
+#' @aliases as.matrix
+setMethod("as.data.frame", "varPartResults",
+function(x, ...)
+{
+	df = as.data.frame( x@.Data )
+	colnames(df) = names(x)
+	rownames(df) = varPart@row.names
+
+	return( df )
+})
+
 
 #' Simulation dataset for examples
 #'
