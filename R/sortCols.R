@@ -84,7 +84,7 @@ setMethod("sortCols", "varPartResults",
 
 		df = as.data.frame( x@.Data )
 		colnames(df) = names(x)
-		rownames(df) = varPart@row.names
+		rownames(df) = x@row.names
 
 
  		res = .sortCols( df, FUN, decreasing, last, ... )

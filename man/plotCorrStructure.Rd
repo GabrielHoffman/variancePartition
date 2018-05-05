@@ -75,3 +75,4 @@ plotCorrStructure( fit, reorder=idx )
 stopCluster(cl)
 
 }
+

@@ -3,11 +3,9 @@
 \docType{methods}
 \name{plotVarPart}
 \alias{plotVarPart}
-\alias{plotVarPart,matrix-method}
 \alias{plotVarPart,data.frame-method}
-\alias{plotVarPart,varPartResults-method}
-\alias{plotVarPart,varPartResults-method}
 \alias{plotVarPart,matrix-method}
+\alias{plotVarPart,varPartResults-method}
 \title{Violin plot of variance fractions}
 \usage{
 plotVarPart(obj, col = c(ggColorHue(ncol(obj) - 1), "grey85"),
@@ -77,3 +75,4 @@ plotVarPart( sortCols( varPart ) )
 stopCluster(cl)
 
 }
+

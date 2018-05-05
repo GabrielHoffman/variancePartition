@@ -69,3 +69,4 @@ varPart <- extractVarPart( results )
 stopCluster(cl)
 
 }
+

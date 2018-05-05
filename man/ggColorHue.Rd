@@ -18,3 +18,4 @@ Return an array of n colors the same as the default used by ggplot2
 \examples{
 ggColorHue(4)
 }
+

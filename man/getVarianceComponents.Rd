@@ -46,3 +46,4 @@ getVarianceComponents( fit )
 stopCluster(cl)
 
 }
+

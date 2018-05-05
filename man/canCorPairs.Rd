@@ -4,12 +4,14 @@
 \alias{canCorPairs}
 \title{canCorPairs}
 \usage{
-canCorPairs(formula, data)
+canCorPairs(formula, data, showWarnings = TRUE)
 }
 \arguments{
 \item{formula}{standard linear model formula (doesn't support random effects currently, so just change the syntax)}
 
 \item{data}{data.frame with the data for the variables in the formula}
+
+\item{showWarnings}{default to true}
 }
 \value{
 Matrix of correlation values between all pairs of variables.
@@ -44,3 +46,4 @@ C = canCorPairs( form, info)
 plotCorrMatrix( C )
 
 }
+

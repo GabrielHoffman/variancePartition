@@ -7,6 +7,7 @@
 #'
 #' @param formula standard linear model formula (doesn't support random effects currently, so just change the syntax)
 #' @param data data.frame with the data for the variables in the formula
+#' @param showWarnings default to true
 #'
 #' @details
 #' Canonical Correlation Analysis (CCA) is similar to correlation between two vectors, except that CCA can accommodate matricies as well.  For a pair of variables, canCorPairs assesses the degree to which they co-vary and contain the same information.  Variables in the formula can be a continuous variable or a discrete variable expanded to a matrix (which is done in the backend of a regression model).  For a pair of variables, canCorPairs uses CCA to compute the correlation between these variables and returns the pairwise correlation matrix.
@@ -38,7 +39,7 @@
 #' plotCorrMatrix( C )
 #'
 #' @export
-canCorPairs = function(formula, data){
+canCorPairs = function(formula, data, showWarnings=TRUE){
 
 	formula = stats::as.formula( formula )
 
@@ -78,6 +79,8 @@ canCorPairs = function(formula, data){
 
 	pairs = combn(varLabels, 2)
 
+	colinear_set = c()
+
 	for(i in 1:ncol(pairs)){
 		key1 = pairs[1,i]
 		key2 = pairs[2,i]
@@ -85,7 +88,18 @@ canCorPairs = function(formula, data){
 		fit = cancor( variableList[[key1]], variableList[[key2]] ) 
 		C[key1, key2] = sum(fit$cor) / length(fit$cor)
 		C[key2, key1] = C[key1, key2]
+
+		if( showWarnings & (C[key2, key1] > .999) ){
+			colinear_set = c(colinear_set, paste(key1, "and", key2))
+		}
+	}
+
+	if( length(colinear_set) > 0){
+		warning("Regression model may be problematic.\nHigh colinearity between variables:\n", paste(paste0('  ', colinear_set), collapse="\n"))
 	}
 
 	return( C )
 }
+
+
+

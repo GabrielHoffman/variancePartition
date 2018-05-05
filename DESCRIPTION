@@ -2,7 +2,7 @@ Package: variancePartition
 Type: Package
 Title: Quantify and interpret divers of variation in multilevel gene expression
     experiments
-Version: 1.11.1
+Version: 1.11.2
 Date: 2017-5-5
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
@@ -13,8 +13,8 @@ Description: Quantify and interpret multiple sources of biological and technical
 VignetteBuilder: knitr
 License: GPL (>= 2)
 Suggests:
-    BiocStyle, 
-    knitr, 
+    BiocStyle,
+    knitr,
     rmarkdown,
     edgeR,
     dendextend,
@@ -47,4 +47,4 @@ Imports:
     graphics,
     utils,
     stats
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1

@@ -44,3 +44,4 @@ plotCorrMatrix( C )
 plotCorrMatrix( C^2, dendrogram="none" )
 
 }
+

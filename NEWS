@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.11.2 
+-------------------------
+	o Add warnings to canCorPairs for colinear terms
+
 CHANGES IN VERSION 1.11.1
 -------------------------
 	o Add vignette: theory_practice_random_effects.Rnw
