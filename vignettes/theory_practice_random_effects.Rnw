@@ -1,0 +1,128 @@
+%\VignetteIndexEntry{2) Additional visualizations}
+%\VignettePackage{variancePartition}
+%\VignetteEngine{knitr::knitr}
+
+% To compile this document
+% library('knitr'); rm(list=ls()); knit('theory_practice_random_effects.Rnw')
+
+\documentclass[12pt]{article}
+
+\newcommand{\lowtilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
+
+<<knitr, echo=FALSE, results='hide'>>=
+library("knitr")
+opts_chunk$set(tidy=FALSE,dev="pdf",fig.show="hide",
+               fig.width=4,fig.height=4.5,
+               message=FALSE, warning=FALSE)
+
+@ 
+
+<<style, eval=TRUE, echo=FALSE, results="asis">>=
+BiocStyle::latex()
+@
+
+\usepackage[position=top]{subfig}
+\usepackage{blkarray}
+
+\bioctitle[Theory and Practice]{Theory and Practice\\of random effects in \\\Biocpkg{variancePartition}}
+
+\author{Gabriel Hoffman\\ 
+\small{Pamela Sklar Division of Psychiatric Genomics} \\
+\small{Icahn Institute for Genomics and Multiscale Biology}\\
+\small{Department of Genetics and Genomic Sciences}\\
+\small{Icahn School of Medicine at Mount Sinai}}
+
+
+\begin{document}
+
+\maketitle
+
+The distinction between modeling a variable as a fixed versus a random effect depends on the goal of the statistical analysis.  While some theory and software make a strong distinction.  Yet \Rpackage{variancePartition} takes a different approach based on the goal of this type of analysis.  
+
+	Why?
+
+\pagebreak
+
+In traditional statistics and biostatistics, there is a strong distinction between modeling categorical variants as fixed and random effects.  Random effects correspond to a sample of units from a larger population, while fixed effects correspond to properties of specific individuals.  Random effects are typically treated as nuisance variables and integrated out, and hypothesis testing is performed on the fixed effect.  
+
+The \Rpackage{r2glmm} package fits into this traditional framework, by computing the variance fractions for a given fixed effect as:
+\begin{eqnarray}
+\sigma^2_{fixed}/ (\sigma^2_{fixed} + \sigma^2_{error})
+\end{eqnarray}
+
+Importantly, the random effects are not in the denominator.  The fraction is only determined by fixed effects and residuals.  
+
+In my experience in bioinformatics, this was a problem. Making such distinctions  between fixed and random effects seemed arbitrary.  Variance in a phenotype could be due to age (fixed) or to variation across subject (random).  Including all of the variables in the denominator produced more intutiive results so that 1) the variance fractions sum to one across all components and 2) fixed and random effects could be interpreted on the same scale 3) fractions could be compared across studies with different designs, 4) estimates of variance fractions were most accurate.  So in variancePartition the fractions are defined as:
+\begin{eqnarray}
+\sigma^2_{fixed}/ (\sigma^2_{fixed} + \sigma^2_{random} + \sigma^2_{error}) 
+\end{eqnarray}
+
+just plugging the each variable in the numerator.  
+
+Thus the faction evaluated by variancePartition is different than \Rpackage{r2glmm} by definition.  
+
+Here is some code explicitly demonstrating this difference:
+
+<<options, results="hide", echo=FALSE>>=
+options(digits=3, width=80, prompt=" ", continue=" ")
+opts_chunk$set(comment=NA, fig.width=7, fig.height=7)
+@
+
+<<code, cache=TRUE>>=
+library(variancePartition)
+library(lme4)
+library(r2glmm)
+
+set.seed(1)
+
+N = 1000
+beta = 3
+alpha = c(1, 5, 7)
+
+# generate 1 fixed variable and 1 random variable with 3 levels
+data = data.frame(X=rnorm(N), Subject = sample(c('A', 'B', 'C'), 100, replace=TRUE))
+
+# simulate variable
+# y = X\beta + Subject\alpha + \sigma^2
+data$y = data$X*beta + model.matrix(~ data$Subject) %*% alpha  + rnorm(N, 0, 1)
+
+# fit model
+fit = lmer( y ~ X +(1|Subject), data, REML=FALSE)
+
+# calculate variance fraction using variancePartition
+# include the total sum in the denominator
+frac = calcVarPart(fit)
+frac
+
+# the variance fraction excluding the random effect from the denominator
+# is the same as from r2glmm
+frac[['X']] / (frac[['X']] + frac[['Residuals']])
+
+# using r2glmm
+r2beta(fit)
+@
+
+So the formulas are different. But why require categorical variables as random effects?
+
+At practical level, categorical variables with too many levels are problematic.  Using a categorical variable with 200 categories as a fixed effect, is statistically unstable.  There are so many degrees of freedom that that variable will absorb a lot of variance even under the null.   Statistically, estimating the variance fraction for a variable with many categories can be biased if that variable is a fixed effect.  Therefore, \Rpackage{variancePartition} requires all categorical variables to be random effects.  Modeling this variable as a random effect produces unbiased in practice (see simulations in the supplement of the paper; Section 1.5).
+
+The distinction between fixed and random effects is important in the \Rpackage{r2glmm} formulation because it affects which variables are put in the denominator.  So choosing to model a variable as a fixed versus random effect will definitely change the estimated fraction.  
+
+Yet for the \Rpackage{variancePartition} formulation, all variables are in the denominator and it isn`t affected by the fixed/random decision.  Moreover, using a random effect empirically reduces the bias of the estimated fraction.     
+
+Finally, why use maximum likelihood to estimate the paramters instead of the default REML (\Rcode{REML=FALSE})?  Maximum likelihood fits all parameters jointly so that it estimates the fixed and random effects together.  This is essential if we want to compare fixed and random effects later.  Conversely, REML estimates the fixed effects by integrating out the random effects.  This implicitly removes the random effects from the denominator when evaluating the variance fraction.  REML treats random effects as nuisance variables to be integrated out.  Conversely, \Rpackage{variancePartition} considers random effects to be a core part of the analysis.
+
+<<resetOptions, results="hide", echo=FALSE>>=
+options(prompt="> ", continue="+ ")
+@ 
+
+
+
+
+% \bibliography{library}
+\end{document}
+
+
+
+
+

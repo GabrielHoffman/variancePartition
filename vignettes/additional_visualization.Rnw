@@ -27,7 +27,7 @@ BiocStyle::latex()
 \bioctitle[Additional visualizations]{Additional visualizations for\\\Biocpkg{variancePartition}}
 
 \author{Gabriel Hoffman\\ 
-\small{Pamela Sklar Division of Psychiatric Genomics \& Precision Psychiatry} \\
+\small{Pamela Sklar Division of Psychiatric Genomics} \\
 \small{Icahn Institute for Genomics and Multiscale Biology}\\
 \small{Department of Genetics and Genomic Sciences}\\
 \small{Icahn School of Medicine at Mount Sinai}}
