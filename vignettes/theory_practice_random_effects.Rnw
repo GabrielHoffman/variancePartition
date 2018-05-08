@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{2) Additional visualizations}
+%\VignetteIndexEntry{3) Theory and practice of random effects}
 %\VignettePackage{variancePartition}
 %\VignetteEngine{knitr::knitr}
 

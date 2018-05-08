@@ -86,10 +86,12 @@ setMethod("as.matrix", "varPartResults",
 function(x, ...)
 {
 	df = as.data.frame( x@.Data )
-	colnames(df) = colnames(x)
-	rownames(df) = rownames(x)
+	colnames(df) = names(x)
+	rownames(df) = x@row.names
+	# colnames(df) = colnames(x)
+	# rownames(df) = rownames(x)
 
-	return( df )
+	return( as.matrix(df) )
 })
 
 #' Convert to data.frame
@@ -97,6 +99,8 @@ function(x, ...)
 #' Convert varPartResults to data.frame
 #'
 #' @param x varPartResults
+#' @param row.names pass thru to generic
+#' @param optional pass thru to generic
 #' @param ... other arguments.
 #' 
 #' @return
@@ -119,17 +123,19 @@ function(x, ...)
 #' varPart <- fitExtractVarPartModel( geneExpr[1:5,], form, info )
 #' 
 #' # convert to matrix
-#' as.matrix(varPart)
+#' as.data.frame(varPart)
 #'
 #' @export
 #' @docType methods
-#' @aliases as.matrix
+#' @aliases as.data.frame
 setMethod("as.data.frame", "varPartResults",
-function(x, ...)
+function(x, row.names = NULL, optional = FALSE,...)
 {
 	df = as.data.frame( x@.Data )
 	colnames(df) = names(x)
 	rownames(df) = x@row.names
+	# colnames(df) = colnames(x)
+	# rownames(df) = rownames(x)
 
 	return( df )
 })

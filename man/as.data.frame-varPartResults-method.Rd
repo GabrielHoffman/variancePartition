@@ -2,8 +2,8 @@
 % Please edit documentation in R/misc.R
 \docType{methods}
 \name{as.data.frame,varPartResults-method}
+\alias{as.data.frame}
 \alias{as.data.frame,varPartResults-method}
-\alias{as.matrix}
 \title{Convert to data.frame}
 \usage{
 \S4method{as.data.frame}{varPartResults}(x, row.names = NULL,
@@ -11,6 +11,10 @@
 }
 \arguments{
 \item{x}{varPartResults}
+
+\item{row.names}{pass thru to generic}
+
+\item{optional}{pass thru to generic}
 
 \item{...}{other arguments.}
 }
@@ -38,7 +42,7 @@ form <- ~ Age + (1|Individual) + (1|Tissue)
 varPart <- fitExtractVarPartModel( geneExpr[1:5,], form, info )
 
 # convert to matrix
-as.matrix(varPart)
+as.data.frame(varPart)
 
 }
 
