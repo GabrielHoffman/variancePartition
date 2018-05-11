@@ -146,9 +146,9 @@ function(x, row.names = NULL, optional = FALSE,...)
 #' A simulated dataset of gene expression and metadata
 #'
 #' \itemize{    
-#'	\item geneCounts: gene expression in the form of RNA-seq counts
-#'	\item geneExpr: gene expression on a continuous scale
-#'  \item info: metadata about the study design
+#'	\item geneCounts gene expression in the form of RNA-seq counts
+#'	\item geneExpr gene expression on a continuous scale
+#'  \item info metadata about the study design
 #' }
 #' @docType data
 #' @keywords datasets
@@ -156,8 +156,6 @@ function(x, row.names = NULL, optional = FALSE,...)
 #' @format A dataset of 100 samples and 200 genes
 #' @name varPartData
 NULL
-
-
 
 #' Default colors for ggplot
 #' 

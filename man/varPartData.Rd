@@ -13,9 +13,9 @@ A simulated dataset of gene expression and metadata
 }
 \details{
 \itemize{    
-\item geneCounts: gene expression in the form of RNA-seq counts
-\item geneExpr: gene expression on a continuous scale
- \item info: metadata about the study design
+\item geneCounts gene expression in the form of RNA-seq counts
+\item geneExpr gene expression on a continuous scale
+ \item info metadata about the study design
 }
 }
 \keyword{datasets}
