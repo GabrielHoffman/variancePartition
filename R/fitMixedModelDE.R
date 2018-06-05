@@ -68,7 +68,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 
 #' @export
-fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
+fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
 
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
@@ -78,6 +78,10 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
 
+	if( !(ddf %in% c("Kenward-Roger", 'Satterthwaite')) ){
+		stop("Specify ddf correctly")
+	}
+	
 	# if weightsMatrix is not specified, set useWeights to FALSE
 	if( useWeights && is.null(weightsMatrix) ){
 		# warning("useWeights was ignored: no weightsMatrix was specified")
@@ -115,8 +119,15 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 
 		timeStart = proc.time()
 		fitInit <- lmerTest::lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
-		V = pbkrtest::vcovAdj.lmerMod(fitInit, 0)
-		df = pbkrtest::get_Lb_ddf(fitInit, L)
+		if(ddf == "Kenward-Roger"){
+			# KR
+			V = pbkrtest::vcovAdj.lmerMod(fit, 0)
+			df = pbkrtest::get_Lb_ddf(fit, L)
+		}else{
+			# Satterthwaite
+			V = vcov(fit)
+			df = contest(fit, L, ddf="Sat")['DenDF']
+		}
 		sigma = attr(lme4::VarCorr(fitInit), "sc")	
 		beta = as.matrix(sum(L * fixef(fitInit)), ncol=1)
 		SE = as.matrix(sqrt(sum(L * (V %*% L))), ncol=1)
@@ -157,9 +168,15 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 			# fit linear mixed model
 			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
-			V = pbkrtest::vcovAdj.lmerMod(fit, 0)
-
-			df = pbkrtest::get_Lb_ddf(fit, L)
+			if(ddf == "Kenward-Roger"){
+				# KR
+				V = pbkrtest::vcovAdj.lmerMod(fit, 0)
+				df = pbkrtest::get_Lb_ddf(fit, L)
+			}else{
+				# Satterthwaite
+				V = vcov(fit)
+				df = contest(fit, L, ddf="Sat")['DenDF']
+			}
 
 			sigma = attr(lme4::VarCorr(fit), "sc")
 	
