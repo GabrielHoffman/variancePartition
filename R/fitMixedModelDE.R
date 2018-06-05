@@ -172,7 +172,8 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 				Amean = mean(fit@frame[,1]), 
 				method = 'lmer',
 				sigma = sigma,
-				stdev.unscaled = SE/sigma)
+				stdev.unscaled = SE/sigma,
+				pValue = 2*pt(abs(beta / SE), df, lower.tail=FALSE))
 
 			new("MArrayLM", ret)
 		}
@@ -185,6 +186,9 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 
 		df.residual = sapply( resList, function(x) x$df.residual)
 		names(df.residual ) = rownames(exprObj)
+
+		pValue = sapply( resList, function(x) x$pValue)
+		names(pValue) = rownames(exprObj)
 
 		Amean = sapply( resList, function(x) x$Amean)
 		names(Amean ) = rownames(exprObj)
@@ -207,7 +211,7 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 		ret = new("MArrayLM", ret)
 	}
 	
-	new("MArrayLMM_lmer", object=ret, contrast=L)	
+	new("MArrayLMM_lmer", object=ret, contrast=L, pValue=pValue)	
 }
 
 
