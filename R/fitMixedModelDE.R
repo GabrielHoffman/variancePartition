@@ -1,5 +1,5 @@
 
-setClass("MArrayLMM_lmer", representation(object="MArrayLM", contrast="numeric"))
+setClass("MArrayLMM_lmer", representation(object="MArrayLM", contrast="numeric", pValue="numeric"))
 
 #' @export
 getContrast = function( exprObj, formula, data, coefficient){ 
