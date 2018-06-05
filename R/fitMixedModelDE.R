@@ -115,7 +115,11 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 
 		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
-
+		V = pbkrtest::vcovAdj.lmerMod(fitInit, 0)
+		df = pbkrtest::get_Lb_ddf(fitInit, L)
+		sigma = attr(lme4::VarCorr(fitInit), "sc")	
+		beta = as.matrix(sum(L * fixef(fitInit)), ncol=1)
+		SE = as.matrix(sqrt(sum(L * (V %*% L))), ncol=1)
 		timediff = proc.time() - timeStart
 
 		# check size of stored objects
@@ -124,7 +128,7 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
 		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
 
-		cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
+		# cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
 
 		if( showTime > .01 ){
 			cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
