@@ -114,7 +114,7 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, useWeights=T
 		gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
-		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
+		fitInit <- lmerTest::lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
 		V = pbkrtest::vcovAdj.lmerMod(fitInit, 0)
 		df = pbkrtest::get_Lb_ddf(fitInit, L)
 		sigma = attr(lme4::VarCorr(fitInit), "sc")	
