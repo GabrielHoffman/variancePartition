@@ -36,6 +36,7 @@ Depends:
 Imports:
     MASS,
     pbkrtest (>= 0.4-4),
+    lmerTest,
     iterators,
     splines,
     colorRamps,
