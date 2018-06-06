@@ -123,7 +123,7 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 
 		timeStart = proc.time()
 		fitInit <- lmerTest::lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
-		cons = contest(fit, L, ddf=ddf)
+		cons = lmerTest::contest(fit, L, ddf=ddf)
 		df = as.numeric(cons['DenDF'])
 
 		if(ddf == "Kenward-Roger"){
@@ -174,7 +174,7 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 			# fit linear mixed model
 			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
-			cons = contest(fit, L, ddf=ddf)
+			cons = lmerTest::contest(fit, L, ddf=ddf)
 			df = as.numeric(cons['DenDF'])
 
 			if(ddf == "Kenward-Roger"){
