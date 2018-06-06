@@ -166,7 +166,7 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
-		resList <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		resList <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest") ) %dopar% {
 
 			# modify data2 for this gene
 			data2$expr = gene14643$E
