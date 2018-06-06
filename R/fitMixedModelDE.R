@@ -81,6 +81,10 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 	if( !(ddf %in% c("Kenward-Roger", 'Satterthwaite')) ){
 		stop("Specify ddf correctly")
 	}
+
+	if( ddf == "Kenward-Roger" & ! REML ){
+		stop("Kenward-Roger must be used with REML")
+	}
 	
 	# if weightsMatrix is not specified, set useWeights to FALSE
 	if( useWeights && is.null(weightsMatrix) ){
@@ -168,14 +172,18 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 			# fit linear mixed model
 			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
+			cons = contest(fit, L, ddf=ddf)
+
+			df = as.numeric(cons['DenDF'])
+
 			if(ddf == "Kenward-Roger"){
 				# KR
 				V = pbkrtest::vcovAdj.lmerMod(fit, 0)
-				df = pbkrtest::get_Lb_ddf(fit, L)
+				# df = pbkrtest::get_Lb_ddf(fit, L)
 			}else{
 				# Satterthwaite
 				V = vcov(fit)
-				df = contest(fit, L, ddf="Sat")['DenDF']
+				# df = as.numeric(contest(fit, L, ddf="Sat")['DenDF'])
 			}
 
 			sigma = attr(lme4::VarCorr(fit), "sc")
@@ -186,6 +194,9 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 
 			SE = as.matrix(sqrt(sum(L * (V %*% L))), ncol=1)		
 			colnames(SE) = "logFC"
+
+			# pValue = 2*pt(as.numeric(abs(beta / SE)), df, lower.tail=FALSE)
+			pValue = as.numeric(cons['Pr(>F)'])
 			
 			ret = list(coefficients = beta, 
 				design = fit@pp$X, 
@@ -194,7 +205,7 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 				method = 'lmer',
 				sigma = sigma,
 				stdev.unscaled = SE/sigma,
-				pValue = 2*pt(abs(beta / SE), df, lower.tail=FALSE))
+				pValue = pValue)
 
 			new("MArrayLM", ret)
 		}
