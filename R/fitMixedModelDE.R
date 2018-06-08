@@ -1,7 +1,36 @@
 
 setClass("MArrayLMM_lmer", representation(object="MArrayLM", contrast="numeric", pValue="numeric"))
 
+
+#' Extract contrast matrix for linear mixed model
+#' 
+#' Extract contrast matrix, L, testing a single variable.  Contrasts involving more than one variable can be constructed by modifying L directly
+#'
+#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
+#' @param data data.frame with columns corresponding to formula 
+#' @param coefficient the coefficient to use in the hypothesis test
+#' 
+#' @return
+#' Contrast matrix testing one variable
+#'
+#' @examples
+#'
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' # get contrast matrix.  
+#' # The variable of interest must be a fixed effect
+#' # May have to modify afterward to get the contrast you want
+#' # For example, setting L[3] = -1 tests whether the difference between Batch2 and Batch3 is equal to zero
+#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
+#' L = getContrast( geneExpr, form, info, "Batch2")
+#'
 #' @export
+#' @docType methods
+#' @rdname getContrast-method
 getContrast = function( exprObj, formula, data, coefficient){ 
 
 	exprObj = as.matrix( exprObj )
@@ -67,11 +96,82 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 
 
+#' Differential expression with linear mixed model
+#' 
+#' Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
+#'
+#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
+#' @param data data.frame with columns corresponding to formula 
+#' @param L contrast matrix specifying a linear combination of fixed effects to test
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option
+#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
+#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
+#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
+#' @param showWarnings show warnings about model fit (default TRUE)
+#' @param control control settings for lmer()
+#' @param ... Additional arguments for lmer() or lm()
+#' 
+#' @return
+#' MArrayLMM_lmer object containing MArrayLM object from limma, along with the contrast matrix, and the directly estimated p-value (without eBayes)
+#'
+#' @details 
+#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
+#'
+#' fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)
+#'
+#' useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regression model.
+#'
+#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
+#' 
+#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lm/lmer.
+#'
+#' Hypothesis tests and degrees of freedom are producted by lmerTest and pbkrtest pacakges
+#' @examples
+#'
+#' # load library
+#' # library(variancePartition)
+#'
+#' # optional step to run analysis in parallel on multicore machines
+#' # Here, we used 4 threads
+#' library(doParallel)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
+#'
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' # get contrast matrix.  
+#' # The variable of interest must be a fixed effect
+#' # May have to modify afterward to get the contrast you want
+#' # For example, setting L[3] = -1 tests whether the difference between Batch2 and Batch3 is equal to zero
+#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
+#' L = getContrast( geneExpr, form, info, "Batch2")
+#' 
+#' # Fit linaer mixed model for each gene
+#' fit = fitMixedModelDE( geneExpr, form, info, L, showWarnings=FALSE)
+#' 
+#' # Run empirical Bayes post processing from limma
+#' fitEB = eBayes( fit )
+#' 
+#' # view top genes
+#' topTable( fit2e )
+#' 
+#' # stop cluster
+#' stopCluster(cl)
+#'
 #' @export
-fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
+#' @docType methods
+#' @rdname fitMixedModelDE-method
+fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
 
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
+	ddf = match.arg(ddf)
+	colinearityCutoff=.999
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
@@ -140,7 +240,7 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 		timediff = proc.time() - timeStart
 
 		# check size of stored objects
-		objSize = object.size( fxn(fitInit) ) * nrow(exprObj)
+		objSize = object.size( fitInit ) * nrow(exprObj)
 
 		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
 		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
@@ -248,6 +348,26 @@ fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Sat
 }
 
 
+
+
+
+
+
+# MArrayLMM_lmer
+#' eBayes for MArrayLMM_lmer
+#'
+#' eBayes for MArrayLMM_lmer
+#'
+#' @param fit fit
+#' @param proportion proportion
+#' @param stdev.coef.lim stdev.coef.lim
+#' @param trend trend
+#' @param robust robust
+#' @param winsor.tail.p winsor.tail.p 
+#'
+#' @export
+#' @rdname eBayes-method
+#' @aliases eBayes,MArrayLMM_lmer-method
 setMethod("eBayes", "MArrayLMM_lmer",
 function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
@@ -256,8 +376,34 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 })
 
 
+
+
+
+
+#' topTable for MArrayLMM_lmer
+#'
+#' topTable for MArrayLMM_lmer
+
+#' @param fit fit
+#' @param coef coef
+#' @param number number
+#' @param genelist genelist
+#' @param adjust.method adjust.method
+#' @param sort.by sort.by
+#' @param resort.by resort.by
+#' @param p.value p.value
+#' @param lfc lfc
+#' @param confint confint
+#'
+#' @export
+#' @rdname topTable-method
+#' @aliases topTable,MArrayLMM_lmer-method
 setMethod("topTable", "MArrayLMM_lmer",
 function(fit, coef=NULL, number=10, genelist=fit$genes, adjust.method="BH",
               sort.by="B", resort.by=NULL, p.value=1, lfc=0, confint=FALSE){
 	topTable( fit@object, number=number,  adjust.method=adjust.method, sort.by= sort.by, resort.by=resort.by, p.value=p.value, lfc=lfc, confint=confint  )	
 })
+
+
+
+
