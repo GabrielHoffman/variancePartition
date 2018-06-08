@@ -152,7 +152,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' L = getContrast( geneExpr, form, info, "Batch2")
 #' 
 #' # Fit linaer mixed model for each gene
-#' fit = fitMixedModelDE( geneExpr, form, info, L, showWarnings=FALSE)
+#' fit = limmde( geneExpr, form, info, L, showWarnings=FALSE)
 #' 
 #' # Run empirical Bayes post processing from limma
 #' fitEB = eBayes( fit )
@@ -165,8 +165,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'
 #' @export
 #' @docType methods
-#' @rdname fitMixedModelDE-method
-fitMixedModelDE <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
+#' @rdname limmde-method
+limmde <- function( exprObj, formula, data, L, REML=FALSE, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
 
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
