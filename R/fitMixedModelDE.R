@@ -39,7 +39,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 	REML=FALSE
 	useWeights=TRUE
 	weightsMatrix=NULL
-	showWarnings=TRUE
+	showWarnings=FALSE
+	limmde=TRUE
 	fxn=identity
 	colinearityCutoff=.999
 	control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" )
@@ -108,7 +109,6 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
-#' @param showWarnings show warnings about model fit (default TRUE)
 #' @param control control settings for lmer()
 #' @param ... Additional arguments for lmer() or lm()
 #' 
@@ -152,7 +152,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' L = getContrast( geneExpr, form, info, "Batch2")
 #' 
 #' # Fit linaer mixed model for each gene
-#' fit = limmde( geneExpr, form, info, L, showWarnings=FALSE)
+#' fit = limmde( geneExpr, form, info, L)
 #' 
 #' # Run empirical Bayes post processing from limma
 #' fitEB = eBayes( fit )
@@ -166,7 +166,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @export
 #' @docType methods
 #' @rdname limmde-method
-limmde <- function( exprObj, formula, data, L, REML=TRUE, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
+limmde <- function( exprObj, formula, data, L, REML=TRUE, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
 
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
@@ -252,7 +252,7 @@ limmde <- function( exprObj, formula, data, L, REML=TRUE, ddf = c("Satterthwaite
 		}
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fitInit, showWarnings=FALSE, limmde=TRUE, colinearityCutoff )
 
 		a = names(fixef(fitInit))
 		b = names(L)

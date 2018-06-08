@@ -74,7 +74,7 @@ registerDoParallel(cl)
 # fitMixedModelDE
 form <- ~ Disease + (1|Individual) 
 L = getContrast( vobj, form, metadata, "Disease1")
-fitmm = fitMixedModelDE( vobj, form, metadata, L, showWarnings=FALSE)
+fitmm = limmde( vobj, form, metadata, L, showWarnings=FALSE)
 fitmm_eb = eBayes( fitmm )
 ```
 

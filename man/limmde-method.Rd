@@ -5,10 +5,10 @@
 \alias{limmde}
 \title{Differential expression with linear mixed model}
 \usage{
-limmde(exprObj, formula, data, L, REML = FALSE, ddf = c("Satterthwaite",
+limmde(exprObj, formula, data, L, REML = TRUE, ddf = c("Satterthwaite",
   "Kenward-Roger"), useWeights = TRUE, weightsMatrix = NULL,
-  showWarnings = TRUE, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), ...)
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
+  "stop.deficient"), ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -26,8 +26,6 @@ limmde(exprObj, formula, data, L, REML = FALSE, ddf = c("Satterthwaite",
 \item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
 
 \item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE}
-
-\item{showWarnings}{show warnings about model fit (default TRUE)}
 
 \item{control}{control settings for lmer()}
 
@@ -77,7 +75,7 @@ form <- ~ Batch + (1|Individual) + (1|Tissue)
 L = getContrast( geneExpr, form, info, "Batch2")
 
 # Fit linaer mixed model for each gene
-fit = limmde( geneExpr, form, info, L, showWarnings=FALSE)
+fit = limmde( geneExpr, form, info, L)
 
 # Run empirical Bayes post processing from limma
 fitEB = eBayes( fit )
