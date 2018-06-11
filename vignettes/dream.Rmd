@@ -14,7 +14,7 @@ output:
     fig_width: 5
 bibliography: library.bib
 vignette: >
-  %\VignetteIndexEntry{Differential expression testing with repeated measures designs}
+  %\VignetteIndexEntry{4) Differential expression testing with repeated measures designs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
   %\usepackage[utf8]{inputenc}
