@@ -4,7 +4,7 @@ author: "[Gabriel E Hoffman](http://gabrielhoffman.github.io)"
 date: "`r format(Sys.Date(), '%m/%d/%Y')`"
 abstract: > 
   **D**ifferential expression for **re**pe**a**ted **m**easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual.  Dream fits seamlessly into the widely used workflow of limma/voom [@Law2014].  
-
+  <br> <br> 
   variancePartition v`r packageVersion("variancePartition")`
 
 output:
