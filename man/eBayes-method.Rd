@@ -22,6 +22,9 @@
 
 \item{winsor.tail.p}{winsor.tail.p}
 }
+\value{
+resold of eBayes
+}
 \description{
 eBayes for MArrayLMM_lmer
 }

@@ -2,8 +2,8 @@ Package: variancePartition
 Type: Package
 Title: Quantify and interpret divers of variation in multilevel gene expression
     experiments
-Version: 1.11.4
-Date: 2017-5-8
+Version: 1.11.5
+Date: 2017-6-10
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
 Description: Quantify and interpret multiple sources of biological and technical
@@ -30,6 +30,7 @@ biocViews: RNASeq,
     Software
 Depends:
     ggplot2,
+    limma,
     foreach,
     Biobase,
     methods
@@ -44,7 +45,6 @@ Imports:
     reshape2,
     lme4 (>= 1.1-10),
     doParallel,
-    limma,
     grDevices,
     graphics,
     utils,

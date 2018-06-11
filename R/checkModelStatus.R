@@ -8,12 +8,12 @@
 #	2) Any coefficient is NA
 #	3) a categorical variable is modeled as a fixed effect
 setGeneric("checkModelStatus", signature="fit",
-  function( fit, showWarnings=TRUE, limmde=FALSE, colinearityCutoff=.999 )
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999 )
       standardGeneric("checkModelStatus")
 )
 
 setMethod("checkModelStatus", "lm",
-  function( fit, showWarnings=TRUE, limmde=FALSE, colinearityCutoff=.999 )
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999 )
 	{
 		# if no intercept is specified, give warning
 		if( showWarnings && length(which(names(coef(fit)) == "(Intercept)")) == 0 ){
@@ -34,7 +34,7 @@ setMethod("checkModelStatus", "lm",
 )
 
 setMethod("checkModelStatus", "lmerMod",
-  function( fit, showWarnings=TRUE, limmde=FALSE, colinearityCutoff=.999 )
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999 )
 	{
 		# if no intercept is specified, give warning
 		if( showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
@@ -42,7 +42,7 @@ setMethod("checkModelStatus", "lmerMod",
 		}
 
 		# if any coefficient is NA
-		if( (showWarnings | limmde) && any(is.na(coef(fit))) ){
+		if( (showWarnings | dream) && any(is.na(coef(fit))) ){
 			stop("The variables specified in this model are redundant,\nso the design matrix is not full rank")
 		}
 
@@ -86,7 +86,7 @@ setMethod("checkModelStatus", "lmerMod",
 			}
 
 			# If numeric/double is not fixed
-			if( (showWarnings | limmde) && varType[i] %in% c("numeric", "double") && (!names(varType)[i] %in% fixedVar) ){
+			if( (showWarnings | dream) && varType[i] %in% c("numeric", "double") && (!names(varType)[i] %in% fixedVar) ){
 				stop(paste("Continuous variable cannot be modeled as a random effect:", names(varType)[i]))		
 			}
 		}

@@ -1,0 +1,143 @@
+---
+title: "dream: Differential expression testing with linear mixed models for repeated measures"
+author: "[Gabriel E Hoffman](http://gabrielhoffman.github.io)"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: > 
+  **D**ifferential expression for **re**pe**a**ted **m**easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual.  Dream fits seamlessly into the widely used workflow of limma/voom [@Law2014].  
+
+  variancePartition v`r packageVersion("variancePartition")`
+
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: false
+    fig_width: 5
+bibliography: library.bib
+vignette: >
+  %\VignetteIndexEntry{Differential expression testing with repeated measures designs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
+---
+
+<!---
+cd /Users/gabrielhoffman/workspace/repos
+R
+library(knitr)
+rmarkdown::render('variancePartition/vignettes/dream.Rmd')
+--->
+
+```{r setup, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(tidy=FALSE, cache=TRUE,
+                      dev="png",
+                      message=FALSE, error=FALSE, warning=TRUE)
+```	
+
+### Description
+Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements.  Dream achieves this by combining multiple statistical concepts into a single statistical model.  The dream model includes:     
+
+```{r kable, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+library(pander)
+tab = rbind(c('precision weights to model measurement error in RNA-seq counts', "limma/voom", "@Law2014"),
+  c('ability to model multiple random effects', 'lme4', '@Bates2015'),
+  c('random effects estimated separately for each gene', 'variancePartition', '@hoffman2016'),
+  c('hypothesis testing for fixed effects in linear mixed models', 'lmerTest', 'Kuznetsova, et al. -@kuznetsova2017'),
+  c('small sample size hypothesis test', 'pbkrtest' , 'Halekoh, et al. -@halekoh2014'), 
+  c('emprical Bayes moderated t-test', 'limma/eBayes', '@smyth2004'),
+  c('','','')
+  )
+colnames(tab) = c("Model property", "Package", "Reference")
+
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.default', 'left')
+
+pander(tab, style = 'rmarkdown')
+```
+
+Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.
+
+### Usage
+Process raw count data using limma/voom.  
+```{r preprocess, eval=TRUE}
+library(variancePartition)
+library(edgeR)
+library(doParallel)
+data(varPartDEdata)
+
+isexpr = rowSums(cpm(countMatrix)>0.1) >= 3
+
+# Standard usage of limma/voom
+genes = DGEList( countMatrix )
+genes = calcNormFactors( genes )
+design = model.matrix( ~ Disease, metadata)
+vobj_tmp = voom( genes, design, plot=FALSE)
+
+# apply duplicateCorrelation 
+dupcor <- duplicateCorrelation(vobj_tmp,design,block=metadata$Individual)
+
+# run voom considering the duplicateCorrelation results
+# in order to compute more accurate precision weights
+# Otherwise, use the results from the first voom run
+vobj = voom( genes, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
+```
+
+Limma has a built-in approach for analyzing repeated measures data using duplicateCorrelation.  The model can handle a single random effect, and forces the magnitude of the random effect to be the same across all genes.
+```{r dupCor, eval=TRUE}
+
+design = model.matrix( ~ Disease, metadata)
+
+# Estimate linaer mixed model with a single variance component
+# Fit the model for each gene, 
+dupcor <- duplicateCorrelation(vobj, design, block=metadata$Individual)
+
+# But this step uses only the genome-wide average for the random effect
+fitDupCor <- lmFit(vobj, design, block=metadata$Individual, correlation=dupcor$consensus)
+
+# Fit Empirical Bayes for moderated t-statistics
+fitDupCor <- eBayes( fitDupCor )
+```
+
+The dream model operates directly on the results of voom.  The only change compared to the standard limma workflow is to replace lmFit with dream.  
+```{r lmm, eval=TRUE}
+cl <- makeCluster(4)
+registerDoParallel(cl)
+
+# Specify formula with at least one random effect
+# The variable to be tested should be a fixed effect
+form <- ~ Disease + (1|Individual) 
+
+# Get the contract matrix for the hypothesis test
+L = getContrast( vobj, form, metadata, "Disease1")
+
+# Fit the dream model on each gene
+# Apply the contrast matrix L for the hypothesis test  
+# By default, uses the Satterthwaite approximation for the hypothesis test
+fitmm = dream( vobj[1:10,], form, metadata, L)
+
+# Fit Empirical Bayes for moderated t-statistics
+fitmm_eb = eBayes( fitmm )
+
+# get results
+topTable( fitmm_eb )
+```
+
+You can also perform a hypothesis test between two levels
+```{r contrast, eval=TRUE}
+form <- ~ 0 + Disease + (1|Individual) 
+L = getContrast( vobj, form, metadata, c("Disease1", "Disease0"))
+```
+
+#### Small-sample method
+For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
+```{r kr}
+fitmmKR = dream( vobj[1:10,], form, metadata, L, ddf="Kenward-Roger")
+```
+
+
+# Session info
+```{r sessionInfo}
+sessionInfo()
+```
+
+# References
+

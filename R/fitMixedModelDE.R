@@ -1,4 +1,10 @@
-
+#' Class MArrayLMM_lmer.
+#'
+#' Class \code{MArrayLMM_lmer} 
+#'
+#' @name MArrayLMM_lmer-class
+#' @rdname MArrayLMM_lmer-class
+#' @exportClass MArrayLMM_lmer
 setClass("MArrayLMM_lmer", representation(object="MArrayLM", contrast="numeric", pValue="numeric"))
 
 
@@ -21,12 +27,18 @@ setClass("MArrayLMM_lmer", representation(object="MArrayLM", contrast="numeric",
 #' # info: information/metadata about each sample
 #' data(varPartData)
 #' 
-#' # get contrast matrix.  
+#' # get contrast matrix testing if the coefficient for Batch2 is zero 
 #' # The variable of interest must be a fixed effect
-#' # May have to modify afterward to get the contrast you want
-#' # For example, setting L[3] = -1 tests whether the difference between Batch2 and Batch3 is equal to zero
 #' form <- ~ Batch + (1|Individual) + (1|Tissue) 
-#' L = getContrast( geneExpr, form, info, "Batch2")
+#' L = getContrast( geneExpr, form, info, "Batch3")
+#'
+#' # get contrast matrix testing if Batch3 - Batch2 = 0
+#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
+#' L = getContrast( geneExpr, form, info, c("Batch3", "Batch2"))
+#'
+#' # To test against Batch1 use the formula:
+#' # 	~ 0 + Batch + (1|Individual) + (1|Tissue) 
+#' # to estimate Batch1 directly instead of using it as the baseline
 #'
 #' @export
 #' @docType methods
@@ -36,11 +48,15 @@ getContrast = function( exprObj, formula, data, coefficient){
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
 
-	REML=FALSE
+	if( length(coefficient) > 2){
+		stop("Length of coefficient array limited to 2")
+	}
+
+	REML=TRUE
 	useWeights=TRUE
 	weightsMatrix=NULL
 	showWarnings=FALSE
-	limmde=TRUE
+	dream=TRUE
 	fxn=identity
 	colinearityCutoff=.999
 	control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" )
@@ -80,16 +96,18 @@ getContrast = function( exprObj, formula, data, coefficient){
 	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
 		stop("For fixed effect model, use limma directly")
 	}else{
-		fit = lmer( eval(parse(text=form)), data=data,control=control )
+		fit = lmer( eval(parse(text=form)), data=data,control=control, REML=TRUE )
 		
-		coef = 'TissueB'
-
 		L = rep(0, length(fixef(fit)))
 		names(L) = names(fixef(fit))
-		if( !(coefficient %in% names(L)) ){
+		if( any(!coefficient %in% names(L)) ){
 			stop("coefficient is not in the formula.  Valid coef are:\n", paste(names(L), collapse=', '))
 		}
-		L[coefficient] = 1
+		L[coefficient[1]] = 1
+
+		if( length(coefficient) == 2){			
+			L[coefficient[2]] = -1
+		}
 	}
 	
 	L
@@ -105,8 +123,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option
 #' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 #' @param control control settings for lmer()
@@ -144,29 +162,27 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # info: information/metadata about each sample
 #' data(varPartData)
 #' 
-#' # get contrast matrix.  
+#' # get contrast matrix testing if the coefficient for Batch2 is zero 
 #' # The variable of interest must be a fixed effect
-#' # May have to modify afterward to get the contrast you want
-#' # For example, setting L[3] = -1 tests whether the difference between Batch2 and Batch3 is equal to zero
 #' form <- ~ Batch + (1|Individual) + (1|Tissue) 
-#' L = getContrast( geneExpr, form, info, "Batch2")
+#' L = getContrast( geneExpr, form, info, "Batch3")
 #' 
 #' # Fit linaer mixed model for each gene
-#' fit = limmde( geneExpr, form, info, L)
+#' fit = dream( geneExpr, form, info, L)
 #' 
 #' # Run empirical Bayes post processing from limma
 #' fitEB = eBayes( fit )
 #' 
 #' # view top genes
-#' topTable( fit2e )
+#' topTable( fitEB )
 #' 
 #' # stop cluster
 #' stopCluster(cl)
 #'
 #' @export
 #' @docType methods
-#' @rdname limmde-method
-limmde <- function( exprObj, formula, data, L, REML=TRUE, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
+#' @rdname dream-method
+dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
 
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
@@ -252,7 +268,7 @@ limmde <- function( exprObj, formula, data, L, REML=TRUE, ddf = c("Satterthwaite
 		}
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fitInit, showWarnings=FALSE, limmde=TRUE, colinearityCutoff )
+		checkModelStatus( fitInit, showWarnings=FALSE, dream=TRUE, colinearityCutoff )
 
 		a = names(fixef(fitInit))
 		b = names(L)
@@ -347,13 +363,6 @@ limmde <- function( exprObj, formula, data, L, REML=TRUE, ddf = c("Satterthwaite
 	new("MArrayLMM_lmer", object=ret, contrast=L, pValue=pValue)	
 }
 
-
-
-
-
-
-
-# MArrayLMM_lmer
 #' eBayes for MArrayLMM_lmer
 #'
 #' eBayes for MArrayLMM_lmer
@@ -365,6 +374,7 @@ limmde <- function( exprObj, formula, data, L, REML=TRUE, ddf = c("Satterthwaite
 #' @param robust robust
 #' @param winsor.tail.p winsor.tail.p 
 #'
+#' @return resold of eBayes
 #' @export
 #' @rdname eBayes-method
 #' @aliases eBayes,MArrayLMM_lmer-method
@@ -375,15 +385,10 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	new("MArrayLMM_lmer", object=ret, contrast=fit@contrast)
 })
 
-
-
-
-
-
 #' topTable for MArrayLMM_lmer
 #'
 #' topTable for MArrayLMM_lmer
-
+#'
 #' @param fit fit
 #' @param coef coef
 #' @param number number
@@ -395,6 +400,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 #' @param lfc lfc
 #' @param confint confint
 #'
+#' @return resold of topTable
 #' @export
 #' @rdname topTable-method
 #' @aliases topTable,MArrayLMM_lmer-method
@@ -405,5 +411,36 @@ function(fit, coef=NULL, number=10, genelist=fit$genes, adjust.method="BH",
 })
 
 
+#' toptable for MArrayLMM_lmer
+#'
+#' toptable for MArrayLMM_lmer
+#'
+#' @param fit fit
+#' @param coef coef
+#' @param number number
+#' @param genelist genelist
+#' @param A A
+#' @param eb eb
+#' @param adjust.method adjust.method
+#' @param sort.by sort.by
+#' @param resort.by resort.by
+#' @param p.value p.value
+#' @param lfc lfc
+#' @param confint confint
+#' @param ... ...
+#'
+#' @return resold of toptable
+#' @export
+#' @rdname toptable-method
+#' @aliases toptable,MArrayLMM_lmer-method
+setMethod("toptable", "MArrayLMM_lmer",
+function(fit, coef=1, number=10, genelist=NULL, A=NULL, eb=NULL, adjust.method="BH",
+              sort.by="B", resort.by=NULL, p.value=1, lfc=0, confint=FALSE,...){
+	topTable( fit@object, number=number,  adjust.method=adjust.method, sort.by= sort.by, resort.by=resort.by, p.value=p.value, lfc=lfc, confint=confint  )	
+})
 
-
+#' Example dataset for dream
+#'
+#' Simulated RNA-seq counts in 'countMatrix' and information in 'metadata'
+#'
+# "countMatrix"

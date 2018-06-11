@@ -29,12 +29,18 @@ Extract contrast matrix, L, testing a single variable.  Contrasts involving more
 # info: information/metadata about each sample
 data(varPartData)
 
-# get contrast matrix.  
+# get contrast matrix testing if the coefficient for Batch2 is zero 
 # The variable of interest must be a fixed effect
-# May have to modify afterward to get the contrast you want
-# For example, setting L[3] = -1 tests whether the difference between Batch2 and Batch3 is equal to zero
 form <- ~ Batch + (1|Individual) + (1|Tissue) 
-L = getContrast( geneExpr, form, info, "Batch2")
+L = getContrast( geneExpr, form, info, "Batch3")
+
+# get contrast matrix testing if Batch3 - Batch2 = 0
+form <- ~ Batch + (1|Individual) + (1|Tissue) 
+L = getContrast( geneExpr, form, info, c("Batch3", "Batch2"))
+
+# To test against Batch1 use the formula:
+# 	~ 0 + Batch + (1|Individual) + (1|Tissue) 
+# to estimate Batch1 directly instead of using it as the baseline
 
 }
 
