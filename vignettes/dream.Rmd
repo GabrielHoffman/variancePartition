@@ -86,7 +86,7 @@ Limma has a built-in approach for analyzing repeated measures data using duplica
 
 design = model.matrix( ~ Disease, metadata)
 
-# Estimate linaer mixed model with a single variance component
+# Estimate linear mixed model with a single variance component
 # Fit the model for each gene, 
 dupcor <- duplicateCorrelation(vobj, design, block=metadata$Individual)
 
@@ -112,6 +112,7 @@ L = getContrast( vobj, form, metadata, "Disease1")
 # Fit the dream model on each gene
 # Apply the contrast matrix L for the hypothesis test  
 # By default, uses the Satterthwaite approximation for the hypothesis test
+# for this test, just run on first 10 genes
 fitmm = dream( vobj[1:10,], form, metadata, L)
 
 # Fit Empirical Bayes for moderated t-statistics

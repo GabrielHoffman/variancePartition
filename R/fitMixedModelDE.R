@@ -167,7 +167,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' form <- ~ Batch + (1|Individual) + (1|Tissue) 
 #' L = getContrast( geneExpr, form, info, "Batch3")
 #' 
-#' # Fit linaer mixed model for each gene
+#' # Fit linear mixed model for each gene
 #' fit = dream( geneExpr, form, info, L)
 #' 
 #' # Run empirical Bayes post processing from limma
