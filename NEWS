@@ -1,3 +1,7 @@
+.1) add error checing for L in dream
+
+
+
 CHANGES IN VERSION 1.11.5 
 -------------------------
 	o Add dream function for differential expression for repeated measures with a linear mixed model

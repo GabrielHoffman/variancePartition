@@ -239,6 +239,12 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		timeStart = proc.time()
 		fitInit <- lmerTest::lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
+		
+		# check L
+		if( ! identical(names(L), names(fixef(fitInit))) ){
+			stop("Names of entries in L must match fixed effects")
+		}
+
 		cons = lmerTest::contest(fitInit, L, ddf=ddf)
 		df = as.numeric(cons['DenDF'])
 
