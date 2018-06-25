@@ -37,7 +37,7 @@ BiocStyle::latex()
 
 \maketitle
 
-The distinction between modeling a variable as a fixed versus a random effect depends on the goal of the statistical analysis.  While some theory and software make a strong distinction.  Yet \Rpackage{variancePartition} takes a different approach based on the goal of this type of analysis.  
+The distinction between modeling a variable as a fixed versus a random effect depends on the goal of the statistical analysis.  While some theory and software make a strong distinction, \Rpackage{variancePartition} takes a different approach based on the goal of this type of analysis.  
 
 	Why?
 
@@ -52,9 +52,9 @@ The \Rpackage{r2glmm} package fits into this traditional framework, by computing
 
 Importantly, the random effects are not in the denominator.  The fraction is only determined by fixed effects and residuals.  
 
-In my experience in bioinformatics, this was a problem. Making such distinctions  between fixed and random effects seemed arbitrary.  Variance in a phenotype could be due to age (fixed) or to variation across subject (random).  Including all of the variables in the denominator produced more intutiive results so that 1) the variance fractions sum to one across all components and 2) fixed and random effects could be interpreted on the same scale 3) fractions could be compared across studies with different designs, 4) estimates of variance fractions were most accurate.  So in variancePartition the fractions are defined as:
+In my experience in bioinformatics, this was a problem. Making such distinctions  between fixed and random effects seemed arbitrary.  Variance in a phenotype could be due to age (fixed) or to variation across subject (random).  Including all of the variables in the denominator produced more intuitive results so that 1) the variance fractions sum to one across all components and 2) fixed and random effects could be interpreted on the same scale 3) fractions could be compared across studies with different designs, 4) estimates of variance fractions were most accurate.  So in variancePartition the fractions are defined as:
 \begin{eqnarray}
-\sigma^2_{fixed}/ (\sigma^2_{fixed} + \sigma^2_{random} + \sigma^2_{error}) 
+\sigma^2_{X}/ (\sigma^2_{fixed} + \sigma^2_{random} + \sigma^2_{error}) 
 \end{eqnarray}
 
 just plugging the each variable in the numerator.  
@@ -104,7 +104,7 @@ r2beta(fit)
 
 So the formulas are different. But why require categorical variables as random effects?
 
-At practical level, categorical variables with too many levels are problematic.  Using a categorical variable with 200 categories as a fixed effect, is statistically unstable.  There are so many degrees of freedom that that variable will absorb a lot of variance even under the null.   Statistically, estimating the variance fraction for a variable with many categories can be biased if that variable is a fixed effect.  Therefore, \Rpackage{variancePartition} requires all categorical variables to be random effects.  Modeling this variable as a random effect produces unbiased in practice (see simulations in the supplement of the paper; Section 1.5).
+At practical level, categorical variables with too many levels are problematic.  Using a categorical variable with 200 categories as a fixed effect, is statistically unstable.  There are so many degrees of freedom that that variable will absorb a lot of variance even under the null.   Statistically, estimating the variance fraction for a variable with many categories can be biased if that variable is a fixed effect.  Therefore, \Rpackage{variancePartition} requires all categorical variables to be random effects.  Modeling this variable as a random effect produces unbiased estimates of variance fractions in practice (see simulations in the supplement of the paper; Section 1.5).
 
 The distinction between fixed and random effects is important in the \Rpackage{r2glmm} formulation because it affects which variables are put in the denominator.  So choosing to model a variable as a fixed versus random effect will definitely change the estimated fraction.  
 
