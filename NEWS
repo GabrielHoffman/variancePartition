@@ -1,6 +1,8 @@
-.1) add error checing for L in dream
-
-
+CHANGES IN VERSION 1.11.6
+-------------------------
+	o add error checing for L in dream
+	o fix typoes in dream vignette
+	o fix typoes in theory_practice_random_effects.Rnw
 
 CHANGES IN VERSION 1.11.5 
 -------------------------
