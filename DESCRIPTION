@@ -7,7 +7,7 @@ Date: 2017-6-27
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
 Description: Quantify and interpret multiple sources of biological and technical
-    variation in gene expression experiments. Uses linear mixed model to quantify
+    variation in gene expression experiments. Uses a linear mixed model to quantify
     variation in gene expression attributable to individual, tissue, time point, or
     technical variables.
 VignetteBuilder: knitr
