@@ -45,13 +45,13 @@ opts_chunk$set(comment=NA, fig.width=7, fig.height=7)
 
 <<initialize, cache=FALSE, echo=FALSE>>=
 # load library
-library(variancePartition)
+library('variancePartition')
 
 # optional step to run analysis in parallel on multicore machines
 # Here use 4 threads
 # This is strongly recommended since the analysis 
 # can be computationally intensive 
-library(doParallel)
+library('doParallel')
 cl <- makeCluster(4)
 registerDoParallel(cl)
 @

@@ -100,13 +100,13 @@ The simulated dataset included as an example contains measurements of 200 genes 
 
 <<simResult, cache=TRUE, results='hide', fig.height=4, fig.width=4>>=
 # load library
-library(variancePartition)
+library('variancePartition')
 
 # optional step to run analysis in parallel on multicore machines
 # Here use 4 threads
 # This is strongly recommended since the analysis 
 # can be computationally intensive 
-library(doParallel)
+library('doParallel')
 cl <- makeCluster(4)
 registerDoParallel(cl)
 
@@ -235,7 +235,7 @@ At the heart of \Rcode{variancePartition}, a regression model is fit for each ge
 
 Fitting the regression model and extracting variance statistics can also be done directly:
 <<cache=TRUE>>=
-library(lme4)
+library('lme4')
 
 # fit regression model for the first gene 
 form_test <- geneExpr[1,] ~ Age + (1|Individual) + (1|Tissue)
@@ -384,7 +384,7 @@ varPart <- fitExtractVarPartModel( geneExpr, form, info )
 
 Analysis on residuals:
 <<echo=TRUE, cache=TRUE, results='hide'>>=
-library(limma)
+library('limma')
 # subtract out effect of Batch
 fit <- lmFit( geneExpr, model.matrix(~ Batch, info))
 res <- residuals( fit, geneExpr)
@@ -528,8 +528,8 @@ plotVarPart( sortCols( vpInteraction ) )
 Read RNA-seq counts into \R{}, normalize for library size within and between experiments with TMM \cite{Robinson2010c}, estimate precision weights with \Rpackage{limma}/\Rcode{voom}.
 
 <<echo=TRUE, cache=TRUE, results='hide'>>=
-library(limma)
-library(edgeR)
+library('limma')
+library('edgeR')
 
 # identify genes that pass expression cutoff
 isexpr <- rowSums(cpm(geneCounts)>1) >= 0.5 * ncol(geneCounts)
@@ -563,7 +563,7 @@ varPart <- fitExtractVarPartModel( vobjGenes, form, info )
 
 Process and normalize the gene-level counts before running \Rpackage{variancePartition} analysis.
 <<echo=TRUE, cache=TRUE, results='hide'>>=
-library(DESeq2)
+library('DESeq2')
 
 # create DESeq2 object from gene-level counts and metadata
 dds <- DESeqDataSetFromMatrix(countData = geneCounts,
@@ -596,9 +596,9 @@ Note that DESeq2 does not compute precision weights like \Rpackage{limma}/\Rcode
 Quantifications from \Rcode{kallisto}, \Rcode{salmon}, \Rcode{sailfish} and \Rcode{RSEM} can be read into \R{} and processed with the Bioconductor package \Rpackage{tximport}.  The gene- or transcript-level quantifications can be used directly in \Rpackage{variancePartition}.  
 
 <<echo=TRUE, cache=TRUE, results='hide', eval=FALSE>>=
-library(tximportData)
-library(tximport)
-library(readr)
+library('tximportData')
+library('tximport')
+library('readr')
 
 # Get data from folder where tximportData is installed
 dir <- system.file("extdata", package = "tximportData")
@@ -646,7 +646,7 @@ See tutorial at \url{http://bioconductor.org/packages/release/bioc/vignettes/txi
 Quantifications from Cufflinks/Tablemaker and RSEM can be processed and read into \R{} with the Bioconductor package \Rpackage{ballgown}.  
 
 <<echo=TRUE, cache=TRUE, results='hide'>>=
-library(ballgown)
+library('ballgown')
 
 # Get data from folder where ballgown is installed
 data_directory <- system.file('extdata', package='ballgown') 
@@ -713,7 +713,7 @@ Analysis with \Rpackage{variancePartition} has a number of advantages over these
 \end{itemize}
 
 <<echo=FALSE, cache=TRUE, results='hide'>>=
-library(variancePartition)
+library('variancePartition')
 
 sim_data = function( n, p, var_indiv, var_site){
 
@@ -770,7 +770,7 @@ plotPCA = function(geneExpr, col){
 plotTree = function(geneExpr, col){
 
   hc = hclust(dist(t(geneExpr)))
-  library(dendextend)
+  library('dendextend')
   hcd = as.dendrogram(hc)
   labels_colors(hcd) <- col[match(labels(hcd), names(col))]
 
@@ -840,7 +840,7 @@ plotVarCross( data$geneExpr, data$info, label.angle=60 )
 <<echo=FALSE, cache=FALSE>>=
 # if( "cluster" %in% class(cl) ){
 if( exists("cl") ){
-	library(doParallel)
+	library('doParallel')
 	
 	# stop cluster and catch warning if invalid
 	res = tryCatch( {stopCluster(cl)}, warning = function(x) {
@@ -1028,7 +1028,7 @@ Thus the fraction of variation explained reported by \Rpackage{variancePartition
 <<DE, echo=FALSE, cache=TRUE, fig.height=5, fig.width=5>>=
 set.seed(1) 
 
-library(variancePartition)
+library('variancePartition')
 
 n = 500
 data = data.frame(Sex = c(rep('F', n), rep('M', n)))
