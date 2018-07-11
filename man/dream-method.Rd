@@ -13,7 +13,7 @@ dream(exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"),
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
 
-\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)}
+\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.}
 
 \item{data}{data.frame with columns corresponding to formula}
 
@@ -32,7 +32,7 @@ dream(exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"),
 \item{...}{Additional arguments for lmer() or lm()}
 }
 \value{
-MArrayLMM_lmer object containing MArrayLM object from limma, along with the contrast matrix, and the directly estimated p-value (without eBayes)
+object containing MArrayLM object from limma, along with the contrast matrix, and the directly estimated p-value (without eBayes)
 }
 \description{
 Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
@@ -46,7 +46,7 @@ useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regres
 
 Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
 
-The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lm/lmer.
+The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lmer.
 
 Hypothesis tests and degrees of freedom are producted by lmerTest and pbkrtest pacakges
 }
@@ -73,7 +73,8 @@ form <- ~ Batch + (1|Individual) + (1|Tissue)
 L = getContrast( geneExpr, form, info, "Batch3")
 
 # Fit linear mixed model for each gene
-fit = dream( geneExpr, form, info, L)
+# run on just 10 genes for time
+fit = dream( geneExpr[1:10,], form, info, L)
 
 # Run empirical Bayes post processing from limma
 fitEB = eBayes( fit )

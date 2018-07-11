@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.11.7
+-------------------------
+	o Simplify object return by dream to be more more similar to lmFit
+		- now returns MArrayLM instead of MArrayLMM_lmer
+	o if a fixed effects formula is specified (i.e. not random terms)
+		- dream call lmFit in the backend
+		- getContrast() works seamlessly
+
+
+
+
 CHANGES IN VERSION 1.11.6
 -------------------------
 	o add error checing for L in dream

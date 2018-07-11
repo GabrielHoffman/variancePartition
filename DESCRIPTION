@@ -2,14 +2,14 @@ Package: variancePartition
 Type: Package
 Title: Quantify and interpret divers of variation in multilevel gene expression
     experiments
-Version: 1.11.6
-Date: 2017-6-27
+Version: 1.11.7
+Date: 2017-7-11
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
 Description: Quantify and interpret multiple sources of biological and technical
     variation in gene expression experiments. Uses a linear mixed model to quantify
     variation in gene expression attributable to individual, tissue, time point, or
-    technical variables.
+    technical variables.  Includes dream differential expression analysis for repeated measures.
 VignetteBuilder: knitr
 License: GPL (>= 2)
 Suggests:
@@ -26,12 +26,19 @@ Suggests:
     readr
 biocViews: RNASeq,
     GeneExpression,
+    DifferentialExpression,
+    BatchEffect,
+    QualityControl,
     Regression,
+    Transcription,
+    Normalization,
+    Preprocessing,
     Software
 Depends:
     ggplot2,
     limma,
     foreach,
+    scales,
     Biobase,
     methods
 Imports:
