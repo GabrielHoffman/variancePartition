@@ -5,9 +5,7 @@ CHANGES IN VERSION 1.11.7
 	o if a fixed effects formula is specified (i.e. not random terms)
 		- dream call lmFit in the backend
 		- getContrast() works seamlessly
-
-
-
+	o dream() now returns gene annotation if passed to function
 
 CHANGES IN VERSION 1.11.6
 -------------------------
