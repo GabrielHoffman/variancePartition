@@ -1,3 +1,8 @@
+# July 18, 2018
+Check if there is variation in each gene.  
+	else throw error
+
+
 # June 16, 2016
 Improve warnings in fitVarPart and fitExtractVarPart to show which gene give a warning
 

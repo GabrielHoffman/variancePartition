@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.11.8
+-------------------------
+	o Check and stop() if response variable has variance of 0
+		- in dream(), fitExtractVarPartModel(), and fitVarPartModel() 
+	o add standardized_t_stat() implicitly in eBayes() using MArrayLM2 class
+		- this transforms moderated t-statistics to have same degrees of freedom
+
 CHANGES IN VERSION 1.11.7
 -------------------------
 	o Simplify object return by dream to be more more similar to lmFit

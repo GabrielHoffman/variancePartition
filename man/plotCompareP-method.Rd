@@ -5,7 +5,9 @@
 \alias{plotCompareP}
 \title{Compare p-values from two analyses}
 \usage{
-plotCompareP(p1, p2, vpDonor, dupcorvalue, fraction = 0.2)
+plotCompareP(p1, p2, vpDonor, dupcorvalue, fraction = 0.2,
+  xlabel = bquote(duplicateCorrelation ~ (-log[10] ~ p)),
+  ylabel = bquote(dream ~ (-log[10] ~ p)))
 }
 \arguments{
 \item{p1}{p-value from first analysis}
@@ -17,6 +19,13 @@ plotCompareP(p1, p2, vpDonor, dupcorvalue, fraction = 0.2)
 \item{dupcorvalue}{scalar donor component from duplicateCorrelation}
 
 \item{fraction}{fraction of highest/lowest values to use for best fit lines}
+
+\item{xlabel}{for x-axis}
+
+\item{ylabel}{label for y-axis}
+}
+\value{
+ggplot2 plot
 }
 \description{
 Plot -log10 p-values from two analyses and color based on donor component from variancePartition analysis

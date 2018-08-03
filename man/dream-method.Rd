@@ -32,7 +32,7 @@ dream(exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"),
 \item{...}{Additional arguments for lmer() or lm()}
 }
 \value{
-object containing MArrayLM object from limma, along with the contrast matrix, and the directly estimated p-value (without eBayes)
+MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)
 }
 \description{
 Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L

@@ -1,12 +1,19 @@
-# #' Class MArrayLMM_lmer.
-# #'
-# #' Class \code{MArrayLMM_lmer} 
-# #'
-# #' @name MArrayLMM_lmer-class
-# #' @rdname MArrayLMM_lmer-class
-# #' @exportClass MArrayLMM_lmer
-# # setClass("MArrayLMM_lmer", representation(object="MArrayLM", contrast="numeric", pValue="numeric"))
-# # setClass("MArrayLMM_lmer", representation(pValue="numeric"), contains="MArrayLM")
+
+#' Class MArrayLM2.
+#'
+#' Class \code{MArrayLM2} 
+#'
+#' @name MArrayLM2-class
+#' @rdname MArrayLM2-class
+#' @exportClass MArrayLM2
+setClass("MArrayLM2",
+#  Linear model fit
+representation("MArrayLM")
+)
+setIs("MArrayLM2","LargeDataObject")
+setAs(from='MArrayLM', to='MArrayLM2', function(from){
+	structure(from, class="MArrayLM2")
+	})
 
 #' Extract contrast matrix for linear mixed model
 #' 
@@ -63,7 +70,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
-		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
+		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e. rows)" )
 	}
 
 	# if weightsMatrix is not specified, set useWeights to FALSE
@@ -138,8 +145,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return 
-#' object containing MArrayLM object from limma, along with the contrast matrix, and the directly estimated p-value (without eBayes)
-# MArrayLMM_lmer object containing MArrayLM object from limma, along with the contrast matrix, and the directly estimated p-value (without eBayes)
+#' MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)
 #'
 #' @details 
 #' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
@@ -203,6 +209,13 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
+	}
+
+	# check if all genes have variance
+	rv = apply( exprObj, 1, var)
+	if( any( rv == 0) ){
+		idx = which(rv == 0)
+		stop(paste("Response variable", idx[1], 'has a variance of 0'))
 	}
 
 	if( !(ddf %in% c("Kenward-Roger", 'Satterthwaite')) ){
@@ -387,10 +400,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		ret = new("MArrayLM", ret)
 		ret$pValue = pValue
 	}
-	
-	# new("MArrayLMM_lmer", object=ret, contrast=L, pValue=pValue)	
-	# new("MArrayLMM_lmer", ret, pValue=pValue)
-	ret
+		
+	as(ret, "MArrayLM2")
 }
 
 
@@ -404,6 +415,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @param vpDonor donor component for each gene from variancePartition analysis
 #' @param dupcorvalue scalar donor component from duplicateCorrelation
 #' @param fraction fraction of highest/lowest values to use for best fit lines
+#' @param xlabel for x-axis
+#' @param ylabel label for y-axis
+#'
+#' @return ggplot2 plot
+#'
 #' @examples
 #'
 #' # load library
@@ -446,7 +462,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @export
 #' @docType methods
 #' @rdname plotCompareP-method
-plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2){
+plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquote(duplicateCorrelation~(-log[10]~p)), ylabel=bquote(dream~(-log[10]~p))){
 
 	if( length(unique(c(length(p1), length(p2), length(vpDonor)))) != 1){
 		stop("p1, p2 and vpDonor must have the same number of entries")
@@ -472,34 +488,35 @@ plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2){
 	lim = c(0, max(max(df2$p1), max(df2$p2)))
 
 	# xlab("duplicateCorrelation (-log10 p)") + ylab("dream (-log10 p)")
-	ggplot(df2, aes(p1, p2, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(12) +  
-		theme(aspect.ratio=1) + xlab("p1 (-log10 p)") + ylab("p2 (-log10 p)") + xlim(lim) + ylim(lim) +
+	ggplot(df2, aes(p1, p2, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(12) +  theme(aspect.ratio=1) + xlim(lim) + ylim(lim) + xlab(xlabel) + ylab(ylabel) + 
 		geom_abline( intercept=df_line$a, slope=df_line$b, color=df_line$type, linetype=2) + scale_color_gradientn(name = "Donor", colours = c("blue","green","red"), 
 	                       values = rescale(c(0, dupcorvalue, 1)),
 	                       guide = "colorbar", limits=c(0, 1))
 }
 
-# #' eBayes for MArrayLMM_lmer
-# #'
-# #' eBayes for MArrayLMM_lmer
-# #'
-# #' @param fit fit
-# #' @param proportion proportion
-# #' @param stdev.coef.lim stdev.coef.lim
-# #' @param trend trend
-# #' @param robust robust
-# #' @param winsor.tail.p winsor.tail.p 
-# #'
-# #' @return resold of eBayes
-# #' @export
-# #' @rdname eBayes-method
-# #' @aliases eBayes,MArrayLMM_lmer-method
-# setMethod("eBayes", "MArrayLMM_lmer",
-# function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
-#     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
-# 	ret = eBayes( fit@object, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p   )	
-# 	new("MArrayLMM_lmer", object=ret, contrast=fit@contrast)
-# })
+#' eBayes for MArrayLM2
+#'
+#' eBayes for MArrayLM2
+#'
+#' @param fit fit
+#' @param proportion proportion
+#' @param stdev.coef.lim stdev.coef.lim
+#' @param trend trend
+#' @param robust robust
+#' @param winsor.tail.p winsor.tail.p 
+#'
+#' @return resold of eBayes
+#' @export
+#' @rdname eBayes-method
+#' @aliases eBayes,MArrayLM2-method
+setMethod("eBayes", "MArrayLM2",
+function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
+    trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
+	ret = limma::eBayes( fit, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p   )	
+
+	# transform moderated t-statistics to have same degrees of freedom
+	standardized_t_stat( ret )
+})
 
 # #' topTable for MArrayLMM_lmer
 # #'
@@ -563,9 +580,41 @@ plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2){
 
 
 
+#' change_t_df
+#'
+#' change_t_df
+#'
+#' @param t t-statistic
+#' @param df current degrees of freedom
+#' @param d_target target degrees of freedom
+#'
+#' @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
+change_t_df = function(t, df, d_target){
+  p = pt(abs(t), df, lower.tail=FALSE)
+  qt(p, d_target, lower.tail=FALSE)
+}
 
+#' standardized_t_stat
+#'
+#' standardized_t_stat
+#'
+#' @param fit model fit from dream()
+#'
+#' @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
+#'
+#' @details Since dream() used degrees of freedom estimated from the data, the t-statistics across genes have different df values used to compute p-values.  Therefore the order of the raw t-statistics doesn't correspond to the order of the p-values since the df is different for each gene.  This function resolved this issue by transofrming the t-statistics to all have the same df.  Under a fixed effects model, df = N - p, where N is the sample size and p is the number of covariates.  Here, df is the target degrees of freedom used in the transformation
+standardized_t_stat = function( fit ){
+  res = data.frame(t=as.numeric(fit$t), df.sat=fit$df.residual)
 
+  # d_target = max(res$df.sat)
+  d_target = nrow(fit$design) - ncol(fit$design)
 
+  res$t_dot = sign(res$t) * change_t_df( res$t, res$df.sat, d_target )
+
+  fit$t = res$t_dot 
+  fit$df.residual = rep(d_target, nrow(res))
+  fit
+}
 
 
 

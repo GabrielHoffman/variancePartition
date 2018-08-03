@@ -18,13 +18,13 @@
 #' list() of where each entry is a model fit produced by lmer() or lm()
 #' 
 #' @import splines gplots colorRamps lme4 pbkrtest ggplot2 limma foreach reshape2 iterators doParallel Biobase methods utils
-# dendextend
+# dendextend 
 #' @importFrom MASS ginv
 # @importFrom RSpectra eigs_sym
 #' @importFrom grDevices colorRampPalette hcl
 #' @importFrom graphics abline axis hist image layout lines mtext par plot plot.new rect text title
-#' @importFrom stats anova as.dendrogram as.dist cancor coef cov2cor density dist fitted.values hclust lm median model.matrix order.dendrogram quantile reorder residuals sd terms var vcov
-
+#' @importFrom stats anova as.dendrogram as.dist cancor coef cov2cor density dist fitted.values hclust lm median model.matrix order.dendrogram quantile reorder residuals sd terms var vcov pt qt
+#' @importFrom scales rescale
 
 
 
@@ -120,6 +120,13 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
+	}
+
+	# check if all genes have variance
+	rv = apply( exprObj, 1, var)
+	if( any( rv == 0) ){
+		idx = which(rv == 0)
+		stop(paste("Response variable", idx[1], 'has a variance of 0'))
 	}
 
 	# if weightsMatrix is not specified, set useWeights to FALSE
@@ -360,7 +367,14 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
 
-		# if weightsMatrix is not specified, set useWeights to FALSE
+	# check if all genes have variance
+	rv = apply( exprObj, 1, var)
+	if( any( rv == 0) ){
+		idx = which(rv == 0)
+		stop(paste("Response variable", idx[1], 'has a variance of 0'))
+	}
+	
+	# if weightsMatrix is not specified, set useWeights to FALSE
 	if( useWeights && is.null(weightsMatrix) ){
 		# warning("useWeights was ignored: no weightsMatrix was specified")
 		useWeights = FALSE

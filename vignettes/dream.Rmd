@@ -116,10 +116,10 @@ L = getContrast( vobj, form, metadata, "Disease1")
 fitmm = dream( vobj, form, metadata, L)
 
 # Fit Empirical Bayes for moderated t-statistics
-fitmm_eb = eBayes( fitmm )
+fitmm = eBayes( fitmm )
 
 # get results
-topTable( fitmm_eb )
+topTable( fitmm )
 ```
 
 You can also perform a hypothesis test between two levels
@@ -144,35 +144,18 @@ plotVarPart( sortCols(vp))
 
 ## Compare p-values from dream and duplicateCorrelation
 ```{r define}
-plotCompare = function( stat1, stat2, vpDonor, dupcorvalue, N=3000){
-  library('scales')
-
-  df2 = data.frame(dupCor=-log10(stat1), dream=-log10(stat2), vpDonor=vpDonor, delta = vpDonor - dupcorvalue)
-
-  c1 = sort(df2$delta)[N]
-  c2 = sort(df2$delta)[length(df2$delta) - N]
-
-  l1 = lm(dream ~ dupCor, df2[df2$delta >= c2,])
-  l2 = lm(dream ~ dupCor, df2[df2$delta <= c1,])
-
-  df_line = data.frame(rbind(coef(l1), coef(l2)))
-  colnames(df_line) = c('a', 'b')
-  df_line$type = c('darkred', 'navy')
-
-  ggplot(df2, aes(dupCor, dream, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(12) +  
-    theme(aspect.ratio=1) +xlab("duplicateCorrelation (-log10 p)") + ylab("dream (-log10 p)") +
-    geom_abline( intercept=df_line$a, slope=df_line$b, color=df_line$type, linetype=2) + 
-    scale_color_gradientn(name = "Donor", colours = c("blue","green","red"), 
-                           values = rescale(c(0, dupcorvalue, 1)),
-                           guide = "colorbar", limits=c(0, 1))
-}
-
 # Compare p-values and make plot
 p1 = topTable(fitDupCor, coef="Disease1", number=Inf, sort.by="none")$P.Value
-p2 = topTable(fitmm_eb, number=Inf, sort.by="none")$P.Value
+p2 = topTable(fitmm, number=Inf, sort.by="none")$P.Value
 
-plotCompare( p1, p2, vp$Individual, dupcor$consensus)
+plotCompareP( p1, p2, vp$Individual, dupcor$consensus)
 ```
+
+
+
+
+
+
 
 # Session info
 ```{r sessionInfo}
