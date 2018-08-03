@@ -1,6 +1,6 @@
 ---
 title: "dream: Differential expression testing with linear mixed models for repeated measures"
-author: "[Gabriel E Hoffman](http://gabrielhoffman.github.io)"
+author: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
 date: "`r format(Sys.Date(), '%m/%d/%Y')`"
 abstract: > 
   **D**ifferential expression for **re**pe**a**ted **m**easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual.  Dream fits seamlessly into the widely used workflow of limma/voom [@Law2014].  
@@ -36,6 +36,7 @@ knitr::opts_chunk$set(tidy=FALSE, cache=TRUE,
 ### Description
 Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements.  Dream achieves this by combining multiple statistical concepts into a single statistical model.  The dream model includes:     
 
+<!---
 ```{r kable, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 library('pander')
 tab = rbind(c('precision weights to model measurement error in RNA-seq counts', "limma/voom", "@Law2014"),
@@ -53,10 +54,19 @@ panderOptions('table.alignment.default', 'left')
 
 pander(tab, style = 'rmarkdown')
 ```
+--->
+* flexible modeling of repeated measures gene expression data
+* precision weights to model measurement error in RNA-seq counts
+* ability to model multiple random effects
+* random effects estimated separately for each gene
+* hypothesis testing for fixed effects in linear mixed models
+* small sample size hypothesis test
+* emprical Bayes moderated t-test
+
 
 Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.
 
-### Usage
+### Standard RNA-seq processing
 Process raw count data using limma/voom.  
 ```{r preprocess, eval=TRUE}
 library('variancePartition')
@@ -81,6 +91,7 @@ dupcor <- duplicateCorrelation(vobj_tmp,design,block=metadata$Individual)
 vobj = voom( genes, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
 ```
 
+### Limma Analysis
 Limma has a built-in approach for analyzing repeated measures data using duplicateCorrelation.  The model can handle a single random effect, and forces the magnitude of the random effect to be the same across all genes.
 ```{r dupCor, eval=TRUE}
 
@@ -97,16 +108,17 @@ fitDupCor <- lmFit(vobj, design, block=metadata$Individual, correlation=dupcor$c
 fitDupCor <- eBayes( fitDupCor )
 ```
 
+### Dream Analysis
 The dream model operates directly on the results of voom.  The only change compared to the standard limma workflow is to replace lmFit with dream.  
-```{r lmm, eval=TRUE}
+```{r lmm, eval=TRUE, message=FALSE}
 cl <- makeCluster(4)
 registerDoParallel(cl)
 
 # Specify formula with at least one random effect
 # The variable to be tested should be a fixed effect
-form <- ~ Disease + (1|Individual) 
+form <- ~ Disease #+ (1|Individual) 
 
-# Get the contract matrix for the hypothesis test
+# Get the contrast matrix for the hypothesis test
 L = getContrast( vobj, form, metadata, "Disease1")
 
 # Fit the dream model on each gene
@@ -121,11 +133,13 @@ fitmm = eBayes( fitmm )
 # get results
 topTable( fitmm )
 ```
+Note that if random effect is not specified, dream() automatically uses lmFit().  
 
-You can also perform a hypothesis test between two levels
+You can also perform a hypothesis test between two levels.  Make sure to inspect your contrast matrix to confirm it is testing what you intend.
 ```{r contrast, eval=TRUE}
 form <- ~ 0 + Disease + (1|Individual) 
 L = getContrast( vobj, form, metadata, c("Disease1", "Disease0"))
+L
 ```
 
 #### Small-sample method
