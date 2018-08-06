@@ -116,7 +116,7 @@ registerDoParallel(cl)
 
 # Specify formula with at least one random effect
 # The variable to be tested should be a fixed effect
-form <- ~ Disease #+ (1|Individual) 
+form <- ~ Disease + (1|Individual) 
 
 # Get the contrast matrix for the hypothesis test
 L = getContrast( vobj, form, metadata, "Disease1")

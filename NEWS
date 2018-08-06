@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.11.10
+-------------------------
+	o fix typos in dream vignette
+	
 CHANGES IN VERSION 1.11.8
 -------------------------
 	o Check and stop() if response variable has variance of 0

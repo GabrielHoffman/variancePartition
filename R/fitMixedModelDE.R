@@ -488,7 +488,7 @@ plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquot
 	lim = c(0, max(max(df2$p1), max(df2$p2)))
 
 	# xlab("duplicateCorrelation (-log10 p)") + ylab("dream (-log10 p)")
-	ggplot(df2, aes(p1, p2, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(12) +  theme(aspect.ratio=1) + xlim(lim) + ylim(lim) + xlab(xlabel) + ylab(ylabel) + 
+	ggplot(df2, aes(p1, p2, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(12) +  theme(aspect.ratio=1,plot.title = element_text(hjust = 0.5)) + xlim(lim) + ylim(lim) + xlab(xlabel) + ylab(ylabel) + 
 		geom_abline( intercept=df_line$a, slope=df_line$b, color=df_line$type, linetype=2) + scale_color_gradientn(name = "Donor", colours = c("blue","green","red"), 
 	                       values = rescale(c(0, dupcorvalue, 1)),
 	                       guide = "colorbar", limits=c(0, 1))
@@ -572,11 +572,19 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 # 	topTable( fit@object, number=number,  adjust.method=adjust.method, sort.by= sort.by, resort.by=resort.by, p.value=p.value, lfc=lfc, confint=confint  )	
 # })
 
-#' Example dataset for dream
-#'
-#' Simulated RNA-seq counts in 'countMatrix' and information in 'metadata'
-#'
-# "countMatrix"
+# #' Example dataset for dream
+# #'
+# #' Simulated RNA-seq counts in 'countMatrix' and information in 'metadata'
+# #'
+# #' @docType data
+# #'
+# #' @usage data(varPartDEdata)
+# #'
+# #' @format matrix of RNA-seq counts
+# #'
+# #' @examples
+# #' data(varPartDEdata)
+# "varPartDEdata"
 
 
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitMixedModelDE.R
 \name{change_t_df}
 \alias{change_t_df}
-\title{Example dataset for dream}
+\title{change_t_df}
 \usage{
 change_t_df(t, df, d_target)
 }
@@ -17,11 +17,6 @@ change_t_df(t, df, d_target)
 Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
 }
 \description{
-Simulated RNA-seq counts in 'countMatrix' and information in 'metadata'
-}
-\details{
-change_t_df
-
 change_t_df
 }
 
