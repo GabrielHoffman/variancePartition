@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.11.11
+-------------------------
+	o dream can handle multiple contrasts at the same time
+
 CHANGES IN VERSION 1.11.10
 -------------------------
 	o fix typos in dream vignette

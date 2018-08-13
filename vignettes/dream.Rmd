@@ -3,14 +3,26 @@ title: "dream: Differential expression testing with linear mixed models for repe
 author: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
 date: "`r format(Sys.Date(), '%m/%d/%Y')`"
 abstract: > 
-  **D**ifferential expression for **re**pe**a**ted **m**easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual.  Dream fits seamlessly into the widely used workflow of limma/voom [@Law2014].  
-  <br> <br> 
-  variancePartition v`r packageVersion("variancePartition")`
+  **D**ifferential expression for **re**pe**a**ted **m**easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual.  The analysis fits seamlessly into the widely used workflow of limma/voom [@Law2014].  
+  <br><br> 
+  Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements.  Dream achieves this by combining multiple statistical concepts into a single statistical model.  The model includes: 
+  <br>  
+    - flexible modeling of repeated measures gene expression data<br> 
+    - precision weights to model measurement error in RNA-seq counts<br> 
+    - ability to model multiple random effects<br>
+    - random effects estimated separately for each gene<br>
+    - hypothesis testing for fixed effects in linear mixed models<br>
+    - small sample size hypothesis test<br>
+    - emprical Bayes moderated t-test<br>
+  <br> 
+  Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br> <br> 
+  variancePartition v`r packageVersion("variancePartition")`<br> <br> 
 
 output:
   rmarkdown::html_document:
     highlight: pygments
-    toc: false
+    toc: true
+    toc_depth: 3
     fig_width: 5
 bibliography: library.bib
 vignette: >
@@ -31,12 +43,13 @@ rmarkdown::render('variancePartition/vignettes/dream.Rmd')
 knitr::opts_chunk$set(tidy=FALSE, cache=TRUE,
                       dev="png",
                       message=FALSE, error=FALSE, warning=TRUE)
+options(width=100)
 ```	
 
-### Description
+<!---
+# Description
 Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements.  Dream achieves this by combining multiple statistical concepts into a single statistical model.  The dream model includes:     
 
-<!---
 ```{r kable, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 library('pander')
 tab = rbind(c('precision weights to model measurement error in RNA-seq counts', "limma/voom", "@Law2014"),
@@ -54,7 +67,6 @@ panderOptions('table.alignment.default', 'left')
 
 pander(tab, style = 'rmarkdown')
 ```
---->
 * flexible modeling of repeated measures gene expression data
 * precision weights to model measurement error in RNA-seq counts
 * ability to model multiple random effects
@@ -65,9 +77,10 @@ pander(tab, style = 'rmarkdown')
 
 
 Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.
+--->
 
-### Standard RNA-seq processing
-Process raw count data using limma/voom.  
+# Standard RNA-seq processing
+This tutorial assumes that the reader is familiar with the limma/voom workflow for RNA-seq.  Process raw count data using limma/voom.  
 ```{r preprocess, eval=TRUE}
 library('variancePartition')
 library('edgeR')
@@ -91,7 +104,7 @@ dupcor <- duplicateCorrelation(vobj_tmp,design,block=metadata$Individual)
 vobj = voom( genes, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
 ```
 
-### Limma Analysis
+# Limma Analysis
 Limma has a built-in approach for analyzing repeated measures data using duplicateCorrelation.  The model can handle a single random effect, and forces the magnitude of the random effect to be the same across all genes.
 ```{r dupCor, eval=TRUE}
 
@@ -108,7 +121,7 @@ fitDupCor <- lmFit(vobj, design, block=metadata$Individual, correlation=dupcor$c
 fitDupCor <- eBayes( fitDupCor )
 ```
 
-### Dream Analysis
+# Dream Analysis
 The dream model operates directly on the results of voom.  The only change compared to the standard limma workflow is to replace lmFit with dream.  
 ```{r lmm, eval=TRUE, message=FALSE}
 cl <- makeCluster(4)
@@ -124,7 +137,6 @@ L = getContrast( vobj, form, metadata, "Disease1")
 # Fit the dream model on each gene
 # Apply the contrast matrix L for the hypothesis test  
 # By default, uses the Satterthwaite approximation for the hypothesis test
-# for this test, just run on first 10 genes
 fitmm = dream( vobj, form, metadata, L)
 
 # Fit Empirical Bayes for moderated t-statistics
@@ -135,6 +147,13 @@ topTable( fitmm )
 ```
 Note that if random effect is not specified, dream() automatically uses lmFit().  
 
+### Small-sample method
+For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
+```{r kr, eval=FALSE}
+fitmmKR = dream( vobj[1:10,], form, metadata, L, ddf="Kenward-Roger")
+```
+
+### Advanced use of contrasts
 You can also perform a hypothesis test between two levels.  Make sure to inspect your contrast matrix to confirm it is testing what you intend.
 ```{r contrast, eval=TRUE}
 form <- ~ 0 + Disease + (1|Individual) 
@@ -142,13 +161,27 @@ L = getContrast( vobj, form, metadata, c("Disease1", "Disease0"))
 L
 ```
 
-#### Small-sample method
-For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
-```{r kr}
-fitmmKR = dream( vobj[1:10,], form, metadata, L, ddf="Kenward-Roger")
+Multiple contrasts can be evaluated at the same time, in order to save computation time:
+```{r contrast.combine}
+form <- ~ 0 + Disease + (1|Individual) 
+
+# define and then cbind contrasts
+L1 = getContrast( vobj, form, metadata, "Disease0")
+L2 = getContrast( vobj, form, metadata, "Disease1")
+L = cbind(L1, L2)
+
+# fit both contrasts
+fit = dream( vobj[1:10,], form, metadata, L)
+
+# empirical Bayes step
+fiteb = eBayes( fit )
+
+# extract results from first contrast
+topTable( fiteb, coef="L1" )
 ```
 
 ## variancePartition plot
+Dream and variancePartition share the same underlying linear mixed model framework. A variancePartition analysis can indicate important variables that should be included as fixed or random effects in the dream analysis. 
 ```{r vp}
 form = ~ (1|Individual) + (1|Disease)
 vp = fitExtractVarPartModel( vobj, form, metadata)
@@ -157,6 +190,15 @@ plotVarPart( sortCols(vp))
 ```
 
 ## Compare p-values from dream and duplicateCorrelation
+
+In order to understand the empircal difference between dream and duplication correlation, we can plot the $-\log_{10}$ p-values from both methods.
+
+The duplicateCorrelation method estimates a single variance term genome-wide even though the donor contribution of a particular gene can vary substantially from the genome-wide trend.  Using a single value genome-wide for the within-donor variance can reduce power and increase the false positive rate in a particular, reproducible way.  Let $\tau^2_g$  be the value of the donor component for gene $g$ and $\bar{\tau}^2$ be the genome-wide mean.  For genes where $\tau^2_g>\bar{\tau}^2$, using $\bar{\tau}^2$ under-corrects for the donor component so that it increases the false positive rate compared to using $\tau^2_g$.  Conversely, for genes where $\tau^2_g<\bar{\tau}^2$, using $\bar{\tau}^2$ over-corrects for the donor component so that it decreases power.  Increasing sample size does not overcome this issue.  The dream method overcomes this issue by using a $\tau^2_g$.
+
+  Here, the $-\log_{10}$ p-values from both methods are plotted and colored by the donor contribution estiamted by variancePartition.  The green value indicates $\bar{\tau}^2$, while red and blue indicate higher and lower values, respectively.  When only one variance component is used and the contrast matrix is simple, the effect of using dream versus duplicateCorrelation is determined by the comparison of $\tau^2_g$ to $\bar{\tau}^2$: 
+
+  dream can increase the $-\log_{10}$ p-value for genes with a lower donor component (i.e. $\tau^2_g<\bar{\tau}^2$) and decrease $-\log_{10}$ p-value for genes with a higher donor component (i.e. $\tau^2_g>\bar{\tau}^2$)
+
 ```{r define}
 # Compare p-values and make plot
 p1 = topTable(fitDupCor, coef="Disease1", number=Inf, sort.by="none")$P.Value
@@ -165,7 +207,7 @@ p2 = topTable(fitmm, number=Inf, sort.by="none")$P.Value
 plotCompareP( p1, p2, vp$Individual, dupcor$consensus)
 ```
 
-
+Note that using more variance components or a more complicated contrast matrix can make the relationship more complicated.
 
 
 
@@ -174,6 +216,9 @@ plotCompareP( p1, p2, vp$Individual, dupcor$consensus)
 # Session info
 ```{r sessionInfo}
 sessionInfo()
+```
+```{r , message=FALSE, cache=FALSE}
+# stopCluster(cl)
 ```
 
 # References

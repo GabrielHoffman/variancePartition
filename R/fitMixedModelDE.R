@@ -127,6 +127,68 @@ getContrast = function( exprObj, formula, data, coefficient){
 	L
 }
 
+#' Evaluate contrasts for linear mixed model
+#' 
+#' Evaluate contrasts for linear mixed model
+#'
+#' @param fit model fit
+#' @param L contrast matrix
+#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
+#' 
+#' @return
+#' df, sigma, beta, SE of model
+#'
+#' @docType methods
+#' @rdname eval_lmm-method
+eval_lmm = function( fit, L, ddf ){
+	# evaluate each contrast
+	# cons = lmerTest::contest(fit, L, ddf=ddf)
+	cons = foreach( j = 1:ncol(L), .combine=rbind) %do% {
+		lmerTest::contest(fit, L[,j], ddf=ddf)
+	}
+
+	df = as.numeric(cons[,'DenDF'])
+
+	if(ddf == "Kenward-Roger"){
+		# KR
+		V = pbkrtest::vcovAdj.lmerMod(fit, 0)
+		# df = pbkrtest::get_Lb_ddf(fit, L)
+	}else{
+		# Satterthwaite
+		V = vcov(fit)
+		# df = as.numeric(contest(fit, L, ddf="Sat")['DenDF'])
+	}
+
+	sigma = attr(lme4::VarCorr(fit), "sc")
+
+	# get contrasts
+	# beta = as.matrix(sum(L * fixef(fit)), ncol=1)
+	# colnames(beta) = "logFC"
+
+	beta = foreach( j = 1:ncol(L), .combine=rbind) %do% {
+		as.matrix(sum(L[,j] * fixef(fit)), ncol=1)
+	}
+	colnames(beta) = "logFC"
+	rownames(beta) = colnames(L)
+
+	# SE = as.matrix(sqrt(sum(L * (V %*% L))), ncol=1)		
+	# colnames(SE) = "logFC"
+	SE = foreach( j = 1:ncol(L), .combine=rbind) %do% {
+		as.matrix(sqrt(sum(L[,j] * (V %*% L[,j]))), ncol=1)
+	}
+	colnames(SE) = "logFC"
+	rownames(SE) = colnames(L)
+
+	# pValue = 2*pt(as.numeric(abs(beta / SE)), df, lower.tail=FALSE)
+	pValue = as.numeric(cons[,'Pr(>F)'])
+
+	list(cons = cons,
+		df		= df,
+		sigma	= sigma,
+		beta	= beta,
+		SE		= SE,
+		pValue	= pValue)
+}
 
 
 #' Differential expression with linear mixed model
@@ -242,6 +304,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
 	}
 
+	# format contrasts 
+	if( class(L) == "numeric" ){
+		L = as.matrix(L, ncol=1)
+	}
+
 	# add response (i.e. exprObj[,j] to formula
 	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
 
@@ -270,24 +337,12 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		fitInit <- lmerTest::lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
 		
 		# check L
-		if( ! identical(names(L), names(fixef(fitInit))) ){
+		if( ! identical(rownames(L), names(fixef(fitInit))) ){
 			stop("Names of entries in L must match fixed effects")
 		}
-
-		cons = lmerTest::contest(fitInit, L, ddf=ddf)
-		df = as.numeric(cons['DenDF'])
-
-		if(ddf == "Kenward-Roger"){
-			# KR
-			V = pbkrtest::vcovAdj.lmerMod(fitInit, 0)
-		}else{
-			# Satterthwaite
-			V = vcov(fitInit)
-		}
-
-		sigma = attr(lme4::VarCorr(fitInit), "sc")	
-		beta = as.matrix(sum(L * fixef(fitInit)), ncol=1)
-		SE = as.matrix(sqrt(sum(L * (V %*% L))), ncol=1)
+		
+		# extract statistics from model
+		mod = eval_lmm( fitInit, L, ddf)
 		timediff = proc.time() - timeStart
 
 		# check size of stored objects
@@ -306,7 +361,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		checkModelStatus( fitInit, showWarnings=FALSE, dream=TRUE, colinearityCutoff )
 
 		a = names(fixef(fitInit))
-		b = names(L)
+		b = rownames(L)
 
 		if( ! identical( a,b) ){
 			stop("Terms in contrast matrix L do not match model:\n  Model: ", paste(a, collapse=',' ), "\n  L: ", paste(b, collapse=',' ), "\nNote thhat order must be the same")
@@ -317,72 +372,62 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
+		# loop through genes
 		resList <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest") ) %dopar% {
 
 			# modify data2 for this gene
 			data2$expr = gene14643$E
  
 			# fit linear mixed model
-			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
+			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
-			cons = lmerTest::contest(fit, L, ddf=ddf)
-			df = as.numeric(cons['DenDF'])
-
-			if(ddf == "Kenward-Roger"){
-				# KR
-				V = pbkrtest::vcovAdj.lmerMod(fit, 0)
-				# df = pbkrtest::get_Lb_ddf(fit, L)
-			}else{
-				# Satterthwaite
-				V = vcov(fit)
-				# df = as.numeric(contest(fit, L, ddf="Sat")['DenDF'])
-			}
-
-			sigma = attr(lme4::VarCorr(fit), "sc")
-	
-			# get contrasts
-			beta = as.matrix(sum(L * fixef(fit)), ncol=1)
-			colnames(beta) = "logFC"
-
-			SE = as.matrix(sqrt(sum(L * (V %*% L))), ncol=1)		
-			colnames(SE) = "logFC"
-
-			# pValue = 2*pt(as.numeric(abs(beta / SE)), df, lower.tail=FALSE)
-			pValue = as.numeric(cons['Pr(>F)'])
+			# extract statistics from model
+			mod = eval_lmm( fit, L, ddf)
 			
-			ret = list(coefficients = beta, 
+			ret = list(coefficients = mod$beta, 
 				design = fit@pp$X, 
-				df.residual = df, 
+				df.residual = mod$df, 
 				Amean = mean(fit@frame[,1]), 
 				method = 'lmer',
-				sigma = sigma,
-				stdev.unscaled = SE/sigma,
-				pValue = pValue)
+				sigma = mod$sigma,
+				stdev.unscaled = mod$SE/mod$sigma,
+				pValue = mod$pValue)
 
 			new("MArrayLM", ret)
 		}
 
-		coefficients = t(t(sapply( resList, function(x) x$coefficients)))
-		colnames(coefficients) = colnames(resList[[1]]$coefficients)
+		# extract results
+		coefficients = foreach( x = resList, .combine=cbind ) %do% {x$coefficients}
+		df.residual = foreach( x = resList, .combine=cbind ) %do% {	x$df.residual}
+		pValue = foreach( x = resList, .combine=cbind ) %do% { x$pValue }
+		stdev.unscaled  = foreach( x = resList, .combine=cbind ) %do% {x$stdev.unscaled} 
+		
+		# transpose
+		coefficients = t( coefficients )
+		df.residual = t( df.residual )
+		pValue = t( pValue )
+		stdev.unscaled = t( stdev.unscaled )
+		
+
+		colnames(coefficients) = colnames(L)
 		rownames(coefficients) = rownames(exprObj)
 
 		design = resList[[1]]$design
 
-		df.residual = sapply( resList, function(x) x$df.residual)
-		names(df.residual ) = rownames(exprObj)
+		colnames(df.residual) = colnames(L)
+		rownames(df.residual) = rownames(exprObj)
 
-		pValue = sapply( resList, function(x) x$pValue)
-		names(pValue) = rownames(exprObj)
+		colnames(pValue) = colnames(L)
+		rownames(pValue) = rownames(exprObj)
 
-		Amean = sapply( resList, function(x) x$Amean)
+		Amean =sapply( resList, function(x) x$Amean) 
 		names(Amean ) = rownames(exprObj)
 		method = "lmer"
 		sigma = sapply( resList, function(x) x$sigma)
 		names(sigma) = rownames(exprObj)
 
-		stdev.unscaled  = t(t(sapply( resList, function(x) x$stdev.unscaled )))
-		colnames(stdev.unscaled ) = colnames(resList[[1]]$stdev.unscaled )
-		rownames(stdev.unscaled ) = rownames(exprObj)
+		colnames(stdev.unscaled) = colnames(L)
+		rownames(stdev.unscaled) = rownames(exprObj)
 
 		ret = list( coefficients = coefficients,
 		 			design = design, 
@@ -399,100 +444,46 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		ret = new("MArrayLM", ret)
 		ret$pValue = pValue
+		ret = as(ret, "MArrayLM2")
 	}
-		
-	as(ret, "MArrayLM2")
+	ret	
 }
 
 
+# 
+# 
 
-#' Compare p-values from two analyses
+#' Subseting for MArrayLM2
 #'
-#' Plot -log10 p-values from two analyses and color based on donor component from variancePartition analysis
+#' Enable subsetting on MArrayLM2 object. Same as for MArrayLM, but apply column subsetting to df.residual and pValue
 #'
-#' @param p1 p-value from first analysis
-#' @param p2 p-value from second analysis
-#' @param vpDonor donor component for each gene from variancePartition analysis
-#' @param dupcorvalue scalar donor component from duplicateCorrelation
-#' @param fraction fraction of highest/lowest values to use for best fit lines
-#' @param xlabel for x-axis
-#' @param ylabel label for y-axis
+#' @param object MArrayLM2
+#' @param i row
+#' @param j col
 #'
-#' @return ggplot2 plot
-#'
-#' @examples
-#'
-#' # load library
-#' # library(variancePartition)
-#'
-#' # optional step to run analysis in parallel on multicore machines
-#' # Here, we used 4 threads
-#' library(doParallel)
-#' cl <- makeCluster(4)
-#' registerDoParallel(cl)
-#' # or by using the doSNOW package
-#'
-#' # load simulated data:
-#' # geneExpr: matrix of gene expression values
-#' # info: information/metadata about each sample
-#' data(varPartData)
-#' 
-#' # Perform very simple analysis for demonstration
-#' 
-#' # Analysis 1
-#' form <- ~ Batch 
-#' L = getContrast( geneExpr, form, info, "Batch3")
-#' fit = dream( geneExpr, form, info, L)
-#' fitEB = eBayes( fit )
-#' res = topTable( fitEB, number=Inf )
-#' 
-#' # Analysis 2
-#' form <- ~ Batch + (1|Tissue)
-#' L = getContrast( geneExpr, form, info, "Batch3")
-#' fit = dream( geneExpr, form, info, L)
-#' fitEB = eBayes( fit )
-#' res2 = topTable( fitEB, number=Inf )
-#' 
-#' # Compare p-values
-#' plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )
-#' 
-#' # stop cluster
-#' stopCluster(cl)
-#'
+#' @name [.MArrayLM2
+#' @return subset
 #' @export
-#' @docType methods
-#' @rdname plotCompareP-method
-plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquote(duplicateCorrelation~(-log[10]~p)), ylabel=bquote(dream~(-log[10]~p))){
+# @rdname [.MArrayLM2-method
+# @aliases [.MArrayLM2,MArrayLM2-method
+assign("[.MArrayLM2",
+	function(object, i, j){
+		if(nargs() != 3){
+			stop("Two subscripts required",call.=FALSE)
+		}
 
-	if( length(unique(c(length(p1), length(p2), length(vpDonor)))) != 1){
-		stop("p1, p2 and vpDonor must have the same number of entries")
-	}
-	if( length(dupcorvalue) != 1){
-		stop("dupcorvalue must be a scalar")
-	}
+		obj = as(object, 'MArrayLM')
 
-	df2 = data.frame(p1=-log10(p1), p2=-log10(p2), vpDonor=vpDonor, delta = vpDonor - dupcorvalue)
-
-	N = nrow(df2)
-
-	c1 = sort(df2$delta)[N*fraction]
-	c2 = sort(df2$delta)[length(df2$delta) - N*fraction]
-
-	l1 = lm(p2 ~ p1, df2[df2$delta >= c2,])
-	l2 = lm(p2 ~ p1, df2[df2$delta <= c1,])
-
-	df_line = data.frame(rbind(coef(l1), coef(l2)))
-	colnames(df_line) = c('a', 'b')
-	df_line$type = c('darkred', 'navy')
-
-	lim = c(0, max(max(df2$p1), max(df2$p2)))
-
-	# xlab("duplicateCorrelation (-log10 p)") + ylab("dream (-log10 p)")
-	ggplot(df2, aes(p1, p2, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(12) +  theme(aspect.ratio=1,plot.title = element_text(hjust = 0.5)) + xlim(lim) + ylim(lim) + xlab(xlabel) + ylab(ylabel) + 
-		geom_abline( intercept=df_line$a, slope=df_line$b, color=df_line$type, linetype=2) + scale_color_gradientn(name = "Donor", colours = c("blue","green","red"), 
-	                       values = rescale(c(0, dupcorvalue, 1)),
-	                       guide = "colorbar", limits=c(0, 1))
-}
+		if(!missing(j)){
+			obj = obj[,j]
+		}
+		if(!missing(i)){
+			obj = obj[i,]
+		}
+		obj$df.residual = object$df.residual[i,j]
+		obj$pValue = object$pValue[i,j]
+		obj
+		})
 
 #' eBayes for MArrayLM2
 #'
@@ -512,11 +503,37 @@ plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquot
 setMethod("eBayes", "MArrayLM2",
 function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
-	ret = limma::eBayes( fit, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p   )	
 
-	# transform moderated t-statistics to have same degrees of freedom
-	standardized_t_stat( ret )
+	retList = foreach( i = 1:ncol(fit) ) %do% {
+
+		ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+
+		# transform moderated t-statistics to have same degrees of freedom
+		standardized_t_stat( ret )	
+	}
+
+	fit2 = retList[[1]]
+
+	fit2$coefficients = do.call("cbind", lapply(retList, function(fit) fit$coefficients))
+	fit2$contrasts = do.call("cbind", lapply(retList, function(fit) fit$contrasts))
+	fit2$stdev.unscaled = do.call("cbind", lapply(retList, function(fit) fit$stdev.unscaled))
+	fit2$pValue = do.call("cbind", lapply(retList, function(fit) fit$pValue))
+	fit2$df.prior = do.call("cbind", lapply(retList, function(fit) fit$df.prior))
+	fit2$s2.prior = do.call("cbind", lapply(retList, function(fit) fit$s2.prior))
+	fit2$var.prior = do.call("cbind", lapply(retList, function(fit) fit$var.prior))
+	fit2$s2.post = do.call("cbind", lapply(retList, function(fit) fit$s2.post))
+	fit2$t = do.call("cbind", lapply(retList, function(fit) fit$t))
+	fit2$df.total = do.call("cbind", lapply(retList, function(fit) fit$df.total))
+	fit2$p.value = do.call("cbind", lapply(retList, function(fit) fit$p.value))
+	fit2$lods = do.call("cbind", lapply(retList, function(fit) fit$lods))
+
+	colnames(fit2$pValue) = colnames(fit2$coefficients)
+	colnames(fit2$t) = 	colnames(fit2$coefficients)
+	colnames(fit2$df.total) = colnames(fit2$coefficients)
+
+	fit2 
 })
+
 
 # #' topTable for MArrayLMM_lmer
 # #'
@@ -626,5 +643,92 @@ standardized_t_stat = function( fit ){
 
 
 
+#' Compare p-values from two analyses
+#'
+#' Plot -log10 p-values from two analyses and color based on donor component from variancePartition analysis
+#'
+#' @param p1 p-value from first analysis
+#' @param p2 p-value from second analysis
+#' @param vpDonor donor component for each gene from variancePartition analysis
+#' @param dupcorvalue scalar donor component from duplicateCorrelation
+#' @param fraction fraction of highest/lowest values to use for best fit lines
+#' @param xlabel for x-axis
+#' @param ylabel label for y-axis
+#'
+#' @return ggplot2 plot
+#'
+#' @examples
+#'
+#' # load library
+#' # library(variancePartition)
+#'
+#' # optional step to run analysis in parallel on multicore machines
+#' # Here, we used 4 threads
+#' library(doParallel)
+#' cl <- makeCluster(4)
+#' registerDoParallel(cl)
+#' # or by using the doSNOW package
+#'
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' # Perform very simple analysis for demonstration
+#' 
+#' # Analysis 1
+#' form <- ~ Batch 
+#' L = getContrast( geneExpr, form, info, "Batch3")
+#' fit = dream( geneExpr, form, info, L)
+#' fitEB = eBayes( fit )
+#' res = topTable( fitEB, number=Inf )
+#' 
+#' # Analysis 2
+#' form <- ~ Batch + (1|Tissue)
+#' L = getContrast( geneExpr, form, info, "Batch3")
+#' fit = dream( geneExpr, form, info, L)
+#' fitEB = eBayes( fit )
+#' res2 = topTable( fitEB, number=Inf )
+#' 
+#' # Compare p-values
+#' plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )
+#' 
+#' # stop cluster
+#' stopCluster(cl)
+#'
+#' @export
+#' @docType methods
+#' @rdname plotCompareP-method
+plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquote(duplicateCorrelation~(-log[10]~p)), ylabel=bquote(dream~(-log[10]~p))){
+
+	if( length(unique(c(length(p1), length(p2), length(vpDonor)))) != 1){
+		stop("p1, p2 and vpDonor must have the same number of entries")
+	}
+	if( length(dupcorvalue) != 1){
+		stop("dupcorvalue must be a scalar")
+	}
+
+	df2 = data.frame(p1=-log10(p1), p2=-log10(p2), vpDonor=vpDonor, delta = vpDonor - dupcorvalue)
+
+	N = nrow(df2)
+
+	c1 = sort(df2$delta)[N*fraction]
+	c2 = sort(df2$delta)[length(df2$delta) - N*fraction]
+
+	l1 = lm(p2 ~ p1, df2[df2$delta >= c2,])
+	l2 = lm(p2 ~ p1, df2[df2$delta <= c1,])
+
+	df_line = data.frame(rbind(coef(l1), coef(l2)))
+	colnames(df_line) = c('a', 'b')
+	df_line$type = c('darkred', 'navy')
+
+	lim = c(0, max(max(df2$p1), max(df2$p2)))
+
+	# xlab("duplicateCorrelation (-log10 p)") + ylab("dream (-log10 p)")
+	ggplot(df2, aes(p1, p2, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(12) +  theme(aspect.ratio=1,plot.title = element_text(hjust = 0.5)) + xlim(lim) + ylim(lim) + xlab(xlabel) + ylab(ylabel) + 
+		geom_abline( intercept=df_line$a, slope=df_line$b, color=df_line$type, linetype=2) + scale_color_gradientn(name = "Donor", colours = c("blue","green","red"), 
+	                       values = rescale(c(0, dupcorvalue, 1)),
+	                       guide = "colorbar", limits=c(0, 1))
+}
 
 
