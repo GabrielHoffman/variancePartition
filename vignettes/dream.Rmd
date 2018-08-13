@@ -127,7 +127,6 @@ The dream model operates directly on the results of voom.  The only change compa
 cl <- makeCluster(4)
 registerDoParallel(cl)
 
-# Specify formula with at least one random effect
 # The variable to be tested should be a fixed effect
 form <- ~ Disease + (1|Individual) 
 
@@ -216,9 +215,6 @@ Note that using more variance components or a more complicated contrast matrix c
 # Session info
 ```{r sessionInfo}
 sessionInfo()
-```
-```{r , message=FALSE, cache=FALSE}
-# stopCluster(cl)
 ```
 
 # References
