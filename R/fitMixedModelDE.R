@@ -127,20 +127,23 @@ getContrast = function( exprObj, formula, data, coefficient){
 	L
 }
 
-#' Evaluate contrasts for linear mixed model
-#' 
-#' Evaluate contrasts for linear mixed model
-#'
-#' @param fit model fit
-#' @param L contrast matrix
-#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
-#' 
-#' @return
-#' df, sigma, beta, SE of model
-#'
-#' @docType methods
-#' @rdname eval_lmm-method
-eval_lmm = function( fit, L, ddf ){
+# Evaluate contrasts for linear mixed model
+# 
+# Evaluate contrasts for linear mixed model
+#
+# @param fit model fit
+# @param L contrast matrix
+# @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
+# 
+# @return
+# df, sigma, beta, SE of model
+#
+# @export
+# @docType methods
+# @rdname eval_lmm-method
+.eval_lmm = function( fit, L, ddf ){
+
+	j = 1
 	# evaluate each contrast
 	# cons = lmerTest::contest(fit, L, ddf=ddf)
 	cons = foreach( j = 1:ncol(L), .combine=rbind) %do% {
@@ -342,7 +345,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		}
 		
 		# extract statistics from model
-		mod = eval_lmm( fitInit, L, ddf)
+		mod = .eval_lmm( fitInit, L, ddf)
 		timediff = proc.time() - timeStart
 
 		# check size of stored objects
@@ -382,7 +385,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
 			# extract statistics from model
-			mod = eval_lmm( fit, L, ddf)
+			mod = .eval_lmm( fit, L, ddf)
 			
 			ret = list(coefficients = mod$beta, 
 				design = fit@pp$X, 
@@ -396,6 +399,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			new("MArrayLM", ret)
 		}
 
+		x = 1
 		# extract results
 		coefficients = foreach( x = resList, .combine=cbind ) %do% {x$coefficients}
 		df.residual = foreach( x = resList, .combine=cbind ) %do% {	x$df.residual}
@@ -406,8 +410,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		coefficients = t( coefficients )
 		df.residual = t( df.residual )
 		pValue = t( pValue )
-		stdev.unscaled = t( stdev.unscaled )
-		
+		stdev.unscaled = t( stdev.unscaled )		
 
 		colnames(coefficients) = colnames(L)
 		rownames(coefficients) = rownames(exprObj)
@@ -504,12 +507,13 @@ setMethod("eBayes", "MArrayLM2",
 function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
 
+	i = 1
 	retList = foreach( i = 1:ncol(fit) ) %do% {
 
 		ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
 		# transform moderated t-statistics to have same degrees of freedom
-		standardized_t_stat( ret )	
+		.standardized_t_stat( ret )	
 	}
 
 	fit2 = retList[[1]]
@@ -605,36 +609,36 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 
 
 
-#' change_t_df
-#'
-#' change_t_df
-#'
-#' @param t t-statistic
-#' @param df current degrees of freedom
-#' @param d_target target degrees of freedom
-#'
-#' @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
-change_t_df = function(t, df, d_target){
+# change_t_df
+#
+# change_t_df
+#
+# @param t t-statistic
+# @param df current degrees of freedom
+# @param d_target target degrees of freedom
+#
+# @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
+.change_t_df = function(t, df, d_target){
   p = pt(abs(t), df, lower.tail=FALSE)
   qt(p, d_target, lower.tail=FALSE)
 }
 
-#' standardized_t_stat
-#'
-#' standardized_t_stat
-#'
-#' @param fit model fit from dream()
-#'
-#' @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
-#'
-#' @details Since dream() used degrees of freedom estimated from the data, the t-statistics across genes have different df values used to compute p-values.  Therefore the order of the raw t-statistics doesn't correspond to the order of the p-values since the df is different for each gene.  This function resolved this issue by transofrming the t-statistics to all have the same df.  Under a fixed effects model, df = N - p, where N is the sample size and p is the number of covariates.  Here, df is the target degrees of freedom used in the transformation
-standardized_t_stat = function( fit ){
+# standardized_t_stat
+#
+# standardized_t_stat
+#
+# @param fit model fit from dream()
+#
+# @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
+#
+# @details Since dream() used degrees of freedom estimated from the data, the t-statistics across genes have different df values used to compute p-values.  Therefore the order of the raw t-statistics doesn't correspond to the order of the p-values since the df is different for each gene.  This function resolved this issue by transofrming the t-statistics to all have the same df.  Under a fixed effects model, df = N - p, where N is the sample size and p is the number of covariates.  Here, df is the target degrees of freedom used in the transformation
+.standardized_t_stat = function( fit ){
   res = data.frame(t=as.numeric(fit$t), df.sat=fit$df.residual)
 
   # d_target = max(res$df.sat)
   d_target = nrow(fit$design) - ncol(fit$design)
 
-  res$t_dot = sign(res$t) * change_t_df( res$t, res$df.sat, d_target )
+  res$t_dot = sign(res$t) * .change_t_df( res$t, res$df.sat, d_target )
 
   fit$t = res$t_dot 
   fit$df.residual = rep(d_target, nrow(res))
