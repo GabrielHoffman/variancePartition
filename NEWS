@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.11.13
+-------------------------
+	o Fix multithreading issue
+
 CHANGES IN VERSION 1.11.11
 -------------------------
 	o dream can handle multiple contrasts at the same time
