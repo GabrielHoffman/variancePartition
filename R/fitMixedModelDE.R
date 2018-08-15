@@ -376,7 +376,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
 		# loop through genes
-		resList <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest") ) %dopar% {
+		resList <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
 
 			# modify data2 for this gene
 			data2$expr = gene14643$E
