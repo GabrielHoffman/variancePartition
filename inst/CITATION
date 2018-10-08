@@ -11,3 +11,16 @@ citEntry(entry="article",
    textVersion = 
    paste("Hoffman GE, Schadt EE (2016). variancePartition: Interpreting drivers of variation in complex gene expression studies. BMC Bioinformatics, 17:483, doi:10.1186/s12859-016-1323-z"))
 
+
+citEntry(entry="article",
+   title = "dream: Powerful differential expression analysis for repeated measures designs",
+   author = personList( as.person("Gabriel E. Hoffman"), as.person("Panos Roussos")),
+   year = 2018,
+   journal = "biorxiv",
+   doi = "10.1101/432567",
+   volume = "",
+   issue = "",
+   pages = "",
+   textVersion = 
+   paste("Hoffman GE, Roussos P (2018). dream: Powerful differential expression analysis for repeated measures designs. biorxiv, doi:10.1101/432567"))
+
