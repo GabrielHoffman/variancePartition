@@ -5,8 +5,9 @@
 \alias{eBayes,MArrayLM2-method}
 \title{eBayes for MArrayLM2}
 \usage{
-\S4method{eBayes}{MArrayLM2}(fit, proportion = 0.01, stdev.coef.lim = c(0.1,
-  4), trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1))
+\S4method{eBayes}{MArrayLM2}(fit, proportion = 0.01,
+  stdev.coef.lim = c(0.1, 4), trend = FALSE, robust = FALSE,
+  winsor.tail.p = c(0.05, 0.1))
 }
 \arguments{
 \item{fit}{fit}
@@ -27,4 +28,3 @@ resold of eBayes
 \description{
 eBayes for MArrayLM2
 }
-

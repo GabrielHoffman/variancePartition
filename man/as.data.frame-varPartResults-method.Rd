@@ -2,8 +2,8 @@
 % Please edit documentation in R/misc.R
 \docType{methods}
 \name{as.data.frame,varPartResults-method}
-\alias{as.data.frame}
 \alias{as.data.frame,varPartResults-method}
+\alias{as.data.frame}
 \title{Convert to data.frame}
 \usage{
 \S4method{as.data.frame}{varPartResults}(x, row.names = NULL,
@@ -45,4 +45,3 @@ varPart <- fitExtractVarPartModel( geneExpr[1:5,], form, info )
 as.data.frame(varPart)
 
 }
-

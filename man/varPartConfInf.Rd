@@ -75,4 +75,3 @@ resCI <- varPartConfInf( geneExpr[1:5,], form, info, nsim=100 )
 stopCluster(cl)
 
 }
-

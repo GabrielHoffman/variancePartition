@@ -70,4 +70,3 @@ plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )
 stopCluster(cl)
 
 }
-

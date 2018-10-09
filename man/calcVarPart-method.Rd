@@ -7,8 +7,8 @@
 \alias{calcVarPart,lmerMod-method}
 \title{Compute variance statistics}
 \usage{
-calcVarPart(fit, adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
-  ...)
+calcVarPart(fit, adjust = NULL, adjustAll = FALSE,
+  showWarnings = TRUE, ...)
 
 \S4method{calcVarPart}{lm}(fit, adjust = NULL, adjustAll = FALSE,
   showWarnings = TRUE, ...)
@@ -49,4 +49,3 @@ fit <- lm( geneExpr[1,] ~ Tissue + Age, info)
 calcVarPart( fit )
 
 }
-
