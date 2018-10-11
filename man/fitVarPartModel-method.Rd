@@ -3,26 +3,27 @@
 \docType{methods}
 \name{fitVarPartModel}
 \alias{fitVarPartModel}
+\alias{fitVarPartModel,matrix-method}
+\alias{fitVarPartModel,data.frame-method}
 \alias{fitVarPartModel,EList-method}
 \alias{fitVarPartModel,ExpressionSet-method}
-\alias{fitVarPartModel,data.frame-method}
-\alias{fitVarPartModel,matrix-method}
 \title{Fit linear (mixed) model}
 \usage{
-fitVarPartModel(exprObj, formula, data, REML = FALSE, useWeights = TRUE,
-  weightsMatrix = NULL, showWarnings = TRUE, fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), ...)
+fitVarPartModel(exprObj, formula, data, REML = FALSE,
+  useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
+  fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
+  check.rankX = "stop.deficient"), ...)
 
 \S4method{fitVarPartModel}{matrix}(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
   check.rankX = "stop.deficient"), ...)
 
-\S4method{fitVarPartModel}{data.frame}(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
-  fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), ...)
+\S4method{fitVarPartModel}{data.frame}(exprObj, formula, data,
+  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
+  showWarnings = TRUE, fxn = identity,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
+  "stop.deficient"), ...)
 
 \S4method{fitVarPartModel}{EList}(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
@@ -134,4 +135,3 @@ results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 # stop cluster
 stopCluster(cl)
 }
-

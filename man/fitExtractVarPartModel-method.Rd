@@ -3,10 +3,10 @@
 \docType{methods}
 \name{fitExtractVarPartModel}
 \alias{fitExtractVarPartModel}
+\alias{fitExtractVarPartModel,matrix-method}
+\alias{fitExtractVarPartModel,data.frame-method}
 \alias{fitExtractVarPartModel,EList-method}
 \alias{fitExtractVarPartModel,ExpressionSet-method}
-\alias{fitExtractVarPartModel,data.frame-method}
-\alias{fitExtractVarPartModel,matrix-method}
 \title{Fit linear (mixed) model, report variance fractions}
 \usage{
 fitExtractVarPartModel(exprObj, formula, data, REML = FALSE,
@@ -16,26 +16,26 @@ fitExtractVarPartModel(exprObj, formula, data, REML = FALSE,
   "stop.deficient"), ...)
 
 \S4method{fitExtractVarPartModel}{matrix}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL, adjust = NULL,
-  adjustAll = FALSE, showWarnings = TRUE,
+  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
+  adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
   "stop.deficient"), ...)
 
 \S4method{fitExtractVarPartModel}{data.frame}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL, adjust = NULL,
-  adjustAll = FALSE, showWarnings = TRUE,
+  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
+  adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
   "stop.deficient"), ...)
 
-\S4method{fitExtractVarPartModel}{EList}(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, weightsMatrix = NULL, adjust = NULL,
-  adjustAll = FALSE, showWarnings = TRUE,
+\S4method{fitExtractVarPartModel}{EList}(exprObj, formula, data,
+  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
+  adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
   "stop.deficient"), ...)
 
 \S4method{fitExtractVarPartModel}{ExpressionSet}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL, adjust = NULL,
-  adjustAll = FALSE, showWarnings = TRUE,
+  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
+  adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
   "stop.deficient"), ...)
 }
@@ -130,4 +130,3 @@ varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
 stopCluster(cl)
 
 }
-

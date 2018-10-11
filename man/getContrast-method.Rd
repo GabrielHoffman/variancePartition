@@ -43,4 +43,3 @@ L = getContrast( geneExpr, form, info, c("Batch3", "Batch2"))
 # to estimate Batch1 directly instead of using it as the baseline
 
 }
-

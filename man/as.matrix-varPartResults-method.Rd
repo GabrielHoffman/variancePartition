@@ -2,8 +2,8 @@
 % Please edit documentation in R/misc.R
 \docType{methods}
 \name{as.matrix,varPartResults-method}
-\alias{as.matrix}
 \alias{as.matrix,varPartResults-method}
+\alias{as.matrix}
 \title{Convert to matrix}
 \usage{
 \S4method{as.matrix}{varPartResults}(x, ...)
@@ -40,4 +40,3 @@ varPart <- fitExtractVarPartModel( geneExpr[1:5,], form, info )
 as.matrix(varPart)
 
 }
-

@@ -36,4 +36,3 @@ res <- fitVarPartModel( geneExpr[1:10,], form, info )
 colinearityScore(res[[1]])
 
 }
-

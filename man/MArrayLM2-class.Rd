@@ -7,4 +7,3 @@
 \description{
 Class \code{MArrayLM2}
 }
-

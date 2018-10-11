@@ -4,9 +4,9 @@
 \alias{plotStratify}
 \title{plotStratify}
 \usage{
-plotStratify(formula, data, xlab, ylab, main, sortBy, colorBy, sort = TRUE,
-  text = NULL, text.y = 1, text.size = 5, pts.cex = 1, ylim = NULL,
-  legend = TRUE, x.labels = FALSE)
+plotStratify(formula, data, xlab, ylab, main, sortBy, colorBy,
+  sort = TRUE, text = NULL, text.y = 1, text.size = 5,
+  pts.cex = 1, ylim = NULL, legend = TRUE, x.labels = FALSE)
 }
 \arguments{
 \item{formula}{specify variables shown in the x- and y-axes.  Y-axis should be continuous variable, x-axis should be discrete.}
@@ -69,4 +69,3 @@ col = c( B="green", A="red", C="yellow")
 plotStratify( Expression ~ Tissue, GE, colorBy=col, sort=FALSE)
 
 }
-

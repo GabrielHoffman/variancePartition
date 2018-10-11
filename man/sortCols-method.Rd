@@ -3,8 +3,8 @@
 \docType{methods}
 \name{sortCols}
 \alias{sortCols}
-\alias{sortCols,data.frame-method}
 \alias{sortCols,matrix-method}
+\alias{sortCols,data.frame-method}
 \alias{sortCols,varPartResults-method}
 \title{Sort variance partition statistics}
 \usage{
@@ -75,4 +75,3 @@ plotVarPart( sortCols( varPart ) )
 stopCluster(cl)
 
 }
-
