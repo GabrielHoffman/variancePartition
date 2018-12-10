@@ -375,6 +375,13 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
+		pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
+			total = nrow(exprObj), width= 60, clear=FALSE)
+
+		pids = .get_pids()
+
+		timeStart = proc.time()
+
 		# loop through genes
 		resList <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
 
@@ -386,7 +393,12 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 			# extract statistics from model
 			mod = .eval_lmm( fit, L, ddf)
-			
+
+			# progressbar
+			if( Sys.getpid() == pids[1]){
+				pb$update( gene14643$n_iter / gene14643$max_iter )
+			}
+
 			ret = list(coefficients = mod$beta, 
 				design = fit@pp$X, 
 				df.residual = mod$df, 
@@ -398,6 +410,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 			new("MArrayLM", ret)
 		}
+		cat("\nFinished...")
+		cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 
 		x = 1
 		# extract results

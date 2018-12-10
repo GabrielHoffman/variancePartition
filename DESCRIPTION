@@ -26,6 +26,7 @@ Suggests:
     readr
 biocViews: RNASeq,
     GeneExpression,
+    GeneSetEnrichment
     DifferentialExpression,
     BatchEffect,
     QualityControl,
@@ -50,6 +51,7 @@ Imports:
     splines,
     colorRamps,
     gplots,
+    progress,
     reshape2,
     lme4 (>= 1.1-10),
     doParallel,
@@ -57,4 +59,4 @@ Imports:
     graphics,
     utils,
     stats
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1

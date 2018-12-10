@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.11.14
+-------------------------
+	o Add progress bar at ETA
+
 CHANGES IN VERSION 1.11.13
 -------------------------
 	o Fix multithreading issue
