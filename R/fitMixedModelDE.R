@@ -354,11 +354,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
 		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
 
-		# cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
+		cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
 
-		if( showTime > .01 ){
-			cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		}
+		# if( showTime > .01 ){
+		# 	cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
+		# }
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=FALSE, dream=TRUE, colinearityCutoff )
