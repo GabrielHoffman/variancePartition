@@ -42,7 +42,7 @@ setMethod("checkModelStatus", "lmerMod",
 		}
 
 		# if any coefficient is NA
-		if( (showWarnings | dream) && any(is.na(coef(fit))) ){
+		if( ( showWarnings | dream) && any(is.na(coef(fit))) ){
 			stop("The variables specified in this model are redundant,\nso the design matrix is not full rank")
 		}
 
@@ -80,18 +80,28 @@ setMethod("checkModelStatus", "lmerMod",
 		for( i in 1:length(varType) ){
 
 			# if factor is not random
-			if( showWarnings && varType[i] %in% c("factor", "character") && (! names(varType)[i] %in% randVar) ){
-				stop(paste("Categorical variables modeled as fixed effect:", paste(names(varType)[i], collapse=', '), "\nThe results will not behave as expected and may be very wrong!!"))
-		
+			if( (showWarnings && ! dream) && varType[i] %in% c("factor", "character") && (! names(varType)[i] %in% randVar) ){
+				stop(paste("Categorical variables modeled as fixed effect:", paste(names(varType)[i], collapse=', '), "\nThe results will not behave as expected and may be very wrong!!"))		
 			}
 
 			# If numeric/double is not fixed
-			if( (showWarnings | dream) && varType[i] %in% c("numeric", "double") && (!names(varType)[i] %in% fixedVar) ){
+			if( (showWarnings && ! dream) && varType[i] %in% c("numeric", "double") && (!names(varType)[i] %in% fixedVar) ){
 				stop(paste("Continuous variable cannot be modeled as a random effect:", names(varType)[i]))		
 			}
 		}
 
-		isMultipleVaryingCoefficientTerms( fit )
+		if( (! dream) && showWarnings && isVaryingCoefficientModel( fit ) ){
+			stop(paste("Random slope models {i.e. ~ (var1 | var2) } are no longer supported\nfor estimating variance fractions.\nThey produced results that were not interpretable."))			
+		}
+
+		# show convergance message
+		if( showWarnings && !is.null(fit@optinfo$conv$lme4$messages) ){
+			stop(fit@optinfo$conv$lme4$messages)
+		}
 	}
 )
+
+
+
+
 

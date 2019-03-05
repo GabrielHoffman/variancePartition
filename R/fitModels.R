@@ -169,7 +169,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		fit <- lm( eval(parse(text=form)), data=data,...)
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
 		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
@@ -210,7 +210,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# }
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
 		# specify gene explicitly in data 
 		# required for downstream processing with lmerTest
@@ -430,7 +430,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		fit <- lm( eval(parse(text=form)), data=data,...)
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
+
+		testValue = calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )		
 
 		timeStart = proc.time()
 
@@ -465,7 +467,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# }
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
 		timeStart = proc.time()
 

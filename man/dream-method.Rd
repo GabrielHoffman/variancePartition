@@ -8,7 +8,7 @@
 dream(exprObj, formula, data, L, ddf = c("Satterthwaite",
   "Kenward-Roger"), REML = TRUE, useWeights = TRUE,
   weightsMatrix = NULL, control = lme4::lmerControl(calc.derivs =
-  FALSE, check.rankX = "stop.deficient"), ...)
+  FALSE, check.rankX = "stop.deficient"), suppressWarnings = FALSE, ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -28,6 +28,8 @@ dream(exprObj, formula, data, L, ddf = c("Satterthwaite",
 \item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE}
 
 \item{control}{control settings for lmer()}
+
+\item{suppressWarnings}{if TRUE, do not stop because of warnings or errors in model fit}
 
 \item{...}{Additional arguments for lmer() or lm()}
 }

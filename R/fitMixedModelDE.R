@@ -207,6 +207,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 #' @param control control settings for lmer()
+#' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return 
@@ -262,7 +263,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @export
 #' @docType methods
 #' @rdname dream-method
-dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
+dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, ...){ 
 
 	exprObjInit = exprObj
 
@@ -361,7 +362,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# }
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fitInit, showWarnings=FALSE, dream=TRUE, colinearityCutoff )
+		checkModelStatus( fitInit, showWarnings=!suppressWarnings, dream=TRUE, colinearityCutoff=colinearityCutoff )
 
 		a = names(fixef(fitInit))
 		b = rownames(L)

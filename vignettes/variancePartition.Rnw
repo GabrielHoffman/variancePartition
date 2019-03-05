@@ -430,7 +430,7 @@ So far, we have focused on interpreting one variable at a time. But the linear m
 form <- ~ (Tissue+0|Individual) + Age + (1|Tissue) + (1|Batch)
 
 # fit model and extract variance percents
-varPart <- fitExtractVarPartModel( geneExpr, form, info )
+varPart <- fitExtractVarPartModel( geneExpr, form, info, showWarnings=FALSE )
 
 # violin plot
 plotVarPart( sortCols(varPart), label.angle=60 )
@@ -753,7 +753,7 @@ plotVarCross = function( geneExpr, info, label.angle=30 ){
   #res = fitVarPartModel( geneExpr, form, info )
   #varPart = extractVarPart( res )
 
-  varPart = fitExtractVarPartModel( geneExpr, form, info )
+  varPart = fitExtractVarPartModel( geneExpr, form, info, showWarnings=FALSE )
 
   plotVarPart( varPart, label.angle=label.angle )
 }
@@ -1074,6 +1074,8 @@ Uncertainty in the measurement of gene expression can be modeled with precision 
 
 \pagebreak
 \section{Frequently asked questions}
+
+Note that manny warnings and errors can be overridden by specifying \newline \Rcode{suppressWarnings=TRUE} for \Rcode{dream()} and \Rcode{showWarnings=FALSE} for \newline\Rcode{fitExtractVarPartModel()} and \Rcode{fitVarPartModel()}.
 
 Interpreting warnings and errors from \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}:
 
