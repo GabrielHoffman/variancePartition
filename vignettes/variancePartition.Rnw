@@ -1075,7 +1075,7 @@ Uncertainty in the measurement of gene expression can be modeled with precision 
 \pagebreak
 \section{Frequently asked questions}
 
-Note that manny warnings and errors can be overridden by specifying \newline \Rcode{suppressWarnings=TRUE} for \Rcode{dream()} and \Rcode{showWarnings=FALSE} for \newline\Rcode{fitExtractVarPartModel()} and \Rcode{fitVarPartModel()}.
+Note that many warnings and errors can be overridden by specifying \newline \Rcode{suppressWarnings=TRUE} for \Rcode{dream()} and \Rcode{showWarnings=FALSE} for \newline\Rcode{fitExtractVarPartModel()} and \Rcode{fitVarPartModel()}.
 
 Interpreting warnings and errors from \Rcode{fitVarPartModel} and \Rcode{fitExtractVarPartModel}:
 
