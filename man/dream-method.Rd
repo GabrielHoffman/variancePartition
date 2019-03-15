@@ -74,6 +74,9 @@ data(varPartData)
 form <- ~ Batch + (1|Individual) + (1|Tissue) 
 L = getContrast( geneExpr, form, info, "Batch3")
 
+# plot contrasts
+plotContrasts( L )
+
 # Fit linear mixed model for each gene
 # run on just 10 genes for time
 fit = dream( geneExpr[1:10,], form, info, L)

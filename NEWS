@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.13.3
+-------------------------
+	o add plotContrasts()
+
 CHANGES IN VERSION 1.13.2
 -------------------------
 	o Enable random slope models in dream, but not for estimating variance fractions
