@@ -207,6 +207,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 #' @param control control settings for lmer()
+#' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return 
@@ -246,6 +247,9 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' form <- ~ Batch + (1|Individual) + (1|Tissue) 
 #' L = getContrast( geneExpr, form, info, "Batch3")
 #' 
+#' # plot contrasts
+#' plotContrasts( L )
+#' 
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
 #' fit = dream( geneExpr[1:10,], form, info, L)
@@ -262,7 +266,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @export
 #' @docType methods
 #' @rdname dream-method
-dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
+dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, ...){ 
 
 	exprObjInit = exprObj
 
@@ -354,14 +358,14 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
 		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
 
-		# cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
+		cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
 
-		if( showTime > .01 ){
-			cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		}
+		# if( showTime > .01 ){
+		# 	cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
+		# }
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fitInit, showWarnings=FALSE, dream=TRUE, colinearityCutoff )
+		checkModelStatus( fitInit, showWarnings=!suppressWarnings, dream=TRUE, colinearityCutoff=colinearityCutoff )
 
 		a = names(fixef(fitInit))
 		b = rownames(L)
@@ -375,6 +379,13 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
+		pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
+			total = nrow(exprObj), width= 60, clear=FALSE)
+
+		pids = .get_pids()
+
+		timeStart = proc.time()
+
 		# loop through genes
 		resList <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
 
@@ -386,7 +397,12 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 			# extract statistics from model
 			mod = .eval_lmm( fit, L, ddf)
-			
+
+			# progressbar
+			if( Sys.getpid() == pids[1]){
+				pb$update( gene14643$n_iter / gene14643$max_iter )
+			}
+
 			ret = list(coefficients = mod$beta, 
 				design = fit@pp$X, 
 				df.residual = mod$df, 
@@ -398,6 +414,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 			new("MArrayLM", ret)
 		}
+		cat("\nFinished...")
+		cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 
 		x = 1
 		# extract results

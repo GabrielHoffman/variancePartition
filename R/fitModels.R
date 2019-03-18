@@ -17,7 +17,7 @@
 #' @return
 #' list() of where each entry is a model fit produced by lmer() or lm()
 #' 
-#' @import splines gplots colorRamps lme4 pbkrtest ggplot2 limma foreach reshape2 iterators doParallel Biobase methods utils
+#' @import splines gplots colorRamps lme4 pbkrtest ggplot2 limma foreach progress reshape2 iterators doParallel Biobase methods utils
 # dendextend 
 #' @importFrom MASS ginv
 # @importFrom RSpectra eigs_sym
@@ -154,6 +154,13 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
 
+	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
+			total = nrow(exprObj), width= 60, clear=FALSE)
+
+	pids = .get_pids()
+
+	timeStart = proc.time()
+
 	mesg <- "No random effects terms specified in formula"
 	method = ''
 	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
@@ -162,11 +169,16 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		fit <- lm( eval(parse(text=form)), data=data,...)
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
 		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
 			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
+
+			# progressbar
+			if( Sys.getpid() == pids[1]){
+				pb$update( gene14643$n_iter / gene14643$max_iter )
+			}
 
 			# apply function
 			fxn( fit )
@@ -193,12 +205,12 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
 
-		if( showTime > .01 ){
-			cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		}
+		# if( showTime > .01 ){
+		# 	cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
+		# }
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
 		# specify gene explicitly in data 
 		# required for downstream processing with lmerTest
@@ -213,12 +225,20 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			# fit linear mixed model
 			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
 
+			# progressbar
+			if( Sys.getpid() == pids[1]){
+				pb$update( gene14643$n_iter / gene14643$max_iter )
+			}
+
 			# apply function
 			fxn( fit )
 		}
 
 		method = "lmer"
 	}
+	
+	cat("\nFinished...")
+	cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 
 	# set name of each entry
 	names(res) <- rownames( exprObj )
@@ -398,6 +418,11 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data, control=control,... ), error = function(e) e)
 
+	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
+			total = nrow(exprObj), width= 60, clear=FALSE)
+
+	pids = .get_pids()
+
 	mesg <- "No random effects terms specified in formula"
 	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
 
@@ -405,11 +430,20 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		fit <- lm( eval(parse(text=form)), data=data,...)
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
+
+		testValue = calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )		
+
+		timeStart = proc.time()
 
 		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
 			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
+
+			# progressbar
+			if( Sys.getpid() == pids[1]){
+				pb$update( gene14643$n_iter / gene14643$max_iter )
+			}
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
@@ -426,24 +460,34 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		timediff = proc.time() - timeStart
 
 		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
-		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
+		# showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
 
-		if( showTime > .01 ){
-			cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		}
+		# if( showTime > .01 ){
+		# 	cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
+		# }
 
 		# check that model fit is valid, and throw warning if not
-		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff )
+		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
+
+		timeStart = proc.time()
 
 		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 			# fit linear mixed model
 			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
+
+			# progressbar
+			if( Sys.getpid() == pids[1]){
+				pb$update( gene14643$n_iter / gene14643$max_iter )
+			}
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
 
 		modelType = "linear mixed model"
 	}
+	cat("\nFinished...")
+	cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
+
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))
 	colnames(varPartMat) <- names(varPart[[1]])

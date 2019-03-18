@@ -8,7 +8,9 @@ setClass("VarParFitList", representation(method="character"), contains="list")
 
 # Iterator over genes
 exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
-    xit <- icountn( nrow(exprObj) )
+
+	n_features = nrow(exprObj)
+	xit <- icountn( n_features )
     nextEl <- function() {
     	j <- nextElem(xit)
 
@@ -23,7 +25,7 @@ exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
     		w = NULL		
 		}
 
-       	list(E = exprObj[j,], weights = w)
+       	list(E = exprObj[j,], weights = w, n_iter = j, max_iter = n_features)
     }
     it <- list(nextElem = nextEl)
     class(it) <- c("abstractiter", "iter")
@@ -470,4 +472,18 @@ colinearityScore = function(fit){
     result = inherits(possibleError, "error") && identical(possibleError$message, mesg)
 
     return( ! result )
+}
+
+
+
+# Get process IDs
+# 
+# Get process IDs for parallel processing
+#
+# @param vmax minumum number of processes
+.get_pids = function( vmax = 2){
+
+	foreach(i = 1:vmax, .combine=c) %dopar% { 
+		Sys.getpid()
+	}
 }
