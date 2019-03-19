@@ -10,6 +10,7 @@ setClass("MArrayLM2",
 #  Linear model fit
 representation("MArrayLM")
 )
+
 setIs("MArrayLM2","LargeDataObject")
 setAs(from='MArrayLM', to='MArrayLM2', function(from){
 	structure(from, class="MArrayLM2")

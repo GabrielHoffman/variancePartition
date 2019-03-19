@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.13.4
+-------------------------
+	o export classes to fix bug with class "varPartResults" not being defined
+	o Thanks Megan Behringer
+
 CHANGES IN VERSION 1.13.3
 -------------------------
 	o add plotContrasts()
@@ -5,6 +10,7 @@ CHANGES IN VERSION 1.13.3
 CHANGES IN VERSION 1.13.2
 -------------------------
 	o Enable random slope models in dream, but not for estimating variance fractions
+	o Thanks Jonas Zierer
 
 CHANGES IN VERSION 1.13.1
 -------------------------

@@ -2,8 +2,22 @@
 # Icahn School of Medicine at Mount Sinai
 
 
-# define classes
+#' Class varParFrac
+#'
+#' Class \code{varParFrac} 
+#'
+#' @name varParFrac-class
+#' @rdname varParFrac-class
+#' @exportClass varParFrac
 setClass("varParFrac")
+
+#' Class VarParFitList
+#'
+#' Class \code{VarParFitList} 
+#'
+#' @name VarParFitList-class
+#' @rdname VarParFitList-class
+#' @exportClass VarParFitList
 setClass("VarParFitList", representation(method="character"), contains="list")
 
 # Iterator over genes
@@ -38,6 +52,13 @@ exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
 # type: lmm or anova
 # setClass("varPartResults", representation(results = "data.frame", type = "character", adjustedFor="array", method="character"))
 
+#' Class varPartResults
+#'
+#' Class \code{varPartResults} 
+#'
+#' @name varPartResults-class
+#' @rdname varPartResults-class
+#' @exportClass varPartResults
 setClass("varPartResults", representation(type = "character", adjustedFor="array", method="character"), contains="data.frame")
 
 # # @export
