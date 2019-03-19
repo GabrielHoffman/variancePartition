@@ -37,7 +37,7 @@ setMethod("checkModelStatus", "lmerMod",
   function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999 )
 	{
 		# if no intercept is specified, give warning
-		if( showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
+		if( !dream && showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
 			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
 		}
 

@@ -313,7 +313,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	}
 
 	# format contrasts 
-	if( class(L) == "numeric" ){
+	# if( class(L) == "numeric" ){
+	if( is(L, "numeric") ){
 		L = as.matrix(L, ncol=1)
 	}
 
