@@ -3,7 +3,7 @@
 \docType{class}
 \name{MArrayLM2-class}
 \alias{MArrayLM2-class}
-\title{Class MArrayLM2.}
+\title{Class MArrayLM2}
 \description{
 Class \code{MArrayLM2}
 }

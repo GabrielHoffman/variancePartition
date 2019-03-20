@@ -2,6 +2,7 @@
 % Please edit documentation in R/fitMixedModelDE.R
 \name{[.MArrayLM2}
 \alias{[.MArrayLM2}
+\alias{subset.MArrayLM2,MArrayLM2-method}
 \title{Subseting for MArrayLM2}
 \arguments{
 \item{object}{MArrayLM2}
