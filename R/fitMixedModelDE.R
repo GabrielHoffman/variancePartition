@@ -1,5 +1,5 @@
 
-#' Class MArrayLM2.
+#' Class MArrayLM2
 #'
 #' Class \code{MArrayLM2} 
 #'
@@ -487,8 +487,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @name [.MArrayLM2
 #' @return subset
 #' @export
-# @rdname [.MArrayLM2-method
-# @aliases [.MArrayLM2,MArrayLM2-method
+#' @rdname subset.MArrayLM2-method
+#' @aliases subset.MArrayLM2,MArrayLM2-method
 assign("[.MArrayLM2",
 	function(object, i, j){
 		if(nargs() != 3){
@@ -507,6 +507,7 @@ assign("[.MArrayLM2",
 		obj$pValue = object$pValue[i,j]
 		obj
 		})
+
 
 #' eBayes for MArrayLM2
 #'
