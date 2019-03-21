@@ -37,7 +37,7 @@ setMethod("checkModelStatus", "lmerMod",
   function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999 )
 	{
 		# if no intercept is specified, give warning
-		if( showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
+		if( !dream && showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
 			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
 		}
 
@@ -91,7 +91,7 @@ setMethod("checkModelStatus", "lmerMod",
 		}
 
 		if( (! dream) && showWarnings && isVaryingCoefficientModel( fit ) ){
-			stop(paste("Random slope models {i.e. ~ (var1 | var2) } are no longer supported\nfor estimating variance fractions.\nThey produced results that were not interpretable."))			
+			warning(paste("Note that random slope models {i.e. ~ (var1 | var2) }\nhave been problematic for estimating and interpreting variance fractions.\nI recommend avoiding these models, but they are allowed for compatibility."))			
 		}
 
 		# show convergance message

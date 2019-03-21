@@ -10,6 +10,7 @@ setClass("MArrayLM2",
 #  Linear model fit
 representation("MArrayLM")
 )
+
 setIs("MArrayLM2","LargeDataObject")
 setAs(from='MArrayLM', to='MArrayLM2', function(from){
 	structure(from, class="MArrayLM2")
@@ -312,7 +313,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	}
 
 	# format contrasts 
-	if( class(L) == "numeric" ){
+	# if( class(L) == "numeric" ){
+	if( is(L, "numeric") ){
 		L = as.matrix(L, ncol=1)
 	}
 

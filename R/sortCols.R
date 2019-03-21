@@ -86,8 +86,9 @@ setMethod("sortCols", "varPartResults",
 		colnames(df) = names(x)
 		rownames(df) = x@row.names
 
-
  		res = .sortCols( df, FUN, decreasing, last, ... )
+
+ 		# res = as.data.frame( res )
 
  		vp = new( "varPartResults", res, type=x@type, adjustedFor=x@adjustedFor, method=x@method)
 

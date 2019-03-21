@@ -43,6 +43,8 @@ plotContrasts = function( L ){
 		df$Var1 = factor(rep('', nrow(df)))
 	}
 
+	Var1 = Var2 = value = NULL
+
 	h = length(unique(df$Var1))
 	w = length(unique(df$Var2))
 

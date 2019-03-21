@@ -1,6 +1,12 @@
 
 
-
+#' Class VarParCIList
+#'
+#' Class \code{VarParCIList} 
+#'
+#' @name VarParCIList-class
+#' @rdname VarParCIList-class
+#' @exportClass VarParCIList
 setClass("VarParCIList", representation(method="character"), contains="list")
 
 
