@@ -26,7 +26,7 @@ output:
     fig_width: 5
 bibliography: library.bib
 vignette: >
-  %\VignetteIndexEntry{4) Differential expression testing with repeated measures designs}
+  %\VignetteIndexEntry{4) dream: differential expression testing with repeated measures designs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
   %\usepackage[utf8]{inputenc}
@@ -123,7 +123,7 @@ fitDupCor <- eBayes( fitDupCor )
 
 # Dream Analysis
 The dream model operates directly on the results of voom.  The only change compared to the standard limma workflow is to replace lmFit with dream.  
-```{r lmm, eval=TRUE, message=FALSE}
+```{r lmm, eval=TRUE, message=FALSE, fig.height=2}
 cl <- makeCluster(4)
 registerDoParallel(cl)
 
@@ -131,7 +131,11 @@ registerDoParallel(cl)
 form <- ~ Disease + (1|Individual) 
 
 # Get the contrast matrix for the hypothesis test
+# Compare Disease1 to baseline
 L = getContrast( vobj, form, metadata, "Disease1")
+
+# Visualize contrasts
+plotContrasts(L)
 
 # Fit the dream model on each gene
 # Apply the contrast matrix L for the hypothesis test  
@@ -154,20 +158,25 @@ fitmmKR = dream( vobj[1:10,], form, metadata, L, ddf="Kenward-Roger")
 
 ### Advanced use of contrasts
 You can also perform a hypothesis test between two levels.  Make sure to inspect your contrast matrix to confirm it is testing what you intend.
-```{r contrast, eval=TRUE}
-form <- ~ 0 + Disease + (1|Individual) 
-L = getContrast( vobj, form, metadata, c("Disease1", "Disease0"))
-L
+```{r contrast, eval=TRUE, fig.height=2}
+form <- ~ Disease + Sex + (1|Individual)  
+L = getContrast( vobj, form, metadata, "SexM")
+
+# Visualize contrasts
+plotContrasts(L)
 ```
 
 Multiple contrasts can be evaluated at the same time, in order to save computation time:
-```{r contrast.combine}
-form <- ~ 0 + Disease + (1|Individual) 
+```{r contrast.combine, fig.height=3, message=FALSE}
+form <- ~ Disease + Sex + (1|Individual) 
 
 # define and then cbind contrasts
-L1 = getContrast( vobj, form, metadata, "Disease0")
+L1 = getContrast( vobj, form, metadata, "SexM")
 L2 = getContrast( vobj, form, metadata, "Disease1")
 L = cbind(L1, L2)
+
+# Visualize contrasts
+plotContrasts(L) 
 
 # fit both contrasts
 fit = dream( vobj[1:10,], form, metadata, L)
