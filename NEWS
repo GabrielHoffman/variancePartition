@@ -19,6 +19,17 @@ CHANGES IN VERSION 1.13.2
 CHANGES IN VERSION 1.13.1
 -------------------------
 	o Add progress bar at ETA
+=======
+CHANGES IN VERSION 1.12.4
+-------------------------
+	o Update dream vignette
+
+CHANGES IN VERSION 1.12.3
+-------------------------
+    o add plotContrasts()
+    o Enable random slope models in dream, but not for estimating variance fractions
+    o export classes to fix bug with class "varPartResults" not being defined
+    	- Thanks Megan Behringer
 
 CHANGES IN VERSION 1.11.13
 -------------------------
