@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.13.7
+-------------------------
+	o in dream(), add support for genes annotation in DGElist()
+	o in dream(), automatically evaluate contrasts for all single coefficients
+	o add future compatability for gene set enrichments method "pinnacle"
+
 CHANGES IN VERSION 1.13.5
 -------------------------
 	o add plotContrasts() to dream vignette

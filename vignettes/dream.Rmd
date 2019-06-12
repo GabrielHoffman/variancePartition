@@ -37,6 +37,7 @@ cd /Users/gabrielhoffman/workspace/repos
 R
 library('knitr')
 rmarkdown::render('variancePartition/vignettes/dream.Rmd')
+ scp /Users/gabrielhoffman/workspace/repos/variancePartition/vignettes/dream.html minerva:/hpc/users/hoffmg01/www/software
 --->
 
 ```{r setup, echo=FALSE, results="hide"}
@@ -81,7 +82,7 @@ Dream also includes multi-threaded analysis across thousands of genes on a multi
 
 # Standard RNA-seq processing
 This tutorial assumes that the reader is familiar with the limma/voom workflow for RNA-seq.  Process raw count data using limma/voom.  
-```{r preprocess, eval=TRUE}
+```{r preprocess, eval=TRUE, results='hide'}
 library('variancePartition')
 library('edgeR')
 library('doParallel')
@@ -105,9 +106,8 @@ vobj = voom( genes, design, plot=FALSE, block=metadata$Individual, correlation=d
 ```
 
 # Limma Analysis
-Limma has a built-in approach for analyzing repeated measures data using duplicateCorrelation.  The model can handle a single random effect, and forces the magnitude of the random effect to be the same across all genes.
+Limma has a built-in approach for analyzing repeated measures data using `duplicateCorrelation()`.  The model can handle a single random effect, and forces the magnitude of the random effect to be the same across all genes.
 ```{r dupCor, eval=TRUE}
-
 design = model.matrix( ~ Disease, metadata)
 
 # Estimate linear mixed model with a single variance component
@@ -122,63 +122,42 @@ fitDupCor <- eBayes( fitDupCor )
 ```
 
 # Dream Analysis
-The dream model operates directly on the results of voom.  The only change compared to the standard limma workflow is to replace lmFit with dream.  
-```{r lmm, eval=TRUE, message=FALSE, fig.height=2}
+The dream model operates directly on the results of `voom()`.  The only change compared to the standard limma workflow is to replace `lmFit()` with `dream()`.  
+```{r lmm, eval=TRUE, message=FALSE, fig.height=2, results='hide'}
 cl <- makeCluster(4)
 registerDoParallel(cl)
 
 # The variable to be tested should be a fixed effect
 form <- ~ Disease + (1|Individual) 
 
-# Get the contrast matrix for the hypothesis test
-# Compare Disease1 to baseline
-L = getContrast( vobj, form, metadata, "Disease1")
-
-# Visualize contrasts
-plotContrasts(L)
-
 # Fit the dream model on each gene
-# Apply the contrast matrix L for the hypothesis test  
 # By default, uses the Satterthwaite approximation for the hypothesis test
-fitmm = dream( vobj, form, metadata, L)
+fitmm = dream( vobj, form, metadata)
 
 # Fit Empirical Bayes for moderated t-statistics
 fitmm = eBayes( fitmm )
-
-# get results
-topTable( fitmm )
 ```
-Note that if random effect is not specified, dream() automatically uses lmFit().  
+```{r lmm.print}
+# Examine design matrix
+head(fitmm$design)
 
-### Small-sample method
-For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
-```{r kr, eval=FALSE}
-fitmmKR = dream( vobj[1:10,], form, metadata, L, ddf="Kenward-Roger")
+# get results of hypothesis test on coefficients of interest
+topTable( fitmm, coef='Disease1' )
 ```
+Note that if a random effect is not specified, `dream()` automatically uses `lmFit()`.  
 
-### Advanced use of contrasts
-You can also perform a hypothesis test between two levels.  Make sure to inspect your contrast matrix to confirm it is testing what you intend.
-```{r contrast, eval=TRUE, fig.height=2}
-form <- ~ Disease + Sex + (1|Individual)  
-L = getContrast( vobj, form, metadata, "SexM")
+## Advanced hypothesis testing
+### Using contrasts to compare coefficients
+You can also perform a hypothesis test between two or more coefficients by using a contrast matrix.  The contrasts are evaluated at the time of the model fit and the results can be extracted with `topTable()`.   Make sure to inspect your contrast matrix to confirm it is testing what you intend. 
+```{r contrast, eval=TRUE, fig.width=7, fig.height=2}
+form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual)  
+L = getContrast( vobj, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
 
-# Visualize contrasts
-plotContrasts(L)
-```
-
-Multiple contrasts can be evaluated at the same time, in order to save computation time:
-```{r contrast.combine, fig.height=3, message=FALSE}
-form <- ~ Disease + Sex + (1|Individual) 
-
-# define and then cbind contrasts
-L1 = getContrast( vobj, form, metadata, "SexM")
-L2 = getContrast( vobj, form, metadata, "Disease1")
-L = cbind(L1, L2)
-
-# Visualize contrasts
+# Visualize contrast matrix
 plotContrasts(L) 
-
-# fit both contrasts
+```
+```{r fit.contrast}
+# fit dream model with contrasts
 fit = dream( vobj[1:10,], form, metadata, L)
 
 # empirical Bayes step
@@ -186,6 +165,42 @@ fiteb = eBayes( fit )
 
 # extract results from first contrast
 topTable( fiteb, coef="L1" )
+```
+
+Multiple contrasts can be evaluated at the same time, in order to save computation time:
+```{r contrast.combine, eval=TRUE, fig.width=7, fig.height=3}
+form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual) 
+
+# define and then cbind contrasts
+L1 = getContrast( vobj, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
+L2 = getContrast( vobj, form, metadata, c("DiseaseSubtype1", "DiseaseSubtype0"))
+L = cbind(L1, L2)
+
+# Visualize contrasts
+plotContrasts(L) 
+
+# fit both contrasts
+fit = dream( vobj, form, metadata, L)
+
+# empirical Bayes step
+fiteb = eBayes( fit )
+
+# extract results from first contrast
+topTable( fiteb, coef="L1" )
+```
+
+### Joint hypothesis test of multiple coefficients
+Joint hypothesis testing can be performed by using an F-test.  Just like in limma, the results can be extracted using `topTable()`
+
+```{r joint.test, fig.height=3, message=FALSE}
+# extract results from first contrast
+topTable( fiteb, coef=c("DiseaseSubtype2", "DiseaseSubtype1") )
+```
+
+## Small-sample method
+For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
+```{r kr, eval=FALSE}
+fitmmKR = dream( vobj[1:10,], form, metadata, L, ddf="Kenward-Roger")
 ```
 
 ## variancePartition plot
@@ -198,7 +213,6 @@ plotVarPart( sortCols(vp))
 ```
 
 ## Compare p-values from dream and duplicateCorrelation
-
 In order to understand the empircal difference between dream and duplication correlation, we can plot the $-\log_{10}$ p-values from both methods.
 
 The duplicateCorrelation method estimates a single variance term genome-wide even though the donor contribution of a particular gene can vary substantially from the genome-wide trend.  Using a single value genome-wide for the within-donor variance can reduce power and increase the false positive rate in a particular, reproducible way.  Let $\tau^2_g$  be the value of the donor component for gene $g$ and $\bar{\tau}^2$ be the genome-wide mean.  For genes where $\tau^2_g>\bar{\tau}^2$, using $\bar{\tau}^2$ under-corrects for the donor component so that it increases the false positive rate compared to using $\tau^2_g$.  Conversely, for genes where $\tau^2_g<\bar{\tau}^2$, using $\bar{\tau}^2$ over-corrects for the donor component so that it decreases power.  Increasing sample size does not overcome this issue.  The dream method overcomes this issue by using a $\tau^2_g$.

@@ -36,7 +36,21 @@
 #' @import ggplot2
 #' @export
 plotContrasts = function( L ){
+
+	if( is(L, "numeric") ){
+		L = as.matrix(L, ncol=1)
+	}
+	if( is.null(colnames(L)) ){
+		colnames(L) = paste0('L', seq_len(ncol(L)))
+	}
+
+	# check rownames of contrasts
+	if( length(unique(colnames(L))) != ncol(L) ){
+		stop(paste("Contrast names must be unique: ", paste(colnames(L), collapse=', ')))
+	}
+
 	df = melt(t(L))
+	colnames(df)[1:2] = c("Var1", "Var2")
 	df$Var1 = factor(df$Var1)
 
 	if( identical(levels(df$Var1), "1") ){

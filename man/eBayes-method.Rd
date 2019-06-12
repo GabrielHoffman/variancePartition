@@ -23,7 +23,7 @@
 \item{winsor.tail.p}{winsor.tail.p}
 }
 \value{
-resold of eBayes
+results of eBayes
 }
 \description{
 eBayes for MArrayLM2

@@ -8,7 +8,7 @@
 #' @exportClass MArrayLM2
 setClass("MArrayLM2",
 #  Linear model fit
-representation("MArrayLM")
+representation("MArrayLM")#, varComp="data.frame", sigGStruct='list')
 )
 
 setIs("MArrayLM2","LargeDataObject")
@@ -53,12 +53,55 @@ setAs(from='MArrayLM', to='MArrayLM2', function(from){
 #' @rdname getContrast-method
 getContrast = function( exprObj, formula, data, coefficient){ 
 
-	exprObj = as.matrix( exprObj )
-	formula = stats::as.formula( formula )
-
 	if( length(coefficient) > 2){
 		stop("Length of coefficient array limited to 2")
 	}
+
+	L = .getContrastInit( exprObj, formula, data)
+
+	# assign coefficient coding
+	if( any(!coefficient %in% names(L)) ){
+		stop("coefficient is not in the formula.  Valid coef are:\n", paste(names(L), collapse=', '))
+	}
+	L[coefficient[1]] = 1
+
+	if( length(coefficient) == 2){			
+		L[coefficient[2]] = -1
+	}
+	
+	L
+}
+
+#' Get all univariate contrasts
+#'
+#' Get all univariate contrasts
+#'
+#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work
+#' @param data data.frame with columns corresponding to formula 
+#'
+#' @return
+#'  Matrix testing each variable one at a time.  Contrasts are on rows
+#'
+.getAllUniContrasts = function( exprObj, formula, data){ 
+
+	Linit = .getContrastInit( exprObj, formula, data)
+
+	Lall = lapply( seq_len(length(Linit)), function(i){
+		Linit[i] = 1
+		Linit
+		})
+	names(Lall) = names(Linit)
+	Lall = do.call("rbind", Lall)
+
+	# remove intercept contrasts
+	Lall[,-1,drop=FALSE]
+}
+
+.getContrastInit = function( exprObj, formula, data){ 
+
+	exprObj = as.matrix( exprObj )
+	formula = stats::as.formula( formula )
 
 	REML=TRUE
 	useWeights=TRUE
@@ -114,19 +157,11 @@ getContrast = function( exprObj, formula, data, coefficient){
 		L = rep(0, length(fixef(fit)))
 		names(L) = names(fixef(fit))
 	}
-
-	# assign coefficient coding
-	if( any(!coefficient %in% names(L)) ){
-		stop("coefficient is not in the formula.  Valid coef are:\n", paste(names(L), collapse=', '))
-	}
-	L[coefficient[1]] = 1
-
-	if( length(coefficient) == 2){			
-		L[coefficient[2]] = -1
-	}
-	
 	L
 }
+
+
+
 
 # Evaluate contrasts for linear mixed model
 # 
@@ -193,6 +228,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 		SE		= SE,
 		pValue	= pValue)
 }
+
 
 
 #' Differential expression with linear mixed model
@@ -267,11 +303,12 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @export
 #' @docType methods
 #' @rdname dream-method
+#' @importFrom pbkrtest get_SigmaG
 dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, ...){ 
 
 	exprObjInit = exprObj
-
-	exprObj = as.matrix( exprObj )
+	
+	exprObjMat = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
 	ddf = match.arg(ddf)
 	colinearityCutoff=.999
@@ -296,6 +333,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		stop("Kenward-Roger must be used with REML")
 	}
 	
+	# assign weightsMatrix from exprObj
+	if( is( exprObj, "EList") && useWeights ){
+		weightsMatrix = exprObj$weights
+	}
+
 	# if weightsMatrix is not specified, set useWeights to FALSE
 	if( useWeights && is.null(weightsMatrix) ){
 		# warning("useWeights was ignored: no weightsMatrix was specified")
@@ -312,19 +354,50 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
 	}
 
-	# format contrasts 
-	# if( class(L) == "numeric" ){
-	if( is(L, "numeric") ){
-		L = as.matrix(L, ncol=1)
+	# Contrasts
+	###########
+
+	if( missing(L) ){
+		# all univariate contrasts
+		L = .getAllUniContrasts( exprObj, formula, data)
+	}else{
+		# format contrasts 
+		if( is(L, "numeric") ){
+			L = as.matrix(L, ncol=1)
+		}
+		if( is.null(colnames(L)) ){
+			colnames(L) = paste0('L', seq_len(ncol(L)))
+		}
+
+		# check columns that only have a single 1
+		tst = apply(L, 2, function(x){
+			length(x[x!=0]) == 1
+			})
+		if( any(tst) ){
+			warning("Contrasts with only a single non-zero term are already evaluated by default.")
+		}
+		# remove univariate contrasts
+		# L = L[,!tst,drop=FALSE]
+
+		# add all univariate contrasts
+		Luni = .getAllUniContrasts( exprObj, formula, data)
+		L = cbind(L, Luni)
 	}
 
+	# check rownames of contrasts
+	if( length(unique(colnames(L))) != ncol(L) ){
+		stop(paste("Contrast names must be unique: ", paste(colnames(L), collapse=', ')))
+	}
+
+	# Trail run on model
+	####################
 	# add response (i.e. exprObj[,j] to formula
 	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
 
 	# run lmer() to see if the model has random effects
 	# if less run lmer() in the loop
 	# else run lm()
-	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	gene14643 = nextElem(exprIter( exprObjMat, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
 
 	mesg <- "No random effects terms specified in formula"
@@ -332,6 +405,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
 		cat("Fixed effect model, using limma directly...\n")
 
+		# weights are always used
 		design = model.matrix( formula, data)
 		fit = lmFit( exprObj, design )
 		ret = contrasts.fit( fit, L)
@@ -340,10 +414,13 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+		gene14643 = nextElem(exprIter(exprObjMat, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
 		fitInit <- lmerTest::lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
+
+		# extract covariance matrices  
+		sigGStruct = get_SigmaG( fitInit )$G
 		
 		# check L
 		if( ! identical(rownames(L), names(fixef(fitInit))) ){
@@ -389,7 +466,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		timeStart = proc.time()
 
 		# loop through genes
-		resList <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
+		# store 1) MArrayLM and 2) result of calcVarPart
+		resList <- foreach(gene14643=exprIter(exprObjMat, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
 
 			# modify data2 for this gene
 			data2$expr = gene14643$E
@@ -414,17 +492,22 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 				stdev.unscaled = mod$SE/mod$sigma,
 				pValue = mod$pValue)
 
-			new("MArrayLM", ret)
+			# get variance terms for random effects
+			varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
+			varComp[['resid']] = attr(lme4::VarCorr(fit), 'sc')^2
+
+			list( 	ret = new("MArrayLM", ret),
+					varComp = varComp)
 		}
 		cat("\nFinished...")
 		cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 
 		x = 1
 		# extract results
-		coefficients = foreach( x = resList, .combine=cbind ) %do% {x$coefficients}
-		df.residual = foreach( x = resList, .combine=cbind ) %do% {	x$df.residual}
-		pValue = foreach( x = resList, .combine=cbind ) %do% { x$pValue }
-		stdev.unscaled  = foreach( x = resList, .combine=cbind ) %do% {x$stdev.unscaled} 
+		coefficients = foreach( x = resList, .combine=cbind ) %do% {x$ret$coefficients}
+		df.residual = foreach( x = resList, .combine=cbind ) %do% {	x$ret$df.residual}
+		pValue = foreach( x = resList, .combine=cbind ) %do% { x$ret$pValue }
+		stdev.unscaled  = foreach( x = resList, .combine=cbind ) %do% {x$ret$stdev.unscaled} 
 		
 		# transpose
 		coefficients = t( coefficients )
@@ -435,7 +518,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		colnames(coefficients) = colnames(L)
 		rownames(coefficients) = rownames(exprObj)
 
-		design = resList[[1]]$design
+		design = resList[[1]]$ret$design
 
 		colnames(df.residual) = colnames(L)
 		rownames(df.residual) = rownames(exprObj)
@@ -443,11 +526,15 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		colnames(pValue) = colnames(L)
 		rownames(pValue) = rownames(exprObj)
 
-		Amean =sapply( resList, function(x) x$Amean) 
+		Amean = sapply( resList, function(x) x$ret$Amean) 
 		names(Amean ) = rownames(exprObj)
 		method = "lmer"
-		sigma = sapply( resList, function(x) x$sigma)
+		sigma = sapply( resList, function(x) x$ret$sigma)
 		names(sigma) = rownames(exprObj)
+
+		varComp = lapply(resList, function(x) as.data.frame(x$varComp))
+		varComp = do.call("rbind", varComp)
+		rownames(varComp) = rownames(coefficients)
 
 		colnames(stdev.unscaled) = colnames(L)
 		rownames(stdev.unscaled) = rownames(exprObj)
@@ -467,7 +554,13 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		ret = new("MArrayLM", ret)
 		ret$pValue = pValue
+
 		ret = as(ret, "MArrayLM2")
+		# add additional information for pinnacle
+		# ret = new("MArrayLM2", ret, varComp, sigGStruct)
+		attr(ret, "varComp") = varComp
+		attr(ret, "sigGStruct") = sigGStruct
+
 	}
 	ret	
 }
@@ -505,8 +598,12 @@ assign("[.MArrayLM2",
 		}
 		obj$df.residual = object$df.residual[i,j]
 		obj$pValue = object$pValue[i,j]
+		obj$s2.prior = object$s2.prior
+		obj$df.prior = object$df.prior
 		obj
 		})
+
+
 
 
 #' eBayes for MArrayLM2
@@ -520,7 +617,7 @@ assign("[.MArrayLM2",
 #' @param robust robust
 #' @param winsor.tail.p winsor.tail.p 
 #'
-#' @return resold of eBayes
+#' @return results of eBayes
 #' @export
 #' @rdname eBayes-method
 #' @aliases eBayes,MArrayLM2-method
@@ -556,6 +653,10 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	colnames(fit2$t) = 	colnames(fit2$coefficients)
 	colnames(fit2$df.total) = colnames(fit2$coefficients)
 
+	# some values are shared, or almost identical across contrasts
+	fit2$df.prior = mean(as.array(fit2$df.prior))
+	fit2$s2.prior = mean(as.array(fit2$s2.prior))
+
 	fit2 
 })
 
@@ -575,7 +676,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 # #' @param lfc lfc
 # #' @param confint confint
 # #'
-# #' @return resold of topTable
+# #' @return results of topTable
 # #' @export
 # #' @rdname topTable-method
 # #' @aliases topTable,MArrayLMM_lmer-method
@@ -604,7 +705,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 # #' @param confint confint
 # #' @param ... ...
 # #'
-# #' @return resold of toptable
+# #' @return results of toptable
 # #' @export
 # #' @rdname toptable-method
 # #' @aliases toptable,MArrayLMM_lmer-method
