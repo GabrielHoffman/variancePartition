@@ -565,7 +565,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# remove intercept term if it exists
 		fnd = colnames(C) == "(Intercept)" 
 		if( any(fnd) ){
-			C = C[!fnd,!fnd]
+			C = C[!fnd,!fnd,drop=FALSE]
 		}
 
 		# add additional placeholder columns for contrasts
