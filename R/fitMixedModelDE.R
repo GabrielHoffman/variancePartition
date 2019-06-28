@@ -553,7 +553,44 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		}
 
 		ret = new("MArrayLM", ret)
-		ret$pValue = pValue
+		# ret$pValue = pValue
+
+		# set covariance between covariates
+		# C = solve(crossprod(ret$design))
+		# C = chol2inv(chol(crossprod(ret$design)))
+		C = chol2inv(qr(ret$design)$qr)
+		rownames(C) = colnames(ret$design)
+		colnames(C) = colnames(ret$design)
+
+		# remove intercept term if it exists
+		fnd = colnames(C) == "(Intercept)" 
+		if( any(fnd) ){
+			C = C[!fnd,!fnd]
+		}
+
+		# add additional placeholder columns for contrasts
+		idx = colnames(coef(ret)) %in% colnames(C)
+
+		if( any(!idx) ){
+			C_add1 = matrix(0, nrow=ncol(C), ncol=sum(!idx))
+			colnames(C_add1) = colnames(coef(ret))[!idx]
+
+			C_add2 = matrix(0, ncol=ncol(C)+sum(!idx), nrow=sum(!idx))
+			rownames(C_add2) = colnames(coef(ret))[!idx]
+
+			C = rbind(cbind(C, C_add1), C_add2)
+
+			C = C[ colnames(coef(ret)), colnames(coef(ret))]
+
+			# set diagons of non-real contrasts to 1
+			if( sum(!idx) > 1){
+				diag(C[!idx,!idx]) = 1
+			}else{				
+				C[!idx,!idx] = 1
+			}
+		}
+
+		ret$cov.coefficients = C
 
 		ret = as(ret, "MArrayLM2")
 		# add additional information for pinnacle
@@ -561,9 +598,61 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		attr(ret, "varComp") = varComp
 		attr(ret, "sigGStruct") = sigGStruct
 
+		# compute standard values for t/F/p without running eBayes
+		# eBayes can be run afterwards, if wanted
+		ret = .standard_transform( ret )
 	}
-	ret	
+	ret
 }
+
+
+#' Compute standard post-processing values
+#' 
+#' These values are typically computed by eBayes
+#' 
+#' @param fit result of dream (MArrayLM2)
+#'
+#' @return MArrayLM2 object with values computed
+#' 
+#' @importFrom stats pchisq pf
+.standard_transform = function(fit){
+
+	# get values
+	coefficients <- fit$coefficients
+	stdev.unscaled <- fit$stdev.unscaled
+	sigma <- fit$sigma
+	df.residual <- fit$df.residual
+	
+	# t-test
+	out = fit
+	out$t <- coefficients / stdev.unscaled / sigma
+	out$df.total <- df.residual
+	out$p.value <- 2*pt(-abs(out$t),df=df.residual)
+
+	# F-test
+	if(!is.null(out$design) && is.fullrank(out$design)) {
+
+		# only evaluate F-stat on real coefficients, not contrasts
+		realcoef = colnames(out$design)
+		realcoef = realcoef[realcoef!="(Intercept)"]
+
+		df = mean(out[,realcoef]$df.residual)
+
+		F.stat <- classifyTestsF(out[,realcoef], df=df, fstat.only=TRUE)
+		out$F <- as.vector(F.stat)
+		df1 <- attr(F.stat,"df1")
+		df2 <- attr(F.stat,"df2")
+		if(df2[1] > 1e6){ # Work around bug in R 2.1
+			out$F.p.value <- pchisq(df1*out$F,df1,lower.tail=FALSE)
+		}else{
+			out$F.p.value <- pf(out$F,df1,df2,lower.tail=FALSE)
+		}
+	}
+
+	out
+}
+
+
 
 
 # 
@@ -580,6 +669,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @name [.MArrayLM2
 #' @return subset
 #' @export
+#' @importFrom stats p.adjust
 #' @rdname subset.MArrayLM2-method
 #' @aliases subset.MArrayLM2,MArrayLM2-method
 assign("[.MArrayLM2",
@@ -588,6 +678,7 @@ assign("[.MArrayLM2",
 			stop("Two subscripts required",call.=FALSE)
 		}
 
+		# apply standard MArrayLM subsetting
 		obj = as(object, 'MArrayLM')
 
 		if(!missing(j)){
@@ -596,11 +687,43 @@ assign("[.MArrayLM2",
 		if(!missing(i)){
 			obj = obj[i,]
 		}
-		obj$df.residual = object$df.residual[i,j]
-		obj$pValue = object$pValue[i,j]
+
+		# custom code to deal with df.total and df.residual
+		if( is.null(ncol(object$df.total))  ){
+			obj$df.total = object$df.total[i]
+		}else{			
+			obj$df.total = object$df.total[i,j,drop=FALSE]
+		}
+
+		if( is.null(ncol(object$df.residual))  ){
+			obj$df.residual = object$df.residual[i]
+		}else{			
+			obj$df.residual = object$df.residual[i,j,drop=FALSE]
+		}
+
+		# the F-statistic and p-value are evaluated when subsetting is applied
+		# so need to apply df2 here
+		# If columns have been subsetted, need to re-generate F
+		if(!is.null(obj[["F"]]) && !missing(j)) {
+			df = mean(obj$df.residual)
+		
+			F.stat <- classifyTestsF(obj,df=df,fstat.only=TRUE)
+			obj$F <- as.vector(F.stat)
+			df1 <- attr(F.stat,"df1")
+			df2 <- attr(F.stat,"df2")
+			if (df2[1] > 1e6){ 
+				obj$F.p.value <- pchisq(df1*obj$F,df1,lower.tail=FALSE)
+			}else{
+				obj$F.p.value <- pf(obj$F,df1,df2,lower.tail=FALSE)
+			}
+		}
+
+		# obj$pValue = object$pValue[i,j]
 		obj$s2.prior = object$s2.prior
 		obj$df.prior = object$df.prior
-		obj
+
+		# obj
+		as(obj, "MArrayLM2")
 		})
 
 
@@ -649,7 +772,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	fit2$p.value = do.call("cbind", lapply(retList, function(fit) fit$p.value))
 	fit2$lods = do.call("cbind", lapply(retList, function(fit) fit$lods))
 
-	colnames(fit2$pValue) = colnames(fit2$coefficients)
+	# colnames(fit2$pValue) = colnames(fit2$coefficients)
 	colnames(fit2$t) = 	colnames(fit2$coefficients)
 	colnames(fit2$df.total) = colnames(fit2$coefficients)
 
@@ -657,8 +780,13 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	fit2$df.prior = mean(as.array(fit2$df.prior))
 	fit2$s2.prior = mean(as.array(fit2$s2.prior))
 
-	fit2 
+	# return covariance between coefficients
+	fit2$cov.coefficients = fit$cov.coefficients
+
+	# fit2 
+	as(fit2, "MArrayLM2")
 })
+
 
 
 # #' topTable for MArrayLMM_lmer
@@ -755,7 +883,8 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 #
 # @details Since dream() used degrees of freedom estimated from the data, the t-statistics across genes have different df values used to compute p-values.  Therefore the order of the raw t-statistics doesn't correspond to the order of the p-values since the df is different for each gene.  This function resolved this issue by transofrming the t-statistics to all have the same df.  Under a fixed effects model, df = N - p, where N is the sample size and p is the number of covariates.  Here, df is the target degrees of freedom used in the transformation
 .standardized_t_stat = function( fit ){
-  res = data.frame(t=as.numeric(fit$t), df.sat=fit$df.residual)
+
+  res = data.frame(t=as.numeric(fit$t), df.sat=as.numeric(fit$df.residual))
 
   # d_target = max(res$df.sat)
   d_target = nrow(fit$design) - ncol(fit$design)
@@ -856,5 +985,6 @@ plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquot
 	                       values = rescale(c(0, dupcorvalue, 1)),
 	                       guide = "colorbar", limits=c(0, 1))
 }
+
 
 
