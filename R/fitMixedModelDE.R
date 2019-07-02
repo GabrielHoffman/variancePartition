@@ -357,9 +357,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	# Contrasts
 	###########
 
+	univariateContrasts = FALSE
 	if( missing(L) ){
 		# all univariate contrasts
 		L = .getAllUniContrasts( exprObj, formula, data)
+		univariateContrasts = TRUE
 	}else{
 		# format contrasts 
 		if( is(L, "numeric") ){
@@ -391,24 +393,28 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 	# Trail run on model
 	####################
-	# add response (i.e. exprObj[,j] to formula
-	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
+	# # add response (i.e. exprObj[,j] to formula
+	# form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
 
-	# run lmer() to see if the model has random effects
-	# if less run lmer() in the loop
-	# else run lm()
-	gene14643 = nextElem(exprIter( exprObjMat, weightsMatrix, useWeights))
-	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
+	# # run lmer() to see if the model has random effects
+	# # if less run lmer() in the loop
+	# # else run lm()
+	# gene14643 = nextElem(exprIter( exprObjMat, weightsMatrix, useWeights))
+	# possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
 
-	mesg <- "No random effects terms specified in formula"
-	method = ''
-	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
+	# mesg <- "No random effects terms specified in formula"
+	# method = ''
+	# if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
+	if( .isMixedModelFormula( formula, data) ){
 		cat("Fixed effect model, using limma directly...\n")
 
 		# weights are always used
 		design = model.matrix( formula, data)
-		fit = lmFit( exprObj, design )
-		ret = contrasts.fit( fit, L)
+		ret = lmFit( exprObj, design )
+
+		if( ! univariateContrasts ){
+			ret = contrasts.fit( ret, L)
+		}
 
 	}else{
 
@@ -633,7 +639,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	if(!is.null(out$design) && is.fullrank(out$design)) {
 
 		# only evaluate F-stat on real coefficients, not contrasts
-		realcoef = colnames(out$design)
+		realcoef = colnames(out)[colnames(out) %in% colnames(out$design)]
 		realcoef = realcoef[realcoef!="(Intercept)"]
 
 		df = mean(out[,realcoef]$df.residual)
@@ -980,7 +986,7 @@ plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquot
 	lim = c(0, max(max(df2$p1), max(df2$p2)))
 
 	# xlab("duplicateCorrelation (-log10 p)") + ylab("dream (-log10 p)")
-	ggplot(df2, aes(p1, p2, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(12) +  theme(aspect.ratio=1,plot.title = element_text(hjust = 0.5)) + xlim(lim) + ylim(lim) + xlab(xlabel) + ylab(ylabel) + 
+	ggplot(df2, aes(p1, p2, color = vpDonor)) + geom_abline() + geom_point(size=2) + theme_bw(17) +  theme(aspect.ratio=1,plot.title = element_text(hjust = 0.5)) + xlim(lim) + ylim(lim) + xlab(xlabel) + ylab(ylabel) + 
 		geom_abline( intercept=df_line$a, slope=df_line$b, color=df_line$type, linetype=2) + scale_color_gradientn(name = "Donor", colours = c("blue","green","red"), 
 	                       values = rescale(c(0, dupcorvalue, 1)),
 	                       guide = "colorbar", limits=c(0, 1))

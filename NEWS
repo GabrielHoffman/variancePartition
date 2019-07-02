@@ -1,6 +1,7 @@
 CHANGES IN VERSION 1.13.8
 -------------------------
 	o apply empirical Bayes when doing F-test
+	o add voomWithDreamWeights() for computing observation weights using random effects
 	
 CHANGES IN VERSION 1.13.7
 -------------------------
