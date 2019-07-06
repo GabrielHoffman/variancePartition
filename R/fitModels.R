@@ -12,6 +12,7 @@
 #' @param showWarnings show warnings about model fit (default TRUE)
 #' @param fxn apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself
 #' @param control control settings for lmer()
+#' @param BPPARAM parameters for parallel evaluation
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return
@@ -25,13 +26,6 @@
 #' @importFrom graphics abline axis hist image layout lines mtext par plot plot.new rect text title
 #' @importFrom stats anova as.dendrogram as.dist cancor coef cov2cor density dist fitted.values hclust lm median model.matrix order.dendrogram quantile reorder residuals sd terms var vcov pt qt
 #' @importFrom scales rescale
-
-
-
-
-# Commented out, for now
-###### import colorRamps pbkrtest lmerTest ggplot2 limma foreach reshape2 iterators dendextend doParallel Biobase methods
-###### 
 #'
 #' @details 
 #' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
@@ -53,13 +47,6 @@
 #'
 #' # load library
 #' # library(variancePartition)
-#'
-#' # optional step to run analysis in parallel on multicore machines
-#' # Here, we used 4 threads
-#' library(doParallel)
-#' cl <- makeCluster(4)
-#' registerDoParallel(cl)
-#' # or by using the doSNOW package
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -101,18 +88,20 @@
 #' info2 <- pData(sample.ExpressionSet)
 #' results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+#' # Parallel processing using multiple cores
+#' param <- SnowParam(4, "SOCK")
+#' results2 <- vfitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
+#'
 #' @export
 #' @docType methods
 #' @rdname fitVarPartModel-method
 setGeneric("fitVarPartModel", signature="exprObj",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL,...)
       standardGeneric("fitVarPartModel")
 )
 
 # internal driver function
-.fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...){ 
+.fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...){ 
 
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
@@ -176,7 +165,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
 
 			# progressbar
-			if( Sys.getpid() == pids[1]){
+			if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
 				pb$update( gene14643$n_iter / gene14643$max_iter )
 			}
 
@@ -217,16 +206,17 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
-		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		# Define function for parallel evaluation
+		.eval_model = function(gene14643, form, data2, REML, theta, fxn, control, na.action=stats::na.exclude,...){
 
 			# modify data2 for this gene
 			data2$expr = gene14643$E
  
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
+			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=theta, control=control,na.action=na.action)
 
 			# progressbar
-			if( Sys.getpid() == pids[1]){
+			if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
 				pb$update( gene14643$n_iter / gene14643$max_iter )
 			}
 
@@ -234,10 +224,24 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			fxn( fit )
 		}
 
+		# Evaluate function
+		if( ! is.null(BPPARAM) ){
+			# evalulate function in parallel using less memory
+
+			cat("\nbplapply...\n")
+			res <- bplapply( exprIter(exprObj, weightsMatrix, useWeights), .eval_model, form, data2, REML, fitInit@theta, fxn, control,..., BPPARAM=BPPARAM)
+		}else{
+			# for backward compatability
+			cat("\nforeach...\n")
+			res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+
+				.eval_model(gene14643, form, data2, REML, fitInit@theta, fxn, control,...)
+			}
+		}
+
 		method = "lmer"
 	}
 	
-	cat("\nFinished...")
 	cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 
 	# set name of each entry
@@ -250,9 +254,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,matrix-method
 setMethod("fitVarPartModel", "matrix",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
   {
-    .fitVarPartModel(exprObj, formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control,...)
+    .fitVarPartModel(exprObj, formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, BPPARAM=BPPARAM,...)
   }
 )
 
@@ -261,9 +265,9 @@ setMethod("fitVarPartModel", "matrix",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,data.frame-method
 setMethod("fitVarPartModel", "data.frame",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
   {
-    .fitVarPartModel( as.matrix(exprObj), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, ...)
+    .fitVarPartModel( as.matrix(exprObj), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, BPPARAM=BPPARAM, ...)
   }
 )
 
@@ -272,9 +276,9 @@ setMethod("fitVarPartModel", "data.frame",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,EList-method
 setMethod("fitVarPartModel", "EList",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
   {
-    .fitVarPartModel( as.matrix(exprObj$E), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights, showWarnings=showWarnings, fxn=fxn, control=control,...)
+    .fitVarPartModel( as.matrix(exprObj$E), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights, showWarnings=showWarnings, fxn=fxn, control=control, BPPARAM=BPPARAM,...)
   }
 )
 
@@ -283,9 +287,9 @@ setMethod("fitVarPartModel", "EList",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,ExpressionSet-method
 setMethod("fitVarPartModel", "ExpressionSet",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
   {
-    .fitVarPartModel( as.matrix(exprs(exprObj)), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, ...)
+    .fitVarPartModel( as.matrix(exprs(exprObj)), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, BPPARAM=BPPARAM, ...)
   }
 )
 
@@ -303,6 +307,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables.  This overrides the previous argument, so all variables are include in adjust.
 #' @param showWarnings show warnings about model fit (default TRUE)
 #' @param control control settings for lmer()
+#' @param BPPARAM parameters for parallel evaluation
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return
@@ -326,13 +331,6 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #'
 #' # load library
 #' # library(variancePartition)
-#'
-#' # optional step to run analysis in parallel on multicore machines
-#' # Here, we used 4 threads
-#' library(doParallel)
-#' cl <- makeCluster(4)
-#' registerDoParallel(cl)
-#' # or by using the doSNOW package
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -365,19 +363,21 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' info2 <- pData(sample.ExpressionSet)
 #' varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+#' # Parallel processing using multiple cores
+#' param = SnowParam(4, "SOCK")
+#' varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2, BPPARAM = param)
+#'
 #'
 #' @export
 #' @docType methods
 #' @rdname fitExtractVarPartModel-method
 setGeneric("fitExtractVarPartModel", signature="exprObj",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
       standardGeneric("fitExtractVarPartModel")
 )
 
 # internal driver function
-.fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),...){ 
+.fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL,...){ 
 
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
@@ -441,7 +441,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
 
 			# progressbar
-			if( Sys.getpid() == pids[1]){
+			if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
 				pb$update( gene14643$n_iter / gene14643$max_iter )
 			}
 
@@ -471,23 +471,37 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		timeStart = proc.time()
 
-		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		# Define function for parallel evaluation
+		.eval_model = function(gene14643, data, form, REML, theta, control, na.action=stats::na.exclude,...){
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
+			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, start=theta, control=control,na.action=na.action)
 
 			# progressbar
-			if( Sys.getpid() == pids[1]){
+			if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
 				pb$update( gene14643$n_iter / gene14643$max_iter )
 			}
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
 
+		# Evaluate function
+		if( ! is.null(BPPARAM) ){
+
+			cat("\nbplapply...\n")
+			# evalulate function in parallel using less memory
+			varPart <- bplapply( exprIter(exprObj, weightsMatrix, useWeights), .eval_model, data, form, REML, fitInit@theta, control,..., BPPARAM=BPPARAM)
+		}else{
+			cat("\nforeach...\n")
+			# for backward compatability			
+			varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+
+				.eval_model(gene14643, data, form, REML, fitInit@theta, control,...)
+			}
+		}
+
 		modelType = "linear mixed model"
 	}
-	cat("\nFinished...")
 	cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
-
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))
 	colnames(varPartMat) <- names(varPart[[1]])
@@ -513,10 +527,11 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,matrix-method
 setMethod("fitExtractVarPartModel", "matrix",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
   {
     .fitExtractVarPartModel(exprObj, formula, data,
-                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control, ...)
+                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control,
+                     	 BPPARAM=BPPARAM, ...)
   }
 )
 
@@ -525,10 +540,11 @@ setMethod("fitExtractVarPartModel", "matrix",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,data.frame-method
 setMethod("fitExtractVarPartModel", "data.frame",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
   {
     .fitExtractVarPartModel( as.matrix(exprObj), formula, data,
-                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control, ...)
+                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control,
+                     	 BPPARAM=BPPARAM, ...)
   }
 )
 
@@ -537,10 +553,11 @@ setMethod("fitExtractVarPartModel", "data.frame",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,EList-method
 setMethod("fitExtractVarPartModel", "EList",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
   {
     .fitExtractVarPartModel( as.matrix(exprObj$E), formula, data,
-                     REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control, ...)
+                     REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control, 
+                         BPPARAM=BPPARAM, ...)
   }
 )
 
@@ -549,10 +566,11 @@ setMethod("fitExtractVarPartModel", "EList",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,ExpressionSet-method
 setMethod("fitExtractVarPartModel", "ExpressionSet",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
   {
     .fitExtractVarPartModel( as.matrix(exprs(exprObj)), formula, data,
-                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control,...)
+                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control, 
+                     	 BPPARAM=BPPARAM,...)
   }
 )
 

@@ -6,7 +6,7 @@
 \usage{
 voomWithDreamWeights(counts, formula, data, lib.size = NULL,
   normalize.method = "none", span = 0.5, plot = FALSE,
-  save.plot = FALSE, ...)
+  save.plot = FALSE, BPPARAM = NULL, ...)
 }
 \arguments{
 \item{counts}{a numeric 'matrix' containing raw counts, or an 'ExpressionSet' containing raw counts, or a 'DGEList' object. Counts must be non-negative and NAs are not permitted.}
@@ -25,6 +25,8 @@ voomWithDreamWeights(counts, formula, data, lib.size = NULL,
 
 \item{save.plot}{logical, should the coordinates and line of the plot be saved in the output?}
 
+\item{BPPARAM}{parameters for parallel evaluation}
+
 \item{...}{other arguments are passed to 'lmFit'.}
 }
 \value{
@@ -32,6 +34,9 @@ An 'EList' object just like the result of limma::voom()
 }
 \description{
 Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with dream().   This method is the same as limma::voom(), except that it allows random effects in the formula
+}
+\details{
+Adapted from vomm() in limma v3.40.2
 }
 \examples{
 library(variancePartition)
@@ -47,13 +52,17 @@ dge = calcNormFactors(dge)
 form <- ~ Disease + (1|Individual) 
 
 # compute observation weights
-vobj = voomWithDreamWeights( dge[1:100,], form, metadata)
+vobj = voomWithDreamWeights( dge[1:20,], form, metadata)
 
 # fit dream model 
 res = dream( vobj, form, metadata)
 
 # extract results
 topTable(res, coef="Disease1")
+
+# Parallel processing using multiple cores
+param = SnowParam(4, "SOCK")
+vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
 
 }
 \seealso{

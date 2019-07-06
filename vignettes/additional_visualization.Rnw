@@ -1,9 +1,10 @@
 %\VignetteIndexEntry{2) Additional visualizations}
 %\VignettePackage{variancePartition}
 %\VignetteEngine{knitr::knitr}
+%\VignetteEncoding{UTF-8}
 
 % To compile this document
-% library('knitr'); rm(list=ls()); knit('variancePartition.Rnw')
+% library('knitr'); rm(list=ls()); knit('additional_visualization.Rnw')
 
 \documentclass[12pt]{article}
 
@@ -14,7 +15,6 @@ library("knitr")
 opts_chunk$set(tidy=FALSE,dev="pdf",fig.show="hide",
                fig.width=4,fig.height=4.5,
                message=FALSE, warning=FALSE)
-
 @ 
 
 <<style, eval=TRUE, echo=FALSE, results="asis">>=
@@ -29,7 +29,7 @@ BiocStyle::latex()
 \author{Gabriel Hoffman\\ 
 \small{Pamela Sklar Division of Psychiatric Genomics} \\
 \small{Icahn Institute for Genomics and Multiscale Biology}\\
-\small{Department of Genetics and Genomic Sciences}\\
+\small{Department of Genetics and GenomicżSciences}\\
 \small{Icahn School of Medicine at Mount Sinai}}
 
 

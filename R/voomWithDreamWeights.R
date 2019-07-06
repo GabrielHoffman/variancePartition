@@ -13,6 +13,7 @@
 #' @param span width of the lowess smoothing window as a proportion.
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
+#' @param BPPARAM parameters for parallel evaluation
 #' @param      ... other arguments are passed to 'lmFit'.
 #'
 #' @return
@@ -34,7 +35,7 @@
 #' form <- ~ Disease + (1|Individual) 
 #' 
 #' # compute observation weights
-#' vobj = voomWithDreamWeights( dge[1:100,], form, metadata)
+#' vobj = voomWithDreamWeights( dge[1:20,], form, metadata)
 #' 
 #' # fit dream model 
 #' res = dream( vobj, form, metadata)
@@ -42,10 +43,14 @@
 #' # extract results
 #' topTable(res, coef="Disease1")
 #' 
+#' # Parallel processing using multiple cores
+#' param = SnowParam(4, "SOCK")
+#' vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
+#' 
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL,normalize.method="none",span=0.5,plot=FALSE,save.plot=FALSE,...){
+voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, BPPARAM=NULL,...){
 
 	out <- list()
 
@@ -99,7 +104,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL,normalize.
 			# 2) fitted values
 			list( sd = attr(VarCorr(fit), 'sc'),
 				fitted.values = predict(fit) )
-			} )
+			}, BPPARAM=BPPARAM )
 
 		fit = list()
 		fit$sigma <- sapply( vpList, function(x) x$sd)	

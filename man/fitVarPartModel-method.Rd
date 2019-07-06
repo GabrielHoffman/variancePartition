@@ -12,29 +12,29 @@
 fitVarPartModel(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), ...)
+  check.rankX = "stop.deficient"), BPPARAM = NULL, ...)
 
 \S4method{fitVarPartModel}{matrix}(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), ...)
+  check.rankX = "stop.deficient"), BPPARAM = NULL, ...)
 
 \S4method{fitVarPartModel}{data.frame}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   showWarnings = TRUE, fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), ...)
+  "stop.deficient"), BPPARAM = NULL, ...)
 
 \S4method{fitVarPartModel}{EList}(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), ...)
+  check.rankX = "stop.deficient"), BPPARAM = NULL, ...)
 
 \S4method{fitVarPartModel}{ExpressionSet}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   showWarnings = TRUE, fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), ...)
+  "stop.deficient"), BPPARAM = NULL, ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -54,6 +54,8 @@ fitVarPartModel(exprObj, formula, data, REML = FALSE,
 \item{fxn}{apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself}
 
 \item{control}{control settings for lmer()}
+
+\item{BPPARAM}{parameters for parallel evaluation}
 
 \item{...}{Additional arguments for lmer() or lm()}
 }
@@ -84,13 +86,6 @@ Since this function returns a list of each model fit, using this function is slo
 
 # load library
 # library(variancePartition)
-
-# optional step to run analysis in parallel on multicore machines
-# Here, we used 4 threads
-library(doParallel)
-cl <- makeCluster(4)
-registerDoParallel(cl)
-# or by using the doSNOW package
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
@@ -132,6 +127,8 @@ form <- ~ (1|sex) + (1|type) + score
 info2 <- pData(sample.ExpressionSet)
 results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 
-# stop cluster
-stopCluster(cl)
+# Parallel processing using multiple cores
+param <- SnowParam(4, "SOCK")
+results2 <- vfitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
+
 }

@@ -226,7 +226,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 		sigma	= sigma,
 		beta	= beta,
 		SE		= SE,
-		pValue	= pValue)
+		pValue	= pValue,
+		vcov 	= V )
 }
 
 
@@ -245,6 +246,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 #' @param control control settings for lmer()
 #' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
+#' @param BPPARAM parameters for parallel evaluation
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return 
@@ -267,44 +269,51 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # load library
 #' # library(variancePartition)
 #'
-#' # optional step to run analysis in parallel on multicore machines
-#' # Here, we used 4 threads
-#' library(doParallel)
-#' cl <- makeCluster(4)
-#' registerDoParallel(cl)
-#' # or by using the doSNOW package
-#'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
 #' # info: information/metadata about each sample
 #' data(varPartData)
 #' 
-#' # get contrast matrix testing if the coefficient for Batch2 is zero 
-#' # The variable of interest must be a fixed effect
-#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
-#' L = getContrast( geneExpr, form, info, "Batch3")
-#' 
-#' # plot contrasts
-#' plotContrasts( L )
-#' 
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
-#' fit = dream( geneExpr[1:10,], form, info, L)
+#' fit = dream( geneExpr[1:10,], form, info)
 #' 
 #' # Run empirical Bayes post processing from limma
 #' fitEB = eBayes( fit )
 #' 
 #' # view top genes
 #' topTable( fitEB )
+#'
+#' # get contrast matrix testing if the coefficient for Batch2 is 
+#' # different from coefficient for Batch3
+#' # The variable of interest must be a fixed effect
+#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
+#' L = getContrast( geneExpr, form, info, c("Batch2", "Batch3"))
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+#' # plot contrasts
+#' plotContrasts( L )
+#' 
+#' # Fit linear mixed model for each gene
+#' # run on just 10 genes for time
+#' fit2 = dream( geneExpr[1:10,], form, info, L)
+#'
+#' # Run empirical Bayes post processing from limma
+#' fitEB2 = eBayes( fit2 )
+#' 
+#' # view top genes
+#' topTable( fitEB2 )
+#' 
+#' # Parallel processing using multiple cores
+#' param = SnowParam(4, "SOCK")
+#' fit = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
 #'
 #' @export
 #' @docType methods
 #' @rdname dream-method
 #' @importFrom pbkrtest get_SigmaG
-dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, ...){ 
+#' @importFrom BiocParallel bplapply
+# @importFrom lmerTest lmer
+dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, BPPARAM=NULL, ...){ 
 
 	exprObjInit = exprObj
 	
@@ -386,6 +395,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		L = cbind(L, Luni)
 	}
 
+	if( ncol(L) == 0){
+		stop( "Must include fixed effect in the model for hypothesis testing")
+	}
+
 	# check rownames of contrasts
 	if( length(unique(colnames(L))) != ncol(L) ){
 		stop(paste("Contrast names must be unique: ", paste(colnames(L), collapse=', ')))
@@ -393,19 +406,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 	# Trail run on model
 	####################
-	# # add response (i.e. exprObj[,j] to formula
-	# form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
-
-	# # run lmer() to see if the model has random effects
-	# # if less run lmer() in the loop
-	# # else run lm()
-	# gene14643 = nextElem(exprIter( exprObjMat, weightsMatrix, useWeights))
-	# possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
-
-	# mesg <- "No random effects terms specified in formula"
-	# method = ''
-	# if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
-	if( .isMixedModelFormula( formula, data) ){
+	
+	if( ! .isMixedModelFormula( formula, data) ){
 		cat("Fixed effect model, using limma directly...\n")
 
 		# weights are always used
@@ -417,6 +419,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		}
 
 	}else{
+
+		# add response (i.e. exprObj[,j] to formula
+		form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
@@ -438,16 +443,12 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		timediff = proc.time() - timeStart
 
 		# check size of stored objects
-		objSize = object.size( fitInit ) * nrow(exprObj)
+		# objSize = object.size( fitInit ) * nrow(exprObj)
 
-		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
-		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
+		# # total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
+		# showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
 
-		cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
-
-		# if( showTime > .01 ){
-		# 	cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		# }
+		# cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=!suppressWarnings, dream=TRUE, colinearityCutoff=colinearityCutoff )
@@ -464,48 +465,71 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
-		pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
-			total = nrow(exprObj), width= 60, clear=FALSE)
+		pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta", total = nrow(exprObj), width= 60, clear=FALSE)
 
 		pids = .get_pids()
 
 		timeStart = proc.time()
 
-		# loop through genes
-		# store 1) MArrayLM and 2) result of calcVarPart
-		resList <- foreach(gene14643=exprIter(exprObjMat, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
-
+		# Define function for parallel evaluation
+		.eval_models = function(gene14643, data2, form, REML, theta, control, na.action=stats::na.exclude,...){	
 			# modify data2 for this gene
 			data2$expr = gene14643$E
  
 			# fit linear mixed model
-			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, start=fitInit@theta, control=control,na.action=stats::na.exclude)
+			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, start=theta, control=control,na.action=na.action)
 
 			# extract statistics from model
 			mod = .eval_lmm( fit, L, ddf)
 
 			# progressbar
-			if( Sys.getpid() == pids[1]){
+			if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
 				pb$update( gene14643$n_iter / gene14643$max_iter )
 			}
 
-			ret = list(coefficients = mod$beta, 
-				design = fit@pp$X, 
-				df.residual = mod$df, 
-				Amean = mean(fit@frame[,1]), 
-				method = 'lmer',
-				sigma = mod$sigma,
-				stdev.unscaled = mod$SE/mod$sigma,
-				pValue = mod$pValue)
+			ret = list(	coefficients 	= mod$beta, 
+						design 			= fit@pp$X, 
+						df.residual 	= mod$df, 
+						Amean 			= mean(fit@frame[,1]), 
+						method 			= 'lmer',
+						sigma 			= mod$sigma,
+						stdev.unscaled 	= mod$SE/mod$sigma,
+						pValue 			= mod$pValue)
 
 			# get variance terms for random effects
 			varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
 			varComp[['resid']] = attr(lme4::VarCorr(fit), 'sc')^2
 
+			if( univariateContrasts ){
+				V = mod$vcov
+			}else{
+				# do expensive evaluation only when L is defined by the user
+				V = crossprod(chol(mod$vcov) %*% L)
+			}
+
 			list( 	ret = new("MArrayLM", ret),
-					varComp = varComp)
+					varComp = varComp,
+					vcov = V)
 		}
-		cat("\nFinished...")
+
+		# Evaluate function
+		if( ! is.null(BPPARAM) ){
+
+			cat("\nbplapply...\n")
+			# evalulate function in parallel using less memory
+			resList <- bplapply( exprIter(exprObjMat, weightsMatrix, useWeights), .eval_models, data2, form, REML, fitInit@theta, control,..., BPPARAM=BPPARAM)
+		}else{
+			cat("\nforeach...\n")
+			# for backward compatability
+			# loop through genes
+			# store 1) MArrayLM and 2) result of calcVarPart
+			resList <- foreach(gene14643=exprIter(exprObjMat, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
+
+				.eval_models(gene14643, data2, form, REML, fitInit@theta, control,...)
+			}
+		}
+		names(resList) = seq_len(length(resList))
+
 		cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 
 		x = 1
@@ -545,14 +569,14 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		colnames(stdev.unscaled) = colnames(L)
 		rownames(stdev.unscaled) = rownames(exprObj)
 
-		ret = list( coefficients = coefficients,
-		 			design = design, 
-		 			df.residual = df.residual, 
-		 			Amean = Amean, 
-		 			method = method, 
-		 			sigma = sigma, 
-		 			contrasts = L,
-		 			stdev.unscaled = stdev.unscaled)
+		ret = list( coefficients 	= coefficients,
+		 			design 			= design, 
+		 			df.residual 	= df.residual, 
+		 			Amean 			= Amean, 
+		 			method 			= method, 
+		 			sigma 			= sigma, 
+		 			contrasts 		= L,
+		 			stdev.unscaled 	= stdev.unscaled)
 
 		if( 'genes' %in% names(exprObjInit) ){
 			ret$genes = exprObjInit$genes
@@ -564,39 +588,27 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# set covariance between covariates
 		# C = solve(crossprod(ret$design))
 		# C = chol2inv(chol(crossprod(ret$design)))
-		C = chol2inv(qr(ret$design)$qr)
-		rownames(C) = colnames(ret$design)
-		colnames(C) = colnames(ret$design)
+		V = chol2inv(qr(ret$design)$qr)
+		rownames(V) = colnames(ret$design)
+		colnames(V) = colnames(ret$design)
 
 		# remove intercept term if it exists
-		fnd = colnames(C) == "(Intercept)" 
-		if( any(fnd) ){
-			C = C[!fnd,!fnd,drop=FALSE]
+		# fnd = colnames(C) == "(Intercept)" 
+		# if( any(fnd) ){
+		# 	C = C[!fnd,!fnd,drop=FALSE]
+		# }
+
+		if( ! univariateContrasts ){
+			# do expensive evaluation only when L is defined by the user
+			V = crossprod(chol(V) %*% L)
 		}
 
-		# add additional placeholder columns for contrasts
-		idx = colnames(coef(ret)) %in% colnames(C)
+		# covariance used by limma.  
+		# Assumes covariance is the same for all genes
+		ret$cov.coefficients = V
 
-		if( any(!idx) ){
-			C_add1 = matrix(0, nrow=ncol(C), ncol=sum(!idx))
-			colnames(C_add1) = colnames(coef(ret))[!idx]
-
-			C_add2 = matrix(0, ncol=ncol(C)+sum(!idx), nrow=sum(!idx))
-			rownames(C_add2) = colnames(coef(ret))[!idx]
-
-			C = rbind(cbind(C, C_add1), C_add2)
-
-			C = C[ colnames(coef(ret)), colnames(coef(ret))]
-
-			# set diagons of non-real contrasts to 1
-			if( sum(!idx) > 1){
-				diag(C[!idx,!idx]) = 1
-			}else{				
-				C[!idx,!idx] = 1
-			}
-		}
-
-		ret$cov.coefficients = C
+		# allows covariance to differ for each gene based on variance components
+		ret$cov.coefficients.list = lapply(resList, function(x) as.matrix(x$vcov))
 
 		ret = as(ret, "MArrayLM2")
 		# add additional information for pinnacle
@@ -660,6 +672,33 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 
 
+# add additional placeholder columns for contrasts
+# .augment_cov = function( C, id){
+# 	# add additional placeholder columns for contrasts
+# 	idx = id %in% colnames(C)
+
+# 	if( any(!idx) ){
+# 		C_add1 = matrix(0, nrow=ncol(C), ncol=sum(!idx))
+# 		colnames(C_add1) = id[!idx]
+
+# 		C_add2 = matrix(0, ncol=ncol(C)+sum(!idx), nrow=sum(!idx))
+# 		rownames(C_add2) = id[!idx]
+
+# 		C = rbind(cbind(C, C_add1), C_add2)
+
+# 		C = C[id,id]
+
+# 		# set diagons of non-real contrasts to 1
+# 		if( sum(!idx) > 1){
+# 			diag(C[!idx,!idx]) = 1
+# 		}else{				
+# 			C[!idx,!idx] = 1
+# 		}
+# 	}
+# 	C
+# }
+
+
 
 # 
 # 
@@ -680,57 +719,66 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @aliases subset.MArrayLM2,MArrayLM2-method
 assign("[.MArrayLM2",
 	function(object, i, j){
-		if(nargs() != 3){
-			stop("Two subscripts required",call.=FALSE)
-		}
+	if(nargs() != 3){
+		stop("Two subscripts required",call.=FALSE)
+	}
 
-		# apply standard MArrayLM subsetting
-		obj = as(object, 'MArrayLM')
+	# apply standard MArrayLM subsetting
+	obj = as(object, 'MArrayLM')
 
-		if(!missing(j)){
-			obj = obj[,j]
-		}
+	if(!missing(j)){
+		obj = obj[,j]
+	}
+	if(!missing(i)){
+		obj = obj[i,]
+	}
+
+	# custom code to deal with df.total and df.residual
+	if( is.null(ncol(object$df.total))  ){
+		obj$df.total = object$df.total[i]
+	}else{			
+		obj$df.total = object$df.total[i,j,drop=FALSE]
+	}
+
+	if( is.null(ncol(object$df.residual))  ){
+		obj$df.residual = object$df.residual[i]
+	}else{			
+		obj$df.residual = object$df.residual[i,j,drop=FALSE]
+	}
+
+	# obj$pValue = object$pValue[i,j]
+	obj$s2.prior = object$s2.prior
+	obj$df.prior = object$df.prior
+
+	obj = as(obj, "MArrayLM2")
+
+	#  copy gene-specific covariance, if it exists
+	if( ! is.null(object$cov.coefficients.list) ){
 		if(!missing(i)){
-			obj = obj[i,]
+			obj$cov.coefficients.list = object$cov.coefficients.list[i]
+		}else{
+			obj$cov.coefficients.list = object$cov.coefficients.list
 		}
+	}	
 
-		# custom code to deal with df.total and df.residual
-		if( is.null(ncol(object$df.total))  ){
-			obj$df.total = object$df.total[i]
-		}else{			
-			obj$df.total = object$df.total[i,j,drop=FALSE]
+	# the F-statistic and p-value are evaluated when subsetting is applied
+	# so need to apply df2 here
+	# If columns have been subsetted, need to re-generate F
+	if(!is.null(obj[["F"]]) && !missing(j)) {
+		df = mean(obj$df.residual)
+	
+		F.stat <- classifyTestsF(obj,df=df,fstat.only=TRUE)
+		obj$F <- as.vector(F.stat)
+		df1 <- attr(F.stat,"df1")
+		df2 <- attr(F.stat,"df2")
+		if (df2[1] > 1e6){ 
+			obj$F.p.value <- pchisq(df1*obj$F,df1,lower.tail=FALSE)
+		}else{
+			obj$F.p.value <- pf(obj$F,df1,df2,lower.tail=FALSE)
 		}
-
-		if( is.null(ncol(object$df.residual))  ){
-			obj$df.residual = object$df.residual[i]
-		}else{			
-			obj$df.residual = object$df.residual[i,j,drop=FALSE]
-		}
-
-		# the F-statistic and p-value are evaluated when subsetting is applied
-		# so need to apply df2 here
-		# If columns have been subsetted, need to re-generate F
-		if(!is.null(obj[["F"]]) && !missing(j)) {
-			df = mean(obj$df.residual)
-		
-			F.stat <- classifyTestsF(obj,df=df,fstat.only=TRUE)
-			obj$F <- as.vector(F.stat)
-			df1 <- attr(F.stat,"df1")
-			df2 <- attr(F.stat,"df2")
-			if (df2[1] > 1e6){ 
-				obj$F.p.value <- pchisq(df1*obj$F,df1,lower.tail=FALSE)
-			}else{
-				obj$F.p.value <- pf(obj$F,df1,df2,lower.tail=FALSE)
-			}
-		}
-
-		# obj$pValue = object$pValue[i,j]
-		obj$s2.prior = object$s2.prior
-		obj$df.prior = object$df.prior
-
-		# obj
-		as(obj, "MArrayLM2")
-		})
+	}
+	obj	
+})
 
 
 
@@ -788,6 +836,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 
 	# return covariance between coefficients
 	fit2$cov.coefficients = fit$cov.coefficients
+	fit2$cov.coefficients.list = fit$cov.coefficients.list
 
 	# fit2 
 	as(fit2, "MArrayLM2")
@@ -939,17 +988,15 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 #' 
 #' # Analysis 1
 #' form <- ~ Batch 
-#' L = getContrast( geneExpr, form, info, "Batch3")
-#' fit = dream( geneExpr, form, info, L)
+#' fit = dream( geneExpr, form, info)
 #' fitEB = eBayes( fit )
-#' res = topTable( fitEB, number=Inf )
+#' res = topTable( fitEB, number=Inf, coef="Batch3" )
 #' 
 #' # Analysis 2
 #' form <- ~ Batch + (1|Tissue)
-#' L = getContrast( geneExpr, form, info, "Batch3")
-#' fit = dream( geneExpr, form, info, L)
-#' fitEB = eBayes( fit )
-#' res2 = topTable( fitEB, number=Inf )
+#' fit2 = dream( geneExpr, form, info)
+#' fitEB2 = eBayes( fit2 )
+#' res2 = topTable( fitEB2, number=Inf, coef="Batch3" )
 #' 
 #' # Compare p-values
 #' plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )
@@ -992,5 +1039,139 @@ plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquot
 	                       guide = "colorbar", limits=c(0, 1))
 }
 
+#' Multiple Testing Genewise Across Contrasts
+#' 
+#'  For each gene, classify a series of related t-statistics as up, down or not significant.
+#' 
+#' @param object numeric matrix of t-statistics or an 'MArrayLM2' object from which the t-statistics may be extracted.
+#' @param ... additional arguments
+#' 
+#' @details Works like limma::classifyTestsF, except object can have a list of covariance matrices object$cov.coefficients.list, instead of just one in object$cov.coefficients
+#' @seealso limma::classifyTestsF
+#' @export
+setGeneric("classifyTestsF", signature="object",
+  function(object, ...)
+      standardGeneric("classifyTestsF")
+)
 
+
+
+#' Multiple Testing Genewise Across Contrasts
+#' 
+#'  For each gene, classify a series of related t-statistics as up, down or not significant.
+#' 
+#' @param object numeric matrix of t-statistics or an 'MArrayLM2' object from which the t-statistics may be extracted.
+#' @param cor.matrix covariance matrix of each row of t-statistics.  Defaults to the identity matrix.
+#' @param df numeric vector giving the degrees of freedom for the t-statistics.  May have length 1 or length equal to the number of rows of tstat.
+#' @param p.value numeric value between 0 and 1 giving the desired size of the test
+#' @param fstat.only logical, if 'TRUE' then return the overall F-statistic as for 'FStat' instead of classifying the test results
+#' 
+#' @details Works like limma::classifyTestsF, except object can have a list of covariance matrices object$cov.coefficients.list, instead of just one in object$cov.coefficients
+#' @seealso limma::classifyTestsF
+#' @importFrom stats qf
+#' @export
+setMethod("classifyTestsF", "MArrayLM2",
+  function(object,cor.matrix=NULL, df=Inf, p.value=0.01, fstat.only=FALSE) {
+#	Use F-tests to classify vectors of t-test statistics into outcomes
+#	Gordon Smyth
+#	20 Mar 2003.  Last revised 6 June 2009.
+
+#	Method intended for MArrayLM objects but accept unclassed lists as well
+	if(is.list(object)) {
+		if(is.null(object$t)) stop("tstat cannot be extracted from object")
+		computeCorrMat = ifelse(is.null(cor.matrix), TRUE, FALSE)
+		if(missing(df) && !is.null(object$df.prior) && !is.null(object$df.residual)) df <- object$df.prior+object$df.residual
+		tstat <- as.matrix(object$t)
+	} else {
+		tstat <- as.matrix(object)
+	}
+	ngenes <- nrow(tstat)
+	ntests <- ncol(tstat)
+	if(ntests == 1) {
+		if(fstat.only) {
+			fstat <- tstat^2
+			attr(fstat,"df1") <- 1
+			attr(fstat,"df2") <- df
+			return(fstat)
+		} else {
+			p <- 2 * pt(abs(tstat), df, lower.tail=FALSE)
+			return(new("TestResults", sign(tstat) * (p < p.value) ))
+		}
+	}
+
+	# F test of multiple coefficients
+	#-------------------------------
+
+	if( ngenes != length(object$cov.coefficients.list) ){
+		msg = paste0("Number of genes does not equal number of elements in cov.coefficients.list\n", ngenes, " != ", length(object$cov.coefficients.list))
+		stop(msg)
+	}
+
+	fstat <- rep(NA, ngenes) 
+	names(fstat) = rownames(tstat)
+
+	result <- matrix(0,ngenes,ntests,dimnames=dimnames(tstat))
+
+	for(i in seq_len(ngenes) ){
+
+		if( computeCorrMat ){
+			if( is.null(object$cov.coefficients.list) ){
+				C <- object$cov.coefficients
+			}else{			
+				C <- object$cov.coefficients.list[[i]]
+			}
+			# subset based on coefficient names
+			C = C[colnames(object),colnames(object)]
+			cor.matrix <- cov2cor( C )
+		}else{
+			cor.matrix = cov2cor(cor.matrix)
+		}
+
+		# cor.matrix is estimated correlation matrix of the coefficients
+		# and also the estimated covariance matrix of the t-statistics
+		if(is.null(cor.matrix)) {
+			r <- ntests
+			Q <- diag(r)/sqrt(r)
+		} else {
+			E <- eigen(cor.matrix,symmetric=TRUE)
+			r <- sum(E$values/E$values[1] > 1e-8)
+			Q <- limma:::.matvec( E$vectors[,1:r], 1/sqrt(E$values[1:r]))/sqrt(r)
+		}
+
+		# Return overall moderated F-statistic only
+		if(fstat.only) {
+			fstat[i] <- drop( (tstat[i,,drop=FALSE] %*% Q)^2 %*% array(1,c(r,1)) )
+		}
+		if( i == 1){					
+			attr(fstat,"df1") <- r
+			attr(fstat,"df2") <- df
+		}
+
+		# Return TestResults matrix
+		qF <- qf(p.value, r, df, lower.tail=FALSE)
+		if(length(qF)==1) qF <- rep(qF,ngenes) 
+		x <- tstat[i,]
+		if(any(is.na(x)))
+			result[i,] <- NA
+		else
+			if( crossprod(crossprod(Q,x)) > qF[i] ) {
+				ord <- order(abs(x),decreasing=TRUE)
+				result[i,ord[1]] <- sign(x[ord[1]])
+				for (j in 2:ntests) {
+					bigger <- ord[1:(j-1)]
+					x[bigger] <- sign(x[bigger]) * abs(x[ord[j]])
+					if( crossprod(crossprod(Q,x)) > qF[i] )
+						result[i,ord[j]] <- sign(x[ord[j]])
+					else
+						break
+				}
+			}
+	}
+
+	if(fstat.only){
+		return( fstat )
+	}
+
+	new("TestResults",result)
+})
 

@@ -54,6 +54,7 @@ Imports:
     iterators,
     splines,
     colorRamps,
+    BiocParallel,
     gplots,
     progress,
     reshape2,

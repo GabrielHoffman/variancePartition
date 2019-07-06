@@ -163,105 +163,6 @@ function(x, row.names = NULL, optional = FALSE,...)
 	return( df )
 })
 
-
-#' Simulation dataset for examples
-#'
-#' A simulated dataset of gene expression and metadata
-#'
-#' \itemize{    
-#'	\item geneCounts gene expression in the form of RNA-seq counts
-#'	\item geneExpr gene expression on a continuous scale
-#'  \item info metadata about the study design
-#' }
-#' @docType data
-#' @keywords datasets
-#' @usage data(varPartData)
-#' @format A dataset of 100 samples and 200 genes
-#' @name varPartData
-NULL
-
-
-#' Simulation dataset for examples
-#'
-#' A simulated dataset of gene counts
-#'
-#' \itemize{    
-#'	\item geneCounts gene expression in the form of RNA-seq counts
-#'	\item geneExpr gene expression on a continuous scale
-#'  \item info metadata about the study design
-#' }
-#' @docType data
-#' @keywords datasets
-#' @usage data(varPartData)
-#' @format A dataset of 100 samples and 200 genes
-#' @name varPartData
-"geneCounts"
-
-#' Simulation dataset for examples
-#'
-#' info about study design
-#'
-#' \itemize{    
-#'	\item geneCounts gene expression in the form of RNA-seq counts
-#'	\item geneExpr gene expression on a continuous scale
-#'  \item info metadata about the study design
-#' }
-#' @docType data
-#' @keywords datasets
-#' @usage data(varPartData)
-#' @format A dataset of 100 samples and 200 genes
-#' @name varPartData
-"info"
-
-
-#' Simulation dataset for examples
-#'
-#' Normalized expression data
-#'
-#' \itemize{    
-#'	\item geneCounts gene expression in the form of RNA-seq counts
-#'	\item geneExpr gene expression on a continuous scale
-#'  \item info metadata about the study design
-#' }
-#' @docType data
-#' @keywords datasets
-#' @usage data(varPartData)
-#' @format A dataset of 100 samples and 200 genes
-#' @name varPartData
-"geneExpr"
-
-#' Simulation dataset for dream example
-#'
-#' Gene counts from RNA-seq
-#'
-#' \itemize{    
-#'	\item countMatrix gene expression in the form of RNA-seq counts
-#'  \item metadata metadata about the study design
-#' }
-#' @docType data
-#' @keywords datasets
-#' @usage data(varPartDEdata)
-#' @format A dataset of 24 samples and 19,364 genes
-#' @name varPartDEdata
-"countMatrix"
-
-#' Simulation dataset for dream example
-#'
-#' metadata matrix of sample information
-#'
-#' \itemize{    
-#'	\item countMatrix gene expression in the form of RNA-seq counts
-#'  \item metadata metadata about the study design
-#' }
-#' @docType data
-#' @keywords datasets
-#' @usage data(varPartDEdata)
-#' @format A dataset of 24 samples and 19,364 genes
-#' @name varPartDEdata
-"metadata"
-
-
-
 #' Default colors for ggplot
 #' 
 #' Return an array of n colors the same as the default used by ggplot2
@@ -473,21 +374,23 @@ colinearityScore = function(fit){
 
 
 
-# Check if model contains a random effect
-# 
-# Check if model contains a random effect
-#
-# @param formula model formula
-# @param data data.frame
-# 
+#' Check if model contains a random effect
+#' 
+#' Check if model contains a random effect
+#'
+#' @param formula model formula
+#' @param data data.frame
+#' 
+#' @importFrom stats as.formula
+#' @importFrom lme4 lmerControl 
 .isMixedModelFormula = function(formula, data ){
 
-	formula = stats::as.formula( formula )
+	formula = as.formula( formula )
 
     # don't throw an error if the LHS is missing
-    control = lme4::lmerControl(check.formula.LHS = "ignore")
+    control = lmerControl(check.formula.LHS = "ignore")
 
-    possibleError <- tryCatch(lme4::lFormula( formula, data, control=control), error = function(e) e)
+    possibleError <- tryCatch(lFormula( formula, data, control=control), error = function(e) e)
 
     mesg <- "No random effects terms specified in formula"
     result = inherits(possibleError, "error") && identical(possibleError$message, mesg)

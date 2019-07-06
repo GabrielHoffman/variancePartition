@@ -8,7 +8,8 @@
 dream(exprObj, formula, data, L, ddf = c("Satterthwaite",
   "Kenward-Roger"), REML = TRUE, useWeights = TRUE,
   weightsMatrix = NULL, control = lme4::lmerControl(calc.derivs =
-  FALSE, check.rankX = "stop.deficient"), suppressWarnings = FALSE, ...)
+  FALSE, check.rankX = "stop.deficient"), suppressWarnings = FALSE,
+  BPPARAM = NULL, ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -30,6 +31,8 @@ dream(exprObj, formula, data, L, ddf = c("Satterthwaite",
 \item{control}{control settings for lmer()}
 
 \item{suppressWarnings}{if TRUE, do not stop because of warnings or errors in model fit}
+
+\item{BPPARAM}{parameters for parallel evaluation}
 
 \item{...}{Additional arguments for lmer() or lm()}
 }
@@ -57,29 +60,14 @@ Hypothesis tests and degrees of freedom are producted by lmerTest and pbkrtest p
 # load library
 # library(variancePartition)
 
-# optional step to run analysis in parallel on multicore machines
-# Here, we used 4 threads
-library(doParallel)
-cl <- makeCluster(4)
-registerDoParallel(cl)
-# or by using the doSNOW package
-
 # load simulated data:
 # geneExpr: matrix of gene expression values
 # info: information/metadata about each sample
 data(varPartData)
 
-# get contrast matrix testing if the coefficient for Batch2 is zero 
-# The variable of interest must be a fixed effect
-form <- ~ Batch + (1|Individual) + (1|Tissue) 
-L = getContrast( geneExpr, form, info, "Batch3")
-
-# plot contrasts
-plotContrasts( L )
-
 # Fit linear mixed model for each gene
 # run on just 10 genes for time
-fit = dream( geneExpr[1:10,], form, info, L)
+fit = dream( geneExpr[1:10,], form, info)
 
 # Run empirical Bayes post processing from limma
 fitEB = eBayes( fit )
@@ -87,7 +75,27 @@ fitEB = eBayes( fit )
 # view top genes
 topTable( fitEB )
 
-# stop cluster
-stopCluster(cl)
+# get contrast matrix testing if the coefficient for Batch2 is 
+# different from coefficient for Batch3
+# The variable of interest must be a fixed effect
+form <- ~ Batch + (1|Individual) + (1|Tissue) 
+L = getContrast( geneExpr, form, info, c("Batch2", "Batch3"))
+
+# plot contrasts
+plotContrasts( L )
+
+# Fit linear mixed model for each gene
+# run on just 10 genes for time
+fit2 = dream( geneExpr[1:10,], form, info, L)
+
+# Run empirical Bayes post processing from limma
+fitEB2 = eBayes( fit2 )
+
+# view top genes
+topTable( fitEB2 )
+
+# Parallel processing using multiple cores
+param = SnowParam(4, "SOCK")
+fit = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
 
 }

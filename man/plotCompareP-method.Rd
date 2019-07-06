@@ -51,17 +51,15 @@ data(varPartData)
 
 # Analysis 1
 form <- ~ Batch 
-L = getContrast( geneExpr, form, info, "Batch3")
-fit = dream( geneExpr, form, info, L)
+fit = dream( geneExpr, form, info)
 fitEB = eBayes( fit )
-res = topTable( fitEB, number=Inf )
+res = topTable( fitEB, number=Inf, coef="Batch3" )
 
 # Analysis 2
 form <- ~ Batch + (1|Tissue)
-L = getContrast( geneExpr, form, info, "Batch3")
-fit = dream( geneExpr, form, info, L)
-fitEB = eBayes( fit )
-res2 = topTable( fitEB, number=Inf )
+fit2 = dream( geneExpr, form, info)
+fitEB2 = eBayes( fit2 )
+res2 = topTable( fitEB2, number=Inf, coef="Batch3" )
 
 # Compare p-values
 plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )

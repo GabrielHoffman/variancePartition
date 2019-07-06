@@ -44,6 +44,7 @@ grep -v "## Warning" /Users/gabrielhoffman/workspace/repos/variancePartition/vig
 ```{r setup, echo=FALSE, results="hide"}
 knitr::opts_chunk$set(tidy=FALSE, cache=TRUE,
                       dev="png",
+                      package.startup.message = FALSE,
                       message=FALSE, error=FALSE, warning=TRUE)
 options(width=100)
 ```	
@@ -86,30 +87,29 @@ This tutorial assumes that the reader is familiar with the limma/voom workflow f
 ```{r preprocess, eval=TRUE, results='hide'}
 library('variancePartition')
 library('edgeR')
-library('doParallel')
+library('BiocParallel')
 data(varPartDEdata)
 
-isexpr = rowSums(cpm(countMatrix)>0.1) >= 3
+# isexpr = rowSums(cpm(countMatrix)>0.1) >= 3
+isexpr = rowSums(cpm(countMatrix)>200) >= 10
 
 # Standard usage of limma/voom
-genes = DGEList( countMatrix )
-genes = calcNormFactors( genes )
-design = model.matrix( ~ Disease, metadata)
-vobj_tmp = voom( genes, design, plot=FALSE)
-
-# apply duplicateCorrelation 
-dupcor <- duplicateCorrelation(vobj_tmp,design,block=metadata$Individual)
-
-# run voom considering the duplicateCorrelation results
-# in order to compute more accurate precision weights
-# Otherwise, use the results from the first voom run
-vobj = voom( genes, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
+geneExpr = DGEList( countMatrix[isexpr,] )
+geneExpr = calcNormFactors( geneExpr )
 ```
 
 # Limma Analysis
 Limma has a built-in approach for analyzing repeated measures data using `duplicateCorrelation()`.  The model can handle a single random effect, and forces the magnitude of the random effect to be the same across all genes.
 ```{r dupCor, eval=TRUE}
+# apply duplicateCorrelation is two rounds
 design = model.matrix( ~ Disease, metadata)
+vobj_tmp = voom( geneExpr, design, plot=FALSE)
+dupcor <- duplicateCorrelation(vobj_tmp,design,block=metadata$Individual)
+
+# run voom considering the duplicateCorrelation results
+# in order to compute more accurate precision weights
+# Otherwise, use the results from the first voom run
+vobj = voom( geneExpr, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
 
 # Estimate linear mixed model with a single variance component
 # Fit the model for each gene, 
@@ -125,47 +125,63 @@ fitDupCor <- eBayes( fitDupCor )
 # Dream Analysis
 The dream model operates directly on the results of `voom()`.  The only change compared to the standard limma workflow is to replace `lmFit()` with `dream()`.  
 ```{r lmm, eval=TRUE, message=FALSE, fig.height=2, results='hide'}
-cl <- makeCluster(4)
-registerDoParallel(cl)
+# Specify parallel processing parameters
+param = SnowParam(4, "SOCK")
 
-# The variable to be tested should be a fixed effect
+# The variable to be tested must be a fixed effect
 form <- ~ Disease + (1|Individual) 
+
+# estimate weights using linear mixed model of dream
+vobjDream = voomWithDreamWeights( geneExpr, form, metadata, BPPARAM=param)
 
 # Fit the dream model on each gene
 # By default, uses the Satterthwaite approximation for the hypothesis test
-fitmm = dream( vobj, form, metadata)
+fitmm = dream( vobjDream, form, metadata, BPPARAM=param)
 
 # Fit Empirical Bayes for moderated t-statistics
-fitmm = eBayes( fitmm )
+fitmmEB = eBayes( fitmm )
 ```
 ```{r lmm.print}
 # Examine design matrix
-head(fitmm$design)
+head(fitmm$design, 3)
 
-# get results of hypothesis test on coefficients of interest
-topTable( fitmm, coef='Disease1' )
+# Get results of hypothesis test on coefficients of interest
+# Here, get standard results
+topTable( fitmm, coef='Disease1', number=3 )
+
+# Get results using Empirical Bayes moderated t-statistics 
+topTable( fitmmEB, coef='Disease1', number=3 )
 ```
-Note that if a random effect is not specified, `dream()` automatically uses `lmFit()`.  
+Notes
+
+* if a random effect is not specified, `dream()` automatically uses `lmFit()`.  
+* if `lmFit()` is called, `eBayes()` must be used to be compatiable with limma
+  - if a random effect is used, the empircal Bayes step is optional
 
 ## Advanced hypothesis testing
 ### Using contrasts to compare coefficients
-You can also perform a hypothesis test between two or more coefficients by using a contrast matrix.  The contrasts are evaluated at the time of the model fit and the results can be extracted with `topTable()`.   Make sure to inspect your contrast matrix to confirm it is testing what you intend. 
+You can also perform a hypothesis test of the *difference* between two or more coefficients by using a contrast matrix.  The contrasts are evaluated at the time of the model fit and the results can be extracted with `topTable()`.  This behaves like `makeContrasts()` and `contrasts.fit()` in limma.
+
+ Make sure to inspect your contrast matrix to confirm it is testing what you intend. 
 ```{r contrast, eval=TRUE, fig.width=7, fig.height=2}
 form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual)  
-L = getContrast( vobj, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
+L = getContrast( vobjDream, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
 
 # Visualize contrast matrix
 plotContrasts(L) 
 ```
 ```{r fit.contrast}
 # fit dream model with contrasts
-fit = dream( vobj[1:10,], form, metadata, L)
+fit = dream( vobjDream[1:10,], form, metadata, L, BPPARAM=param)
 
 # empirical Bayes step
 fiteb = eBayes( fit )
 
+# get names of available coefficients and contrasts for testing
+colnames(fit)
+
 # extract results from first contrast
-topTable( fiteb, coef="L1" )
+topTable( fiteb, coef="L1", number=3 )
 ```
 
 Multiple contrasts can be evaluated at the same time, in order to save computation time:
@@ -173,48 +189,59 @@ Multiple contrasts can be evaluated at the same time, in order to save computati
 form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual) 
 
 # define and then cbind contrasts
-L1 = getContrast( vobj, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
-L2 = getContrast( vobj, form, metadata, c("DiseaseSubtype1", "DiseaseSubtype0"))
+L1 = getContrast( vobjDream, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
+L2 = getContrast( vobjDream, form, metadata, c("DiseaseSubtype1", "DiseaseSubtype0"))
 L = cbind(L1, L2)
 
 # Visualize contrasts
 plotContrasts(L) 
 
 # fit both contrasts
-fit = dream( vobj, form, metadata, L)
+fit = dream( vobjDream, form, metadata, L)
 
 # empirical Bayes step
 fiteb = eBayes( fit )
 
 # extract results from first contrast
-topTable( fiteb, coef="L1" )
+topTable( fiteb, coef="L1", number=3 )
 ```
 
 ### Joint hypothesis test of multiple coefficients
-Joint hypothesis testing can be performed by using an F-test.  Just like in limma, the results can be extracted using `topTable()`
+Joint hypothesis testing of multiple coefficients at the same time can be performed by using an F-test.  Just like in limma, the results can be extracted using `topTable()`
 
 ```{r joint.test, fig.height=3, message=FALSE}
 # extract results from first contrast
-topTable( fiteb, coef=c("DiseaseSubtype2", "DiseaseSubtype1") )
+topTable( fiteb, coef=c("DiseaseSubtype2", "DiseaseSubtype1"), number=3 )
 ```
 
 ## Small-sample method
 For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
 ```{r kr, eval=FALSE}
-fitmmKR = dream( vobj[1:10,], form, metadata, L, ddf="Kenward-Roger")
+fitmmKR = dream( vobjDream, form, metadata, ddf="Kenward-Roger", BPPARAM=param)
+fitmmKREB = eBayes( fitmmKR )
 ```
 
 ## variancePartition plot
 Dream and variancePartition share the same underlying linear mixed model framework. A variancePartition analysis can indicate important variables that should be included as fixed or random effects in the dream analysis. 
 ```{r vp}
+# Note: this could be run with either vobj from voom()
+# or vobjDream from voomWithDreamWeights()
+# The resuylts are similar
 form = ~ (1|Individual) + (1|Disease)
-vp = fitExtractVarPartModel( vobj, form, metadata)
+vp = fitExtractVarPartModel( vobj, form, metadata, BPPARAM=param)
 
 plotVarPart( sortCols(vp))
 ```
 
 ## Compare p-values from dream and duplicateCorrelation
 In order to understand the empircal difference between dream and duplication correlation, we can plot the $-\log_{10}$ p-values from both methods.
+```{r define}
+# Compare p-values and make plot
+p1 = topTable(fitDupCor, coef="Disease1", number=Inf, sort.by="none")$P.Value
+p2 = topTable(fitmmEB, number=Inf, sort.by="none")$P.Value
+
+plotCompareP( p1, p2, vp$Individual, dupcor$consensus)
+```
 
 The duplicateCorrelation method estimates a single variance term genome-wide even though the donor contribution of a particular gene can vary substantially from the genome-wide trend.  Using a single value genome-wide for the within-donor variance can reduce power and increase the false positive rate in a particular, reproducible way.  Let $\tau^2_g$  be the value of the donor component for gene $g$ and $\bar{\tau}^2$ be the genome-wide mean.  For genes where $\tau^2_g>\bar{\tau}^2$, using $\bar{\tau}^2$ under-corrects for the donor component so that it increases the false positive rate compared to using $\tau^2_g$.  Conversely, for genes where $\tau^2_g<\bar{\tau}^2$, using $\bar{\tau}^2$ over-corrects for the donor component so that it decreases power.  Increasing sample size does not overcome this issue.  The dream method overcomes this issue by using a $\tau^2_g$.
 
@@ -222,15 +249,7 @@ The duplicateCorrelation method estimates a single variance term genome-wide eve
 
   dream can increase the $-\log_{10}$ p-value for genes with a lower donor component (i.e. $\tau^2_g<\bar{\tau}^2$) and decrease $-\log_{10}$ p-value for genes with a higher donor component (i.e. $\tau^2_g>\bar{\tau}^2$)
 
-```{r define}
-# Compare p-values and make plot
-p1 = topTable(fitDupCor, coef="Disease1", number=Inf, sort.by="none")$P.Value
-p2 = topTable(fitmm, number=Inf, sort.by="none")$P.Value
-
-plotCompareP( p1, p2, vp$Individual, dupcor$consensus)
-```
-
-Note that using more variance components or a more complicated contrast matrix can make the relationship more complicated.
+  Note that using more variance components or a more complicated contrast matrix can make the relationship more complicated.
 
 
 
