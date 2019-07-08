@@ -19,3 +19,6 @@ test_voomWithDreamWeights = function(){
 
 	checkEquals(vobj1, vobj2)
 }
+
+
+

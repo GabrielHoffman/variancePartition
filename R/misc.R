@@ -407,10 +407,12 @@ colinearityScore = function(fit){
 # @param vmax minumum number of processes
 .get_pids = function( vmax = 2){
 
-	foreach(i = 1:vmax, .combine=c) %dopar% { 
+	# use do instead of dopar, since only need single pid
+	foreach(i = 1:vmax, .combine=c) %do% { 
 		Sys.getpid()
 	}
 }
+
 
 
 # Try evaluating foreach dopar loop

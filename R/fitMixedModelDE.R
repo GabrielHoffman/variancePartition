@@ -809,7 +809,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
 
 	i = 1
-	retList = foreach( i = 1:ncol(fit) ) %do% {
+	retList = foreach( i = seq_len(ncol(fit)) ) %do% {
 
 		ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
