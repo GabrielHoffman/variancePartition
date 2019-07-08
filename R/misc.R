@@ -20,11 +20,65 @@ setClass("varParFrac")
 #' @exportClass VarParFitList
 setClass("VarParFitList", representation(method="character"), contains="list")
 
+# requared to that iterator return NULL after the last element
+icount2 = function (count){
+    if (missing(count))
+        count <- NULL
+    else if (!is.numeric(count) || length(count) != 1)
+        stop("count must be a numeric value")
+    i <- 0L
+    nextEl <- function(){
+    	if( is.null(i) )    		
+        	(i <<- NULL)
+        else if (is.null(count) || i < count)
+            (i <<- i + 1L)
+        else 
+        	(i <<- NULL)
+    }
+    it <- list(nextElem = nextEl)
+    class(it) <- c("abstractiter", "iter")
+    it
+}
+
+
 # Iterator over genes
 exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
 
 	n_features = nrow(exprObj)
+	xit <- icount2( n_features )
+
+    nextEl <- function() {
+    	j <- nextElem(xit)
+
+    	if( is.null(j) || j > n_features){
+    		res = NULL
+    	}else{
+	    	if( useWeights && !is.null(weights) ){    		
+				# scale weights to have mean of 1, otherwise it affects the residual variance too much
+	    		if(scale){
+	    			w = weights[j,] /  mean(weights[j,])
+	    		}else{
+	    			w = weights[j,]
+	    		}
+	    	}else{
+	    		w = NULL		
+			}
+
+	       	res = list(E = exprObj[j,], weights = w, n_iter = j, max_iter = n_features)
+	     }
+	     res
+    }
+    it <- list(nextElem = nextEl)
+    class(it) <- c("abstractiter", "iter")
+    it
+}
+
+
+exprIterOrig = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
+
+	n_features = nrow(exprObj)
 	xit <- icountn( n_features )
+
     nextEl <- function() {
     	j <- nextElem(xit)
 
@@ -423,7 +477,7 @@ colinearityScore = function(fit){
 # By no new clusters is registered
 .isDisconnected = function(){
 	i = NULL
-	possibleError <- tryCatch( foreach(i = seq_len(2)) %dopar% {i}, error = function(e) e)
+	possibleError <- tryCatch( suppressWarnings(foreach(i = seq_len(2)) %dopar% {i}), error = function(e) e)
 	return( inherits(possibleError, "error") && identical(possibleError$message, "invalid connection") )
 }
 

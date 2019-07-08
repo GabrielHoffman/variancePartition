@@ -90,7 +90,7 @@
 #' results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 #' 
 #' # Parallel processing using multiple cores
-#' param <- SnowParam(4, "SOCK")
+#' param <- SnowParam(4, "SOCK", progressbar=TRUE)
 #' results2 <- fitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
 #'
 #' @export
@@ -102,6 +102,8 @@ setGeneric("fitVarPartModel", signature="exprObj",
 )
 
 # internal driver function
+#' @importFrom BiocParallel SerialParam bpiterate
+#' @import lme4
 .fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...){ 
 
 	exprObj = as.matrix( exprObj )
@@ -232,12 +234,24 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		if( ! is.null(BPPARAM) ){
 			# evalulate function in parallel using less memory
 
-			cat("\nbplapply...\n")
-			res <- bplapply( exprIter(exprObj, weightsMatrix, useWeights), .eval_model, form, data2, REML, fitInit@theta, fxn, control,..., BPPARAM=BPPARAM)
+			cat("\nbpiterate...\n")
+
+			# someout using a secondary function avoids the error:
+			# Error in as.list.default(X) :
+			# no method for coercing this S4 class to a vector
+			# Calls: local ... doTryCatch -> bpok -> vapply -> as.list -> as.list.default
+			# Execution halted
+			it = exprIter(exprObj, weightsMatrix, useWeights)
+			fxn2 = function(fit){
+				list(fxn(fit))
+			}
+			res <- bpiterate( it$nextElem, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
+			res = lapply(res, function(x) x[[1]])
+
 		}else{
 			# for backward compatability
 			cat("\nforeach...\n")
-			res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+			res <- foreach(gene14643=exprIterOrig(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 
 				.eval_model(gene14643, form, data2, REML, fitInit@theta, fxn, control,...)
 			}
@@ -245,7 +259,8 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		method = "lmer"
 	}
-	
+
+	# pb$update( gene14643$max_iter / gene14643$max_iter )
 	cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 
 	# set name of each entry
@@ -369,14 +384,14 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
 #' 
 #' # Parallel processing using multiple cores
-#' param = SnowParam(4, "SOCK")
+#' param = SnowParam(4, "SOCK", progressbar=TRUE)
 #' varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2, BPPARAM = param)
 #'
 #'
 #' @export
 #' @docType methods
 #' @rdname fitExtractVarPartModel-method
-#' @importFrom BiocParallel SerialParam
+#' @importFrom BiocParallel SerialParam bpiterate
 setGeneric("fitExtractVarPartModel", signature="exprObj",
   function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
       standardGeneric("fitExtractVarPartModel")
@@ -496,20 +511,23 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# Evaluate function
 		if( ! is.null(BPPARAM) ){
 
-			cat("\nbplapply...\n")
+			cat("\nbpiterate...\n")
 			# evalulate function in parallel using less memory
-			varPart <- bplapply( exprIter(exprObj, weightsMatrix, useWeights), .eval_model, data, form, REML, fitInit@theta, control,..., BPPARAM=BPPARAM)
+			it = exprIter(exprObj, weightsMatrix, useWeights)
+
+			varPart <- bpiterate( it$nextElem, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
 		}else{
 			cat("\nforeach...\n")
 			# for backward compatability			
-			varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+			varPart <- foreach(gene14643=exprIterOrig(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
 
 				.eval_model(gene14643, data, form, REML, fitInit@theta, control,...)
 			}
 		}
-
 		modelType = "linear mixed model"
 	}
+
+	# pb$update( gene14643$max_iter / gene14643$max_iter )
 	cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))

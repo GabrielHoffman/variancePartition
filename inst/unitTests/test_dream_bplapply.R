@@ -37,7 +37,7 @@ test_fitVarPartModel_parallel = function(){
 	# foreach
 	vp3 = fitVarPartModel( geneExpr[1:10,], form, info)
 
-	checkEquals(vp1, vp2) & checkEquals(vp2, vp2)
+	checkEquals(lapply(vp1, coef), lapply(vp2, coef)) & checkEquals(lapply(vp2, coef), lapply(vp3, coef))
 }
 
 test_fitExtractVarPartModel_parallel = function(){

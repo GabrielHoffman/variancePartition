@@ -306,14 +306,14 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' topTable( fitEB2 )
 #' 
 #' # Parallel processing using multiple cores
-#' param = SnowParam(4, "SOCK")
+#' param = SnowParam(4, "SOCK", progressbar=TRUE)
 #' fit = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
 #'
 #' @export
 #' @docType methods
 #' @rdname dream-method
 #' @importFrom pbkrtest get_SigmaG
-#' @importFrom BiocParallel bplapply
+#' @importFrom BiocParallel bpiterate
 # @importFrom lmerTest lmer
 dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, BPPARAM=NULL, ...){ 
 
@@ -521,20 +521,24 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# Evaluate function
 		if( ! is.null(BPPARAM) ){
 
-			cat("\nbplapply...\n")
+			cat("\nbpiterate...\n")
+
 			# evalulate function in parallel using less memory
-			resList <- bplapply( exprIter(exprObjMat, weightsMatrix, useWeights), .eval_models, data2, form, REML, fitInit@theta, control,..., BPPARAM=BPPARAM)
+			it = exprIter(exprObjMat, weightsMatrix, useWeights)
+
+			resList <- bpiterate( it$nextElem, .eval_models, data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
 		}else{
 			cat("\nforeach...\n")
 			# for backward compatability
 			# loop through genes
 			# store 1) MArrayLM and 2) result of calcVarPart
-			resList <- foreach(gene14643=exprIter(exprObjMat, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
+			resList <- foreach(gene14643=exprIterOrig(exprObjMat, weightsMatrix, useWeights), .packages=c("splines","lme4", "lmerTest", "pbkrtest"), .export='.eval_lmm' ) %dopar% {
 
 				.eval_models(gene14643, data2, form, REML, fitInit@theta, control,...)
 			}
 		}
 		names(resList) = seq_len(length(resList))
+		# pb$update( gene14643$max_iter / gene14643$max_iter )
 
 		cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
 

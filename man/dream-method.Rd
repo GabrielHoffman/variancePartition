@@ -97,7 +97,7 @@ fitEB2 = eBayes( fit2 )
 topTable( fitEB2 )
 
 # Parallel processing using multiple cores
-param = SnowParam(4, "SOCK")
+param = SnowParam(4, "SOCK", progressbar=TRUE)
 fit = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
 
 }

@@ -123,7 +123,7 @@ info2 <- pData(sample.ExpressionSet)
 varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
 
 # Parallel processing using multiple cores
-param = SnowParam(4, "SOCK")
+param = SnowParam(4, "SOCK", progressbar=TRUE)
 varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2, BPPARAM = param)
 
 

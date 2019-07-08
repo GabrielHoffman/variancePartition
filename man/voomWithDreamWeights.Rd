@@ -62,7 +62,7 @@ res = dream( vobj, form, metadata)
 topTable(res, coef="Disease1")
 
 # Parallel processing using multiple cores
-param = SnowParam(4, "SOCK")
+param = SnowParam(4, "SOCK", progressbar=TRUE)
 vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
 
 }
