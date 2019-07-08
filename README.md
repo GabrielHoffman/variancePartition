@@ -8,5 +8,7 @@ library(devtools)
 install_github("GabrielHoffman/variancePartition")
 ```
 
-# For stable release see [Bioconductor](http://bioconductor.org/packages/variancePartition/)
+This is a developmental version.
+
+For stable release see [Bioconductor version](http://bioconductor.org/packages/variancePartition/)
 
