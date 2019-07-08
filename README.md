@@ -1,6 +1,6 @@
 # variancePartition
 
-## install from GitHub
+## Install from GitHub
 
 ```
 library(devtools)
