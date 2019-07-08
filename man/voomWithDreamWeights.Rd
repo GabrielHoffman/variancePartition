@@ -39,8 +39,9 @@ Transform count data to log2-counts per million (logCPM), estimate the mean-vari
 Adapted from vomm() in limma v3.40.2
 }
 \examples{
-library(variancePartition)
+# library(variancePartition)
 library(edgeR)
+library(BiocParallel)
 
 data(varPartDEdata)
 

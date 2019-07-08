@@ -89,6 +89,7 @@ The regression model is fit for each gene separately. Samples with missing value
 
 # load library
 # library(variancePartition)
+library(BiocParallel)
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

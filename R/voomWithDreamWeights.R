@@ -22,8 +22,9 @@
 #' @details Adapted from vomm() in limma v3.40.2
 #' @seealso limma::voom()
 #' @examples
-#' library(variancePartition)
+#' # library(variancePartition)
 #' library(edgeR)
+#' library(BiocParallel)
 #' 
 #' data(varPartDEdata)
 #' 

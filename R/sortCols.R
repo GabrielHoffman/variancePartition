@@ -46,8 +46,8 @@
 #' # sort columns by median value
 #' plotVarPart( sortCols( varPart ) )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #'
 #' @export
 #' @docType methods

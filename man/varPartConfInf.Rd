@@ -71,7 +71,5 @@ form <- ~ Age + (1|Individual) + (1|Tissue)
 # Compute bootstrap confidence intervals for each variable for each gene
 resCI <- varPartConfInf( geneExpr[1:5,], form, info, nsim=100 )
 
-# stop cluster
-stopCluster(cl)
 
 }

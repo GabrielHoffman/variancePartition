@@ -20,6 +20,7 @@
 #' library(doParallel)
 #' cl <- makeCluster(4)
 #' registerDoParallel(cl)
+#' on.exit(stopCluster(cl))
 #' # or by using the doSNOW package
 #'
 #' # load simulated data:
@@ -53,8 +54,8 @@
 #' # Step 2: extract variance fractions
 #' varPart <- extractVarPart( results )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #'
 #' @export
 extractVarPart <- function( modelList, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,... ){

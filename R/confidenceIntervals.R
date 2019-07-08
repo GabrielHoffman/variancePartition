@@ -59,8 +59,8 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 #' # Compute bootstrap confidence intervals for each variable for each gene
 #' resCI <- varPartConfInf( geneExpr[1:5,], form, info, nsim=100 )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #'
 #' @export
 varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),nsim=1000,...){ 

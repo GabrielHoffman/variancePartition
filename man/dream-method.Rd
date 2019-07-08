@@ -59,11 +59,14 @@ Hypothesis tests and degrees of freedom are producted by lmerTest and pbkrtest p
 
 # load library
 # library(variancePartition)
+library(BiocParallel)
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
 # info: information/metadata about each sample
 data(varPartData)
+
+form <- ~ Batch + (1|Individual) + (1|Tissue) 
 
 # Fit linear mixed model for each gene
 # run on just 10 genes for time
@@ -78,7 +81,6 @@ topTable( fitEB )
 # get contrast matrix testing if the coefficient for Batch2 is 
 # different from coefficient for Batch3
 # The variable of interest must be a fixed effect
-form <- ~ Batch + (1|Individual) + (1|Tissue) 
 L = getContrast( geneExpr, form, info, c("Batch2", "Batch3"))
 
 # plot contrasts

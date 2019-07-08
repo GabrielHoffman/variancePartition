@@ -71,7 +71,5 @@ varPart <- fitExtractVarPartModel( geneExpr, form, info )
 # sort columns by median value
 plotVarPart( sortCols( varPart ) )
 
-# stop cluster
-stopCluster(cl)
 
 }

@@ -222,8 +222,8 @@ ggColorHue <- function(n) {
 #' # Extract residuals of model fit
 #' res <- residuals( modelFit )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #'
 #' @export
 #' @docType methods
@@ -411,3 +411,18 @@ colinearityScore = function(fit){
 		Sys.getpid()
 	}
 }
+
+
+# Try evaluating foreach dopar loop
+#
+# if it fails, connection is disconnected, so return TRUE, else FALSE
+#
+# This detects the error thrown by foreach dopar, after stopCluster() is run 
+# By no new clusters is registered
+.isDisconnected = function(){
+	i = NULL
+	possibleError <- tryCatch( foreach(i = seq_len(2)) %dopar% {i}, error = function(e) e)
+	return( inherits(possibleError, "error") && identical(possibleError$message, "invalid connection") )
+}
+
+

@@ -1,7 +1,9 @@
 ---
 title: "dream: Differential expression testing with linear mixed models for repeated measures"
-author: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
-date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+author:
+- name: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
+  affiliation: | 
+    Icahn School of Medicine at Mount Sinai, New York
 abstract: > 
   **D**ifferential expression for **re**pe**a**ted **m**easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual.  The analysis fits seamlessly into the widely used workflow of limma/voom [@Law2014].  
   <br><br> 
@@ -16,7 +18,8 @@ abstract: >
     - emprical Bayes moderated t-test<br>
   <br> 
   Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br> <br> 
-  variancePartition v`r packageVersion("variancePartition")`<br> <br> 
+  variancePartition v`r packageVersion("variancePartition")`<br> 
+  `r format(Sys.time(),'%B %d, %Y %H:%M:%S')`<br>  
 
 output:
   rmarkdown::html_document:
@@ -90,12 +93,15 @@ library('edgeR')
 library('BiocParallel')
 data(varPartDEdata)
 
-# isexpr = rowSums(cpm(countMatrix)>0.1) >= 3
-isexpr = rowSums(cpm(countMatrix)>200) >= 10
+# filter genes by number of counts
+isexpr = rowSums(cpm(countMatrix)>0.1) >= 5
 
 # Standard usage of limma/voom
 geneExpr = DGEList( countMatrix[isexpr,] )
 geneExpr = calcNormFactors( geneExpr )
+
+# make this vignette faster by analyzing a subset of genes
+geneExpr = geneExpr[1:1000,]
 ```
 
 # Limma Analysis

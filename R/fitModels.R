@@ -47,6 +47,7 @@
 #'
 #' # load library
 #' # library(variancePartition)
+#' library(BiocParallel)
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -90,7 +91,7 @@
 #' 
 #' # Parallel processing using multiple cores
 #' param <- SnowParam(4, "SOCK")
-#' results2 <- vfitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
+#' results2 <- fitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
 #'
 #' @export
 #' @docType methods
@@ -127,6 +128,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	# if useWeights, and (weights and expression are the same size)
 	if( useWeights && !identical( dim(exprObj), dim(weightsMatrix)) ){
 		 stop( "exprObj and weightsMatrix must be the same dimensions" )
+	}
+	if( .isDisconnected() ){
+		stop("Cluster connection lost. Either stopCluster() was run too soon\n, or connection expired")
 	}
 
 	# If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
@@ -331,6 +335,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #'
 #' # load library
 #' # library(variancePartition)
+#' library(BiocParallel)
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -371,6 +376,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' @export
 #' @docType methods
 #' @rdname fitExtractVarPartModel-method
+#' @importFrom BiocParallel SerialParam
 setGeneric("fitExtractVarPartModel", signature="exprObj",
   function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=NULL, ...)
       standardGeneric("fitExtractVarPartModel")
@@ -403,6 +409,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	# if useWeights, and (weights and expression are the same size)
 	if( useWeights && !identical( dim(exprObj), dim(weightsMatrix)) ){
 		 stop( "exprObj and weightsMatrix must be the same dimensions" )
+	}
+	if( .isDisconnected() ){
+		stop("Cluster connection lost. Either stopCluster() was run too soon\n, or connection expired")
 	}
 
 	# add response (i.e. exprObj[,j] to formula

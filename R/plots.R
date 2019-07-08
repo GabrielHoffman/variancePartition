@@ -42,8 +42,8 @@
 #' # violin plot of contribution of each variable to total variance
 #' plotVarPart( sortCols( varPart ) )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #'
 #' @export
 #' @docType methods
@@ -185,8 +185,8 @@ setMethod("plotVarPart", "varPartResults",
 #' # Move the legend to the top
 #' plotPercentBars( varPart[1:5,] ) + theme(legend.position="top") 
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #' @export
 plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey85") ){
 

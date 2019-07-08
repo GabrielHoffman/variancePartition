@@ -50,7 +50,5 @@ modelFit <- fitVarPartModel( geneExpr, form, info )
 # Extract residuals of model fit
 res <- residuals( modelFit )
 
-# stop cluster
-stopCluster(cl)
 
 }

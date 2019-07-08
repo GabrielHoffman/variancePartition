@@ -42,7 +42,5 @@ modelList <- fitVarPartModel( geneExpr, form, info )
 fit <- modelList[[1]]
 getVarianceComponents( fit )
 
-# stop cluster
-stopCluster(cl)
 
 }

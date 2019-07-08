@@ -72,7 +72,5 @@ varPart <- fitExtractVarPartModel( geneExpr, form, info )
 # violin plot of contribution of each variable to total variance
 plotVarPart( sortCols( varPart ) )
 
-# stop cluster
-stopCluster(cl)
 
 }

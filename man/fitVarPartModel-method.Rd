@@ -86,6 +86,7 @@ Since this function returns a list of each model fit, using this function is slo
 
 # load library
 # library(variancePartition)
+library(BiocParallel)
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
@@ -129,6 +130,6 @@ results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 
 # Parallel processing using multiple cores
 param <- SnowParam(4, "SOCK")
-results2 <- vfitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
+results2 <- fitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
 
 }

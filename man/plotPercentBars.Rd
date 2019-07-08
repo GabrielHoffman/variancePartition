@@ -45,6 +45,4 @@ plotPercentBars( varPart[1:5,] )
 # Move the legend to the top
 plotPercentBars( varPart[1:5,] ) + theme(legend.position="top") 
 
-# stop cluster
-stopCluster(cl)
 }

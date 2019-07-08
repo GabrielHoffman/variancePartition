@@ -32,6 +32,7 @@ Extract variance statistics from list of models fit with lm() or lmer()
 library(doParallel)
 cl <- makeCluster(4)
 registerDoParallel(cl)
+on.exit(stopCluster(cl))
 # or by using the doSNOW package
 
 # load simulated data:
@@ -65,7 +66,5 @@ results <- fitVarPartModel( geneExpr, form, info )
 # Step 2: extract variance fractions
 varPart <- extractVarPart( results )
 
-# stop cluster
-stopCluster(cl)
 
 }

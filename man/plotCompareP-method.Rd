@@ -64,7 +64,5 @@ res2 = topTable( fitEB2, number=Inf, coef="Batch3" )
 # Compare p-values
 plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )
 
-# stop cluster
-stopCluster(cl)
 
 }

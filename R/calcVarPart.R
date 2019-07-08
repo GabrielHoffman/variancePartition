@@ -250,8 +250,8 @@ function(fit, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,...)
 #' fit <- modelList[[1]]
 #' getVarianceComponents( fit )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #' 
 #' @export
 # getVarianceComponents = function( fit ){

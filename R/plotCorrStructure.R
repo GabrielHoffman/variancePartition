@@ -60,8 +60,8 @@
 #' idx = order(info$Individual, info$Tissue)
 #' plotCorrStructure( fit, reorder=idx )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #' 
 #' @export
 plotCorrStructure = function( fit, varNames = names(coef(fit)), reorder=TRUE, 

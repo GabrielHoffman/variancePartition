@@ -268,11 +268,14 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'
 #' # load library
 #' # library(variancePartition)
+#' library(BiocParallel)
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
 #' # info: information/metadata about each sample
 #' data(varPartData)
+#' 
+#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
 #' 
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
@@ -287,7 +290,6 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # get contrast matrix testing if the coefficient for Batch2 is 
 #' # different from coefficient for Batch3
 #' # The variable of interest must be a fixed effect
-#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
 #' L = getContrast( geneExpr, form, info, c("Batch2", "Batch3"))
 #' 
 #' # plot contrasts
@@ -361,6 +363,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	# If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
 	if( ! identical(colnames(exprObj), rownames(data)) ){
 		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
+	}
+
+	if( .isDisconnected() ){
+		stop("Cluster connection lost. Either stopCluster() was run too soon\n, or connection expired")
 	}
 
 	# Contrasts
@@ -1001,8 +1007,8 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 #' # Compare p-values
 #' plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )
 #' 
-#' # stop cluster
-#' stopCluster(cl)
+# # stop cluster
+# stopCluster(cl)
 #'
 #' @export
 #' @docType methods
