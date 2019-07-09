@@ -132,17 +132,18 @@ fitDupCor <- eBayes( fitDupCor )
 The dream model operates directly on the results of `voom()`.  The only change compared to the standard limma workflow is to replace `lmFit()` with `dream()`.  
 ```{r lmm, eval=TRUE, message=FALSE, fig.height=2, results='hide'}
 # Specify parallel processing parameters
-param = SnowParam(4, "SOCK")
+param = SnowParam(4, "SOCK", progressbar=TRUE)
+register(param)
 
 # The variable to be tested must be a fixed effect
 form <- ~ Disease + (1|Individual) 
 
 # estimate weights using linear mixed model of dream
-vobjDream = voomWithDreamWeights( geneExpr, form, metadata, BPPARAM=param)
+vobjDream = voomWithDreamWeights( geneExpr, form, metadata )
 
 # Fit the dream model on each gene
 # By default, uses the Satterthwaite approximation for the hypothesis test
-fitmm = dream( vobjDream, form, metadata, BPPARAM=param)
+fitmm = dream( vobjDream, form, metadata )
 
 # Fit Empirical Bayes for moderated t-statistics
 fitmmEB = eBayes( fitmm )
@@ -257,9 +258,32 @@ The duplicateCorrelation method estimates a single variance term genome-wide eve
 
   Note that using more variance components or a more complicated contrast matrix can make the relationship more complicated.
 
+# Parallel processing
+variancePartition functions including `dream()`, `fitExtractVarPartModel()` and `fitVarPartModel()` can take advange of multicore machines to speed up analysis.  It uses the [BiocParallel](http://bioconductor.org/packages/BiocParallel/) package to manage the parallelization.
 
+There are multiple ways to use parallel processing depending on your needs
 
+- Specify parameters with the BPPARAM argument.
+```{r parallel, eval=FALSE}
+# Request 4 cores, and enable the progress bar
+# This is the ideal for Linux, OS X and Windows
+param = SnowParam(4, "SOCK", progressbar=TRUE)
+fitmm = dream( vobjDream, form, metadata, BPPARAM=param)
 
+# Or disable parallel processing and just do serial 
+param = SerialParam()
+fitmm = dream( vobjDream, form, metadata, BPPARAM=param)
+```
+- Set parameters globally for the entire R session
+```{r parallel2, eval=FALSE}
+param = SnowParam(4, "SOCK", progressbar=TRUE)
+register(param)
+
+# uses global parallel processing settings
+fitmm = dream( vobjDream, form, metadata )
+```
+
+By default `BPPARAM` and the global setttings are set the results of `bpparam()`.  But note that using `SnowParam()` can *dramatically* reduce the memory usage needed for parallel processing because it reduces memory redundancy between threads.
 
 # Session info
 ```{r sessionInfo}

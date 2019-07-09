@@ -3,7 +3,9 @@
 %\VignetteEngine{knitr::knitr}
 
 % To compile this document
-% library('knitr'); rm(list=ls()); knit('variancePartition.Rnw')
+% cd /Users/gabrielhoffman/workspace/repos
+% R 
+% library('knitr'); rm(list=ls()); knit('variancePartition/vignettes/variancePartition.Rnw')
 
 \documentclass[12pt]{article}
 
@@ -101,14 +103,6 @@ The simulated dataset included as an example contains measurements of 200 genes 
 <<simResult, cache=TRUE, results='hide', fig.height=4, fig.width=4>>=
 # load library
 library('variancePartition')
-
-# optional step to run analysis in parallel on multicore machines
-# Here use 4 threads
-# This is strongly recommended since the analysis 
-# can be computationally intensive 
-library('doParallel')
-cl <- makeCluster(4)
-registerDoParallel(cl)
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

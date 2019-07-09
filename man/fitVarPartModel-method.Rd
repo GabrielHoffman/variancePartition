@@ -12,29 +12,29 @@
 fitVarPartModel(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), BPPARAM = NULL, ...)
+  check.rankX = "stop.deficient"), BPPARAM = bpparam(), ...)
 
 \S4method{fitVarPartModel}{matrix}(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), BPPARAM = NULL, ...)
+  check.rankX = "stop.deficient"), BPPARAM = bpparam(), ...)
 
 \S4method{fitVarPartModel}{data.frame}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   showWarnings = TRUE, fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = NULL, ...)
+  "stop.deficient"), BPPARAM = bpparam(), ...)
 
 \S4method{fitVarPartModel}{EList}(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), BPPARAM = NULL, ...)
+  check.rankX = "stop.deficient"), BPPARAM = bpparam(), ...)
 
 \S4method{fitVarPartModel}{ExpressionSet}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   showWarnings = TRUE, fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = NULL, ...)
+  "stop.deficient"), BPPARAM = bpparam(), ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -128,8 +128,5 @@ form <- ~ (1|sex) + (1|type) + score
 info2 <- pData(sample.ExpressionSet)
 results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 
-# Parallel processing using multiple cores
-param <- SnowParam(4, "SOCK", progressbar=TRUE)
-results2 <- fitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
 
 }

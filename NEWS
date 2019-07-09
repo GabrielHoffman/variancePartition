@@ -1,9 +1,11 @@
 CHANGES IN VERSION 1.13.8
 -------------------------
 	o apply empirical Bayes when doing F-test
+	o hypothesis testing for single coefficients is now included by default, so only need to specify contrast matrix if for more complicated contrasts  
 	o add voomWithDreamWeights() for computing observation weights using random effects
 	o Add BiocParallel capability with BPPARAM argument
 		- allows parallel processing with lower memory usage
+	o dream() is now compatable with gene set enrichments from pinnacle (software comming soon)
 	
 CHANGES IN VERSION 1.13.7
 -------------------------

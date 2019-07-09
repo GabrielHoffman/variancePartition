@@ -9,7 +9,7 @@ dream(exprObj, formula, data, L, ddf = c("Satterthwaite",
   "Kenward-Roger"), REML = TRUE, useWeights = TRUE,
   weightsMatrix = NULL, control = lme4::lmerControl(calc.derivs =
   FALSE, check.rankX = "stop.deficient"), suppressWarnings = FALSE,
-  BPPARAM = NULL, ...)
+  BPPARAM = bpparam(), ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -96,7 +96,7 @@ fitEB2 = eBayes( fit2 )
 # view top genes
 topTable( fitEB2 )
 
-# Parallel processing using multiple cores
+# Parallel processing using multiple cores with reduced memory usage
 param = SnowParam(4, "SOCK", progressbar=TRUE)
 fit = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
 

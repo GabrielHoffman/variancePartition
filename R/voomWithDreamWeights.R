@@ -14,7 +14,7 @@
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
 #' @param BPPARAM parameters for parallel evaluation
-#' @param      ... other arguments are passed to 'lmFit'.
+#' @param      ... other arguments are passed to 'lmer'.
 #'
 #' @return
 #' An 'EList' object just like the result of limma::voom()
@@ -44,14 +44,14 @@
 #' # extract results
 #' topTable(res, coef="Disease1")
 #' 
-#' # Parallel processing using multiple cores
-#' param = SnowParam(4, "SOCK", progressbar=TRUE)
-#' vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
+# # Parallel processing using multiple cores with reduced memory usage
+# param = SnowParam(4, "SOCK", progressbar=TRUE)
+# vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
 #' 
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, BPPARAM=NULL,...){
+voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, BPPARAM=bpparam(),...){
 
 	out <- list()
 

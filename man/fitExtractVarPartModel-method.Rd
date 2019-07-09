@@ -13,31 +13,31 @@ fitExtractVarPartModel(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, adjust = NULL,
   adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = NULL, ...)
+  "stop.deficient"), BPPARAM = bpparam(), ...)
 
 \S4method{fitExtractVarPartModel}{matrix}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = NULL, ...)
+  "stop.deficient"), BPPARAM = bpparam(), ...)
 
 \S4method{fitExtractVarPartModel}{data.frame}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = NULL, ...)
+  "stop.deficient"), BPPARAM = bpparam(), ...)
 
 \S4method{fitExtractVarPartModel}{EList}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = NULL, ...)
+  "stop.deficient"), BPPARAM = bpparam(), ...)
 
 \S4method{fitExtractVarPartModel}{ExpressionSet}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = NULL, ...)
+  "stop.deficient"), BPPARAM = bpparam(), ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -122,9 +122,6 @@ form <- ~ (1|sex) + (1|type) + score
 info2 <- pData(sample.ExpressionSet)
 varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
 
-# Parallel processing using multiple cores
-param = SnowParam(4, "SOCK", progressbar=TRUE)
-varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2, BPPARAM = param)
 
 
 }

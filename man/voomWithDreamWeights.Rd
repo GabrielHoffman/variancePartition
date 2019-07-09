@@ -6,7 +6,7 @@
 \usage{
 voomWithDreamWeights(counts, formula, data, lib.size = NULL,
   normalize.method = "none", span = 0.5, plot = FALSE,
-  save.plot = FALSE, BPPARAM = NULL, ...)
+  save.plot = FALSE, BPPARAM = bpparam(), ...)
 }
 \arguments{
 \item{counts}{a numeric 'matrix' containing raw counts, or an 'ExpressionSet' containing raw counts, or a 'DGEList' object. Counts must be non-negative and NAs are not permitted.}
@@ -27,7 +27,7 @@ voomWithDreamWeights(counts, formula, data, lib.size = NULL,
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
-\item{...}{other arguments are passed to 'lmFit'.}
+\item{...}{other arguments are passed to 'lmer'.}
 }
 \value{
 An 'EList' object just like the result of limma::voom()
@@ -61,9 +61,6 @@ res = dream( vobj, form, metadata)
 # extract results
 topTable(res, coef="Disease1")
 
-# Parallel processing using multiple cores
-param = SnowParam(4, "SOCK", progressbar=TRUE)
-vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
 
 }
 \seealso{
