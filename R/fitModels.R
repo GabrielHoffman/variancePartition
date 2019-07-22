@@ -198,7 +198,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
 		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
 
-		cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
+		cat("Memory usage to store result: >", format(objSize, units = "auto"), "\n")
 
 		# if( showTime > .01 ){
 		# 	cat("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
