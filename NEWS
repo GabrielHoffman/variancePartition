@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.13.10
+-------------------------
+	o fix parallel processing issues
+
+CHANGES IN VERSION 1.13.9
+-------------------------
+	o update vignette for new parallel processing backend
+
 CHANGES IN VERSION 1.13.8
 -------------------------
 	o apply empirical Bayes when doing F-test

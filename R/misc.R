@@ -42,10 +42,15 @@ icount2 = function (count){
 
 
 # Iterator over genes
-exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
+exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount = "icount2"){
 
 	n_features = nrow(exprObj)
-	xit <- icount2( n_features )
+
+	if( iterCount == 'icount2'){
+		xit <- icount2( n_features )
+	}else{
+		xit <- icount( n_features )
+	}
 
     nextEl <- function() {
     	j <- nextElem(xit)

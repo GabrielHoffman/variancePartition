@@ -239,12 +239,23 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# no method for coercing this S4 class to a vector
 		# Calls: local ... doTryCatch -> bpok -> vapply -> as.list -> as.list.default
 		# Execution halted
-		it = exprIter(exprObj, weightsMatrix, useWeights)
-		fxn2 = function(fit){
-			list(fxn(fit))
-		}
 
-		res <- bpiterate( it$nextElem, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
+		if( 1 ){
+			it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
+			fxn2 = function(fit){
+				list(fxn(fit))
+			}
+
+			res <- bplapply( it, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
+		}else{
+
+			it = exprIter(exprObj, weightsMatrix, useWeights)
+			fxn2 = function(fit){
+				list(fxn(fit))
+			}
+
+			res <- bpiterate( it$nextElem, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
+		}
 
 		res = lapply(res, function(x) x[[1]])		
 

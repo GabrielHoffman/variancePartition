@@ -40,6 +40,8 @@ cd /Users/gabrielhoffman/workspace/repos
 R
 library('knitr')
 rmarkdown::render('variancePartition/vignettes/dream.Rmd')
+
+# create public version
 grep -v "## Warning" /Users/gabrielhoffman/workspace/repos/variancePartition/vignettes/dream.html > /Users/gabrielhoffman/workspace/repos/variancePartition/vignettes/dream2.html
  scp /Users/gabrielhoffman/workspace/repos/variancePartition/vignettes/dream2.html minerva:/hpc/users/hoffmg01/www/software/dream.html
 --->
