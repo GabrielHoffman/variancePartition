@@ -523,9 +523,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# cat("\nbpiterate...\n")
 
 		# evalulate function in parallel using less memory
-		it = exprIter(exprObjMat, weightsMatrix, useWeights)
-
-		resList <- bpiterate( it$nextElem, .eval_models, data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
+		it = exprIter(exprObjMat, weightsMatrix, useWeights, iterCount = "icount")
+	
+		resList <- bplapply( it, .eval_models, data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
+	
+		# resList <- bpiterate( it$nextElem, .eval_models, data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
 		
 		names(resList) = seq_len(length(resList))
 		# pb$update( gene14643$max_iter / gene14643$max_iter )

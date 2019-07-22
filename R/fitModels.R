@@ -102,7 +102,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 )
 
 # internal driver function
-#' @importFrom BiocParallel bpparam bpiterate 
+#' @importFrom BiocParallel bpparam bpiterate bplapply
 #' @import lme4
 .fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=bpparam(), ...){ 
 
@@ -240,22 +240,22 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# Calls: local ... doTryCatch -> bpok -> vapply -> as.list -> as.list.default
 		# Execution halted
 
-		if( 1 ){
+		# if( 1 ){
 			it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
 			fxn2 = function(fit){
 				list(fxn(fit))
 			}
 
 			res <- bplapply( it, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
-		}else{
+		# }else{
 
-			it = exprIter(exprObj, weightsMatrix, useWeights)
-			fxn2 = function(fit){
-				list(fxn(fit))
-			}
+		# 	it = exprIter(exprObj, weightsMatrix, useWeights)
+		# 	fxn2 = function(fit){
+		# 		list(fxn(fit))
+		# 	}
 
-			res <- bpiterate( it$nextElem, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
-		}
+		# 	res <- bpiterate( it$nextElem, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
+		# }
 
 		res = lapply(res, function(x) x[[1]])		
 
@@ -393,7 +393,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' @export
 #' @docType methods
 #' @rdname fitExtractVarPartModel-method
-#' @importFrom BiocParallel bpparam bpiterate
+#' @importFrom BiocParallel bpparam bpiterate bplapply
 setGeneric("fitExtractVarPartModel", signature="exprObj",
   function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), BPPARAM=bpparam(), ...)
       standardGeneric("fitExtractVarPartModel")
@@ -513,10 +513,14 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# Evaluate function
 		
 		# cat("\nbpiterate...\n")
-		# evalulate function in parallel using less memory
-		it = exprIter(exprObj, weightsMatrix, useWeights)
 
-		varPart <- bpiterate( it$nextElem, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
+		it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount2")
+
+		varPart <- bplapply( it, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
+
+		# evalulate function in parallel using less memory
+		# it = exprIter(exprObj, weightsMatrix, useWeights)
+		# varPart <- bpiterate( it$nextElem, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
 		
 		modelType = "linear mixed model"
 	}
