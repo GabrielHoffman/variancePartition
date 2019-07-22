@@ -514,7 +514,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		
 		# cat("\nbpiterate...\n")
 
-		it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount2")
+		it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
 
 		varPart <- bplapply( it, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
 
