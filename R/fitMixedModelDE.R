@@ -305,9 +305,9 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # view top genes
 #' topTable( fitEB2 )
 #' 
-#' # Parallel processing using multiple cores with reduced memory usage
-#' param = SnowParam(4, "SOCK", progressbar=TRUE)
-#' fit = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
+# # Parallel processing using multiple cores with reduced memory usage
+# param = SnowParam(4, "SOCK", progressbar=TRUE)
+# fit = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
 #'
 #' @export
 #' @docType methods
