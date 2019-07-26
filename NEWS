@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.13.11
+-------------------------
+	o Fixed bug in voomWithDreamWeights() with approxfun() with ties
+
 CHANGES IN VERSION 1.13.10
 -------------------------
 	o fix parallel processing issues

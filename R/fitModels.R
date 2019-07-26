@@ -152,7 +152,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)
 
-	pids = .get_pids()
+	# pids = .get_pids()
 
 	timeStart = proc.time()
 
@@ -166,14 +166,14 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
-		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
 			# fit linear mixed model
 			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
 
 			# progressbar
-			if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-				pb$update( gene14643$n_iter / gene14643$max_iter )
-			}
+			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
+			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
+			# }
 
 			# apply function
 			fxn( fit )
@@ -213,7 +213,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
 		# Define function for parallel evaluation
-		.eval_model = function(gene14643, form, data2, REML, theta, fxn, control, na.action=stats::na.exclude,...){
+		.eval_models = function(gene14643, data2, form, REML, theta, fxn, control, na.action=stats::na.exclude,...){
 
 			# modify data2 for this gene
 			data2$expr = gene14643$E
@@ -230,34 +230,35 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			fxn( fit )
 		}
 
+		.eval_master = function( obj, data2, form, REML, theta, fxn, control, na.action=stats::na.exclude,... ){
+
+			lapply(seq_len(nrow(obj$E)), function(j){
+				.eval_models( list(E=obj$E[j,], weights=obj$weights[j,]), data2, form, REML, theta, fxn, control, na.action,...)
+			})
+		}
+
+
 		# Evaluate function
-	
-		# evalulate function in parallel using less memory
-
-		# someout using a secondary function avoids the error:
-		# Error in as.list.default(X) :
-		# no method for coercing this S4 class to a vector
-		# Calls: local ... doTryCatch -> bpok -> vapply -> as.list -> as.list.default
-		# Execution halted
-
-		# if( 1 ){
-			it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
-			fxn2 = function(fit){
-				list(fxn(fit))
-			}
-
-			res <- bplapply( it, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
-		# }else{
-
-		# 	it = exprIter(exprObj, weightsMatrix, useWeights)
-		# 	fxn2 = function(fit){
-		# 		list(fxn(fit))
-		# 	}
-
-		# 	res <- bpiterate( it$nextElem, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
+		###################
+		# it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
+		# fxn2 = function(fit){
+		# 	list(fxn(fit))
 		# }
 
-		res = lapply(res, function(x) x[[1]])		
+		# res <- bplapply( it, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
+		
+		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
+		
+		cat(paste0("Dividing work into ",attr(it, "n_chunks")," chunks...\n"))
+
+		res <- bpiterate( it, .eval_master, 
+			data2=data2, form=form, REML=REML, theta=fitInit@theta, fxn=fxn, control=control,..., 
+			 REDUCE=c,
+		    reduce.in.order=TRUE,	
+			BPPARAM=BPPARAM)
+
+
+		# res = lapply(res, function(x) x[[1]])		
 
 		method = "lmer"
 	}
@@ -447,7 +448,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)
 
-	pids = .get_pids()
+	# pids = .get_pids()
 
 	mesg <- "No random effects terms specified in formula"
 	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
@@ -462,17 +463,19 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		timeStart = proc.time()
 
-		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %dopar% {
+		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
+
 			# fit linear mixed model
 			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
 
 			# progressbar
-			if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-				pb$update( gene14643$n_iter / gene14643$max_iter )
-			}
+			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
+			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
+			# }
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
+
 		modelType = "anova"
 
 	}else{
@@ -498,7 +501,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		timeStart = proc.time()
 
 		# Define function for parallel evaluation
-		.eval_model = function(gene14643, data, form, REML, theta, control, na.action=stats::na.exclude,...){
+		.eval_models = function(gene14643, data, form, REML, theta, control, na.action=stats::na.exclude,...){
 			# fit linear mixed model
 			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, start=theta, control=control,na.action=na.action)
 
@@ -510,18 +513,29 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
 
+		.eval_master = function( obj, data, form, REML, theta, control, na.action=stats::na.exclude,... ){
+
+			lapply(seq_len(nrow(obj$E)), function(j){
+				.eval_models( list(E=obj$E[j,], weights=obj$weights[j,]), data, form, REML, theta, control, na.action,...)
+			})
+		}
+
 		# Evaluate function
-		
-		# cat("\nbpiterate...\n")
+		####################
 
-		it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
+		# it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
 
-		varPart <- bplapply( it, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
+		# varPart <- bplapply( it, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
+		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
 
-		# evalulate function in parallel using less memory
-		# it = exprIter(exprObj, weightsMatrix, useWeights)
-		# varPart <- bpiterate( it$nextElem, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
-		
+		cat(paste0("Dividing work into ",attr(it, "n_chunks")," chunks...\n"))
+
+		varPart <- bpiterate( it, .eval_master, 
+			data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
+			 REDUCE=c,
+		    reduce.in.order=TRUE,	
+			BPPARAM=BPPARAM)
+
 		modelType = "linear mixed model"
 	}
 

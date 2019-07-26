@@ -164,7 +164,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		sx <- sx[!allzero]
 		sy <- sy[!allzero]
 	}
-	l <- lowess(sx,sy,f=span)
+	l <- stats::lowess(sx,sy,f=span)
 	if(plot) {
 		plot(sx,sy,xlab="log2( count size + 0.5 )",ylab="Sqrt( standard deviation )",pch=16,cex=0.25)
 		title("voom: Mean-variance trend")
@@ -179,7 +179,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	#	var0 <- var(log2(0.5*1e6/(lib.size+0.5)))^0.25
 	#	var0 <- max(var0,1e-6)
 	#	l$y <- c(var0, l$y)
-	f <- approxfun(l, rule=2, ties=list("ordered",mean))
+	f <- approxfun(l, rule=2)
 
 	fitted.cpm <- 2^fitted.values
 	fitted.count <- 1e-6 * t(t(fitted.cpm)*(lib.size+1))

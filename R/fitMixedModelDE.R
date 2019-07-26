@@ -518,16 +518,33 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 					vcov = V)
 		}
 
+		.eval_master = function( obj, data2, form, REML, theta, control, na.action=stats::na.exclude,... ){
+
+			lapply(seq_len(nrow(obj$E)), function(j){
+				.eval_models( list(E=obj$E[j,], weights=obj$weights[j,]), data2, form, REML, theta, control, na.action,...)
+			})
+		}
+
 		# Evaluate function
+		####################
 
 		# cat("\nbpiterate...\n")
 
 		# evalulate function in parallel using less memory
-		it = exprIter(exprObjMat, weightsMatrix, useWeights, iterCount = "icount")
+		# it = exprIter(exprObjMat, weightsMatrix, useWeights, iterCount = "icount")
 	
-		resList <- bplapply( it, .eval_models, data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
+		# resList <- bplapply( it, .eval_models, data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
 	
-		# resList <- bpiterate( it$nextElem, .eval_models, data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
+		it = iterBatch(exprObjMat, weightsMatrix, useWeights, n_chunks = 100)
+
+		cat(paste0("Dividing work into ",attr(it, "n_chunks")," chunks...\n"))
+
+		resList <- bpiterate( it, .eval_master, 
+			data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
+			 REDUCE=c,
+		    reduce.in.order=TRUE,	
+			BPPARAM=BPPARAM)
+	
 		
 		names(resList) = seq_len(length(resList))
 		# pb$update( gene14643$max_iter / gene14643$max_iter )

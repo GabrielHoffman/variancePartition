@@ -42,7 +42,7 @@ icount2 = function (count){
 
 
 # Iterator over genes
-exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount = "icount2"){
+exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount = "icount"){
 
 	n_features = nrow(exprObj)
 
@@ -79,31 +79,71 @@ exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount 
 }
 
 
-exprIterOrig = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
+# exprIterOrig = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
 
-	n_features = nrow(exprObj)
-	xit <- icountn( n_features )
+# 	n_features = nrow(exprObj)
+# 	xit <- icountn( n_features )
 
-    nextEl <- function() {
-    	j <- nextElem(xit)
+#     nextEl <- function() {
+#     	j <- nextElem(xit)
 
-    	if( useWeights && !is.null(weights) ){    		
+#     	if( useWeights && !is.null(weights) ){    		
+# 			# scale weights to have mean of 1, otherwise it affects the residual variance too much
+#     		if(scale){
+#     			w = weights[j,] /  mean(weights[j,])
+#     		}else{
+#     			w = weights[j,]
+#     		}
+#     	}else{
+#     		w = NULL		
+# 		}
+
+#        	list(E = exprObj[j,], weights = w, n_iter = j, max_iter = n_features)
+#     }
+#     it <- list(nextElem = nextEl)
+#     class(it) <- c("abstractiter", "iter")
+#     it
+# }
+
+
+iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks  = nrow(exprObj) / 500 ) {
+
+	# specify chunks
+    idx <- parallel::splitIndices(nrow(exprObj), min(nrow(exprObj), n_chunks))
+    i <- 0L
+
+    f = function() {
+    	if (i == length(idx)){
+            return(NULL)
+        }
+        i <<- i + 1L
+        E = exprObj[ idx[[i]],, drop = FALSE ]
+
+        if( useWeights && !is.null(weights) ){    		
 			# scale weights to have mean of 1, otherwise it affects the residual variance too much
     		if(scale){
-    			w = weights[j,] /  mean(weights[j,])
+    			# w = weights[j,] /  mean(weights[j,])
+    			w = weights[idx[[i]],,drop=FALSE]
+    			# for each row, devide by row mean
+    			w = w / rowMeans(w)
     		}else{
-    			w = weights[j,]
+    			# w = weights[j,]
+    			w = weights[idx[[i]],,drop=FALSE]
     		}
     	}else{
-    		w = NULL		
+    		w = matrix(1, nrow(E), ncol(E))		
 		}
-
-       	list(E = exprObj[j,], weights = w, n_iter = j, max_iter = n_features)
+        
+       	list(E = E, weights = w )
     }
-    it <- list(nextElem = nextEl)
-    class(it) <- c("abstractiter", "iter")
-    it
+
+    # get number of chunks
+    attr( f, "n_chunks") = length(idx)
+    f
 }
+
+
+
 
 # results: the variancePartition statistics
 # type: indicate variance fractions or adjusted ICC
