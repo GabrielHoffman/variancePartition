@@ -191,6 +191,12 @@ getContrast = function( exprObj, formula, data, coefficient){
 	if(ddf == "Kenward-Roger"){
 		# KR
 		V = pbkrtest::vcovAdj.lmerMod(fit, 0)
+
+		# if matrix is not PSD
+		if( min(diag(as.matrix(V))) < 0){			
+			# Satterthwaite
+			V = vcov(fit)
+		}
 		# df = pbkrtest::get_Lb_ddf(fit, L)
 	}else{
 		# Satterthwaite
@@ -360,6 +366,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		 stop( "exprObj and weightsMatrix must be the same dimensions" )
 	}
 
+	if( ! useWeights ){
+		weightsMatrix = NULL	
+	}
+	
 	# If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
 	if( ! identical(colnames(exprObj), rownames(data)) ){
 		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
@@ -418,7 +428,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		# weights are always used
 		design = model.matrix( formula, data)
-		ret = lmFit( exprObj, design )
+
+		ret = lmFit( exprObj, design, weights=weightsMatrix )
 
 		if( ! univariateContrasts ){
 			ret = contrasts.fit( ret, L)
