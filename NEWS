@@ -1,3 +1,8 @@
+
+CHANGES IN VERSION 1.15.0
+-------------------------
+	o Push changes to Bioconductor devel
+
 CHANGES IN VERSION 1.13.11
 -------------------------
 	o Fixed bug in voomWithDreamWeights() with approxfun() with ties
