@@ -131,9 +131,16 @@ fitDupCor <- eBayes( fitDupCor )
 ```
 
 # Dream Analysis
-The dream model operates directly on the results of `voom()`.  The only change compared to the standard limma workflow is to replace `lmFit()` with `dream()`.  
+The dream method replaces two core functions of limma with a linear mixed model.
+
+1. `voomWithDreamWeights()` replaces `voom()` to estimate precision weights 
+2. `dream()` replaces `lmFit()` to estimate regression coefficients.  
+
+Otherwise dream uses the same workflow as limma with `eBayes()` and `topTable()`, since any statistical differences are handled behind the scenes.
+  
 ```{r lmm, eval=TRUE, message=FALSE, fig.height=2, results='hide'}
 # Specify parallel processing parameters
+# this is used implicitly by dream() to run in parallel
 param = SnowParam(4, "SOCK", progressbar=TRUE)
 register(param)
 
@@ -163,7 +170,8 @@ topTable( fitmmEB, coef='Disease1', number=3 )
 ```
 Notes
 
-* if a random effect is not specified, `dream()` automatically uses `lmFit()`.  
+* if a random effect is not specified, `dream()` automatically uses `lmFit()`.
+* `dream()` computes standard p-values for each gene.  Empirical Bayes procedure is then applied using `eBayes()` 
 * if `lmFit()` is called, `eBayes()` must be used to be compatiable with limma
   - if a random effect is used, the empircal Bayes step is optional
 
@@ -181,7 +189,7 @@ plotContrasts(L)
 ```
 ```{r fit.contrast}
 # fit dream model with contrasts
-fit = dream( vobjDream[1:10,], form, metadata, L, BPPARAM=param)
+fit = dream( vobjDream[1:10,], form, metadata, L)
 
 # empirical Bayes step
 fiteb = eBayes( fit )
@@ -226,7 +234,7 @@ topTable( fiteb, coef=c("DiseaseSubtype2", "DiseaseSubtype1"), number=3 )
 ## Small-sample method
 For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
 ```{r kr, eval=FALSE}
-fitmmKR = dream( vobjDream, form, metadata, ddf="Kenward-Roger", BPPARAM=param)
+fitmmKR = dream( vobjDream, form, metadata, ddf="Kenward-Roger")
 fitmmKREB = eBayes( fitmmKR )
 ```
 
@@ -237,7 +245,7 @@ Dream and variancePartition share the same underlying linear mixed model framewo
 # or vobjDream from voomWithDreamWeights()
 # The resuylts are similar
 form = ~ (1|Individual) + (1|Disease)
-vp = fitExtractVarPartModel( vobj, form, metadata, BPPARAM=param)
+vp = fitExtractVarPartModel( vobj, form, metadata)
 
 plotVarPart( sortCols(vp))
 ```
