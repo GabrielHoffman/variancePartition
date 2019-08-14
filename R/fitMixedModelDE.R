@@ -835,10 +835,17 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	i = 1
 	retList = foreach( i = seq_len(ncol(fit)) ) %do% {
 
-		ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+		# transform t-statistics to have same degrees of freedom
+		ret = .standardized_t_stat( fit[,i] )	
 
-		# transform moderated t-statistics to have same degrees of freedom
-		.standardized_t_stat( ret )	
+		# get moderate t-stats
+		limma::eBayes( ret, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+
+
+		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+
+		# # transform moderated t-statistics to have same degrees of freedom
+		# .standardized_t_stat( ret )	
 	}
 
 	fit2 = retList[[1]]
