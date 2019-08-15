@@ -836,11 +836,23 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	retList = foreach( i = seq_len(ncol(fit)) ) %do% {
 
 		# transform t-statistics to have same degrees of freedom
-		ret = .standardized_t_stat( fit[,i] )	
+		ret = variancePartition:::.standardized_t_stat( fit[,i] )
+
+		df.residual_tmp = ret$df.residual
+		ret$df.residual = fit[,i]$df.residual	
 
 		# get moderate t-stats
-		limma::eBayes( ret, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+		res = limma::eBayes( ret, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
+		# plot(res$sigma^2, res$t)
+		# abline(h=0, col='red')
+
+		# max(res$t)
+
+		res$df.residual = df.residual_tmp
+
+		# GEH: need to properly set df.residual for eBayes to work
+		# N - df_fit
 
 		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
