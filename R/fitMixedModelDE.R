@@ -851,6 +851,8 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 
 		res$df.residual = df.residual_tmp
 
+		res
+		
 		# GEH: need to properly set df.residual for eBayes to work
 		# N - df_fit
 
