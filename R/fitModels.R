@@ -149,6 +149,10 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
 
+	if( grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+		stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
+	} 
+	
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)
 
@@ -444,6 +448,10 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	# else run lm()
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data, control=control,... ), error = function(e) e)
+
+	if( grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+		stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
+	}  
 
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)

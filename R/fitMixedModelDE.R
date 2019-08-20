@@ -95,7 +95,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 	Lall = do.call("rbind", Lall)
 
 	# remove intercept contrasts
-	Lall[,-1,drop=FALSE]
+	# Lall[,-1,drop=FALSE]
+	Lall
 }
 
 .getContrastInit = function( exprObj, formula, data){ 
@@ -142,6 +143,10 @@ getContrast = function( exprObj, formula, data, coefficient){
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,control=control ), error = function(e) e)
 
+	if( grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+		stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
+	} 
+	
 	mesg <- "No random effects terms specified in formula"
 	method = ''
 	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
@@ -494,7 +499,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			data2$expr = gene14643$E
  
 			# fit linear mixed model
-			fit = lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, start=theta, control=control,na.action=na.action)
+			suppressWarnings({
+				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, start=theta, control=control,na.action=na.action)
+				})
 
 			# extract statistics from model
 			mod = .eval_lmm( fit, L, ddf)
@@ -836,30 +843,30 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	retList = foreach( i = seq_len(ncol(fit)) ) %do% {
 
 		# transform t-statistics to have same degrees of freedom
-		ret = variancePartition:::.standardized_t_stat( fit[,i] )
+		# ret = variancePartition:::.standardized_t_stat( fit[,i] )
 
-		df.residual_tmp = ret$df.residual
-		ret$df.residual = fit[,i]$df.residual	
+		# df.residual_tmp = ret$df.residual
+		# ret$df.residual = fit[,i]$df.residual	
 
-		# get moderate t-stats
-		res = limma::eBayes( ret, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+		# # get moderate t-stats
+		# res = limma::eBayes( ret, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
-		# plot(res$sigma^2, res$t)
-		# abline(h=0, col='red')
+		# # plot(res$sigma^2, res$t)
+		# # abline(h=0, col='red')
 
-		# max(res$t)
+		# # max(res$t)
 
-		res$df.residual = df.residual_tmp
+		# res$df.residual = df.residual_tmp
 
-		res
-		
+		# res
+
 		# GEH: need to properly set df.residual for eBayes to work
 		# N - df_fit
 
-		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+		ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
 		# # transform moderated t-statistics to have same degrees of freedom
-		# .standardized_t_stat( ret )	
+		.standardized_t_stat( ret )	
 	}
 
 	fit2 = retList[[1]]

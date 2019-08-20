@@ -1,4 +1,8 @@
 
+CHANGES IN VERSION 1.15.4
+-------------------------
+	o Add error message when scale of fixed effects causes a problem
+
 
 CHANGES IN VERSION 1.15.3
 -------------------------
