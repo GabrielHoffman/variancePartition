@@ -891,8 +891,10 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	colnames(fit2$df.total) = colnames(fit2$coefficients)
 
 	# some values are shared, or almost identical across contrasts
-	fit2$df.prior = mean(as.array(fit2$df.prior))
-	fit2$s2.prior = mean(as.array(fit2$s2.prior))
+	if( !is.null(fit2$df.prior) ){
+		fit2$df.prior = mean(as.array(fit2$df.prior))
+		fit2$s2.prior = mean(as.array(fit2$s2.prior))
+	}
 
 	# return covariance between coefficients
 	fit2$cov.coefficients = fit$cov.coefficients
