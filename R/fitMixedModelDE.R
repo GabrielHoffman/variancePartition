@@ -863,12 +863,10 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 		# GEH: need to properly set df.residual for eBayes to work
 		# N - df_fit
 
-		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+		ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
-		# # # transform moderated t-statistics to have same degrees of freedom
-		# .standardized_t_stat( ret )	
-
-		.standardized_t_stat( fit[,i] )	
+		# transform moderated t-statistics to have same degrees of freedom
+		.standardized_t_stat( ret )
 	}
 
 	fit2 = retList[[1]]
@@ -882,7 +880,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 	fit2$var.prior = do.call("cbind", lapply(retList, function(fit) fit$var.prior))
 	fit2$s2.post = do.call("cbind", lapply(retList, function(fit) fit$s2.post))
 	fit2$t = do.call("cbind", lapply(retList, function(fit) fit$t))
-	fit2$df.total = do.call("cbind", lapply(retList, function(fit) fit$df.total))
+	# fit2$df.total = do.call("cbind", lapply(retList, function(fit) fit$df.total))
 	fit2$p.value = do.call("cbind", lapply(retList, function(fit) fit$p.value))
 	fit2$lods = do.call("cbind", lapply(retList, function(fit) fit$lods))
 
@@ -1010,6 +1008,12 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 
   fit$t = res$t_dot 
   fit$df.residual = rep(d_target, nrow(res))
+
+  # if df.prior is defined, set new df.total, since df.residual has changed
+  if( !is.null(fit$df.prior) ){
+	fit$df.total = fit$df.residual + fit$df.prior
+  }
+
   fit
 }
 
