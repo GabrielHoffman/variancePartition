@@ -863,10 +863,12 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 		# GEH: need to properly set df.residual for eBayes to work
 		# N - df_fit
 
-		ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
-		# # transform moderated t-statistics to have same degrees of freedom
-		.standardized_t_stat( ret )	
+		# # # transform moderated t-statistics to have same degrees of freedom
+		# .standardized_t_stat( ret )	
+
+		.standardized_t_stat( fit[,i] )	
 	}
 
 	fit2 = retList[[1]]
