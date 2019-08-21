@@ -802,9 +802,8 @@ assign("[.MArrayLM2",
 	# so need to apply df2 here
 	# If columns have been subsetted, need to re-generate F
 	if(!is.null(obj[["F"]]) && !missing(j)) {
-		df = mean(obj$df.residual)
-	
-		F.stat <- classifyTestsF(obj,df=df,fstat.only=TRUE)
+
+		F.stat <- classifyTestsF(obj,df=obj$df.total,fstat.only=TRUE)
 		obj$F <- as.vector(F.stat)
 		df1 <- attr(F.stat,"df1")
 		df2 <- attr(F.stat,"df2")
