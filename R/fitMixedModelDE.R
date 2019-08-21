@@ -886,7 +886,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 
 	# colnames(fit2$pValue) = colnames(fit2$coefficients)
 	colnames(fit2$t) = 	colnames(fit2$coefficients)
-	colnames(fit2$df.total) = colnames(fit2$coefficients)
+	# colnames(fit2$df.total) = colnames(fit2$coefficients)
 
 	# some values are shared, or almost identical across contrasts
 	if( !is.null(fit2$df.prior) ){
