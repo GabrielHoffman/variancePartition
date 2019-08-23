@@ -143,10 +143,6 @@ getContrast = function( exprObj, formula, data, coefficient){
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,control=control ), error = function(e) e)
 
-	if( inherits(possibleError, "error") && grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
-		stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
-	} 
-	
 	mesg <- "No random effects terms specified in formula"
 	method = ''
 	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
@@ -157,6 +153,11 @@ getContrast = function( exprObj, formula, data, coefficient){
 		names(L) = colnames(design)
 
 	}else{
+
+		if( inherits(possibleError, "error") && grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+			stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
+		} 		
+
 		fit = lmer( eval(parse(text=form)), data=data,control=control, REML=TRUE )
 		
 		L = rep(0, length(fixef(fit)))
@@ -862,10 +863,15 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 		# GEH: need to properly set df.residual for eBayes to work
 		# N - df_fit
 
-		ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 
-		# transform moderated t-statistics to have same degrees of freedom
-		.standardized_t_stat( ret )
+		# # transform moderated t-statistics to have same degrees of freedom
+		# .standardized_t_stat( ret )
+		
+		# # transform moderated t-statistics to have same degrees of freedom
+		res = .standardized_t_stat( fit[,i])
+
+		limma::eBayes( res, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
 	}
 
 	fit2 = retList[[1]]
@@ -892,6 +898,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 		fit2$df.prior = mean(as.array(fit2$df.prior))
 		fit2$s2.prior = mean(as.array(fit2$s2.prior))
 	}
+	fit2$s2.post = rowMeans(fit2$s2.post)
 
 	# return covariance between coefficients
 	fit2$cov.coefficients = fit$cov.coefficients

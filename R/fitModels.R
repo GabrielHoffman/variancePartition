@@ -148,10 +148,6 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	# else run lm()
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
-
-	if( inherits(possibleError, "error") &&  grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
-		stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
-	} 
 	
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)
@@ -186,6 +182,10 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		method = "lm"
 
 	}else{
+
+		if( inherits(possibleError, "error") &&  grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+			stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
+		} 
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
@@ -449,10 +449,6 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data, control=control,... ), error = function(e) e)
 
-	if( inherits(possibleError, "error") && grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
-		stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
-	}  
-
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)
 
@@ -487,6 +483,10 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		modelType = "anova"
 
 	}else{
+
+		if( inherits(possibleError, "error") && grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+			stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
+		}  
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
