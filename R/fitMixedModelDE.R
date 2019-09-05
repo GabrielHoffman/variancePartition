@@ -292,12 +292,12 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
 #' fit = dream( geneExpr[1:10,], form, info)
-#' 
-#' # Run empirical Bayes post processing from limma
-#' fitEB = eBayes( fit )
-#' 
+#'
+# # Run empirical Bayes post processing from limma
+# fitEB = eBayes( fit )
+# 
 #' # view top genes
-#' topTable( fitEB )
+#' topTable( fit )
 #'
 #' # get contrast matrix testing if the coefficient for Batch2 is 
 #' # different from coefficient for Batch3
@@ -311,11 +311,11 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # run on just 10 genes for time
 #' fit2 = dream( geneExpr[1:10,], form, info, L)
 #'
-#' # Run empirical Bayes post processing from limma
-#' fitEB2 = eBayes( fit2 )
-#' 
+# # Run empirical Bayes post processing from limma
+# fitEB2 = eBayes( fit2 )
+# 
 #' # view top genes
-#' topTable( fitEB2 )
+#' topTable( fit2 )
 #' 
 # # Parallel processing using multiple cores with reduced memory usage
 # param = SnowParam(4, "SOCK", progressbar=TRUE)
@@ -441,6 +441,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			ret = contrasts.fit( ret, L)
 		}
 
+		cat("Applying eBayes()...\n")
+		ret = eBayes( ret )
 	}else{
 
 		# add response (i.e. exprObj[,j] to formula
@@ -682,7 +684,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	# t-test
 	out = fit
 	out$t <- coefficients / stdev.unscaled / sigma
-	out$df.total <- df.residual
+	# out$df.total <- df.residual
 	out$p.value <- 2*pt(-abs(out$t),df=df.residual)
 
 	# F-test
@@ -692,7 +694,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		realcoef = colnames(out)[colnames(out) %in% colnames(out$design)]
 		realcoef = realcoef[realcoef!="(Intercept)"]
 
-		df = mean(out[,realcoef]$df.residual)
+		df = rowMeans(out[,realcoef]$df.residual)
 
 		F.stat <- classifyTestsF(out[,realcoef], df=df, fstat.only=TRUE)
 		out$F <- as.vector(F.stat)
@@ -772,16 +774,38 @@ assign("[.MArrayLM2",
 	}
 
 	# custom code to deal with df.total and df.residual
-	if( is.null(ncol(object$df.total))  ){
-		obj$df.total = object$df.total[i]
+	if( is.null(ncol(object$df.total)) ){
+		if(!missing(i)){
+			obj$df.total = object$df.total[i]
+		}else{
+			obj$df.total = object$df.total
+		}
 	}else{			
-		obj$df.total = object$df.total[i,j,drop=FALSE]
+		tmp = object$df.total
+		if(!missing(i)){
+			tmp = object$df.total[i,,drop=FALSE]
+		}		
+		if(!missing(j)){
+			tmp = tmp[,j,drop=FALSE]
+		}	
+		obj$df.total = tmp
 	}
 
-	if( is.null(ncol(object$df.residual))  ){
-		obj$df.residual = object$df.residual[i]
-	}else{			
-		obj$df.residual = object$df.residual[i,j,drop=FALSE]
+	if( is.null(ncol(object$df.residual)) ){
+		if(!missing(i)){
+			obj$df.residual = object$df.residual[i]
+		}else{			
+			obj$df.residual = object$df.residual
+		}
+	}else{	
+		tmp = object$df.residual
+		if(!missing(i)){
+			tmp = object$df.residual[i,,drop=FALSE]
+		}		
+		if(!missing(j)){
+			tmp = tmp[,j,drop=FALSE]
+		}	
+		obj$df.residual = tmp
 	}
 
 	# obj$pValue = object$pValue[i,j]
@@ -798,6 +822,10 @@ assign("[.MArrayLM2",
 			obj$cov.coefficients.list = object$cov.coefficients.list
 		}
 	}	
+
+	if( is.null(obj$df.total)){
+		obj$df.total = rowMeans(obj$df.residual)
+	}
 
 	# the F-statistic and p-value are evaluated when subsetting is applied
 	# so need to apply df2 here
@@ -839,74 +867,84 @@ setMethod("eBayes", "MArrayLM2",
 function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
 
-	i = 1
-	retList = foreach( i = seq_len(ncol(fit)) ) %do% {
+	cat("Empircal Bayes moderated test is no longer supported for dream analysis\nReturning original results for use downstream\n")
 
-		# transform t-statistics to have same degrees of freedom
-		# ret = variancePartition:::.standardized_t_stat( fit[,i] )
-
-		# df.residual_tmp = ret$df.residual
-		# ret$df.residual = fit[,i]$df.residual	
-
-		# # get moderate t-stats
-		# res = limma::eBayes( ret, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
-
-		# # plot(res$sigma^2, res$t)
-		# # abline(h=0, col='red')
-
-		# # max(res$t)
-
-		# res$df.residual = df.residual_tmp
-
-		# res
-
-		# GEH: need to properly set df.residual for eBayes to work
-		# N - df_fit
-
-		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
-
-		# # transform moderated t-statistics to have same degrees of freedom
-		# .standardized_t_stat( ret )
-		
-		# # transform moderated t-statistics to have same degrees of freedom
-		res = .standardized_t_stat( fit[,i])
-
-		limma::eBayes( res, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
-	}
-
-	fit2 = retList[[1]]
-
-	fit2$coefficients = do.call("cbind", lapply(retList, function(fit) fit$coefficients))
-	fit2$contrasts = do.call("cbind", lapply(retList, function(fit) fit$contrasts))
-	fit2$stdev.unscaled = do.call("cbind", lapply(retList, function(fit) fit$stdev.unscaled))
-	fit2$pValue = do.call("cbind", lapply(retList, function(fit) fit$pValue))
-	fit2$df.prior = do.call("cbind", lapply(retList, function(fit) fit$df.prior))
-	fit2$s2.prior = do.call("cbind", lapply(retList, function(fit) fit$s2.prior))
-	fit2$var.prior = do.call("cbind", lapply(retList, function(fit) fit$var.prior))
-	fit2$s2.post = do.call("cbind", lapply(retList, function(fit) fit$s2.post))
-	fit2$t = do.call("cbind", lapply(retList, function(fit) fit$t))
-	# fit2$df.total = do.call("cbind", lapply(retList, function(fit) fit$df.total))
-	fit2$p.value = do.call("cbind", lapply(retList, function(fit) fit$p.value))
-	fit2$lods = do.call("cbind", lapply(retList, function(fit) fit$lods))
-
-	# colnames(fit2$pValue) = colnames(fit2$coefficients)
-	colnames(fit2$t) = 	colnames(fit2$coefficients)
-	# colnames(fit2$df.total) = colnames(fit2$coefficients)
-
-	# some values are shared, or almost identical across contrasts
-	if( !is.null(fit2$df.prior) ){
-		fit2$df.prior = mean(as.array(fit2$df.prior))
-		fit2$s2.prior = mean(as.array(fit2$s2.prior))
-	}
-	fit2$s2.post = rowMeans(fit2$s2.post)
-
-	# return covariance between coefficients
-	fit2$cov.coefficients = fit$cov.coefficients
-	fit2$cov.coefficients.list = fit$cov.coefficients.list
-
-	# fit2 
-	as(fit2, "MArrayLM2")
+	fit
 })
+
+# old eBayes
+# setMethod("eBayes", "MArrayLM2",
+# function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
+#     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
+
+# 	i = 1
+# 	retList = foreach( i = seq_len(ncol(fit)) ) %do% {
+
+# 		# transform t-statistics to have same degrees of freedom
+# 		# ret = variancePartition:::.standardized_t_stat( fit[,i] )
+
+# 		# df.residual_tmp = ret$df.residual
+# 		# ret$df.residual = fit[,i]$df.residual	
+
+# 		# # get moderate t-stats
+# 		# res = limma::eBayes( ret, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+
+# 		# # plot(res$sigma^2, res$t)
+# 		# # abline(h=0, col='red')
+
+# 		# # max(res$t)
+
+# 		# res$df.residual = df.residual_tmp
+
+# 		# res
+
+# 		# GEH: need to properly set df.residual for eBayes to work
+# 		# N - df_fit
+
+# 		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+
+# 		# # transform moderated t-statistics to have same degrees of freedom
+# 		# .standardized_t_stat( ret )
+		
+# 		# # transform moderated t-statistics to have same degrees of freedom
+# 		res = .standardized_t_stat( fit[,i])
+
+# 		limma::eBayes( res, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
+# 	}
+
+# 	fit2 = retList[[1]]
+
+# 	fit2$coefficients = do.call("cbind", lapply(retList, function(fit) fit$coefficients))
+# 	fit2$contrasts = do.call("cbind", lapply(retList, function(fit) fit$contrasts))
+# 	fit2$stdev.unscaled = do.call("cbind", lapply(retList, function(fit) fit$stdev.unscaled))
+# 	fit2$pValue = do.call("cbind", lapply(retList, function(fit) fit$pValue))
+# 	fit2$df.prior = do.call("cbind", lapply(retList, function(fit) fit$df.prior))
+# 	fit2$s2.prior = do.call("cbind", lapply(retList, function(fit) fit$s2.prior))
+# 	fit2$var.prior = do.call("cbind", lapply(retList, function(fit) fit$var.prior))
+# 	fit2$s2.post = do.call("cbind", lapply(retList, function(fit) fit$s2.post))
+# 	fit2$t = do.call("cbind", lapply(retList, function(fit) fit$t))
+# 	# fit2$df.total = do.call("cbind", lapply(retList, function(fit) fit$df.total))
+# 	fit2$p.value = do.call("cbind", lapply(retList, function(fit) fit$p.value))
+# 	fit2$lods = do.call("cbind", lapply(retList, function(fit) fit$lods))
+
+# 	# colnames(fit2$pValue) = colnames(fit2$coefficients)
+# 	colnames(fit2$t) = 	colnames(fit2$coefficients)
+# 	# colnames(fit2$df.total) = colnames(fit2$coefficients)
+
+# 	# some values are shared, or almost identical across contrasts
+# 	if( !is.null(fit2$df.prior) ){
+# 		fit2$df.prior = mean(as.array(fit2$df.prior))
+# 		fit2$s2.prior = mean(as.array(fit2$s2.prior))
+# 	}
+# 	fit2$s2.post = rowMeans(fit2$s2.post)
+
+# 	# return covariance between coefficients
+# 	fit2$cov.coefficients = fit$cov.coefficients
+# 	fit2$cov.coefficients.list = fit$cov.coefficients.list
+
+# 	# fit2 
+# 	as(fit2, "MArrayLM2")
+# })
 
 
 
@@ -1012,17 +1050,51 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 
   res$t_dot = sign(res$t) * .change_t_df( res$t, res$df.sat, d_target )
 
-  fit$t = res$t_dot 
-  fit$df.residual = rep(d_target, nrow(res))
+  fit2 = fit
+  fit2$t = matrix(res$t_dot, nrow=nrow(fit$t))
+  rownames( fit2$t) = rownames( fit$t)
+  colnames( fit2$t) = colnames( fit$t)
+
+  # fit2$df.residual = rep(d_target, nrow(res))
 
   # if df.prior is defined, set new df.total, since df.residual has changed
-  if( !is.null(fit$df.prior) ){
-	fit$df.total = fit$df.residual + fit$df.prior
+  if( !is.null(fit2$df.prior) ){
+	fit2$df.total = fit2$df.residual + fit2$df.prior
   }
 
-  fit
+  fit2
 }
 
+#' Convert t-statistics to standard degrees of freedom
+#'
+#' Convert t-statistics with differing degrees of freedom (df) to standard degrees of freedom.
+#' 
+#' @param fit fit from dream
+#' @param coef coef passed to topTable
+#' @param number number passed to TopTable
+#'
+#' @examples
+#' # load library
+#' # library(variancePartition)
+#' library(BiocParallel)
+#'
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
+#' 
+#' # Fit linear mixed model for each gene
+#' # run on just 10 genes for time
+#' fit = dream( geneExpr[1:10,], form, info)
+#' 
+#' get_standardized_t(fit, "Batch2")
+#' 
+#' @export
+get_standardized_t = function( fit, coef=NULL, number=10){
+	topTable(.standardized_t_stat(fit), coef, number)
+}
 
 
 #' Compare p-values from two analyses
@@ -1061,14 +1133,14 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 #' # Analysis 1
 #' form <- ~ Batch 
 #' fit = dream( geneExpr, form, info)
-#' fitEB = eBayes( fit )
-#' res = topTable( fitEB, number=Inf, coef="Batch3" )
+#' fit = eBayes( fit )
+#' res = topTable( fit, number=Inf, coef="Batch3" )
 #' 
 #' # Analysis 2
 #' form <- ~ Batch + (1|Tissue)
 #' fit2 = dream( geneExpr, form, info)
-#' fitEB2 = eBayes( fit2 )
-#' res2 = topTable( fitEB2, number=Inf, coef="Batch3" )
+# fitEB2 = eBayes( fit2 )
+#' res2 = topTable( fit2, number=Inf, coef="Batch3" )
 #' 
 #' # Compare p-values
 #' plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )

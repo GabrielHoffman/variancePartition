@@ -52,14 +52,13 @@ data(varPartData)
 # Analysis 1
 form <- ~ Batch 
 fit = dream( geneExpr, form, info)
-fitEB = eBayes( fit )
-res = topTable( fitEB, number=Inf, coef="Batch3" )
+fit = eBayes( fit )
+res = topTable( fit, number=Inf, coef="Batch3" )
 
 # Analysis 2
 form <- ~ Batch + (1|Tissue)
 fit2 = dream( geneExpr, form, info)
-fitEB2 = eBayes( fit2 )
-res2 = topTable( fitEB2, number=Inf, coef="Batch3" )
+res2 = topTable( fit2, number=Inf, coef="Batch3" )
 
 # Compare p-values
 plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )

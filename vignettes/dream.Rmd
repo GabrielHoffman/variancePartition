@@ -15,7 +15,6 @@ abstract: >
     - random effects estimated separately for each gene<br>
     - hypothesis testing for fixed effects in linear mixed models<br>
     - small sample size hypothesis test<br>
-    - emprical Bayes moderated t-test<br>
   <br> 
   Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br> <br> 
   variancePartition v`r packageVersion("variancePartition")`<br> 
@@ -65,7 +64,7 @@ tab = rbind(c('precision weights to model measurement error in RNA-seq counts', 
   c('random effects estimated separately for each gene', 'variancePartition', '@hoffman2016'),
   c('hypothesis testing for fixed effects in linear mixed models', 'lmerTest', 'Kuznetsova, et al. -@kuznetsova2017'),
   c('small sample size hypothesis test', 'pbkrtest' , 'Halekoh, et al. -@halekoh2014'), 
-  c('emprical Bayes moderated t-test', 'limma/eBayes', '@smyth2004'),
+  # c('emprical Bayes moderated t-test', 'limma/eBayes', '@smyth2004'),
   c('','','')
   )
 colnames(tab) = c("Model property", "Package", "Reference")
@@ -136,7 +135,7 @@ The dream method replaces two core functions of limma with a linear mixed model.
 1. `voomWithDreamWeights()` replaces `voom()` to estimate precision weights 
 2. `dream()` replaces `lmFit()` to estimate regression coefficients.  
 
-Otherwise dream uses the same workflow as limma with `eBayes()` and `topTable()`, since any statistical differences are handled behind the scenes.
+Otherwise dream uses the same workflow as limma with  `topTable()`, since any statistical differences are handled behind the scenes.
   
 ```{r lmm, eval=TRUE, message=FALSE, fig.height=2, results='hide'}
 # Specify parallel processing parameters
@@ -153,27 +152,15 @@ vobjDream = voomWithDreamWeights( geneExpr, form, metadata )
 # Fit the dream model on each gene
 # By default, uses the Satterthwaite approximation for the hypothesis test
 fitmm = dream( vobjDream, form, metadata )
-
-# Fit Empirical Bayes for moderated t-statistics
-fitmmEB = eBayes( fitmm )
 ```
 ```{r lmm.print}
 # Examine design matrix
 head(fitmm$design, 3)
 
 # Get results of hypothesis test on coefficients of interest
-# Here, get standard results
 topTable( fitmm, coef='Disease1', number=3 )
-
-# Get results using Empirical Bayes moderated t-statistics 
-topTable( fitmmEB, coef='Disease1', number=3 )
 ```
-Notes
-
-* if a random effect is not specified, `dream()` automatically uses `lmFit()`.
-* `dream()` computes standard p-values for each gene.  Empirical Bayes procedure is then applied using `eBayes()` 
-* if `lmFit()` is called, `eBayes()` must be used to be compatiable with limma
-  - if a random effect is used, the empircal Bayes step is optional
+Note that if a random effect is not specified, `dream()` automatically uses `lmFit()` and runs `eBayes()`
 
 ## Advanced hypothesis testing
 ### Using contrasts to compare coefficients
@@ -189,16 +176,13 @@ plotContrasts(L)
 ```
 ```{r fit.contrast}
 # fit dream model with contrasts
-fit = dream( vobjDream[1:10,], form, metadata, L)
-
-# empirical Bayes step
-fiteb = eBayes( fit )
+fit = dream( vobjDream, form, metadata, L)
 
 # get names of available coefficients and contrasts for testing
 colnames(fit)
 
 # extract results from first contrast
-topTable( fiteb, coef="L1", number=3 )
+topTable( fit, coef="L1", number=3 )
 ```
 
 Multiple contrasts can be evaluated at the same time, in order to save computation time:
@@ -208,7 +192,7 @@ form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual)
 # define and then cbind contrasts
 L1 = getContrast( vobjDream, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
 L2 = getContrast( vobjDream, form, metadata, c("DiseaseSubtype1", "DiseaseSubtype0"))
-L = cbind(L1, L2)
+L = cbind(L1, L2)     
 
 # Visualize contrasts
 plotContrasts(L) 
@@ -216,11 +200,8 @@ plotContrasts(L)
 # fit both contrasts
 fit = dream( vobjDream, form, metadata, L)
 
-# empirical Bayes step
-fiteb = eBayes( fit )
-
 # extract results from first contrast
-topTable( fiteb, coef="L1", number=3 )
+topTable( fit, coef="L1", number=3 )
 ```
 
 ### Joint hypothesis test of multiple coefficients
@@ -228,14 +209,13 @@ Joint hypothesis testing of multiple coefficients at the same time can be perfor
 
 ```{r joint.test, fig.height=3, message=FALSE}
 # extract results from first contrast
-topTable( fiteb, coef=c("DiseaseSubtype2", "DiseaseSubtype1"), number=3 )
+topTable( fit, coef=c("DiseaseSubtype2", "DiseaseSubtype1"), number=3 )
 ```
 
 ## Small-sample method
 For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
 ```{r kr, eval=FALSE}
 fitmmKR = dream( vobjDream, form, metadata, ddf="Kenward-Roger")
-fitmmKREB = eBayes( fitmmKR )
 ```
 
 ## variancePartition plot
@@ -255,7 +235,7 @@ In order to understand the empircal difference between dream and duplication cor
 ```{r define}
 # Compare p-values and make plot
 p1 = topTable(fitDupCor, coef="Disease1", number=Inf, sort.by="none")$P.Value
-p2 = topTable(fitmmEB, number=Inf, sort.by="none")$P.Value
+p2 = topTable(fitmm, number=Inf, sort.by="none")$P.Value
 
 plotCompareP( p1, p2, vp$Individual, dupcor$consensus)
 ```

@@ -72,11 +72,8 @@ form <- ~ Batch + (1|Individual) + (1|Tissue)
 # run on just 10 genes for time
 fit = dream( geneExpr[1:10,], form, info)
 
-# Run empirical Bayes post processing from limma
-fitEB = eBayes( fit )
-
 # view top genes
-topTable( fitEB )
+topTable( fit )
 
 # get contrast matrix testing if the coefficient for Batch2 is 
 # different from coefficient for Batch3
@@ -90,11 +87,8 @@ plotContrasts( L )
 # run on just 10 genes for time
 fit2 = dream( geneExpr[1:10,], form, info, L)
 
-# Run empirical Bayes post processing from limma
-fitEB2 = eBayes( fit2 )
-
 # view top genes
-topTable( fitEB2 )
+topTable( fit2 )
 
 
 }
