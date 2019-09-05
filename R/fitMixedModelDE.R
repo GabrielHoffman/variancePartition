@@ -503,8 +503,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
  
 			# fit linear mixed model
 			suppressWarnings({
-				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, start=theta, control=control,na.action=na.action)
+				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, control=control,na.action=na.action)
 				})
+			# , start=theta
 
 			# extract statistics from model
 			mod = .eval_lmm( fit, L, ddf)
@@ -1089,12 +1090,12 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 #' # run on just 10 genes for time
 #' fit = dream( geneExpr[1:10,], form, info)
 #' 
-#' get_standardized_t(fit, "Batch2")
+#' topTable_stdt(fit, "Batch2")
 #' 
 #' @export
-get_standardized_t = function( fit, coef=NULL, number=10){
-	topTable(.standardized_t_stat(fit), coef, number)
-}
+# topTable_stdt = function( fit, ...){
+# 	topTable(.standardized_t_stat(fit), ...)
+# }
 
 
 #' Compare p-values from two analyses

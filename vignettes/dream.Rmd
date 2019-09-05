@@ -160,6 +160,9 @@ head(fitmm$design, 3)
 # Get results of hypothesis test on coefficients of interest
 topTable( fitmm, coef='Disease1', number=3 )
 ```
+Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here.  Therefore, the t-statistics are not directly comparable since they have different degrees of freedom.  In order to be able to compare test statistics, we report `z.std` which is the p-value transformed into a signed z-score.  This can be used for downstream analysis.
+
+
 Note that if a random effect is not specified, `dream()` automatically uses `lmFit()` and runs `eBayes()`
 
 ## Advanced hypothesis testing
@@ -211,6 +214,8 @@ Joint hypothesis testing of multiple coefficients at the same time can be perfor
 # extract results from first contrast
 topTable( fit, coef=c("DiseaseSubtype2", "DiseaseSubtype1"), number=3 )
 ```
+Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here.  Therefore, the F-statistics are not directly comparable since they have different degrees of freedom.  In order to be able to compare test statistics, we report `F.std` which is the p-value transformed into an F-statistic with $df_1={\text{number of coefficiets tested}}$ and $df_2=\infty$.  This can be used for downstream analysis.
+
 
 ## Small-sample method
 For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.

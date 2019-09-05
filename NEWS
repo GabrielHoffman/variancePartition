@@ -2,6 +2,8 @@
 CHANGES IN VERSION 1.15.5
 -------------------------
 	o Official release to development branch
+	o fix convergence errror when recycling parameters values from first gene
+	o add column z.std and F.std to topTable
 
 CHANGES IN VERSION 1.15.4
 -------------------------

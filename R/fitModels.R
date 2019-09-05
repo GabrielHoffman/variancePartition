@@ -223,8 +223,8 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			data2$expr = gene14643$E
  
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, start=theta, control=control,na.action=na.action)
-
+			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, control=control,na.action=na.action)
+				#, start=theta
 			# progressbar
 			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
 			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
@@ -511,8 +511,8 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# Define function for parallel evaluation
 		.eval_models = function(gene14643, data, form, REML, theta, control, na.action=stats::na.exclude,...){
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, start=theta, control=control,na.action=na.action)
-
+			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, control=control,na.action=na.action)
+			# , start=theta
 			# progressbar
 			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
 			# 	pb$update( gene14643$n_iter / gene14643$max_iter )

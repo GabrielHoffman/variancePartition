@@ -58,20 +58,35 @@ function (fit, coef = NULL, number = 10, genelist = fit$genes,
         # if (sort.by == "B"){
             sort.by <- "F"
         # }
-        return(topTableF(fit, number = number, genelist = genelist,
+        tab = topTableF(fit, number = number, genelist = genelist,
             adjust.method = adjust.method, sort.by = sort.by,
-            p.value = p.value, lfc = lfc))
+            p.value = p.value, lfc = lfc)
+
+        # GEH September 5, 2019
+		# convert p-values to F-statatistcs
+		# this corresponds to constant degrees of freedom equals Inf
+		tab$F.std = qf(tab$P.Value, df1=length(coef), df2=Inf, lower.tail=FALSE)
+
+        return( tab )
     }
     fit <- unclass(fit)
     ebcols <- c("t", "p.value", "lods")
     if (confint){
         ebcols <- c("s2.post", "df.total", ebcols)
     }
-    .topTableT(fit = fit[c("coefficients", "stdev.unscaled")],
+    
+    tab = .topTableT(fit = fit[c("coefficients", "stdev.unscaled")],
         coef = coef, number = number, genelist = genelist, A = fit$Amean,
         eb = fit[ebcols], adjust.method = adjust.method, sort.by = sort.by,
         resort.by = resort.by, p.value = p.value, lfc = lfc,
         confint = confint)
+
+    # GEH September 5, 2019
+	# convert p-values to z-scores 
+	# this corresponds to constant degrees of freedom equals Inf
+	tab$z.std = sign(tab$t) * qnorm(tab$P.Value/2, lower.tail=FALSE)
+
+	tab
 })
 
 
@@ -223,4 +238,14 @@ function (fit, coef = NULL, number = 10, genelist = fit$genes,
 
 	tab
 }
+
+
+
+
+
+
+
+
+
+
 
