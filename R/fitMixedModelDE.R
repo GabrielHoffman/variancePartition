@@ -1066,37 +1066,6 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
   fit2
 }
 
-#' Convert t-statistics to standard degrees of freedom
-#'
-#' Convert t-statistics with differing degrees of freedom (df) to standard degrees of freedom.
-#' 
-#' @param fit fit from dream
-#' @param coef coef passed to topTable
-#' @param number number passed to TopTable
-#'
-#' @examples
-#' # load library
-#' # library(variancePartition)
-#' library(BiocParallel)
-#'
-#' # load simulated data:
-#' # geneExpr: matrix of gene expression values
-#' # info: information/metadata about each sample
-#' data(varPartData)
-#' 
-#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
-#' 
-#' # Fit linear mixed model for each gene
-#' # run on just 10 genes for time
-#' fit = dream( geneExpr[1:10,], form, info)
-#' 
-#' topTable_stdt(fit, "Batch2")
-#' 
-#' @export
-# topTable_stdt = function( fit, ...){
-# 	topTable(.standardized_t_stat(fit), ...)
-# }
-
 
 #' Compare p-values from two analyses
 #'

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plotCompareP}
 \alias{plotCompareP}
-\title{Convert t-statistics to standard degrees of freedom}
+\title{Compare p-values from two analyses}
 \usage{
 plotCompareP(p1, p2, vpDonor, dupcorvalue, fraction = 0.2,
   xlabel = bquote(duplicateCorrelation ~ (-log[10] ~ p)),
@@ -23,37 +23,14 @@ plotCompareP(p1, p2, vpDonor, dupcorvalue, fraction = 0.2,
 \item{xlabel}{for x-axis}
 
 \item{ylabel}{label for y-axis}
-
-\item{fit}{fit from dream}
-
-\item{coef}{coef passed to topTable}
-
-\item{number}{number passed to TopTable}
 }
 \value{
 ggplot2 plot
 }
 \description{
-Convert t-statistics with differing degrees of freedom (df) to standard degrees of freedom.
+Plot -log10 p-values from two analyses and color based on donor component from variancePartition analysis
 }
 \examples{
-# load library
-# library(variancePartition)
-library(BiocParallel)
-
-# load simulated data:
-# geneExpr: matrix of gene expression values
-# info: information/metadata about each sample
-data(varPartData)
-
-form <- ~ Batch + (1|Individual) + (1|Tissue) 
-
-# Fit linear mixed model for each gene
-# run on just 10 genes for time
-fit = dream( geneExpr[1:10,], form, info)
-
-topTable_stdt(fit, "Batch2")
-
 
 # load library
 # library(variancePartition)

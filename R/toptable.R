@@ -17,6 +17,7 @@
 #'
 #' @return results of toptable
 #' @export
+#' @importFrom stats qnorm
 #' @import limma
 #' @rdname toptable-method
 #' @aliases toptable,MArrayLM2-method
