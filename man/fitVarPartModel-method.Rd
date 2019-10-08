@@ -12,29 +12,32 @@
 fitVarPartModel(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), BPPARAM = bpparam(), ...)
+  check.rankX = "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(),
+  ...)
 
 \S4method{fitVarPartModel}{matrix}(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), BPPARAM = bpparam(), ...)
+  check.rankX = "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(),
+  ...)
 
 \S4method{fitVarPartModel}{data.frame}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   showWarnings = TRUE, fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = bpparam(), ...)
+  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
 
 \S4method{fitVarPartModel}{EList}(exprObj, formula, data, REML = FALSE,
   useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
   fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), BPPARAM = bpparam(), ...)
+  check.rankX = "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(),
+  ...)
 
 \S4method{fitVarPartModel}{ExpressionSet}(exprObj, formula, data,
   REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
   showWarnings = TRUE, fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), BPPARAM = bpparam(), ...)
+  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -54,6 +57,8 @@ fitVarPartModel(exprObj, formula, data, REML = FALSE,
 \item{fxn}{apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself}
 
 \item{control}{control settings for lmer()}
+
+\item{quiet}{suppress message, default FALSE}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 

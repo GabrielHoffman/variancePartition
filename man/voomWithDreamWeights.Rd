@@ -6,7 +6,7 @@
 \usage{
 voomWithDreamWeights(counts, formula, data, lib.size = NULL,
   normalize.method = "none", span = 0.5, plot = FALSE,
-  save.plot = FALSE, BPPARAM = bpparam(), ...)
+  save.plot = FALSE, quiet = FALSE, BPPARAM = bpparam(), ...)
 }
 \arguments{
 \item{counts}{a numeric 'matrix' containing raw counts, or an 'ExpressionSet' containing raw counts, or a 'DGEList' object. Counts must be non-negative and NAs are not permitted.}
@@ -24,6 +24,8 @@ voomWithDreamWeights(counts, formula, data, lib.size = NULL,
 \item{plot}{logical, should a plot of the mean-variance trend be displayed?}
 
 \item{save.plot}{logical, should the coordinates and line of the plot be saved in the output?}
+
+\item{quiet}{suppress message, default FALSE}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 

@@ -1,4 +1,10 @@
 
+CHANGES IN VERSION 1.15.8
+-------------------------
+	o Replace cat() with message()
+	o add quiet option to a few functions
+	o dream() does not call eBayes() when lmFit is used
+
 CHANGES IN VERSION 1.15.7
 -------------------------
 	o Official release to development branch

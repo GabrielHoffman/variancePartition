@@ -3,7 +3,7 @@
 
 #' Transform RNA-Seq Data Ready for Linear Mixed Modelling with dream()
 #'
-#'  Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with dream().   This method is the same as limma::voom(), except that it allows random effects in the formula
+#' Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with dream().   This method is the same as limma::voom(), except that it allows random effects in the formula
 #'
 #' @param counts a numeric 'matrix' containing raw counts, or an 'ExpressionSet' containing raw counts, or a 'DGEList' object. Counts must be non-negative and NAs are not permitted.
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
@@ -13,6 +13,7 @@
 #' @param span width of the lowess smoothing window as a proportion.
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
+#' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
 #' @param      ... other arguments are passed to 'lmer'.
 #'
@@ -51,7 +52,7 @@
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, BPPARAM=bpparam(),...){
+voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=bpparam(),...){
 
 	out <- list()
 
@@ -116,7 +117,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		fitted.values <- do.call("rbind", fitted.values )
 	}else{
 
-		cat("Fixed effect model, using limma directly...\n")
+		if( ! quiet) message("Fixed effect model, using limma directly...")
 
 		design = model.matrix(formula, data)
 		fit <- lmFit(y,design,...)

@@ -9,7 +9,7 @@ dream(exprObj, formula, data, L, ddf = c("Satterthwaite",
   "Kenward-Roger"), REML = TRUE, useWeights = TRUE,
   weightsMatrix = NULL, control = lme4::lmerControl(calc.derivs =
   FALSE, check.rankX = "stop.deficient"), suppressWarnings = FALSE,
-  BPPARAM = bpparam(), ...)
+  quiet = FALSE, BPPARAM = bpparam(), ...)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
@@ -31,6 +31,8 @@ dream(exprObj, formula, data, L, ddf = c("Satterthwaite",
 \item{control}{control settings for lmer()}
 
 \item{suppressWarnings}{if TRUE, do not stop because of warnings or errors in model fit}
+
+\item{quiet}{suppress message, default FALSE}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
@@ -85,10 +87,24 @@ plotContrasts( L )
 
 # Fit linear mixed model for each gene
 # run on just 10 genes for time
+# Note that that dream() is not compatible with eBayes()
 fit2 = dream( geneExpr[1:10,], form, info, L)
 
 # view top genes
 topTable( fit2 )
 
+# Parallel processing using multiple cores with reduced memory usage
+param = SnowParam(4, "SOCK", progressbar=TRUE)
+fit3 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
+
+# Fit fixed effect model for each gene
+# Use lmFit in the backend
+# Need to run eBayes afterward
+form <- ~ Batch 
+fit4 = dream( geneExpr[1:10,], form, info)
+fit4 = eBayes( fit4 )
+
+# view top genes
+topTable( fit4 )
 
 }

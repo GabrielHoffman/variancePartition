@@ -258,6 +258,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
 #' @param control control settings for lmer()
 #' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
+#' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
 #' @param ... Additional arguments for lmer() or lm()
 #' 
@@ -293,9 +294,6 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # run on just 10 genes for time
 #' fit = dream( geneExpr[1:10,], form, info)
 #'
-# # Run empirical Bayes post processing from limma
-# fitEB = eBayes( fit )
-# 
 #' # view top genes
 #' topTable( fit )
 #'
@@ -309,25 +307,33 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' 
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
+#' # Note that that dream() is not compatible with eBayes()
 #' fit2 = dream( geneExpr[1:10,], form, info, L)
-#'
-# # Run empirical Bayes post processing from limma
-# fitEB2 = eBayes( fit2 )
-# 
+#' 
 #' # view top genes
 #' topTable( fit2 )
 #' 
-# # Parallel processing using multiple cores with reduced memory usage
-# param = SnowParam(4, "SOCK", progressbar=TRUE)
-# fit = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
+#' # Parallel processing using multiple cores with reduced memory usage
+#' param = SnowParam(4, "SOCK", progressbar=TRUE)
+#' fit3 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
 #'
+#' # Fit fixed effect model for each gene
+#' # Use lmFit in the backend
+#' # Need to run eBayes afterward
+#' form <- ~ Batch 
+#' fit4 = dream( geneExpr[1:10,], form, info)
+#' fit4 = eBayes( fit4 )
+#' 
+#' # view top genes
+#' topTable( fit4 )
+#' 
 #' @export
 #' @docType methods
 #' @rdname dream-method
 #' @importFrom pbkrtest get_SigmaG
 #' @importFrom BiocParallel bpiterate bpparam
 # @importFrom lmerTest lmer
-dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, BPPARAM=bpparam(), ...){ 
+dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), ...){ 
 
 	exprObjInit = exprObj
 	
@@ -430,7 +436,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	####################
 	
 	if( ! .isMixedModelFormula( formula, data) ){
-		cat("Fixed effect model, using limma directly...\n")
+		if( !quiet ){
+			message("Fixed effect model, using limma directly...")
+			message("User can apply eBayes() afterwards...")
+		}
 
 		# weights are always used
 		design = model.matrix( formula, data)
@@ -441,8 +450,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			ret = contrasts.fit( ret, L)
 		}
 
-		cat("Applying eBayes()...\n")
-		ret = eBayes( ret )
+		# if( !quiet ) message("Applying eBayes()...")
+		# ret = eBayes( ret )
 	}else{
 
 		# add response (i.e. exprObj[,j] to formula
@@ -473,7 +482,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# # total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
 		# showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
 
-		# cat("Projected memory usage: >", format(objSize, units = "auto"), "\n")
+		# message("Projected memory usage: >", format(objSize, units = "auto"), "\n")
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=!suppressWarnings, dream=TRUE, colinearityCutoff=colinearityCutoff )
@@ -550,7 +559,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# Evaluate function
 		####################
 
-		# cat("\nbpiterate...\n")
+		# message("\nbpiterate...\n")
 
 		# evalulate function in parallel using less memory
 		# it = exprIter(exprObjMat, weightsMatrix, useWeights, iterCount = "icount")
@@ -559,7 +568,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	
 		it = iterBatch(exprObjMat, weightsMatrix, useWeights, n_chunks = 100)
 
-		cat(paste0("Dividing work into ",attr(it, "n_chunks")," chunks...\n"))
+		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
 		resList <- bpiterate( it, .eval_master, 
 			data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
@@ -571,7 +580,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		names(resList) = seq_len(length(resList))
 		# pb$update( gene14643$max_iter / gene14643$max_iter )
 
-		cat("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s\n"))		
+		if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
 
 		x = 1
 		# extract results
@@ -755,6 +764,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @name [.MArrayLM2
 #' @return subset
 #' @export
+#' @S3method [ MArrayLM2
 #' @importFrom stats p.adjust
 #' @rdname subset.MArrayLM2-method
 #' @aliases subset.MArrayLM2,MArrayLM2-method
@@ -868,7 +878,7 @@ setMethod("eBayes", "MArrayLM2",
 function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
 
-	cat("Empircal Bayes moderated test is no longer supported for dream analysis\nReturning original results for use downstream\n")
+	warning("Empircal Bayes moderated test is no longer supported for dream analysis\nReturning original results for use downstream")
 
 	fit
 })
