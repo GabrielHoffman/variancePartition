@@ -56,7 +56,7 @@ function (fit, coef = NULL, number = 10, genelist = fit$genes,
         if (length(fit$coef[1, coef]) < ncol(fit)){
             fit <- fit[, coef]
         }
-        if (sort.by == "B"){
+        if (sort.by != "none"){
             sort.by <- "F"
         }
         tab = topTableF(fit, number = number, genelist = genelist,
