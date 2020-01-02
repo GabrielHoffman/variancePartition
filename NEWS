@@ -1,3 +1,6 @@
+CHANGES IN VERSION 1.17.1
+-------------------------
+	o topTable(...,sort.by=) now is correct when and F-test is used
 
 CHANGES IN VERSION 1.15.8
 -------------------------
