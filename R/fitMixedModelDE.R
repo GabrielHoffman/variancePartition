@@ -764,7 +764,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @name [.MArrayLM2
 #' @return subset
 #' @export
-#' @S3method [ MArrayLM2
+# @S3method [ MArrayLM2
+#' @rawNamespace S3method("[", MArrayLM2)
 #' @importFrom stats p.adjust
 #' @rdname subset.MArrayLM2-method
 #' @aliases subset.MArrayLM2,MArrayLM2-method
