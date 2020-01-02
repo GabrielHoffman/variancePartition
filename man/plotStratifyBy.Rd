@@ -4,10 +4,24 @@
 \alias{plotStratifyBy}
 \title{plotStratifyBy}
 \usage{
-plotStratifyBy(geneExpr, xval, yval, xlab = xval, ylab = yval,
-  main = NULL, sortBy = xval, colorBy = xval, sort = TRUE,
-  text = NULL, text.y = 1, text.size = 5, pts.cex = 1,
-  ylim = NULL, legend = TRUE, x.labels = FALSE)
+plotStratifyBy(
+  geneExpr,
+  xval,
+  yval,
+  xlab = xval,
+  ylab = yval,
+  main = NULL,
+  sortBy = xval,
+  colorBy = xval,
+  sort = TRUE,
+  text = NULL,
+  text.y = 1,
+  text.size = 5,
+  pts.cex = 1,
+  ylim = NULL,
+  legend = TRUE,
+  x.labels = FALSE
+)
 }
 \arguments{
 \item{geneExpr}{data.frame of gene expression values and another variable for each sample.  If there are multiple columns, the user can specify which one to use}

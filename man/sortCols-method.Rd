@@ -8,17 +8,37 @@
 \alias{sortCols,varPartResults-method}
 \title{Sort variance partition statistics}
 \usage{
-sortCols(x, FUN = median, decreasing = TRUE, last = c("Residuals",
-  "Measurement.error"), ...)
+sortCols(
+  x,
+  FUN = median,
+  decreasing = TRUE,
+  last = c("Residuals", "Measurement.error"),
+  ...
+)
 
-\S4method{sortCols}{matrix}(x, FUN = median, decreasing = TRUE,
-  last = c("Residuals", "Measurement.error"), ...)
+\S4method{sortCols}{matrix}(
+  x,
+  FUN = median,
+  decreasing = TRUE,
+  last = c("Residuals", "Measurement.error"),
+  ...
+)
 
-\S4method{sortCols}{data.frame}(x, FUN = median, decreasing = TRUE,
-  last = c("Residuals", "Measurement.error"), ...)
+\S4method{sortCols}{data.frame}(
+  x,
+  FUN = median,
+  decreasing = TRUE,
+  last = c("Residuals", "Measurement.error"),
+  ...
+)
 
-\S4method{sortCols}{varPartResults}(x, FUN = median, decreasing = TRUE,
-  last = c("Residuals", "Measurement.error"), ...)
+\S4method{sortCols}{varPartResults}(
+  x,
+  FUN = median,
+  decreasing = TRUE,
+  last = c("Residuals", "Measurement.error"),
+  ...
+)
 }
 \arguments{
 \item{x}{object returned by extractVarPart() or fitExtractVarPartModel()}

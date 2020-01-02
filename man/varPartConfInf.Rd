@@ -4,11 +4,21 @@
 \alias{varPartConfInf}
 \title{Linear mixed model confidence intervals}
 \usage{
-varPartConfInf(exprObj, formula, data, REML = FALSE, useWeights = TRUE,
-  weightsMatrix = NULL, adjust = NULL, adjustAll = FALSE,
-  showWarnings = TRUE, colinearityCutoff = 0.999,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), nsim = 1000, ...)
+varPartConfInf(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  adjust = NULL,
+  adjustAll = FALSE,
+  showWarnings = TRUE,
+  colinearityCutoff = 0.999,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  nsim = 1000,
+  ...
+)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}

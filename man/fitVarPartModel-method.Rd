@@ -9,35 +9,80 @@
 \alias{fitVarPartModel,ExpressionSet-method}
 \title{Fit linear (mixed) model}
 \usage{
-fitVarPartModel(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
-  fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(),
-  ...)
+fitVarPartModel(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  showWarnings = TRUE,
+  fxn = identity,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 
-\S4method{fitVarPartModel}{matrix}(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
-  fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(),
-  ...)
+\S4method{fitVarPartModel}{matrix}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  showWarnings = TRUE,
+  fxn = identity,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 
-\S4method{fitVarPartModel}{data.frame}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
-  showWarnings = TRUE, fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
+\S4method{fitVarPartModel}{data.frame}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  showWarnings = TRUE,
+  fxn = identity,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 
-\S4method{fitVarPartModel}{EList}(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, weightsMatrix = NULL, showWarnings = TRUE,
-  fxn = identity, control = lme4::lmerControl(calc.derivs = FALSE,
-  check.rankX = "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(),
-  ...)
+\S4method{fitVarPartModel}{EList}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  showWarnings = TRUE,
+  fxn = identity,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 
-\S4method{fitVarPartModel}{ExpressionSet}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
-  showWarnings = TRUE, fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
+\S4method{fitVarPartModel}{ExpressionSet}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  showWarnings = TRUE,
+  fxn = identity,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}

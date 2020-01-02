@@ -1253,10 +1253,10 @@ setMethod("classifyTestsF", "MArrayLM2",
 
 		# cor.matrix is estimated correlation matrix of the coefficients
 		# and also the estimated covariance matrix of the t-statistics
-		if(is.null(cor.matrix)) {
+		if(is.null(cor.matrix)){
 			r <- ntests
 			Q <- diag(r)/sqrt(r)
-		} else {
+		}else{
 			E <- eigen(cor.matrix,symmetric=TRUE)
 			r <- sum(E$values/E$values[1] > 1e-8)
 			Q <- limma:::.matvec( E$vectors[,1:r], 1/sqrt(E$values[1:r]))/sqrt(r)
@@ -1268,11 +1268,11 @@ setMethod("classifyTestsF", "MArrayLM2",
 		}
 		if( i == 1){					
 			attr(fstat,"df1") <- r
-			attr(fstat,"df2") <- df
+			attr(fstat,"df2") <- df[i]
 		}
 
 		# Return TestResults matrix
-		qF <- qf(p.value, r, df, lower.tail=FALSE)
+		qF <- qf(p.value, r, df[i], lower.tail=FALSE)
 		if(length(qF)==1) qF <- rep(qF,ngenes) 
 		x <- tstat[i,]
 		if(any(is.na(x)))

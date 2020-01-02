@@ -5,11 +5,21 @@
 \alias{dream}
 \title{Differential expression with linear mixed model}
 \usage{
-dream(exprObj, formula, data, L, ddf = c("Satterthwaite",
-  "Kenward-Roger"), REML = TRUE, useWeights = TRUE,
-  weightsMatrix = NULL, control = lme4::lmerControl(calc.derivs =
-  FALSE, check.rankX = "stop.deficient"), suppressWarnings = FALSE,
-  quiet = FALSE, BPPARAM = bpparam(), ...)
+dream(
+  exprObj,
+  formula,
+  data,
+  L,
+  ddf = c("Satterthwaite", "Kenward-Roger"),
+  REML = TRUE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  suppressWarnings = FALSE,
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}

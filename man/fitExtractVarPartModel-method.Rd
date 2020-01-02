@@ -9,35 +9,85 @@
 \alias{fitExtractVarPartModel,ExpressionSet-method}
 \title{Fit linear (mixed) model, report variance fractions}
 \usage{
-fitExtractVarPartModel(exprObj, formula, data, REML = FALSE,
-  useWeights = TRUE, weightsMatrix = NULL, adjust = NULL,
-  adjustAll = FALSE, showWarnings = TRUE,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
+fitExtractVarPartModel(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  adjust = NULL,
+  adjustAll = FALSE,
+  showWarnings = TRUE,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 
-\S4method{fitExtractVarPartModel}{matrix}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
-  adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
+\S4method{fitExtractVarPartModel}{matrix}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  adjust = NULL,
+  adjustAll = FALSE,
+  showWarnings = TRUE,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 
-\S4method{fitExtractVarPartModel}{data.frame}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
-  adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
+\S4method{fitExtractVarPartModel}{data.frame}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  adjust = NULL,
+  adjustAll = FALSE,
+  showWarnings = TRUE,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 
-\S4method{fitExtractVarPartModel}{EList}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
-  adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
+\S4method{fitExtractVarPartModel}{EList}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  adjust = NULL,
+  adjustAll = FALSE,
+  showWarnings = TRUE,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 
-\S4method{fitExtractVarPartModel}{ExpressionSet}(exprObj, formula, data,
-  REML = FALSE, useWeights = TRUE, weightsMatrix = NULL,
-  adjust = NULL, adjustAll = FALSE, showWarnings = TRUE,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX =
-  "stop.deficient"), quiet = FALSE, BPPARAM = bpparam(), ...)
+\S4method{fitExtractVarPartModel}{ExpressionSet}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  adjust = NULL,
+  adjustAll = FALSE,
+  showWarnings = TRUE,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 }
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}

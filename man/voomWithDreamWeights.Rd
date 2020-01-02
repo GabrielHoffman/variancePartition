@@ -4,9 +4,19 @@
 \alias{voomWithDreamWeights}
 \title{Transform RNA-Seq Data Ready for Linear Mixed Modelling with dream()}
 \usage{
-voomWithDreamWeights(counts, formula, data, lib.size = NULL,
-  normalize.method = "none", span = 0.5, plot = FALSE,
-  save.plot = FALSE, quiet = FALSE, BPPARAM = bpparam(), ...)
+voomWithDreamWeights(
+  counts,
+  formula,
+  data,
+  lib.size = NULL,
+  normalize.method = "none",
+  span = 0.5,
+  plot = FALSE,
+  save.plot = FALSE,
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
 }
 \arguments{
 \item{counts}{a numeric 'matrix' containing raw counts, or an 'ExpressionSet' containing raw counts, or a 'DGEList' object. Counts must be non-negative and NAs are not permitted.}

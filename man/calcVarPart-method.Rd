@@ -7,14 +7,11 @@
 \alias{calcVarPart,lmerMod-method}
 \title{Compute variance statistics}
 \usage{
-calcVarPart(fit, adjust = NULL, adjustAll = FALSE,
-  showWarnings = TRUE, ...)
+calcVarPart(fit, adjust = NULL, adjustAll = FALSE, showWarnings = TRUE, ...)
 
-\S4method{calcVarPart}{lm}(fit, adjust = NULL, adjustAll = FALSE,
-  showWarnings = TRUE, ...)
+\S4method{calcVarPart}{lm}(fit, adjust = NULL, adjustAll = FALSE, showWarnings = TRUE, ...)
 
-\S4method{calcVarPart}{lmerMod}(fit, adjust = NULL, adjustAll = FALSE,
-  showWarnings = TRUE, ...)
+\S4method{calcVarPart}{lmerMod}(fit, adjust = NULL, adjustAll = FALSE, showWarnings = TRUE, ...)
 }
 \arguments{
 \item{fit}{model fit from lm() or lmer()}
