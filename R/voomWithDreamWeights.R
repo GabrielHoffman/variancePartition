@@ -140,7 +140,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		out$E <- y
 		out$weights <- y
 		out$weights[] <- 1
-		out$design <- design
+		if( !is.null(design) ) out$design <- design
 		if(is.null(out$targets))
 			out$targets <- data.frame(lib.size=lib.size)
 		else
@@ -193,7 +193,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	#	Output
 	out$E <- y
 	out$weights <- w
-	out$design <- design
+	if( !is.null(design) ) out$design <- design
 	if(is.null(out$targets))
 		out$targets <- data.frame(lib.size=lib.size)
 	else

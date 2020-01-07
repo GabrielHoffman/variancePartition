@@ -2,7 +2,7 @@ Package: variancePartition
 Type: Package
 Title: Quantify and interpret divers of variation in multilevel gene expression
     experiments
-Version: 1.17.1
+Version: 1.17.2
 Date: 2020-01-02
 Author: Gabriel E. Hoffman
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
@@ -64,4 +64,4 @@ Imports:
     graphics,
     utils,
     stats
-RoxygenNote: 7.0.0
+RoxygenNote: 7.0.2

@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.17.2
+-------------------------
+	o fix error in voomWithDreamWeights() when design matrix is null
+
 CHANGES IN VERSION 1.17.1
 -------------------------
 	o topTable(...,sort.by=) now is correct when and F-test is used
