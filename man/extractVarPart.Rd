@@ -4,8 +4,13 @@
 \alias{extractVarPart}
 \title{Extract variance statistics}
 \usage{
-extractVarPart(modelList, adjust = NULL, adjustAll = FALSE,
-  showWarnings = TRUE, ...)
+extractVarPart(
+  modelList,
+  adjust = NULL,
+  adjustAll = FALSE,
+  showWarnings = TRUE,
+  ...
+)
 }
 \arguments{
 \item{modelList}{list of lmer() model fits}

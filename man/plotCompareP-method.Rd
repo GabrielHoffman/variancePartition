@@ -5,9 +5,15 @@
 \alias{plotCompareP}
 \title{Compare p-values from two analyses}
 \usage{
-plotCompareP(p1, p2, vpDonor, dupcorvalue, fraction = 0.2,
+plotCompareP(
+  p1,
+  p2,
+  vpDonor,
+  dupcorvalue,
+  fraction = 0.2,
   xlabel = bquote(duplicateCorrelation ~ (-log[10] ~ p)),
-  ylabel = bquote(dream ~ (-log[10] ~ p)))
+  ylabel = bquote(dream ~ (-log[10] ~ p))
+)
 }
 \arguments{
 \item{p1}{p-value from first analysis}

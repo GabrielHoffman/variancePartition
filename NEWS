@@ -1,4 +1,9 @@
 
+CHANGES IN VERSION 1.16.1
+-------------------------
+	o topTable(...,sort.by=) now is correct when and F-test is used
+	o fixed issue in classifyTestsF.MArrayLM2, now is much faster
+
 CHANGES IN VERSION 1.15.8
 -------------------------
 	o Replace cat() with message()

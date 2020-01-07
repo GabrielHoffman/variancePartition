@@ -6,8 +6,7 @@
 \alias{as.data.frame}
 \title{Convert to data.frame}
 \usage{
-\S4method{as.data.frame}{varPartResults}(x, row.names = NULL,
-  optional = FALSE, ...)
+\S4method{as.data.frame}{varPartResults}(x, row.names = NULL, optional = FALSE, ...)
 }
 \arguments{
 \item{x}{varPartResults}

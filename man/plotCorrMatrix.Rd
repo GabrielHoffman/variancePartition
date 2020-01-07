@@ -4,8 +4,14 @@
 \alias{plotCorrMatrix}
 \title{plotCorrMatrix}
 \usage{
-plotCorrMatrix(C, dendrogram = "both", sort = TRUE, margins = c(13,
-  13), key.xlab = "correlation", ...)
+plotCorrMatrix(
+  C,
+  dendrogram = "both",
+  sort = TRUE,
+  margins = c(13, 13),
+  key.xlab = "correlation",
+  ...
+)
 }
 \arguments{
 \item{C}{correlation matrix: R or R^2 matrix}

@@ -4,9 +4,13 @@
 \alias{plotCorrStructure}
 \title{plotCorrStructure}
 \usage{
-plotCorrStructure(fit, varNames = names(coef(fit)), reorder = TRUE,
+plotCorrStructure(
+  fit,
+  varNames = names(coef(fit)),
+  reorder = TRUE,
   pal = colorRampPalette(c("white", "red", "darkred")),
-  hclust.method = "complete")
+  hclust.method = "complete"
+)
 }
 \arguments{
 \item{fit}{linear mixed model fit of a gene produced by lmer() or fitVarPartModel()}
