@@ -107,7 +107,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 #' @import lme4
 .fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=quiet, BPPARAM=bpparam(), ...){ 
 
-	exprObj = as.matrix( exprObj )
+	if( ! is(exprObj, "sparseMatrix")){
+		exprObj = as.matrix( exprObj )	
+	}
 	formula = stats::as.formula( formula )
 
 	# check dimensions of reponse and covariates
@@ -317,6 +319,17 @@ setMethod("fitVarPartModel", "ExpressionSet",
   function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(), ...)
   {
     .fitVarPartModel( as.matrix(exprs(exprObj)), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, quiet=quiet, BPPARAM=BPPARAM, ...)
+  }
+)
+
+# sparseMatrix
+#' @export
+#' @rdname fitVarPartModel-method
+#' @aliases fitVarPartModel,sparseMatrix-method
+setMethod("fitVarPartModel", "sparseMatrix",
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(), ...)
+  {
+    .fitVarPartModel( exprObj, formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, quiet=quiet, BPPARAM=BPPARAM, ...)
   }
 )
 
@@ -623,4 +636,16 @@ setMethod("fitExtractVarPartModel", "ExpressionSet",
   }
 )
 
+# sparseMatrix
+#' @export
+#' @rdname fitExtractVarPartModel-method
+#' @aliases fitExtractVarPartModel,sparseMatrix-method
+setMethod("fitExtractVarPartModel", "sparseMatrix",
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(), ...)
+  {
+    .fitExtractVarPartModel( exprObj, formula, data,
+                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, adjust=adjust, adjustAll=adjustAll, showWarnings=showWarnings, control=control, quiet=quiet,
+                     	 BPPARAM=BPPARAM, ...)
+  }
+)
 

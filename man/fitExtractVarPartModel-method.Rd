@@ -7,6 +7,7 @@
 \alias{fitExtractVarPartModel,data.frame-method}
 \alias{fitExtractVarPartModel,EList-method}
 \alias{fitExtractVarPartModel,ExpressionSet-method}
+\alias{fitExtractVarPartModel,sparseMatrix-method}
 \title{Fit linear (mixed) model, report variance fractions}
 \usage{
 fitExtractVarPartModel(
@@ -74,6 +75,22 @@ fitExtractVarPartModel(
 )
 
 \S4method{fitExtractVarPartModel}{ExpressionSet}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  adjust = NULL,
+  adjustAll = FALSE,
+  showWarnings = TRUE,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
+
+\S4method{fitExtractVarPartModel}{sparseMatrix}(
   exprObj,
   formula,
   data,

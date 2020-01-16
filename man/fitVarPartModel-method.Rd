@@ -7,6 +7,7 @@
 \alias{fitVarPartModel,data.frame-method}
 \alias{fitVarPartModel,EList-method}
 \alias{fitVarPartModel,ExpressionSet-method}
+\alias{fitVarPartModel,sparseMatrix-method}
 \title{Fit linear (mixed) model}
 \usage{
 fitVarPartModel(
@@ -70,6 +71,21 @@ fitVarPartModel(
 )
 
 \S4method{fitVarPartModel}{ExpressionSet}(
+  exprObj,
+  formula,
+  data,
+  REML = FALSE,
+  useWeights = TRUE,
+  weightsMatrix = NULL,
+  showWarnings = TRUE,
+  fxn = identity,
+  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  quiet = FALSE,
+  BPPARAM = bpparam(),
+  ...
+)
+
+\S4method{fitVarPartModel}{sparseMatrix}(
   exprObj,
   formula,
   data,
