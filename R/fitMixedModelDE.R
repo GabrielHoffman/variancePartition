@@ -16,6 +16,32 @@ setAs(from='MArrayLM', to='MArrayLM2', function(from){
 	structure(from, class="MArrayLM2")
 	})
 
+
+
+
+#' residuals for MArrayLM2
+#'
+#' residuals for MArrayLM2
+#'
+#' @param object MArrayLM2 object from dream
+#' @param ... other arguments, currently ignored
+#'
+#' @return results of residuals
+#' @export
+#' @rdname residuals-method
+#' @aliases residuals,MArrayLM2-method
+setMethod("residuals", "MArrayLM2",
+function( object, ...){
+	if( is.null(object$residuals) ){
+		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
+	}
+	warning("\nSecond argument is ignored here,\nbut can be passed for compatability with limma.\nResults are the same either way")
+	object$residuals
+})
+
+
+
+
 #' Extract contrast matrix for linear mixed model
 #' 
 #' Extract contrast matrix, L, testing a single variable.  Contrasts involving more than one variable can be constructed by modifying L directly
@@ -260,6 +286,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
 #' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
+#' @param computeResiduals if TRUE, compute residuals and extract with residuals(fit).  Setting to false saves memory
 #' @param ... Additional arguments for lmer() or lm()
 #' 
 #' @return 
@@ -333,7 +360,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @importFrom pbkrtest get_SigmaG
 #' @importFrom BiocParallel bpiterate bpparam
 # @importFrom lmerTest lmer
-dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), ...){ 
+dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=FALSE, ...){ 
 
 	exprObjInit = exprObj
 	
@@ -519,6 +546,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			# extract statistics from model
 			mod = .eval_lmm( fit, L, ddf)
 
+			res = NULL
+			if( computeResiduals ){
+				 res = residuals(fit)
+			}
+
 			# progressbar
 			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
 			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
@@ -531,7 +563,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 						method 			= 'lmer',
 						sigma 			= mod$sigma,
 						stdev.unscaled 	= mod$SE/mod$sigma,
-						pValue 			= mod$pValue)
+						pValue 			= mod$pValue,
+						residuals 		= res)
 
 			# get variance terms for random effects
 			varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
@@ -588,12 +621,20 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		df.residual = foreach( x = resList, .combine=cbind ) %do% {	x$ret$df.residual}
 		pValue = foreach( x = resList, .combine=cbind ) %do% { x$ret$pValue }
 		stdev.unscaled  = foreach( x = resList, .combine=cbind ) %do% {x$ret$stdev.unscaled} 
-		
+		if( computeResiduals ){
+			residuals = foreach( x = resList, .combine=cbind ) %do% { x$ret$residuals }
+		}
+
 		# transpose
 		coefficients = t( coefficients )
 		df.residual = t( df.residual )
 		pValue = t( pValue )
-		stdev.unscaled = t( stdev.unscaled )		
+		stdev.unscaled = t( stdev.unscaled )
+		
+		if( computeResiduals ){
+			residuals = t(residuals)
+			rownames(residuals) = rownames(exprObj)
+		}
 
 		colnames(coefficients) = colnames(L)
 		rownames(coefficients) = rownames(exprObj)
@@ -659,6 +700,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		# allows covariance to differ for each gene based on variance components
 		ret$cov.coefficients.list = lapply(resList, function(x) as.matrix(x$vcov))
+
+		if( computeResiduals ){
+			ret$residuals = residuals
+		}
 
 		ret = as(ret, "MArrayLM2")
 		# add additional information for pinnacle

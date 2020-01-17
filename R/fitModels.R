@@ -107,9 +107,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 #' @import lme4
 .fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=quiet, BPPARAM=bpparam(), ...){ 
 
-	if( ! is(exprObj, "sparseMatrix")){
-		exprObj = as.matrix( exprObj )	
-	}
+	# if( ! is(exprObj, "sparseMatrix")){
+	# 	exprObj = as.matrix( exprObj )	
+	# }
 	formula = stats::as.formula( formula )
 
 	# check dimensions of reponse and covariates
@@ -118,7 +118,14 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	}
 
 	# check if all genes have variance
-	rv = apply( exprObj, 1, var)
+	if( ! is(exprObj, "sparseMatrix")){
+		rv = apply( exprObj, 1, var)
+	}else{
+		rv = c()
+		for( i in seq_len(nrow(exprObj)) ){
+			rv[i] = var( exprObj[i,])
+		}
+	}
 	if( any( rv == 0) ){
 		idx = which(rv == 0)
 		stop(paste("Response variable", idx[1], 'has a variance of 0'))
@@ -422,7 +429,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 # internal driver function
 .fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(),...){ 
 
-	exprObj = as.matrix( exprObj )
+	# exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
 
 	# check dimensions of reponse and covariates
@@ -430,8 +437,14 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
 
-	# check if all genes have variance
-	rv = apply( exprObj, 1, var)
+	if( ! is(exprObj, "sparseMatrix")){
+		rv = apply( exprObj, 1, var)
+	}else{
+		rv = c()
+		for( i in seq_len(nrow(exprObj)) ){
+			rv[i] = var( exprObj[i,])
+		}
+	}
 	if( any( rv == 0) ){
 		idx = which(rv == 0)
 		stop(paste("Response variable", idx[1], 'has a variance of 0'))

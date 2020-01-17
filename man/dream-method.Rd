@@ -18,6 +18,7 @@ dream(
   suppressWarnings = FALSE,
   quiet = FALSE,
   BPPARAM = bpparam(),
+  computeResiduals = FALSE,
   ...
 )
 }
@@ -45,6 +46,8 @@ dream(
 \item{quiet}{suppress message, default FALSE}
 
 \item{BPPARAM}{parameters for parallel evaluation}
+
+\item{computeResiduals}{if TRUE, compute residuals and extract with residuals(fit).  Setting to false saves memory}
 
 \item{...}{Additional arguments for lmer() or lm()}
 }

@@ -1,6 +1,7 @@
 CHANGES IN VERSION 1.17.3
 -------------------------
 	o Allow sparse matrix for gene expression
+	o dream(..., computeResiduals=TRUE) now computes residuals and allows use of residuals() function
 
 CHANGES IN VERSION 1.17.2
 -------------------------
