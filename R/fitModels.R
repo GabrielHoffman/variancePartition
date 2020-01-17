@@ -440,6 +440,8 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	if( ! is(exprObj, "sparseMatrix")){
 		rv = apply( exprObj, 1, var)
 	}else{
+		# if exprObj is a sparseMatrix, this method will compute row-wise
+		# variances with using additional memory
 		rv = c()
 		for( i in seq_len(nrow(exprObj)) ){
 			rv[i] = var( exprObj[i,])
