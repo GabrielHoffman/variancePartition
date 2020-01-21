@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.17.5
+-------------------------
+	o if contrasts for dream() is data.frame, convert to matrix
+
 CHANGES IN VERSION 1.17.4
 -------------------------
 	o Don't print warnings for residuals() when only one argument passed.

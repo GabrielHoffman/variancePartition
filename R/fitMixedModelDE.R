@@ -457,6 +457,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# format contrasts 
 		if( is(L, "numeric") ){
 			L = as.matrix(L, ncol=1)
+		}else if( is(L, 'data.frame') ){
+			L = as.matrix(L)
 		}
 		if( is.null(colnames(L)) ){
 			colnames(L) = paste0('L', seq_len(ncol(L)))
