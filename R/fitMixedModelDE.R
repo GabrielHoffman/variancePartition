@@ -35,9 +35,36 @@ function( object, ...){
 	if( is.null(object$residuals) ){
 		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
 	}
-	warning("\nSecond argument is ignored here,\nbut can be passed for compatability with limma.\nResults are the same either way")
+	if( nargs() > 1 & is.null(suppressWarnings) ){
+		warning("\n Second argument is ignored here,\n but can be passed for compatability with limma.\n Results are the same either way")
+	}
 	object$residuals
 })
+
+
+#' residuals for MArrayLM
+#'
+#' residuals for MArrayLM
+#'
+#' @param object MArrayLM object from dream
+#' @param ... other arguments, currently ignored
+#'
+#' @return results of residuals
+#' @export
+#' @rdname residuals-method
+#' @aliases residuals,MArrayLM-method
+setMethod("residuals", "MArrayLM",
+function( object, ...){
+	if( is.null(object$residuals) ){
+		# use residuals computed by limma
+		res = limma::residuals.MArrayLM( object, ...)
+	}else{
+		# use precomputed residuals
+		res = object$residuals
+	}
+	res
+})
+
 
 
 
@@ -471,8 +498,16 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# weights are always used
 		design = model.matrix( formula, data)
 
+		# least squares fit
 		ret = lmFit( exprObj, design, weights=weightsMatrix )
 
+		if( computeResiduals ){
+			# Evaluate residuals here, since can't be evaluate after contrasts.fit() is run
+			# add this to the standard MArrayLM object for use by custom residuals function
+			ret$residuals = residuals( ret, exprObj )
+		}
+
+		# apply contrasts
 		if( ! univariateContrasts ){
 			ret = contrasts.fit( ret, L)
 		}

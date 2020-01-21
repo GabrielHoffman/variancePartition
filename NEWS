@@ -1,4 +1,9 @@
-CHANGES IN VERSION 1.17.3
+CHANGES IN VERSION 1.17.4
+-------------------------
+	o Don't print warnings for residuals() when only one argument passed.
+	o fix bug with residuals evaluated with only fixed effects
+
+	CHANGES IN VERSION 1.17.3
 -------------------------
 	o Allow sparseMatrix for gene expression.  Now saves memory by avoiding conversion to matrix.  Processing sparseMatrix will be slower, but memory usage will be low. 
 	o dream(..., computeResiduals=TRUE) now computes residuals and allows use of residuals() function
