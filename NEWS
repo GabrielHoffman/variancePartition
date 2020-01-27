@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.17.6
+-------------------------
+	o comply with new Bioconductor check: _R_CHECK_LENGTH_1_LOGIC2_
+
 CHANGES IN VERSION 1.17.5
 -------------------------
 	o if contrasts for dream() is data.frame, convert to matrix

@@ -96,7 +96,7 @@ plotStratify = function( formula, data, xlab, ylab, main, sortBy, colorBy, sort=
    
     pOut = ggplot( data.st, aes_string(x=ord, y=yval)) + theme_bw() + theme( plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab(ylab) + xlab(xlab) + theme(plot.title=element_text(hjust=0.5)) 
 
-    if(  is.null(colorBy) || is.na(colorBy) ){
+    if(  any(is.null(colorBy)) || any(is.na(colorBy)) ){
         pOut = pOut + geom_boxplot(color="grey", fill="grey", outlier.colour='black',outlier.shape = 20)
     }else{
 
@@ -225,7 +225,7 @@ plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL
    
     pOut = ggplot( geneExpr, aes_string(x=ord, y=yval)) + theme_bw() + theme( plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab(ylab) + xlab(xlab) + theme(plot.title=element_text(hjust=0.5))
 
-    if(  is.null(colorBy) || is.na(colorBy) ){
+    if(  any(is.null(colorBy)) || any(is.na(colorBy)) ){
         pOut = pOut + geom_boxplot(color="grey", fill="grey", outlier.colour='black',outlier.shape = 20)
     }else{
 
