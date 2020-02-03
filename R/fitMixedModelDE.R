@@ -307,6 +307,21 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 
 
+.checkNA = function(exprObj){
+	# check if values are NA
+	countNA = sum(is.nan(exprObj)) + sum(!is.finite(exprObj))
+	if( countNA > 0 ){
+		stop("There are ", countNA, " NA/NaN/Inf values in exprObj\nMissing data is not allowed")
+	}
+
+	# check if all genes have variance
+	rv = apply( exprObj, 1, var)
+	if( any( rv == 0) ){
+		idx = which(rv == 0)
+		stop(paste("Response variable", idx[1], 'has a variance of 0'))
+	}		
+}
+
 #' Differential expression with linear mixed model
 #' 
 #' Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
@@ -346,6 +361,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # load library
 #' # library(variancePartition)
 #' library(BiocParallel)
+#' register(SerialParam())
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -411,12 +427,17 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
 
-	# check if all genes have variance
-	rv = apply( exprObj, 1, var)
-	if( any( rv == 0) ){
-		idx = which(rv == 0)
-		stop(paste("Response variable", idx[1], 'has a variance of 0'))
+
+	# assign weightsMatrix from exprObj
+	if( is( exprObj, "EList") ){
+		if( useWeights ){
+			weightsMatrix = exprObj$weights
+		}
+		.checkNA( exprObj$E )
+	}else{
+		.checkNA( exprObj )
 	}
+
 
 	if( !(ddf %in% c("Kenward-Roger", 'Satterthwaite')) ){
 		stop("Specify ddf correctly")
@@ -424,11 +445,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 	if( ddf == "Kenward-Roger" & ! REML ){
 		stop("Kenward-Roger must be used with REML")
-	}
-	
-	# assign weightsMatrix from exprObj
-	if( is( exprObj, "EList") && useWeights ){
-		weightsMatrix = exprObj$weights
 	}
 
 	# if weightsMatrix is not specified, set useWeights to FALSE

@@ -1,3 +1,8 @@
+
+CHANGES IN VERSION 1.17.8
+-------------------------
+	o Better error message when response contains missing data
+
 CHANGES IN VERSION 1.17.7
 -------------------------
 	o Better error message when variable in formula does not exist

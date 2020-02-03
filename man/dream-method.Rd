@@ -75,6 +75,7 @@ Hypothesis tests and degrees of freedom are producted by lmerTest and pbkrtest p
 # load library
 # library(variancePartition)
 library(BiocParallel)
+register(SerialParam())
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

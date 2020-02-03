@@ -119,6 +119,12 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	# check if all genes have variance
 	if( ! is(exprObj, "sparseMatrix")){
+		# check if values are NA
+		countNA = sum(is.nan(exprObj)) + sum(!is.finite(exprObj))
+		if( countNA > 0 ){
+			stop("There are ", countNA, " NA/NaN/Inf values in exprObj\nMissing data is not allowed")
+		}
+
 		rv = apply( exprObj, 1, var)
 	}else{
 		rv = c()
@@ -447,6 +453,12 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	}
 
 	if( ! is(exprObj, "sparseMatrix")){
+		# check if values are NA
+		countNA = sum(is.nan(exprObj)) + sum(!is.finite(exprObj))
+		if( countNA > 0 ){
+			stop("There are ", countNA, " NA/NaN/Inf values in exprObj\nMissing data is not allowed")
+		}
+		
 		rv = apply( exprObj, 1, var)
 	}else{
 		# if exprObj is a sparseMatrix, this method will compute row-wise
