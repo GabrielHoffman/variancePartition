@@ -158,6 +158,15 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	# else run lm()
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
+
+	# detect error when variable in formula does not exist
+	if( inherits(possibleError, "error") ){
+		if( grep("object '.*' not found", possibleError$message) == 1){
+			stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
+		}else{
+			stop( possibleError$message )
+		}
+	}
 	
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)
@@ -478,6 +487,15 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	# else run lm()
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data, control=control,... ), error = function(e) e)
+
+	# detect error when variable in formula does not exist
+	if( inherits(possibleError, "error") ){
+		if( grep("object '.*' not found", possibleError$message) == 1){
+			stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
+		}else{
+			stop( possibleError$message )
+		}
+	}
 
 	if( !quiet) pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)

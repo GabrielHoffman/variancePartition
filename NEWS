@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.17.7
+-------------------------
+	o Better error message when variable in formula does not exist
+
 CHANGES IN VERSION 1.17.6
 -------------------------
 	o comply with new Bioconductor check: _R_CHECK_LENGTH_1_LOGIC2_

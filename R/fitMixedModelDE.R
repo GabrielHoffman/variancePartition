@@ -196,6 +196,16 @@ getContrast = function( exprObj, formula, data, coefficient){
 	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,control=control ), error = function(e) e)
 
+	# detect error when variable in formula does not exist
+	# *** This error has already been found at this point
+	# if( inherits(possibleError, "error") ){
+	# 	if( grep("object '.*' not found", possibleError$message) == 1){
+	# 		stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
+	# 	}else{
+	# 		stop( possibleError$message )
+	# 	}
+	# }
+
 	mesg <- "No random effects terms specified in formula"
 	method = ''
 	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
