@@ -1025,7 +1025,7 @@ set.seed(1)
 library('variancePartition')
 
 n = 500
-data = data.frame(Sex = c(rep('F', n), rep('M', n)))
+data = data.frame(Sex = factor(c(rep('F', n), rep('M', n))))
 data$expression = rnorm(2*n, (as.integer(data$Sex)-1)*2, .3)
 data$Sex = factor(data$Sex)
 
@@ -1039,7 +1039,7 @@ plotStratify( expression ~ Sex, data, ylim=c(-6, 9)) +
 
 
 n = 500
-data = data.frame(Sex = c(rep('F', n), rep('M', n)))
+data = data.frame(Sex = factor(c(rep('F', n), rep('M', n))))
 data$expression = rnorm(2*n, (as.integer(data$Sex)-1)*2, 2.01)
 data$Sex = factor(data$Sex)
 

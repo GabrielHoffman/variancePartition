@@ -1,4 +1,8 @@
 
+CHANGES IN VERSION 1.17.9
+-------------------------
+	o Fix issues with compatability with R/4.0.0
+
 CHANGES IN VERSION 1.17.8
 -------------------------
 	o Better error message when response contains missing data
