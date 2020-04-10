@@ -6,7 +6,11 @@
 \alias{countMatrix}
 \alias{metadata}
 \title{Simulation dataset for dream example}
-\format{A dataset of 24 samples and 19,364 genes}
+\format{
+A dataset of 24 samples and 19,364 genes
+
+A dataset of 24 samples and 19,364 genes
+}
 \usage{
 data(varPartDEdata)
 

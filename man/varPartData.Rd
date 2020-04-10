@@ -7,7 +7,15 @@
 \alias{info}
 \alias{geneExpr}
 \title{Simulation dataset for examples}
-\format{A dataset of 100 samples and 200 genes}
+\format{
+A dataset of 100 samples and 200 genes
+
+A dataset of 100 samples and 200 genes
+
+A dataset of 100 samples and 200 genes
+
+A dataset of 100 samples and 200 genes
+}
 \usage{
 data(varPartData)
 

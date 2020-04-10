@@ -812,16 +812,22 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		realcoef = colnames(out)[colnames(out) %in% colnames(out$design)]
 		realcoef = realcoef[realcoef!="(Intercept)"]
 
-		df = rowMeans(out[,realcoef]$df.residual)
+		if( is.null(realcoef) || (length(realcoef) == 0) ){
 
-		F.stat <- classifyTestsF(out[,realcoef], df=df, fstat.only=TRUE)
-		out$F <- as.vector(F.stat)
-		df1 <- attr(F.stat,"df1")
-		df2 <- attr(F.stat,"df2")
-		if(df2[1] > 1e6){ # Work around bug in R 2.1
-			out$F.p.value <- pchisq(df1*out$F,df1,lower.tail=FALSE)
+			# this happends when only the intercept term is included
+			warning("No testable fixed effects were included in the model.\n  Running topTable() will fail.")
 		}else{
-			out$F.p.value <- pf(out$F,df1,df2,lower.tail=FALSE)
+			df = rowMeans(out[,realcoef]$df.residual)
+
+			F.stat <- classifyTestsF(out[,realcoef], df=df, fstat.only=TRUE)
+			out$F <- as.vector(F.stat)
+			df1 <- attr(F.stat,"df1")
+			df2 <- attr(F.stat,"df2")
+			if(df2[1] > 1e6){ # Work around bug in R 2.1
+				out$F.p.value <- pchisq(df1*out$F,df1,lower.tail=FALSE)
+			}else{
+				out$F.p.value <- pf(out$F,df1,df2,lower.tail=FALSE)
+			}
 		}
 	}
 
