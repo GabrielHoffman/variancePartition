@@ -51,13 +51,14 @@ function( object, ...){
 #'
 #' @return results of residuals
 #' @export
+#' @importFrom limma residuals.MArrayLM
 #' @rdname residuals-method
 #' @aliases residuals,MArrayLM-method
 setMethod("residuals", "MArrayLM",
 function( object, ...){
 	if( is.null(object$residuals) ){
 		# use residuals computed by limma
-		res = limma::residuals.MArrayLM( object, ...)
+		res = residuals.MArrayLM( object, ...)
 	}else{
 		# use precomputed residuals
 		res = object$residuals

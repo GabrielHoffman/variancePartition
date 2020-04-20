@@ -1,5 +1,9 @@
 CHANGES IN VERSION 1.17.10
 -------------------------
+	o fix issue returning residuals from limma
+
+CHANGES IN VERSION 1.17.10
+-------------------------
 	o resolve issue where dream gives error: r[cbind(1L:p, 1L:p)] <- 1 : subscript out of bounds
 		- only occured when no fixed effects were used
 
