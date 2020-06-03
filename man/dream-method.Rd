@@ -11,7 +11,6 @@ dream(
   data,
   L,
   ddf = c("Satterthwaite", "Kenward-Roger"),
-  REML = TRUE,
   useWeights = TRUE,
   weightsMatrix = NULL,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
@@ -19,6 +18,7 @@ dream(
   quiet = FALSE,
   BPPARAM = bpparam(),
   computeResiduals = FALSE,
+  REML = TRUE,
   ...
 )
 }
@@ -33,8 +33,6 @@ dream(
 
 \item{ddf}{Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.}
 
-\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option}
-
 \item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
 
 \item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE}
@@ -48,6 +46,8 @@ dream(
 \item{BPPARAM}{parameters for parallel evaluation}
 
 \item{computeResiduals}{if TRUE, compute residuals and extract with residuals(fit).  Setting to false saves memory}
+
+\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option}
 
 \item{...}{Additional arguments for lmer() or lm()}
 }

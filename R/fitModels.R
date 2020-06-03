@@ -156,13 +156,19 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
 	}
 
-	# add response (i.e. exprObj[,j] to formula
-	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
+	# add response (i.e. exprObj[j,]) to formula
+	# Use term 'responsePlaceholder' to store the value of reponse j (exprObj[j,])
+	# This is not an ideal way to structure the evaluation of response j.
+	# 	The formula is evaluated a different scope, (i.e. within lmer()), and there is no need to pass the
+	# 	entire exprObj object into that scope.  With lexical scope, I found it was possible that  
+	# 	the value of exprObj[j,] could be different when evaluated in the lower scope
+	# This placeholder term addresses that issue
+	form = paste( "responsePlaceholder$E", paste(as.character( formula), collapse=''))
 
 	# run lmer() to see if the model has random effects
 	# if less run lmer() in the loop
 	# else run lm()
-	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
 
 	# detect error when variable in formula does not exist
@@ -177,8 +183,6 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)
 
-	# pids = .get_pids()
-
 	timeStart = proc.time()
 
 	mesg <- "No random effects terms specified in formula"
@@ -191,14 +195,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
-		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
+		res <- foreach(responsePlaceholder=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
 			# fit linear mixed model
-			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
-
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
+			fit = lm( eval(parse(text=form)), data=data, weights=responsePlaceholder$weights,na.action=stats::na.exclude,...)
 
 			# apply function
 			fxn( fit )
@@ -214,7 +213,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+		responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
@@ -229,31 +228,22 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		if( !quiet ) message("Memory usage to store result: >", format(objSize, units = "auto"))
 
-		# if( showTime > .01 ){
-		# 	message("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		# }
-
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
 		# specify gene explicitly in data 
 		# required for downstream processing with lmerTest
-		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
+		data2 = data.frame(data, expr=responsePlaceholder$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
 		# Define function for parallel evaluation
-		.eval_models = function(gene14643, data2, form, REML, theta, fxn, control, na.action=stats::na.exclude,...){
+		.eval_models = function(responsePlaceholder, data2, form, REML, theta, fxn, control, na.action=stats::na.exclude,...){
 
 			# modify data2 for this gene
-			data2$expr = gene14643$E
+			data2$expr = responsePlaceholder$E
  
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, control=control,na.action=na.action)
-				#, start=theta
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
+			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=responsePlaceholder$weights, control=control,na.action=na.action)
 
 			# apply function
 			fxn( fit )
@@ -266,15 +256,8 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			})
 		}
 
-
 		# Evaluate function
 		###################
-		# it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
-		# fxn2 = function(fit){
-		# 	list(fxn(fit))
-		# }
-
-		# res <- bplapply( it, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
 		
 		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
 		
@@ -284,15 +267,12 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			data2=data2, form=form, REML=REML, theta=fitInit@theta, fxn=fxn, control=control,..., 
 			 REDUCE=c,
 		    reduce.in.order=TRUE,	
-			BPPARAM=BPPARAM)
-
-
-		# res = lapply(res, function(x) x[[1]])		
+			BPPARAM=BPPARAM)	
 
 		method = "lmer"
 	}
 
-	# pb$update( gene14643$max_iter / gene14643$max_iter )
+	# pb$update( responsePlaceholder$max_iter / responsePlaceholder$max_iter )
 	if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
 
 	# set name of each entry
@@ -488,16 +468,12 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	}
 
 	# add response (i.e. exprObj[,j] to formula
-	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
-
-	# control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient") 
-
-	# control = lme4::lmerControl(calc.derivs=FALSE, optCtrl=list(maxfun=1), check.rankX="stop.deficient" )
+	form = paste( "responsePlaceholder$E", paste(as.character( formula), collapse=''))
 
 	# run lmer() to see if the model has random effects
-	# if less run lmer() in the loop
+	# if yes run lmer() in the loop
 	# else run lm()
-	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data, control=control,... ), error = function(e) e)
 
 	# detect error when variable in formula does not exist
@@ -509,13 +485,10 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		}
 	}
 
-	if( !quiet) pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
+	if( !quiet) pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",
 			total = nrow(exprObj), width= 60, clear=FALSE)
 
-	# pids = .get_pids()
-
-	mesg <- "No random effects terms specified in formula"
-	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
+	if( ! .isMixedModelFormula( formula ) ){
 
 		# fit the model for testing
 		fit <- lm( eval(parse(text=form)), data=data,...)
@@ -527,15 +500,10 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		timeStart = proc.time()
 
-		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
+		varPart <- foreach(responsePlaceholder=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
 
 			# fit linear mixed model
-			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
-
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
+			fit = lm( eval(parse(text=form)), data=data, weights=responsePlaceholder$weights,na.action=stats::na.exclude,...)
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
@@ -550,18 +518,11 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+		responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control)
 		timediff = proc.time() - timeStart
-
-		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
-		# showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
-
-		# if( showTime > .01 ){
-		# 	message("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		# }
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
@@ -569,14 +530,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		timeStart = proc.time()
 
 		# Define function for parallel evaluation
-		.eval_models = function(gene14643, data, form, REML, theta, control, na.action=stats::na.exclude,...){
+		.eval_models = function(responsePlaceholder, data, form, REML, theta, control, na.action=stats::na.exclude,...){
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, control=control,na.action=na.action)
-			# , start=theta
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
+			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=responsePlaceholder$weights, control=control,na.action=na.action)
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
@@ -591,9 +547,6 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# Evaluate function
 		####################
 
-		# it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
-
-		# varPart <- bplapply( it, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
 		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
 
 		if( !quiet) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
@@ -607,7 +560,6 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		modelType = "linear mixed model"
 	}
 
-	# pb$update( gene14643$max_iter / gene14643$max_iter )
 	message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))

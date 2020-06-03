@@ -43,7 +43,7 @@ canCorPairs = function(formula, data, showWarnings=TRUE){
 
 	formula = stats::as.formula( formula )
 
-	if( .isMixedModelFormula(formula, data) ){
+	if( .isMixedModelFormula(formula) ){
 		stop("Invalid formula.\nSuggestion: this function does not handle random effects.\nUse ~ x instead of ~ (1|x) in formula\nBut may be due to other issue")
 	}
 

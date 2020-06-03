@@ -4,7 +4,7 @@
 \alias{.isMixedModelFormula}
 \title{Check if model contains a random effect}
 \usage{
-.isMixedModelFormula(formula, data)
+.isMixedModelFormula(formula)
 }
 \arguments{
 \item{formula}{model formula}

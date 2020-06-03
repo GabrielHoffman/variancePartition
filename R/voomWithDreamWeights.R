@@ -94,7 +94,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	# Fit regression model
 	#---------------------
 
-	if( .isMixedModelFormula( formula, data) ){
+	if( .isMixedModelFormula( formula ) ){
 
 		if( missing(data) ){
 			stop("Must specify argument 'data'\n")
@@ -180,7 +180,9 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	#	var0 <- var(log2(0.5*1e6/(lib.size+0.5)))^0.25
 	#	var0 <- max(var0,1e-6)
 	#	l$y <- c(var0, l$y)
-	f <- approxfun(l, rule=2)
+	suppressWarnings({
+		f <- approxfun(l, rule=2)
+		})
 
 	fitted.cpm <- 2^fitted.values
 	fitted.count <- 1e-6 * t(t(fitted.cpm)*(lib.size+1))

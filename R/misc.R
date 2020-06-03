@@ -451,19 +451,18 @@ setMethod("getOmitted", "lmerMod",
 colinearityScore = function(fit){
 	 # get correlation matrix
 	 V = vcov(fit)
-	 if( any(is.na(vcov(fit))) ){
+	 if( any(is.na(vcov(fit))) || nrow(V) == 0 ){
 	 	C = NA
 	 }else{
-	 	C = cov2cor(as.matrix(V))
+		 C = cov2cor(as.matrix(V))		 
 	 } 
 
+	 score = 0
 	 if( any(is.na(vcov(fit))) ){
 	 	score = 1
-	 }else if( nrow(C) > 1 ){
+	 }else if( length(C) > 1 &&  nrow(C) > 1 ){
 	 	 # return largest off-diagonal absolute correlation
 	 	score = max(abs(C[lower.tri(C)]))
-	 }else{
-	 	score = 0
 	 }
 
 	 attr( score, "vcor") = C
@@ -481,20 +480,11 @@ colinearityScore = function(fit){
 #' @param data data.frame
 #' 
 #' @importFrom stats as.formula
-#' @importFrom lme4 lmerControl 
-.isMixedModelFormula = function(formula, data ){
+# @importFrom lme4 lmerControl 
+#' @importFrom lme4 findbars 
+.isMixedModelFormula = function(formula ){
 
-	formula = as.formula( formula )
-
-    # don't throw an error if the LHS is missing
-    control = lmerControl(check.formula.LHS = "ignore")
-
-    possibleError <- tryCatch(lFormula( formula, data, control=control), error = function(e) e)
-
-    mesg <- "No random effects terms specified in formula"
-    result = inherits(possibleError, "error") && identical(possibleError$message, mesg)
-
-    return( ! result )
+	! is.null( findbars( as.formula( formula ) ) )
 }
 
 
