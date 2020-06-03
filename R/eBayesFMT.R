@@ -82,11 +82,16 @@ eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 	# residual smoothing
 	####################
 
+	ids = data[[Individual]]
+
+	if( is.factor(ids) ){
+		ids = droplevels( ids )
+	}
 	# number of individual
-	n_groups = length(unique(droplevels(data[[Individual]])))
+	n_groups = length(unique(ids))
 
 	# average number of replicates per individual
-	n_reps = mean(table(droplevels(data[[Individual]])))
+	n_reps = mean(table(ids))
 
 	# create data.frame to store results
 	df_fmt = data.frame(Amean = fit$Amean, 
