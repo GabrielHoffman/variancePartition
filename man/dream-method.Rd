@@ -25,7 +25,7 @@ dream(
 \arguments{
 \item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
 
-\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.}
+\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.}
 
 \item{data}{data.frame with columns corresponding to formula}
 
@@ -33,11 +33,11 @@ dream(
 
 \item{ddf}{Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.}
 
-\item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
+\item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified}
 
-\item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE}
+\item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE}
 
-\item{control}{control settings for lmer()}
+\item{control}{control settings for \code{lmer()}}
 
 \item{suppressWarnings}{if TRUE, do not stop because of warnings or errors in model fit}
 
@@ -45,11 +45,11 @@ dream(
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
-\item{computeResiduals}{if TRUE, compute residuals and extract with residuals(fit).  Setting to false saves memory}
+\item{computeResiduals}{if TRUE, compute residuals and extract with \code{residuals(fit)}.  Setting to false saves memory}
 
-\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option}
+\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option, but here for compatibility.}
 
-\item{...}{Additional arguments for lmer() or lm()}
+\item{...}{Additional arguments for \code{lmer()} or \code{lm()}}
 }
 \value{
 MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)
@@ -58,17 +58,17 @@ MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-v
 Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
 }
 \details{
-A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
+A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
 
-fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)
+\code{fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)}
 
-useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regression model.
+\code{useWeights=TRUE} causes \code{weightsMatrix[j,]} to be included as weights in the regression model.
 
-Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
+Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using \code{BiocParallel} to run code in parallel.  Parallel processing must be enabled before calling this function.  See below.
 
 The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lmer.
 
-Hypothesis tests and degrees of freedom are producted by lmerTest and pbkrtest pacakges
+Hypothesis tests and degrees of freedom are producted by \code{lmerTest} and \code{pbkrtest} pacakges
 }
 \examples{
 

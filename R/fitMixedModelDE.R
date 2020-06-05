@@ -24,6 +24,7 @@ setAs(from='MArrayLM', to='MArrayLM2', function(from){
 #' @name FMT-class
 #' @rdname FMT-class
 #' @exportClass FMT
+#' @keywords internal
 setClass('FMT', contains='MArrayLM2')
 
 setAs("MArrayLM2", "FMT", function(from, to ){
@@ -89,8 +90,8 @@ function( object, ...){
 #' 
 #' Extract contrast matrix, L, testing a single variable.  Contrasts involving more than one variable can be constructed by modifying L directly
 #'
-#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work
+#' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
 #' @param coefficient the coefficient to use in the hypothesis test
 #' 
@@ -146,12 +147,13 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' Get all univariate contrasts
 #'
 #' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
 #'
 #' @return
 #'  Matrix testing each variable one at a time.  Contrasts are on rows
 #'
+#' @keywords internal
 .getAllUniContrasts = function( exprObj, formula, data){ 
 
 	Linit = .getContrastInit( exprObj, formula, data)
@@ -343,35 +345,35 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
 #'
 #' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
 #' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
-#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
-#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
-#' @param control control settings for lmer()
+#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
+#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
+#' @param control control settings for \code{lmer()}
 #' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
 #' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
-#' @param computeResiduals if TRUE, compute residuals and extract with residuals(fit).  Setting to false saves memory
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option
-#' @param ... Additional arguments for lmer() or lm()
+#' @param computeResiduals if TRUE, compute residuals and extract with \code{residuals(fit)}.  Setting to false saves memory
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option, but here for compatibility.
+#' @param ... Additional arguments for \code{lmer()} or \code{lm()}
 #' 
 #' @return 
 #' MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)
 #'
 #' @details 
-#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
+#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
 #'
-#' fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)
+#' \code{fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)}
 #'
-#' useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regression model.
+#' \code{useWeights=TRUE} causes \code{weightsMatrix[j,]} to be included as weights in the regression model.
 #'
-#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
+#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using \code{BiocParallel} to run code in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
 #' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lmer.
 #'
-#' Hypothesis tests and degrees of freedom are producted by lmerTest and pbkrtest pacakges
+#' Hypothesis tests and degrees of freedom are producted by \code{lmerTest} and \code{pbkrtest} pacakges
 #' @examples
 #'
 #' # load library
@@ -794,6 +796,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @return MArrayLM2 object with values computed
 #' 
 #' @importFrom stats pchisq pf
+#' @keywords internal
 .standard_transform = function(fit){
 
 	# get values
@@ -856,6 +859,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @importFrom stats p.adjust
 #' @rdname subset.MArrayLM2-method
 #' @aliases subset.MArrayLM2,MArrayLM2-method
+#' @keywords internal
 assign("[.MArrayLM2",
 	function(object, i, j){
 	if(nargs() != 3){
@@ -949,7 +953,7 @@ assign("[.MArrayLM2",
 
 #' eBayes for MArrayLM2
 #'
-#' eBayes for MArrayLM2.  It 
+#' eBayes for MArrayLM2.  It simply returns the orginal input with no change
 #'
 #' @param fit fit
 #' @param proportion proportion
@@ -959,7 +963,7 @@ assign("[.MArrayLM2",
 #' @param winsor.tail.p winsor.tail.p 
 #'
 #' @return results of eBayes
-#' @details Note that empirical Bayes is problematic for linear mixed models.  This function returns its original input with no change.  It is included here just for compatiability compatibility.
+#' @details Note that empirical Bayes is problematic for linear mixed models.  This function returns its original input with no change.  It is included here just for compatibility.
 #' @export
 #' @rdname eBayes-method
 #' @aliases eBayes,MArrayLM2-method

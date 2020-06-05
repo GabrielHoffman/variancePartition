@@ -1,16 +1,16 @@
 
 #' Extract variance statistics
 #' 
-#' Extract variance statistics from list of models fit with lm() or lmer()
+#' Extract variance statistics from list of models fit with \code{lm()} or \code{lmer()}
 #'
-#' @param modelList list of lmer() model fits
+#' @param modelList list of \code{lmer()} model fits
 #' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
 #' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables. This overrides the previous argument, so all variables are include in adjust.
 #' @param showWarnings show warnings about model fit (default TRUE)
 #' @param ... other arguments
 #'  
 #' @return 
-#' data.frame of fraction of variance explained by each variable, after correcting for all others.
+#' \code{data.frame} of fraction of variance explained by each variable, after correcting for all others.
 # @details
 #' @examples
 #' # library(variancePartition)

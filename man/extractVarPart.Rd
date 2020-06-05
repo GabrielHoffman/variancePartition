@@ -13,7 +13,7 @@ extractVarPart(
 )
 }
 \arguments{
-\item{modelList}{list of lmer() model fits}
+\item{modelList}{list of \code{lmer()} model fits}
 
 \item{adjust}{remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables}
 
@@ -24,10 +24,10 @@ extractVarPart(
 \item{...}{other arguments}
 }
 \value{
-data.frame of fraction of variance explained by each variable, after correcting for all others.
+\code{data.frame} of fraction of variance explained by each variable, after correcting for all others.
 }
 \description{
-Extract variance statistics from list of models fit with lm() or lmer()
+Extract variance statistics from list of models fit with \code{lm()} or \code{lmer()}
 }
 \examples{
 # library(variancePartition)

@@ -4,7 +4,7 @@
 #' 
 #' Violin plot of variance fraction for each gene and each variable
 #'
-#' @param obj varParFrac object returned by fitExtractVarPart or extractVarPart
+#' @param obj \code{varParFrac} object returned by \code{fitExtractVarPart} or \code{extractVarPart}
 #' @param col vector of colors
 #' @param label.angle angle of labels on x-axis
 #' @param main title of plot

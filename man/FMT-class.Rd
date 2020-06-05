@@ -7,3 +7,4 @@
 \description{
 Class \code{FMT}
 }
+\keyword{internal}

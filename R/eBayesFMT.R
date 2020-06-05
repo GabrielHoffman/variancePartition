@@ -67,6 +67,7 @@
 #' fiteb = variancePartition:::eBayesFMT(fit, info, 'Individual')
 #' topTable( fiteb )
 #'
+#' @keywords internal
 eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 
 	method = match.arg( method)
@@ -181,6 +182,7 @@ eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 #' @import limma
 #' @rdname toptable-method
 #' @aliases toptable,FMT-method
+#' @keywords internal
 setMethod("topTable", "FMT",
 function (fit, coef = NULL, number = 10, genelist = fit$genes,
     adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,

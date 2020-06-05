@@ -17,3 +17,4 @@ subset
 \description{
 Enable subsetting on MArrayLM2 object. Same as for MArrayLM, but apply column subsetting to df.residual and cov.coefficients.list
 }
+\keyword{internal}

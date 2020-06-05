@@ -14,25 +14,25 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 #' 
 #' Fit linear mixed model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Then perform parametric bootstrap sampling to get a 95\% confidence intervals for each variable for each gene.
 #'
-#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
-#' @param data data.frame with columns corresponding to formula 
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option
-#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
-#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
+#' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}
+#' @param data \code{data.frame} with columns corresponding to formula 
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option, but here for compatibility.
+#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList} from \code{voom()} or \code{weightsMatrix} is specified
+#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
 #' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
 #' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables.  This overrides the previous argument, so all variables are include in adjust.
 #' @param showWarnings show warnings about model fit (default TRUE)
 #' @param colinearityCutoff cutoff used to determine if model is computationally singular
-#' @param control control settings for lmer()
+#' @param control control settings for \code{lmer()}
 #' @param nsim number of bootstrap datasets
-#' @param ... Additional arguments for lmer() or lm()
+#' @param ... Additional arguments for \code{lmer()} or l\code{m()}
 #' 
 #' @return
-#' list() of where each entry is the result for a gene.  Each entry is a matrix of the 95\% confidence interval of the variance fraction for each variable 
+#' \code{list()} of where each entry is the result for a gene.  Each entry is a matrix of the 95\% confidence interval of the variance fraction for each variable 
 #'
 #' @details 
-#' A linear mixed model is fit for each gene, and bootMer() is used to generate parametric bootstrap confidence intervals.  use.u=TRUE is used so that the \\hat(u) values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, use.u=FALSE assumes that  this dataset is a sample from a larger population.   Thus it simulates \\hat(u) based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, use.u=TRUE gives smaller confidence intervals that are appropriate in this case.
+#' A linear mixed model is fit for each gene, and \code{bootMer()} is used to generate parametric bootstrap confidence intervals.  \code{use.u=TRUE} is used so that the \deqn{\hat{u}} values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, \code{use.u=FALSE} assumes that  this dataset is a sample from a larger population.   Thus it simulates \deqn{\hat{u}} based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, \code{use.u=TRUE} gives smaller confidence intervals that are appropriate in this case.
 #'
 #' @examples
 #'

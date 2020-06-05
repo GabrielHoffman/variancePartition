@@ -8,9 +8,8 @@
 }
 \arguments{
 \item{formula}{model formula}
-
-\item{data}{data.frame}
 }
 \description{
 Check if model contains a random effect
 }
+\keyword{internal}

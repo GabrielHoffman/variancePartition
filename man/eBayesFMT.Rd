@@ -44,7 +44,8 @@ fit = dream( geneExpr[1:10,], form, info)
 topTable( fit )
 
 # Compute moderated t-statistics from Yu, et al, 2019
-fiteb = eBayesFMT(fit, info, 'Individual')
+fiteb = variancePartition:::eBayesFMT(fit, info, 'Individual')
 topTable( fiteb )
 
 }
+\keyword{internal}

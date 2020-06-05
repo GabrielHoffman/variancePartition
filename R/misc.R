@@ -481,6 +481,7 @@ colinearityScore = function(fit){
 #' @importFrom stats as.formula
 # @importFrom lme4 lmerControl 
 #' @importFrom lme4 findbars 
+#' @keywords internal
 .isMixedModelFormula = function(formula ){
 
 	! is.null( findbars( as.formula( formula ) ) )
@@ -493,6 +494,7 @@ colinearityScore = function(fit){
 # Get process IDs for parallel processing
 #
 # @param vmax minumum number of processes
+#' @keywords internal
 .get_pids = function( vmax = 2){
 
 	# use do instead of dopar, since only need single pid

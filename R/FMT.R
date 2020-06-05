@@ -68,6 +68,7 @@
 #' @param b       number of genes on either side of moving average window when calculating variance of log residual variances
 #'
 #' @import limma
+#' @keywords internal
 FMT <- function(Amean, sigmasq, df, span1=0.5, span2=0.95, iter1=4, iter2=4, b=20) {
   
   # library(limma)
@@ -128,6 +129,7 @@ FMT <- function(Amean, sigmasq, df, span1=0.5, span2=0.95, iter1=4, iter2=4, b=2
 #'
 #' @import limma
 #' @importFrom stats approx
+#' @keywords internal
 FMT.ZI <- function(Amean, sigmasq, df, span1=0.5, span2=0.95, iter1=4, iter2=4, b=20, sigma.thres=1e-7) {
   
   # library(limma)

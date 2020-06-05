@@ -15,3 +15,4 @@ MArrayLM2 object with values computed
 \description{
 These values are typically computed by eBayes
 }
+\keyword{internal}

@@ -1,9 +1,9 @@
 
 #' Sort variance partition statistics
 #' 
-#' Sort columns returned by extractVarPart() or fitExtractVarPartModel()
+#' Sort columns returned by \code{extractVarPart()} or \code{fitExtractVarPartModel()}
 #'
-#' @param x object returned by extractVarPart() or fitExtractVarPartModel()
+#' @param x object returned by \code{extractVarPart()} or \code{fitExtractVarPartModel()}
 #' @param FUN function giving summary statistic to sort by.  Defaults to median
 #' @param decreasing  logical.  Should the sorting be increasing or decreasing?  
 #' @param last columns to be placed on the right, regardless of values in these columns

@@ -49,7 +49,7 @@ plotVarPart(
 )
 }
 \arguments{
-\item{obj}{varParFrac object returned by fitExtractVarPart or extractVarPart}
+\item{obj}{\code{varParFrac} object returned by \code{fitExtractVarPart} or \code{extractVarPart}}
 
 \item{col}{vector of colors}
 

@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.18.3
+-------------------------
+	o Improve documentation
+	o move location of eBayesFMT code
+
+CHANGES IN VERSION 1.18.2
+-------------------------
+	o Clean up some code and add documentation
+	o document ebayesFMT
+
 CHANGES IN VERSION 1.18.1
 -------------------------
 	o Clean up some code and add documentation
