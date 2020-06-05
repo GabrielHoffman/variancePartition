@@ -477,7 +477,6 @@ colinearityScore = function(fit){
 #' Check if model contains a random effect
 #'
 #' @param formula model formula
-#' @param data data.frame
 #' 
 #' @importFrom stats as.formula
 # @importFrom lme4 lmerControl 

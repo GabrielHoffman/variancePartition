@@ -255,6 +255,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 # @return
 # df, sigma, beta, SE of model
 #
+# @details If the Kenward-Roger covariance matrix is not positive definite, the Satterthwaite method is used
+#
 # @export
 # @docType methods
 # @rdname eval_lmm-method
@@ -947,7 +949,7 @@ assign("[.MArrayLM2",
 
 #' eBayes for MArrayLM2
 #'
-#' eBayes for MArrayLM2
+#' eBayes for MArrayLM2.  It 
 #'
 #' @param fit fit
 #' @param proportion proportion
@@ -957,6 +959,7 @@ assign("[.MArrayLM2",
 #' @param winsor.tail.p winsor.tail.p 
 #'
 #' @return results of eBayes
+#' @details Note that empirical Bayes is problematic for linear mixed models.  This function returns its original input with no change.  It is included here just for compatiability compatibility.
 #' @export
 #' @rdname eBayes-method
 #' @aliases eBayes,MArrayLM2-method
@@ -964,7 +967,7 @@ setMethod("eBayes", "MArrayLM2",
 function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
 
-	warning("Empircal Bayes moderated test is no longer supported for dream analysis\nReturning original results for use downstream")
+	warning("Empirical Bayes moderated test is no longer supported for dream analysis\nReturning original results for use downstream")
 
 	fit
 })

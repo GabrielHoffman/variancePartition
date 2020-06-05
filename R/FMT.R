@@ -54,8 +54,20 @@
 ##
 ############################################################################################
 
-
-
+#' Fully moderated t-test
+#'
+#' Fully moderated t-test
+#' 
+#' @param Amean     average log intensity levels of all genes
+#' @param sigmasq   residual variances of all genes
+#' @param df        degrees of freedom for sigmasq
+#' @param span1     span parameter in LOESS smoothing function
+#' @param span2    span parameter in LOESS smoothing function
+#' @param iter1    iteration number in LOESS smoothing function
+#' @param iter2    iteration number in LOESS smoothing function
+#' @param b       number of genes on either side of moving average window when calculating variance of log residual variances
+#'
+#' @import limma
 FMT <- function(Amean, sigmasq, df, span1=0.5, span2=0.95, iter1=4, iter2=4, b=20) {
   
   # library(limma)
@@ -99,7 +111,23 @@ FMT <- function(Amean, sigmasq, df, span1=0.5, span2=0.95, iter1=4, iter2=4, b=2
 }
 
 
-### for zero-inflated variances
+
+#' Fully moderated t-test for zero-inflated variances
+#'
+#' Fully moderated t-test for zero-inflated variances
+#' 
+#' @param Amean     average log intensity levels of all genes
+#' @param sigmasq   residual variances of all genes
+#' @param df        degrees of freedom for variance component
+#' @param span1     span parameter in LOESS smoothing function
+#' @param span2    span parameter in LOESS smoothing function
+#' @param iter1    iteration number in LOESS smoothing function
+#' @param iter2    iteration number in LOESS smoothing function
+#' @param b       number of genes on either side of moving average window when calculating variance of log residual variances
+#' @param sigma.thres threshold for variance being zero
+#'
+#' @import limma
+#' @importFrom stats approx
 FMT.ZI <- function(Amean, sigmasq, df, span1=0.5, span2=0.95, iter1=4, iter2=4, b=20, sigma.thres=1e-7) {
   
   # library(limma)
@@ -200,30 +228,30 @@ FMT.ZI <- function(Amean, sigmasq, df, span1=0.5, span2=0.95, iter1=4, iter2=4, 
 
 
 ### plots
-PlotVarResid <- function(results)
-{
-  eg <- log(results$s2.eg) 
-  egpred <- loessFit(eg, results$Amean, iterations=4, span=0.5)$fitted
-  plot(results$Amean,eg,cex=0.1,xlab="Average log intensity",ylab="Log variance estimate",pch=16,cex.lab=1.5)
-  points(results$Amean,log(results$s2.eg.post),col="blue",cex=0.1)
+# PlotVarResid <- function(results)
+# {
+#   eg <- log(results$s2.eg) 
+#   egpred <- loessFit(eg, results$Amean, iterations=4, span=0.5)$fitted
+#   plot(results$Amean,eg,cex=0.1,xlab="Average log intensity",ylab="Log variance estimate",pch=16,cex.lab=1.5)
+#   points(results$Amean,log(results$s2.eg.post),col="blue",cex=0.1)
 
-  i = order(results$Amean)
-  lines(results$Amean[i],log(results$s02.eg)[i],col="green",cex=0.5,pch=16)
+#   i = order(results$Amean)
+#   lines(results$Amean[i],log(results$s02.eg)[i],col="green",cex=0.5,pch=16)
 
-  legend("topright",c("Residual variance","Posterior variance","Prior variance"),col=c("black","blue","green"),pch=16,cex=0.7)
-}
+#   legend("topright",c("Residual variance","Posterior variance","Prior variance"),col=c("black","blue","green"),pch=16,cex=0.7)
+# }
 
 
 
-PlotVarRandom <- function(results,sigma.thres=1e-7)
-{
-  eg.sub <- log(results$s2.rg) 
-  egpred.sub <- loessFit(eg.sub, results$Amean, iterations=4, span=0.95)$fitted
-  plot(results$Amean,log(results$s2.rg+sigma.thres),cex=0.5,xlab="Average log intensity",ylab="Log variance estimate",pch=16,cex.lab=1.5)
-  points(results$Amean,log(results$s2.rg.post),col="blue",cex=0.1,pch=16)
-  points(results$Amean,log(results$s02.rg),col="green",cex=0.5,pch=16)
-  legend("topright",c("Estimated variance","Posterior variance","Prior variance"),col=c("black","blue","green"),pch=16,cex=0.7)
-}
+# PlotVarRandom <- function(results,sigma.thres=1e-7)
+# {
+#   eg.sub <- log(results$s2.rg) 
+#   egpred.sub <- loessFit(eg.sub, results$Amean, iterations=4, span=0.95)$fitted
+#   plot(results$Amean,log(results$s2.rg+sigma.thres),cex=0.5,xlab="Average log intensity",ylab="Log variance estimate",pch=16,cex.lab=1.5)
+#   points(results$Amean,log(results$s2.rg.post),col="blue",cex=0.1,pch=16)
+#   points(results$Amean,log(results$s02.rg),col="green",cex=0.5,pch=16)
+#   legend("topright",c("Estimated variance","Posterior variance","Prior variance"),col=c("black","blue","green"),pch=16,cex=0.7)
+# }
 
 
 

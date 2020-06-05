@@ -64,10 +64,9 @@
 #' topTable( fit )
 #'
 #' # Compute moderated t-statistics from Yu, et al, 2019
-#' fiteb = eBayesFMT(fit, info, 'Individual')
+#' fiteb = variancePartition:::eBayesFMT(fit, info, 'Individual')
 #' topTable( fiteb )
 #'
-#' @export
 eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 
 	method = match.arg( method)
@@ -94,8 +93,9 @@ eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 	n_reps = mean(table(ids))
 
 	# create data.frame to store results
-	df_fmt = data.frame(Amean = fit$Amean, 
-	                  s2resid = fit$sigma^2)
+	df_fmt = data.frame(Amean 			= fit$Amean, 
+		                s2resid 		= fit$sigma^2,
+		                sq2_Individual 	= attr(fit, "varComp")[[Individual]])
 
 	df_fmt$df.resid <- (n_reps-1)*2*n_groups
 	df_fmt$df.sub <- 2*n_groups - 2
@@ -113,9 +113,7 @@ eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 	# random subject smoothing
 	##########################
 
-	sq2_Individual = attr(fit, "varComp")[[Individual]]
-
-	FMTout.sub <- FMT.ZI(df_fmt$Amean, sq2_Individual, df_fmt$df.sub[1], span1=0.4, span2=0.7)
+	FMTout.sub <- FMT.ZI(df_fmt$Amean, df_fmt$sq2_Individual, df_fmt$df.sub[1], span1=0.4, span2=0.7)
 
 	df_fmt$s2.rg.post <- FMTout.sub$s2.post
 	df_fmt$df.rg.post <- FMTout.sub$df.post
@@ -234,7 +232,7 @@ function (fit, coef = NULL, number = 10, genelist = fit$genes,
         ebcols <- c("s2.post", "df.total", ebcols)
     }
     
-    tab = variancePartition:::.topTableT(fit = fit[c("coefficients", "stdev.unscaled")],
+    tab = .topTableT(fit = fit[c("coefficients", "stdev.unscaled")],
         coef = coef, number = number, genelist = genelist, A = fit$Amean,
         eb = fit[ebcols], adjust.method = adjust.method, sort.by = sort.by,
         resort.by = resort.by, p.value = p.value, lfc = lfc,
