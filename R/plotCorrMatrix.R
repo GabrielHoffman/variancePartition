@@ -48,6 +48,19 @@ plotCorrMatrix = function(C, dendrogram="both", sort=TRUE, margins=c(13,13), key
 		stop("min value is less than -1")
 	}
 
+	# keep only columns that have more than 1 non-NA value
+	keep = apply(C, 2, function(x) sum(!is.na(x)) > 1)
+
+	# avoid error when distances are Inf because all entries are NA
+	if( sum(!keep) > 0){
+		txt = paste(sum(!keep), 'variables only have NA values and were omitted from plot:\n ',  paste0(rownames(C)[!keep], collapse="\n  "))
+
+		warning(txt)
+
+		rownames(C)[!keep]
+		C = C[keep,keep]
+	}
+
 	if( min(C, na.rm=TRUE) < 0){
 		pal = colorRampPalette(c("blue", "white", "red"))
 		lim = c(-1,1)

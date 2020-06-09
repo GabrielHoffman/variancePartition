@@ -3,7 +3,7 @@ CHANGES IN VERSION 1.19.2
 -------------------------
 	o canCorPairs() now returns NA correlation when two variables have 
 		no overlapping observed values
-	o plotCorrMatrix() now handles NA correlation values
+	o plotCorrMatrix() now handles NA correlation values	
 
 CHANGES IN VERSION 1.19.1
 -------------------------
