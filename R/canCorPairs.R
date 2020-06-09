@@ -38,6 +38,7 @@
 #' # Plot correlation matrix
 #' plotCorrMatrix( C )
 #'
+#' @importFrom stats model.matrix.lm cancor
 #' @export
 canCorPairs = function(formula, data, showWarnings=TRUE){
 
@@ -47,7 +48,8 @@ canCorPairs = function(formula, data, showWarnings=TRUE){
 		stop("Invalid formula.\nSuggestion: this function does not handle random effects.\nUse ~ x instead of ~ (1|x) in formula\nBut may be due to other issue")
 	}
 
-	X = model.matrix(formula, data)
+	# keep rows even if they have NA's
+	X = model.matrix.lm(formula, data, na.action="na.pass")
 
 	varLabels = attr(terms(formula),"term.labels")
 
@@ -85,11 +87,24 @@ canCorPairs = function(formula, data, showWarnings=TRUE){
 		key1 = pairs[1,i]
 		key2 = pairs[2,i]
 
-		fit = cancor( variableList[[key1]], variableList[[key2]] ) 
-		C[key1, key2] = sum(fit$cor) / length(fit$cor)
-		C[key2, key1] = C[key1, key2]
+		value = tryCatch( {
+			# keep only rows with no NA's
+			keep1 = apply(variableList[[key1]], 1, function(x) !any(is.na(x)))
+			keep2 = apply(variableList[[key2]], 1, function(x) !any(is.na(x)))
+			keep = keep1 & keep2
 
-		if( showWarnings & (C[key2, key1] > .999) ){
+			fit <- cancor( variableList[[key1]][keep,,drop=FALSE], variableList[[key2]][keep,,drop=FALSE] )
+			sum(fit$cor) / length(fit$cor)
+			},
+			error = function(e){
+			NA
+			}
+			)
+
+		C[key1, key2] = value
+		C[key2, key1] = value
+
+		if( showWarnings & !is.na(value) & (value > .999) ){
 			colinear_set = c(colinear_set, paste(key1, "and", key2))
 		}
 	}
