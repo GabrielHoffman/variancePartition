@@ -1,4 +1,8 @@
 
+CHANGES IN VERSION 1.19.3
+-------------------------
+	o add new FAQ.Rmd
+
 CHANGES IN VERSION 1.19.2
 -------------------------
 	o canCorPairs() now returns NA correlation when two variables have 

@@ -1,3 +1,25 @@
+
+
+library(BiocParallel)
+
+# globally specify that all multithreading using bpiterate from BiocParallel
+# should use 8 cores
+register(SnowParam(8))
+
+# By default it is set to the max number of CPUs
+# If you have a very long interactive session, this can crash and you get the error you see
+
+Alternatively, you can specify and restart the parallel backend every function call
+
+
+fitExtractVarPartModel(..., BPPARAM=SnowParam(8))
+
+fitVarPartModel(..., BPPARAM=SnowParam(8))
+
+dream(..., BPPARAM=SnowParam(8))
+
+
+
 # July 18, 2018
 Check if there is variation in each gene.  
 	else throw error

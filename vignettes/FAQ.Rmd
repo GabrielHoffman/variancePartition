@@ -1,0 +1,132 @@
+---
+title: "Frequently asked questions"
+author:
+- name: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
+  affiliation: | 
+    Icahn School of Medicine at Mount Sinai, New York
+abstract: >
+  Errors and warnings in `variancePartition` are mostly designed to let the user know that there is an isssue with the model.  Note that some of these warnings and errors can be overridden by specifying `suppressWarnings=TRUE` for `dream()` and `showWarnings=FALSE` for `fitExtractVarPartModel()` and `fitVarPartModel()`.
+
+  Here is a guide to interperting interpreting warnings and errors from `variancePartition` and `dream`.  Note that some of the document can be found in "1) Tutorial on using variancePartition".
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    toc_depth: 3
+    fig_width: 5
+bibliography: library.bib
+vignette: >
+  %\VignetteIndexEntry{5) Frequently asked questions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
+---
+
+<!---
+cd /Users/gabrielhoffman/workspace/repos
+R
+library('knitr')
+rmarkdown::render('variancePartition/vignettes/FAQ.Rmd')
+
+
+rmarkdown::render('FAQ.Rmd')
+
+--->
+
+```{r setup, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(tidy=FALSE, cache=TRUE,
+                      dev="png",
+                      package.startup.message = FALSE,
+                      message=FALSE, error=FALSE, warning=TRUE)
+options(width=100)
+```	
+
+
+# Current GitHub issues
+See [GitHub page](https://github.com/GabrielHoffman/variancePartition/issues) for up-to-date responses to users' questions.
+
+# Warnings
+
++ `No Intercept term was specified in the formula:
+ The results will not behave as expected and may be very wrong!!`
+
+  An intercept (i.e. mean term) must be specified order for the results to be statistically valid.  Otherwise, the variance percentages will be *very* overestimated.
+
+* `Categorical variables modeled as fixed effect: The results will not behave as expected and may be very wrong!!`
+
+  If a linear mixed model is used, all categorical variables must be modeled as a random effect.  Alternatively, a fixed effect model can be used by modeling all variables as fixed. 
+
+* `Cannot have more than one varying coefficient term:\newline The results will not behave as expected and may be very wrong!!`
+
+  Only one varying coefficient term can be specified.  For example, the formula `~(Tissue+0|Individual) + (Batch+0|Individual)` contains two varying coefficient terms and the results from this analysis are not easily interpretable.  Only a formula with one term like `(Tissue+0|Individual)` is allowed. 
+
+
+# Errors
+
+* `Colinear score > .99: Covariates in the formula are so strongly correlated that the parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem`
+* `Error in asMethod(object) : not a positive definite matrix`
+* `In vcov.merMod(fit) : Computed variance-covariance matrix problem: not a positive definite matrix; returning NA matrix`
+* `fixed-effect model matrix is rank deficient so dropping 26 columns / coefficients`
+
+  Including variables that are highly correlated can produce misleading results (see Section "Detecting problems caused by collinearity of variables").  In this case, parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem.
+
+
+* `Error in checkNlevels(reTrms$flist, n = n, control): number of levels of each grouping factor must be < number of observations`
+
+  This arises when using a varying coefficient model that examines the effect of one variable inside subsets of the data defined by another: `~(A+0|B)`.  See Section "Variation within multiple subsets of the data". There must be enough observations of each level of the variable B with each level of variable A.  Consider an example with samples from multiple tissues from a set of individual where we are interested in the variation across individuals within each tissue using the formula: `~(Tissue+0|Individual)`.  This analysis will only work if there are multiple samples from the same individual in at least one tissue.  If all tissues only have one sample per individual, the analysis will fail and `variancePartition` will give this error.
+
+* `Problem with varying coefficient model in formula: should have form (A+0|B)`
+
+  When analyzing the variation of one variable inside another (see Section "Variation within multiple subsets of the data".), the formula most be specified as `(Tissue+0|Individual)`.  This error occurs when the formula contains `(Tissue|Individual)` instead.
+
+* `fatal error in wrapper code`
+* `Error in mcfork() : unable to fork, possible reason: Cannot allocate memory`
+* `Error: cannot allocate buffer`
+
+  This error occurs when `fitVarPartModel` uses too many threads and takes up too much memory.  The easiest solution is to use `fitExtractVarPartModel` instead.  Occasionally there is an issue in the parallel backend that is out of my control.  Using fewer threads or restarting R will solve the problem. 
+
+## Errors: Problems removing samples with NA/NaN/Inf values
+
+`variancePartition` fits a regression model for each gene and drops samples that have NA/NaN/Inf values in each model fit.  This is generally seamless but can cause an issue when a variable specified in the formula no longer varies within the subset of samples that are retained.  Consider an example with variables for sex and age where age is NA for all males samples.  Dropping samples with invalid values for variables included in the formula will retain only female samples.  This will cause `variancePartition` to throw an error because there is now no variation in sex in the retained subset of the data.  This can be resolved by removing either age or sex from the formula.
+
+This situtation is indicated by the following errors:   
+
+* `Error: grouping factors must have > 1 sampled level`
+
+* `Error: Invalid grouping factor specification, Individual`
+
+*  `Error in contrasts<-(*tmp*, value = contr.funs[1 + isOF[nn]]): contrasts can be applied only to factors with 2 or more levels`
+
+* `Error in checkNlevels(reTrms\$flist, n = n, control): grouping factors must have > 1 sampled level`
+
+
+
+## Errors with BiocParallel multithreading backend
+
+* `Error: 'bpiterate' receive data failed: error reading from connection`
+
+* `Error in serialize(data, node$con, xdr = FALSE) : ignoring SIGPIPE signal`
+
+    `variancePartition` uses the `BiocParallel` package to run analysis in parallel across multiple cores.  If there is an issue with the parallel backend you might see these errors.  This often occurs in long interactive sessions, or if you manually kill a function running in parallel.  There are two ways to address this issue.  
+
+  + __Global__: set the number of threads to be a smaller number.  I have found that reducing the number of threads reduces the chance of random failures like this.
+
+    ```{r, eval=FALSE, echo=TRUE}
+    library(BiocParallel)
+
+    # globally specify that all multithreading using bpiterate from BiocParallel
+    # should use 8 cores
+    register(SnowParam(8))
+    ```
+
+  + __Local__: set the number of theads at each function call.  This re-initializes the parallel backend and should address the error 
+
+    ```{r, eval=FALSE, echo=TRUE}
+    fitExtractVarPartModel(..., BPPARAM=SnowParam(8))
+
+    fitVarPartModel(..., BPPARAM=SnowParam(8))
+
+    dream(..., BPPARAM=SnowParam(8))
+
+    voomWithDreamWeights(...,BPPARAM=SnowParam(8))
+    ```

@@ -12,3 +12,4 @@ This is a developmental version.
 
 For stable release see [Bioconductor version](http://bioconductor.org/packages/variancePartition/)
 
+See [frequently asked questions](http://bioconductor.org/packages/release/bioc/vignettes/variancePartition/inst/doc/FAQ.html)

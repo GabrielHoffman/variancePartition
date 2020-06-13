@@ -173,10 +173,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	# detect error when variable in formula does not exist
 	if( inherits(possibleError, "error") ){
-		if( grep("object '.*' not found", possibleError$message) == 1){
+		err = grep("object '.*' not found", possibleError$message)
+		if( length(err) > 0 ){
 			stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
-		}else{
-			stop( possibleError$message )
 		}
 	}
 	
@@ -478,10 +477,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 	# detect error when variable in formula does not exist
 	if( inherits(possibleError, "error") ){
-		if( grep("object '.*' not found", possibleError$message) == 1){
+		err = grep("object '.*' not found", possibleError$message)
+		if( length(err) > 0 ){
 			stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
-		}else{
-			stop( possibleError$message )
 		}
 	}
 
