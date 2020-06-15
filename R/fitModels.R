@@ -6,7 +6,7 @@
 #' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}
 #' @param data \code{data.frame} with columns corresponding to formula 
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option.  Strongly discourage against changing this option, but here for compatibility.
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  See Details.  
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
 #' @param showWarnings show warnings about model fit (default TRUE)
@@ -44,6 +44,9 @@
 #' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lm/lmer.
 #'
 #' Since this function returns a list of each model fit, using this function is slower and uses more memory than \code{fitExtractVarPartModel()}.
+#'
+#' \code{REML=FALSE} uses maximum likelihood to estimate variance fractions.  This approach produced unbiased estimates, while \code{REML=TRUE} can show substantial bias.  See Vignette "3) Theory and practice of random effects and REML"
+#'
 #' @examples
 #'
 #' # load library
@@ -341,7 +344,7 @@ setMethod("fitVarPartModel", "sparseMatrix",
 #' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}
 #' @param data \code{data.frame} with columns corresponding to formula 
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.   Strongly discourage against changing this option, but here for compatibility.
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.   See Details.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if \code{useWeights} is TRUE 
 #' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
@@ -369,6 +372,9 @@ setMethod("fitVarPartModel", "sparseMatrix",
 #' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using \code{BiocParallel} to run in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
 #' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to \code{lm}/\code{lmer}.
+#'
+#' \code{REML=FALSE} uses maximum likelihood to estimate variance fractions.  This approach produced unbiased estimates, while \code{REML=TRUE} can show substantial bias.  See Vignette "3) Theory and practice of random effects and REML"
+#'
 #' @examples
 #'
 #' # load library

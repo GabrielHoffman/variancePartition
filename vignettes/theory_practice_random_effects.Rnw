@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{3) Theory and practice of random effects}
+%\VignetteIndexEntry{3) Theory and practice of random effects and REML}
 %\VignettePackage{variancePartition}
 %\VignetteEngine{knitr::knitr}
 
@@ -23,12 +23,13 @@ BiocStyle::latex()
 
 \usepackage[position=top]{subfig}
 \usepackage{blkarray}
+\usepackage{hyperref}
 
-\bioctitle[Theory and Practice]{Theory and Practice\\of random effects in \\\Biocpkg{variancePartition}}
+\bioctitle[Theory and Practice]{Theory and Practice\\of random effects and REML in \\\Biocpkg{variancePartition} and \Rpackage{dream}}
 
 \author{Gabriel Hoffman\\ 
 \small{Pamela Sklar Division of Psychiatric Genomics} \\
-\small{Icahn Institute for Genomics and Multiscale Biology}\\
+\small{Icahn Institute for Data Science and Genomic Technology}\\
 \small{Department of Genetics and Genomic Sciences}\\
 \small{Icahn School of Medicine at Mount Sinai}}
 
@@ -37,11 +38,14 @@ BiocStyle::latex()
 
 \maketitle
 
-The distinction between modeling a variable as a fixed versus a random effect depends on the goal of the statistical analysis.  While some theory and software make a strong distinction, \Rpackage{variancePartition} takes a different approach based on the goal of this type of analysis.  
+The distinction between modeling a variable as a fixed versus a random effect depends on the goal of the statistical analysis.  While some theory and software make a strong distinction, \Rpackage{variancePartition} and \Rpackage{dream}  take different approaches based on the goal of each type of analysis.  
 
-	Why?
+	Here we consider the distinction between fixed and random effects, and the usage of REML in \Rpackage{variancePartition} and \Rpackage{dream}.
 
 \pagebreak
+
+\section{\Biocpkg{variancePartition}: estimating contributions to expression variation}
+
 
 In traditional statistics and biostatistics, there is a strong distinction between modeling categorical variants as fixed and random effects.  Random effects correspond to a sample of units from a larger population, while fixed effects correspond to properties of specific individuals.  Random effects are typically treated as nuisance variables and integrated out, and hypothesis testing is performed on the fixed effect.  
 
@@ -104,13 +108,23 @@ r2beta(fit)
 
 So the formulas are different. But why require categorical variables as random effects?
 
-At practical level, categorical variables with too many levels are problematic.  Using a categorical variable with 200 categories as a fixed effect, is statistically unstable.  There are so many degrees of freedom that that variable will absorb a lot of variance even under the null.   Statistically, estimating the variance fraction for a variable with many categories can be biased if that variable is a fixed effect.  Therefore, \Rpackage{variancePartition} requires all categorical variables to be random effects.  Modeling this variable as a random effect produces unbiased estimates of variance fractions in practice (see simulations in the supplement of the paper; Section 1.5).
+At practical level, categorical variables with too many levels are problematic.  Using a categorical variable with 200 categories as a fixed effect is statistically unstable.  There are so many degrees of freedom that that variable will absorb a lot of variance even under the null.   Statistically, estimating the variance fraction for a variable with many categories can be biased if that variable is a fixed effect.  Therefore, \Rpackage{variancePartition} requires all categorical variables to be random effects.  Modeling this variable as a random effect produces unbiased estimates of variance fractions in practice.  See simulations in the Supplement (section 1.5) of \href{https://doi.org/10.1186/s12859-016-1323-z}{Hoffman and Schadt (2016)}.
 
 The distinction between fixed and random effects is important in the \Rpackage{r2glmm} formulation because it affects which variables are put in the denominator.  So choosing to model a variable as a fixed versus random effect will definitely change the estimated fraction.  
 
 Yet for the \Rpackage{variancePartition} formulation, all variables are in the denominator and it isn`t affected by the fixed/random decision.  Moreover, using a random effect empirically reduces the bias of the estimated fraction.     
 
-Finally, why use maximum likelihood to estimate the paramters instead of the default REML (\Rcode{REML=FALSE})?  Maximum likelihood fits all parameters jointly so that it estimates the fixed and random effects together.  This is essential if we want to compare fixed and random effects later.  Conversely, REML estimates the fixed effects by integrating out the random effects.  This implicitly removes the random effects from the denominator when evaluating the variance fraction.  REML treats random effects as nuisance variables to be integrated out.  Conversely, \Rpackage{variancePartition} considers random effects to be a core part of the analysis.
+Finally, why use maximum likelihood to estimate the paramters instead of the default REML (\Rcode{REML=FALSE})?  Maximum likelihood fits all parameters jointly so that it estimates the fixed and random effects together.  This is essential if we want to compare fixed and random effects later.  Conversely, REML estimates the random effects by removing the fixed effects from the response before estimation.  This implicitly removes the fixed effects from the denominator when evaluating the variance fraction.  REML treats fixed effects as nuisance variables, while \Rpackage{variancePartition} considers fixed effects to be a core part of the analysis.
+
+While REML produced unbiased estimates of the variance components, the goal of \Rpackage{variancePartition} is to estimate the variance fractions for fixed and random effects jointly.  In simulations from the Supplement (section 1.5) of \href{https://doi.org/10.1186/s12859-016-1323-z}{Hoffman and Schadt (2016)}, REML produced biased estimates of the variance fractions while maximum likelihood estimates are unbiased.
+
+
+\section{\Biocpkg{dream}: hypothesis testing}
+
+While \Rpackage{dream} is also based on a linear mixed model, the goal of this analysis is to perform hypothesis testing on fixed effects.  Random effects are treated as nuisance variables to be integrated out, and the approximate null distribution of a t- or F-statistic is constructed from the model fit.  
+
+Since the goal of the analysis is different, the consideration of using REML versus ML is different than above.  While \Rcode{REML=TRUE} is required by \Rcode{lmerTest} called by \Rcode{dream} when \Rcode{ddf='Kenward-Roger'}, \Rcode{ddf='Satterthwaite'} can be used with \Rcode{REML} as either \Rcode{TRUE} or \Rcode{FALSE}.  Since the Kenward-Roger method gave the best power with an accurate control of false positive rate in our simulations, and since the Satterthwaite method with \Rcode{REML=TRUE} gives p-values that are slightly closer to the Kenward-Roger p-values, \Rcode{REML=TRUE} is set as the default.
+
 
 <<resetOptions, results="hide", echo=FALSE>>=
 options(prompt="> ", continue="+ ")

@@ -1,4 +1,8 @@
 
+CHANGES IN VERSION 1.19.4
+-------------------------
+	o Update vignette #3, and update documentation of REML argument	
+
 CHANGES IN VERSION 1.19.3
 -------------------------
 	o add new FAQ.Rmd

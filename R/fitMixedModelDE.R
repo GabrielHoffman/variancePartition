@@ -348,7 +348,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
-#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
+#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
 #' @param control control settings for \code{lmer()}
@@ -356,7 +356,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
 #' @param computeResiduals if TRUE, compute residuals and extract with \code{residuals(fit)}.  Setting to false saves memory
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option, but here for compatibility.
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.
 #' @param ... Additional arguments for \code{lmer()} or \code{lm()}
 #' 
 #' @return 
@@ -374,6 +374,10 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lmer.
 #'
 #' Hypothesis tests and degrees of freedom are producted by \code{lmerTest} and \code{pbkrtest} pacakges
+#'
+#' While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', ddf='Satterthwaite' can be used with \code{REML} as \code{TRUE} or \code{FALSE}.  Since the Kenward-Roger method gave the best power with an accurate control of false positive rate in our simulations, and since the Satterthwaite method with REML=TRUE gives p-values that are slightly closer to the Kenward-Roger p-values, \code{REML=TRUE} is the default.  See Vignette "3) Theory and practice of random effects and REML"
+#'
+#'
 #' @examples
 #'
 #' # load library

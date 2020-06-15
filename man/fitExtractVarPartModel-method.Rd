@@ -113,7 +113,7 @@ fitExtractVarPartModel(
 
 \item{data}{\code{data.frame} with columns corresponding to formula}
 
-\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.   Strongly discourage against changing this option, but here for compatibility.}
+\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.   See Details.}
 
 \item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified}
 
@@ -153,6 +153,8 @@ In both cases, \code{useWeights=TRUE} causes \code{weightsMatrix[j,]} to be incl
 Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using \code{BiocParallel} to run in parallel.  Parallel processing must be enabled before calling this function.  See below.
 
 The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to \code{lm}/\code{lmer}.
+
+\code{REML=FALSE} uses maximum likelihood to estimate variance fractions.  This approach produced unbiased estimates, while \code{REML=TRUE} can show substantial bias.  See Vignette "3) Theory and practice of random effects and REML"
 }
 \examples{
 
