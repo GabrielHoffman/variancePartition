@@ -271,6 +271,11 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		    reduce.in.order=TRUE,	
 			BPPARAM=BPPARAM)	
 
+		# if there is an error in evaluating fxn (usually in parallel backend)
+		if( is(res, 'remote_error') ){
+			stop("Error evaluating fxn:\n\n", res)
+		}
+
 		method = "lmer"
 	}
 
