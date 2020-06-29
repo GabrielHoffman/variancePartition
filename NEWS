@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.19.5
+-------------------------	
+	o Better error catching when running fitVarPartModel() with fxn that fails
+	o add get_prediction() function
+		- the following code now can be run in parallel
+		fitList = fitVarPartModel( Y, ~ (1|Batch), data, fxn = function(fit){
+		           B = variancePartition::get_prediction(fit, ~(1|Batch))
+		           fit@resp$y - B
+		        }, BPPARAM=SnowParam(3))
 
 CHANGES IN VERSION 1.19.4
 -------------------------
