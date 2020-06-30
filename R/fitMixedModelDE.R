@@ -216,7 +216,11 @@ getContrast = function( exprObj, formula, data, coefficient){
 		L = rep(0, ncol(design))
 		names(L) = colnames(design)
 
-	}else{
+		 # detect error when variable in formula does not exist
+	}else if( inherits(possibleError, "error") && length( grep("object '.*' not found", possibleError$message)) > 0 ){
+		stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
+	}
+	else{
 
 		if( inherits(possibleError, "error") && grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
 			stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))

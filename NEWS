@@ -1,3 +1,38 @@
+
+CHANGES IN VERSION 1.18.1 Bug fixes
+-------------------------	
+	o New gives meaning full error message for dream(), etc when variable is not found in data.
+
+	o Better error catching when running fitVarPartModel() with fxn that fails
+	o add get_prediction() function
+		- the following code now can be run in parallel
+		fitList = fitVarPartModel( Y, ~ (1|Batch), data, fxn = function(fit){
+		           B = variancePartition::get_prediction(fit, ~(1|Batch))
+		           fit@resp$y - B
+		        }, BPPARAM=SnowParam(3))
+
+	o Update vignette #3, and update documentation of REML argument	
+
+	o add new FAQ.Rmd
+
+	o canCorPairs() now returns NA correlation when two variables have 
+		no overlapping observed values
+	o plotCorrMatrix() now handles NA correlation values	
+
+	o Improve documentation
+	o move location of eBayesFMT code
+
+	o Clean up some code and add documentation
+	o document ebayesFMT
+
+	o Clean up some code and add documentation
+	o compute effective degrees of freedom for each model
+
+CHANGES IN VERSION 1.18.0
+-------------------------
+	o Bioconductor freeze
+
+>>>>>>> a1b5a31... 1.19.6
 CHANGES IN VERSION 1.17.10
 -------------------------
 	o fix issue returning residuals from limma
