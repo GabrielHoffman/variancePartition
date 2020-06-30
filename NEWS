@@ -1,5 +1,4 @@
-
-CHANGES IN VERSION 1.18.1 Bug fixes
+CHANGES IN VERSION 1.18.2 Bug fixes
 -------------------------	
 	o New gives meaning full error message for dream(), etc when variable is not found in data.
 
@@ -32,7 +31,6 @@ CHANGES IN VERSION 1.18.0
 -------------------------
 	o Bioconductor freeze
 
->>>>>>> a1b5a31... 1.19.6
 CHANGES IN VERSION 1.17.10
 -------------------------
 	o fix issue returning residuals from limma
