@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.19.6
+-------------------------	
+	o New gives meaning full error message for dream(), etc when variable is not found in data.
+
 CHANGES IN VERSION 1.19.5
 -------------------------	
 	o Better error catching when running fitVarPartModel() with fxn that fails
