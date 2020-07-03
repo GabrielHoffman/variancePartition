@@ -3,21 +3,21 @@
 #' 
 #' Fit linear (mixed) model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables.
 #'
-#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
-#' @param data data.frame with columns corresponding to formula 
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option
-#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
-#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
+#' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}
+#' @param data \code{data.frame} with columns corresponding to formula 
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  See Details.  
+#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
+#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
 #' @param showWarnings show warnings about model fit (default TRUE)
 #' @param fxn apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself
-#' @param control control settings for lmer()
+#' @param control control settings for \code{lmer()}
 #' @param BPPARAM parameters for parallel evaluation
 #' @param quiet suppress message, default FALSE
-#' @param ... Additional arguments for lmer() or lm()
+#' @param ... Additional arguments for \code{lmer()} or \code{lm()}
 #' 
 #' @return
-#' list() of where each entry is a model fit produced by lmer() or lm()
+#' \code{list()} of where each entry is a model fit produced by \code{lmer()} or \code{lm()}
 #' 
 #' @import splines gplots colorRamps lme4 pbkrtest ggplot2 limma foreach progress reshape2 iterators doParallel Biobase methods utils
 # dendextend 
@@ -29,21 +29,24 @@
 #' @importFrom scales rescale
 #'
 #' @details 
-#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
+#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
 #'
-#' fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)
+#' \code{fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)}
 #'
-#' If there are no random effects, so formula is ~ a + b + c, a 'standard' linear model is used:
+#' If there are no random effects, so formula is \code{~ a + b + c}, a 'standard' linear model is used:
 #'
-#' fit <- lm( exprObj[j,] ~ a + b + c, data=data)
+#' \code{fit <- lm( exprObj[j,] ~ a + b + c, data=data)}
 #'
-#' In both cases, useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regression model.
+#' In both cases, \code{useWeights=TRUE} causes \code{weightsMatrix[j,]} to be included as weights in the regression model.
 #'
-#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
+#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using \code{BiocParallel} to run in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
 #' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lm/lmer.
 #'
-#' Since this function returns a list of each model fit, using this function is slower and uses more memory than fitExtractVarPartModel().
+#' Since this function returns a list of each model fit, using this function is slower and uses more memory than \code{fitExtractVarPartModel()}.
+#'
+#' \code{REML=FALSE} uses maximum likelihood to estimate variance fractions.  This approach produced unbiased estimates, while \code{REML=TRUE} can show substantial bias.  See Vignette "3) Theory and practice of random effects and REML"
+#'
 #' @examples
 #'
 #' # load library
@@ -156,28 +159,31 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
 	}
 
-	# add response (i.e. exprObj[,j] to formula
-	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
+	# add response (i.e. exprObj[j,]) to formula
+	# Use term 'responsePlaceholder' to store the value of reponse j (exprObj[j,])
+	# This is not an ideal way to structure the evaluation of response j.
+	# 	The formula is evaluated a different scope, (i.e. within lmer()), and there is no need to pass the
+	# 	entire exprObj object into that scope.  With lexical scope, I found it was possible that  
+	# 	the value of exprObj[j,] could be different when evaluated in the lower scope
+	# This placeholder term addresses that issue
+	form = paste( "responsePlaceholder$E", paste(as.character( formula), collapse=''))
 
 	# run lmer() to see if the model has random effects
 	# if less run lmer() in the loop
 	# else run lm()
-	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,...,control=control ), error = function(e) e)
 
 	# detect error when variable in formula does not exist
 	if( inherits(possibleError, "error") ){
-		if( grep("object '.*' not found", possibleError$message) == 1){
+		err = grep("object '.*' not found", possibleError$message)
+		if( length(err) > 0 ){
 			stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
-		}else{
-			stop( possibleError$message )
 		}
 	}
 	
 	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
 			total = nrow(exprObj), width= 60, clear=FALSE)
-
-	# pids = .get_pids()
 
 	timeStart = proc.time()
 
@@ -191,14 +197,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
-		res <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
+		res <- foreach(responsePlaceholder=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
 			# fit linear mixed model
-			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
-
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
+			fit = lm( eval(parse(text=form)), data=data, weights=responsePlaceholder$weights,na.action=stats::na.exclude,...)
 
 			# apply function
 			fxn( fit )
@@ -214,7 +215,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+		responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
@@ -229,31 +230,22 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		if( !quiet ) message("Memory usage to store result: >", format(objSize, units = "auto"))
 
-		# if( showTime > .01 ){
-		# 	message("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		# }
-
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
 		# specify gene explicitly in data 
 		# required for downstream processing with lmerTest
-		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
+		data2 = data.frame(data, expr=responsePlaceholder$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
 		# Define function for parallel evaluation
-		.eval_models = function(gene14643, data2, form, REML, theta, fxn, control, na.action=stats::na.exclude,...){
+		.eval_models = function(responsePlaceholder, data2, form, REML, theta, fxn, control, na.action=stats::na.exclude,...){
 
 			# modify data2 for this gene
-			data2$expr = gene14643$E
+			data2$expr = responsePlaceholder$E
  
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=gene14643$weights, control=control,na.action=na.action)
-				#, start=theta
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
+			fit = lmer( eval(parse(text=form)), data=data2, ..., REML=REML, weights=responsePlaceholder$weights, control=control,na.action=na.action)
 
 			# apply function
 			fxn( fit )
@@ -266,15 +258,8 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			})
 		}
 
-
 		# Evaluate function
 		###################
-		# it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
-		# fxn2 = function(fit){
-		# 	list(fxn(fit))
-		# }
-
-		# res <- bplapply( it, .eval_model, form=form, data2=data2, REML=REML, theta=fitInit@theta, fxn=fxn2, control=control,..., BPPARAM=BPPARAM)
 		
 		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
 		
@@ -284,15 +269,17 @@ setGeneric("fitVarPartModel", signature="exprObj",
 			data2=data2, form=form, REML=REML, theta=fitInit@theta, fxn=fxn, control=control,..., 
 			 REDUCE=c,
 		    reduce.in.order=TRUE,	
-			BPPARAM=BPPARAM)
+			BPPARAM=BPPARAM)	
 
-
-		# res = lapply(res, function(x) x[[1]])		
+		# if there is an error in evaluating fxn (usually in parallel backend)
+		if( is(res, 'remote_error') ){
+			stop("Error evaluating fxn:\n\n", res)
+		}
 
 		method = "lmer"
 	}
 
-	# pb$update( gene14643$max_iter / gene14643$max_iter )
+	# pb$update( responsePlaceholder$max_iter / responsePlaceholder$max_iter )
 	if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
 
 	# set name of each entry
@@ -359,37 +346,40 @@ setMethod("fitVarPartModel", "sparseMatrix",
 #' 
 #' Fit linear (mixed) model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Report fraction of variance attributable to each variable 
 #'
-#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)
-#' @param data data.frame with columns corresponding to formula 
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option
-#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
-#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
+#' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}
+#' @param data \code{data.frame} with columns corresponding to formula 
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.   See Details.
+#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
+#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if \code{useWeights} is TRUE 
 #' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
 #' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables.  This overrides the previous argument, so all variables are include in adjust.
 #' @param showWarnings show warnings about model fit (default TRUE)
-#' @param control control settings for lmer()
+#' @param control control settings for \code{lmer()}
 #' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
-#' @param ... Additional arguments for lmer() or lm()
+#' @param ... Additional arguments for \code{lmer()} or \code{lm()}
 #' 
 #' @return
-#' list() of where each entry is a model fit produced by lmer() or lm()
+#' list() of where each entry is a model fit produced by \code{lmer()} or \code{lm()}
 #'
 #' @details 
-#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
+#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
 #'
 #' fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)
 #'
 #' If there are no random effects, so formula is ~ a + b + c, a 'standard' linear model is used:
 #'
-#' fit <- lm( exprObj[j,] ~ a + b + c, data=data)
+#' \code{fit <- lm( exprObj[j,] ~ a + b + c, data=data)}
 #'
-#' In both cases, useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regression model.
+#' In both cases, \code{useWeights=TRUE} causes \code{weightsMatrix[j,]} to be included as weights in the regression model.
 #'
-#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
+#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using \code{BiocParallel} to run in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
-#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lm/lmer.
+#' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to \code{lm}/\code{lmer}.
+#'
+#' \code{REML=FALSE} uses maximum likelihood to estimate variance fractions.  This approach produced unbiased estimates, while \code{REML=TRUE} can show substantial bias.  See Vignette "3) Theory and practice of random effects and REML"
+#'
 #' @examples
 #'
 #' # load library
@@ -488,34 +478,26 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	}
 
 	# add response (i.e. exprObj[,j] to formula
-	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
-
-	# control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient") 
-
-	# control = lme4::lmerControl(calc.derivs=FALSE, optCtrl=list(maxfun=1), check.rankX="stop.deficient" )
+	form = paste( "responsePlaceholder$E", paste(as.character( formula), collapse=''))
 
 	# run lmer() to see if the model has random effects
-	# if less run lmer() in the loop
+	# if yes run lmer() in the loop
 	# else run lm()
-	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data, control=control,... ), error = function(e) e)
 
 	# detect error when variable in formula does not exist
 	if( inherits(possibleError, "error") ){
-		if( grep("object '.*' not found", possibleError$message) == 1){
+		err = grep("object '.*' not found", possibleError$message)
+		if( length(err) > 0 ){
 			stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
-		}else{
-			stop( possibleError$message )
 		}
 	}
 
-	if( !quiet) pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",,
+	if( !quiet) pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta",
 			total = nrow(exprObj), width= 60, clear=FALSE)
 
-	# pids = .get_pids()
-
-	mesg <- "No random effects terms specified in formula"
-	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
+	if( ! .isMixedModelFormula( formula ) ){
 
 		# fit the model for testing
 		fit <- lm( eval(parse(text=form)), data=data,...)
@@ -527,15 +509,10 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		timeStart = proc.time()
 
-		varPart <- foreach(gene14643=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
+		varPart <- foreach(responsePlaceholder=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
 
 			# fit linear mixed model
-			fit = lm( eval(parse(text=form)), data=data, weights=gene14643$weights,na.action=stats::na.exclude,...)
-
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
+			fit = lm( eval(parse(text=form)), data=data, weights=responsePlaceholder$weights,na.action=stats::na.exclude,...)
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
@@ -550,18 +527,11 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+		responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
 		fitInit <- lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control)
 		timediff = proc.time() - timeStart
-
-		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
-		# showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
-
-		# if( showTime > .01 ){
-		# 	message("Projected run time: ~", paste(format(showTime, digits=1), "min"), "\n")
-		# }
 
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
@@ -569,14 +539,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		timeStart = proc.time()
 
 		# Define function for parallel evaluation
-		.eval_models = function(gene14643, data, form, REML, theta, control, na.action=stats::na.exclude,...){
+		.eval_models = function(responsePlaceholder, data, form, REML, theta, control, na.action=stats::na.exclude,...){
 			# fit linear mixed model
-			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=gene14643$weights, control=control,na.action=na.action)
-			# , start=theta
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
+			fit = lmer( eval(parse(text=form)), data=data, ..., REML=REML, weights=responsePlaceholder$weights, control=control,na.action=na.action)
 
 			calcVarPart( fit, adjust, adjustAll, showWarnings, colinearityCutoff )
 		}
@@ -591,9 +556,6 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# Evaluate function
 		####################
 
-		# it = exprIter(exprObj, weightsMatrix, useWeights, iterCount = "icount")
-
-		# varPart <- bplapply( it, .eval_model, data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
 		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
 
 		if( !quiet) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
@@ -607,7 +569,6 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		modelType = "linear mixed model"
 	}
 
-	# pb$update( gene14643$max_iter / gene14643$max_iter )
 	message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))

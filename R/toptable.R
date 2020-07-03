@@ -1,8 +1,8 @@
 
 
-#' toptable for MArrayLMM_lmer
+#' toptable for MArrayLM2
 #'
-#' toptable for MArrayLMM_lmer
+#' toptable for MArrayLM2
 #'
 #' @param fit fit
 #' @param coef coef

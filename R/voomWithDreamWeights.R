@@ -1,26 +1,26 @@
 
 
 
-#' Transform RNA-Seq Data Ready for Linear Mixed Modelling with dream()
+#' Transform RNA-Seq Data Ready for Linear Mixed Modelling with \code{dream()}
 #'
-#' Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with dream().   This method is the same as limma::voom(), except that it allows random effects in the formula
+#' Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with \code{dream()}.   This method is the same as limma::voom(), except that it allows random effects in the formula
 #'
-#' @param counts a numeric 'matrix' containing raw counts, or an 'ExpressionSet' containing raw counts, or a 'DGEList' object. Counts must be non-negative and NAs are not permitted.
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
-#' @param data data.frame with columns corresponding to formula 
-#' @param lib.size numeric vector containing total library sizes for each sample.  Defaults to the normalized (effective) library sizes in 'counts' if 'counts' is a 'DGEList' or to the columnwise count totals if 'counts' is a matrix.
-#' @param normalize.method the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the 'method' argument of 'normalizeBetweenArrays' when the data is single-channel.  Any normalization factors found in 'counts' will still be used even if 'normalize.method'="none".
+#' @param counts a numeric \code{matrix} containing raw counts, or an \code{ExpressionSet} containing raw counts, or a \code{DGEList} object. Counts must be non-negative and NAs are not permitted.
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by contrasts.fit() are run.
+#' @param data \code{data.frame} with columns corresponding to formula 
+#' @param lib.size numeric vector containing total library sizes for each sample.  Defaults to the normalized (effective) library sizes in \code{counts} if \code{counts} is a \code{DGEList} or to the columnwise count totals if \code{counts} is a matrix.
+#' @param normalize.method the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the \code{method} argument of \code{normalizeBetweenArrays} when the data is single-channel.  Any normalization factors found in \code{counts} will still be used even if \code{normalize.method="none"}.
 #' @param span width of the lowess smoothing window as a proportion.
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
 #' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
-#' @param      ... other arguments are passed to 'lmer'.
+#' @param      ... other arguments are passed to \code{lmer}.
 #'
 #' @return
-#' An 'EList' object just like the result of limma::voom()
+#' An \code{EList} object just like the result of \code{limma::voom()}
 #'
-#' @details Adapted from vomm() in limma v3.40.2
+#' @details Adapted from \code{vomm()} in \code{limma} v3.40.2
 #' @seealso limma::voom()
 #' @examples
 #' # library(variancePartition)
@@ -94,7 +94,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	# Fit regression model
 	#---------------------
 
-	if( .isMixedModelFormula( formula, data) ){
+	if( .isMixedModelFormula( formula ) ){
 
 		if( missing(data) ){
 			stop("Must specify argument 'data'\n")
@@ -180,7 +180,9 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	#	var0 <- var(log2(0.5*1e6/(lib.size+0.5)))^0.25
 	#	var0 <- max(var0,1e-6)
 	#	l$y <- c(var0, l$y)
-	f <- approxfun(l, rule=2)
+	suppressWarnings({
+		f <- approxfun(l, rule=2)
+		})
 
 	fitted.cpm <- 2^fitted.values
 	fitted.count <- 1e-6 * t(t(fitted.cpm)*(lib.size+1))

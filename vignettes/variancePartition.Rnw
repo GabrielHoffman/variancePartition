@@ -242,7 +242,7 @@ calcVarPart(fit)
 \pagebreak
 \section{Interpretation}
 
-\Rpackage{variancePartition} fits a linear (mixed) model thats jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while correcting for all others.  Therefore, fitting the model with each variable separately will give very different results from the considering all variables jointly.  I have found joint analysis the best option in most cases.  
+\Rpackage{variancePartition} fits a linear (mixed) model that jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while correcting for all others.  However, we note that like any multiple regression model, high correlation bewtween fixed or random effect variables (see Section \ref{sec:canCor}) can produce unstable estimates and it can be challanging to identify which variable is responsible for the expression variation.
 
 The results of \Rpackage{variancePartition} give insight into the expression data at multiple levels.  Moreover, a single statistic often has multiple equivalent interpretations while only one is relevant to the biological question.  Analysis of the example data in Figure 1 gives some strong interpretations. 
 
@@ -305,6 +305,7 @@ In biological datasets technical variability (i.e. batch effects) can often redu
 
 
 \subsubsection{Assess correlation between all pairs of variables}
+\label{sec:canCor}
 
 Evaluating the correlation between variables in a important part in interpreting variancePartition results.  When comparing two continuous variables, Pearson correlation is widely used.  But variancePartition includes categorical variables in the model as well.  In order to accommodate the correlation between a continuous and a categorical variable, or two categorical variables we used canonical correlation analysis.  
 

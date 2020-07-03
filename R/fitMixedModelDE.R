@@ -17,6 +17,22 @@ setAs(from='MArrayLM', to='MArrayLM2', function(from){
 	})
 
 
+#' Class FMT 
+#'
+#' Class \code{FMT} 
+#'
+#' @name FMT-class
+#' @rdname FMT-class
+#' @exportClass FMT
+#' @keywords internal
+setClass('FMT', contains='MArrayLM2')
+
+setAs("MArrayLM2", "FMT", function(from, to ){
+
+	res = new( to, from )
+	names(res) = names(from)
+	res
+})
 
 
 #' residuals for MArrayLM2
@@ -74,8 +90,8 @@ function( object, ...){
 #' 
 #' Extract contrast matrix, L, testing a single variable.  Contrasts involving more than one variable can be constructed by modifying L directly
 #'
-#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work
+#' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
 #' @param coefficient the coefficient to use in the hypothesis test
 #' 
@@ -131,12 +147,13 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' Get all univariate contrasts
 #'
 #' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
 #'
 #' @return
 #'  Matrix testing each variable one at a time.  Contrasts are on rows
 #'
+#' @keywords internal
 .getAllUniContrasts = function( exprObj, formula, data){ 
 
 	Linit = .getContrastInit( exprObj, formula, data)
@@ -188,24 +205,20 @@ getContrast = function( exprObj, formula, data, coefficient){
 		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
 	}
 
-	# add response (i.e. exprObj[,j] to formula
-	form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
+	# add response (i.e. exprObj[j,]) to formula
+	# Use term 'responsePlaceholder' to store the value of reponse j (exprObj[j,])
+	# This is not an ideal way to structure the evaluation of response j.
+	# 	The formula is evaluated a different scope, (i.e. within lmer()), and there is no need to pass the
+	# 	entire exprObj object into that scope.  With lexical scope, I found it was possible that  
+	# 	the value of exprObj[j,] could be different when evaluated in the lower scope
+	# This placeholder term addresses that issue
+	form = paste( "responsePlaceholder$E", paste(as.character( formula), collapse=''))
 
 	# run lmer() to see if the model has random effects
 	# if less run lmer() in the loop
 	# else run lm()
-	gene14643 = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,control=control ), error = function(e) e)
-
-	# detect error when variable in formula does not exist
-	# *** This error has already been found at this point
-	# if( inherits(possibleError, "error") ){
-	# 	if( grep("object '.*' not found", possibleError$message) == 1){
-	# 		stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
-	# 	}else{
-	# 		stop( possibleError$message )
-	# 	}
-	# }
 
 	mesg <- "No random effects terms specified in formula"
 	method = ''
@@ -243,10 +256,12 @@ getContrast = function( exprObj, formula, data, coefficient){
 #
 # @param fit model fit
 # @param L contrast matrix
-# @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
+# @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets.
 # 
 # @return
 # df, sigma, beta, SE of model
+#
+# @details If the Kenward-Roger covariance matrix is not positive definite, the Satterthwaite method is used
 #
 # @export
 # @docType methods
@@ -268,6 +283,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 		# if matrix is not PSD
 		if( min(diag(as.matrix(V))) < 0){			
+			warning("The adjusted Kenward-Roger covariance matrix is not positive definite.\nUsing Satterthwaite approximation instead")
+
 			# Satterthwaite
 			V = vcov(fit)
 		}
@@ -332,35 +349,39 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
 #'
 #' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
-#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough exproximation for most datasets.
-#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  Strongly discourage against changing this option
-#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified
-#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE 
-#' @param control control settings for lmer()
+#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets.
+#' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
+#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
+#' @param control control settings for \code{lmer()}
 #' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
 #' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
-#' @param computeResiduals if TRUE, compute residuals and extract with residuals(fit).  Setting to false saves memory
-#' @param ... Additional arguments for lmer() or lm()
+#' @param computeResiduals if TRUE, compute residuals and extract with \code{residuals(fit)}.  Setting to false saves memory
+#' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.
+#' @param ... Additional arguments for \code{lmer()} or \code{lm()}
 #' 
 #' @return 
 #' MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)
 #'
 #' @details 
-#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
+#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
 #'
-#' fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)
+#' \code{fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)}
 #'
-#' useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regression model.
+#' \code{useWeights=TRUE} causes \code{weightsMatrix[j,]} to be included as weights in the regression model.
 #'
-#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
+#' Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using \code{BiocParallel} to run code in parallel.  Parallel processing must be enabled before calling this function.  See below.
 #' 
 #' The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lmer.
 #'
-#' Hypothesis tests and degrees of freedom are producted by lmerTest and pbkrtest pacakges
+#' Hypothesis tests and degrees of freedom are producted by \code{lmerTest} and \code{pbkrtest} pacakges
+#'
+#' While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', ddf='Satterthwaite' can be used with \code{REML} as \code{TRUE} or \code{FALSE}.  Since the Kenward-Roger method gave the best power with an accurate control of false positive rate in our simulations, and since the Satterthwaite method with REML=TRUE gives p-values that are slightly closer to the Kenward-Roger p-values, \code{REML=TRUE} is the default.  See Vignette "3) Theory and practice of random effects and REML"
+#'
+#'
 #' @examples
 #'
 #' # load library
@@ -417,21 +438,22 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @rdname dream-method
 #' @importFrom pbkrtest get_SigmaG
 #' @importFrom BiocParallel bpiterate bpparam
+#' @importFrom lme4 VarCorr 
+#' @importFrom stats hatvalues
 # @importFrom lmerTest lmer
-dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), REML=TRUE, useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=FALSE, ...){ 
+dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=FALSE, REML=TRUE, ...){ 
 
 	exprObjInit = exprObj
 	
 	exprObjMat = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
 	ddf = match.arg(ddf)
-	colinearityCutoff=.999
+	colinearityCutoff = 0.999
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
-
 
 	# assign weightsMatrix from exprObj
 	if( is( exprObj, "EList") ){
@@ -519,10 +541,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		stop(paste("Contrast names must be unique: ", paste(colnames(L), collapse=', ')))
 	}
 
-	# Trail run on model
-	####################
+	# Evaluate model on each gene
+	#############################
 	
-	if( ! .isMixedModelFormula( formula, data) ){
+	if( ! .isMixedModelFormula( formula ) ){
 		if( !quiet ){
 			message("Fixed effect model, using limma directly...")
 			message("User can apply eBayes() afterwards...")
@@ -545,16 +567,20 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			ret = contrasts.fit( ret, L)
 		}
 
-		# if( !quiet ) message("Applying eBayes()...")
-		# ret = eBayes( ret )
 	}else{
 
-		# add response (i.e. exprObj[,j] to formula
-		form = paste( "gene14643$E", paste(as.character( formula), collapse=''))
+		# add response (i.e. exprObj[j,]) to formula
+		# Use term 'responsePlaceholder' to store the value of reponse j (exprObj[j,])
+		# This is not an ideal way to structure the evaluation of response j.
+		# 	The formula is evaluated a different scope, (i.e. within lmer()), and there is no need to pass the
+		# 	entire exprObj object into that scope.  With lexical scope, I found it was possible that  
+		# 	the value of exprObj[j,] could be different when evaluated in the lower scope
+		# This placeholder term addresses that issue
+		form = paste( "responsePlaceholder$E", paste(as.character( formula), collapse=''))
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		gene14643 = nextElem(exprIter(exprObjMat, weightsMatrix, useWeights))
+		responsePlaceholder = nextElem(exprIter(exprObjMat, weightsMatrix, useWeights))
 
 		timeStart = proc.time()
 		fitInit <- lmerTest::lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
@@ -571,14 +597,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		mod = .eval_lmm( fitInit, L, ddf)
 		timediff = proc.time() - timeStart
 
-		# check size of stored objects
-		# objSize = object.size( fitInit ) * nrow(exprObj)
-
-		# # total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
-		# showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
-
-		# message("Projected memory usage: >", format(objSize, units = "auto"), "\n")
-
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fitInit, showWarnings=!suppressWarnings, dream=TRUE, colinearityCutoff=colinearityCutoff )
 
@@ -591,7 +609,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		# specify gene explicitly in data 
 		# required for downstream processing with lmerTest
-		data2 = data.frame(data, expr=gene14643$E, check.names=FALSE)
+		data2 = data.frame(data, expr=responsePlaceholder$E, check.names=FALSE)
 		form = paste( "expr", paste(as.character( formula), collapse=''))
 
 		pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta", total = nrow(exprObj), width= 60, clear=FALSE)
@@ -601,15 +619,14 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		timeStart = proc.time()
 
 		# Define function for parallel evaluation
-		.eval_models = function(gene14643, data2, form, REML, theta, control, na.action=stats::na.exclude,...){	
+		.eval_models = function(responsePlaceholder, data2, form, REML, theta, control, na.action=stats::na.exclude,...){	
 			# modify data2 for this gene
-			data2$expr = gene14643$E
+			data2$expr = responsePlaceholder$E
  
 			# fit linear mixed model
 			suppressWarnings({
-				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=gene14643$weights, control=control,na.action=na.action)
+				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=responsePlaceholder$weights, control=control,na.action=na.action)
 				})
-			# , start=theta
 
 			# extract statistics from model
 			mod = .eval_lmm( fit, L, ddf)
@@ -619,11 +636,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 				 res = residuals(fit)
 			}
 
-			# progressbar
-			# if( (Sys.getpid() == pids[1]) && (gene14643$n_iter %% 20 == 0) ){
-			# 	pb$update( gene14643$n_iter / gene14643$max_iter )
-			# }
-
 			ret = list(	coefficients 	= mod$beta, 
 						design 			= fit@pp$X, 
 						df.residual 	= mod$df, 
@@ -632,7 +644,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 						sigma 			= mod$sigma,
 						stdev.unscaled 	= mod$SE/mod$sigma,
 						pValue 			= mod$pValue,
-						residuals 		= res)
+						residuals 		= res ) 
 
 			# get variance terms for random effects
 			varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
@@ -645,9 +657,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 				V = crossprod(chol(mod$vcov) %*% L)
 			}
 
-			list( 	ret = new("MArrayLM", ret),
+			list( 	ret 	= new("MArrayLM", ret),
 					varComp = varComp,
-					vcov = V)
+					edf		= sum(hatvalues(fit)), # effective degrees of freedom as sum of diagonals of hat matrix
+					vcov 	= V)
 		}
 
 		.eval_master = function( obj, data2, form, REML, theta, control, na.action=stats::na.exclude,... ){
@@ -660,13 +673,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# Evaluate function
 		####################
 
-		# message("\nbpiterate...\n")
-
-		# evalulate function in parallel using less memory
-		# it = exprIter(exprObjMat, weightsMatrix, useWeights, iterCount = "icount")
-	
-		# resList <- bplapply( it, .eval_models, data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., BPPARAM=BPPARAM)
-	
 		it = iterBatch(exprObjMat, weightsMatrix, useWeights, n_chunks = 100)
 
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
@@ -679,7 +685,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	
 		
 		names(resList) = seq_len(length(resList))
-		# pb$update( gene14643$max_iter / gene14643$max_iter )
 
 		if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
 
@@ -724,6 +729,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		varComp = lapply(resList, function(x) as.data.frame(x$varComp))
 		varComp = do.call("rbind", varComp)
 		rownames(varComp) = rownames(coefficients)
+
+		edf = sapply(resList, function(x) x$edf)
 
 		colnames(stdev.unscaled) = colnames(L)
 		rownames(stdev.unscaled) = rownames(exprObj)
@@ -778,6 +785,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# ret = new("MArrayLM2", ret, varComp, sigGStruct)
 		attr(ret, "varComp") = varComp
 		attr(ret, "sigGStruct") = sigGStruct
+		attr(ret, "edf") = edf
 
 		# compute standard values for t/F/p without running eBayes
 		# eBayes can be run afterwards, if wanted
@@ -796,6 +804,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @return MArrayLM2 object with values computed
 #' 
 #' @importFrom stats pchisq pf
+#' @keywords internal
 .standard_transform = function(fit){
 
 	# get values
@@ -841,36 +850,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 
 
-# add additional placeholder columns for contrasts
-# .augment_cov = function( C, id){
-# 	# add additional placeholder columns for contrasts
-# 	idx = id %in% colnames(C)
-
-# 	if( any(!idx) ){
-# 		C_add1 = matrix(0, nrow=ncol(C), ncol=sum(!idx))
-# 		colnames(C_add1) = id[!idx]
-
-# 		C_add2 = matrix(0, ncol=ncol(C)+sum(!idx), nrow=sum(!idx))
-# 		rownames(C_add2) = id[!idx]
-
-# 		C = rbind(cbind(C, C_add1), C_add2)
-
-# 		C = C[id,id]
-
-# 		# set diagons of non-real contrasts to 1
-# 		if( sum(!idx) > 1){
-# 			diag(C[!idx,!idx]) = 1
-# 		}else{				
-# 			C[!idx,!idx] = 1
-# 		}
-# 	}
-# 	C
-# }
-
-
-
-# 
-# 
 
 #' Subseting for MArrayLM2
 #'
@@ -888,6 +867,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' @importFrom stats p.adjust
 #' @rdname subset.MArrayLM2-method
 #' @aliases subset.MArrayLM2,MArrayLM2-method
+#' @keywords internal
 assign("[.MArrayLM2",
 	function(object, i, j){
 	if(nargs() != 3){
@@ -981,7 +961,7 @@ assign("[.MArrayLM2",
 
 #' eBayes for MArrayLM2
 #'
-#' eBayes for MArrayLM2
+#' eBayes for MArrayLM2.  It simply returns the orginal input with no change
 #'
 #' @param fit fit
 #' @param proportion proportion
@@ -991,6 +971,7 @@ assign("[.MArrayLM2",
 #' @param winsor.tail.p winsor.tail.p 
 #'
 #' @return results of eBayes
+#' @details Note that empirical Bayes is problematic for linear mixed models.  This function returns its original input with no change.  It is included here just for compatibility.
 #' @export
 #' @rdname eBayes-method
 #' @aliases eBayes,MArrayLM2-method
@@ -998,154 +979,10 @@ setMethod("eBayes", "MArrayLM2",
 function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
 
-	warning("Empircal Bayes moderated test is no longer supported for dream analysis\nReturning original results for use downstream")
+	warning("Empirical Bayes moderated test is no longer supported for dream analysis\nReturning original results for use downstream")
 
 	fit
 })
-
-# old eBayes
-# setMethod("eBayes", "MArrayLM2",
-# function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
-#     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
-
-# 	i = 1
-# 	retList = foreach( i = seq_len(ncol(fit)) ) %do% {
-
-# 		# transform t-statistics to have same degrees of freedom
-# 		# ret = variancePartition:::.standardized_t_stat( fit[,i] )
-
-# 		# df.residual_tmp = ret$df.residual
-# 		# ret$df.residual = fit[,i]$df.residual	
-
-# 		# # get moderate t-stats
-# 		# res = limma::eBayes( ret, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
-
-# 		# # plot(res$sigma^2, res$t)
-# 		# # abline(h=0, col='red')
-
-# 		# # max(res$t)
-
-# 		# res$df.residual = df.residual_tmp
-
-# 		# res
-
-# 		# GEH: need to properly set df.residual for eBayes to work
-# 		# N - df_fit
-
-# 		# ret = limma::eBayes( fit[,i], proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
-
-# 		# # transform moderated t-statistics to have same degrees of freedom
-# 		# .standardized_t_stat( ret )
-		
-# 		# # transform moderated t-statistics to have same degrees of freedom
-# 		res = .standardized_t_stat( fit[,i])
-
-# 		limma::eBayes( res, proportion=proportion, stdev.coef.lim =stdev.coef.lim, trend=trend, robust=robust, winsor.tail.p =winsor.tail.p )
-# 	}
-
-# 	fit2 = retList[[1]]
-
-# 	fit2$coefficients = do.call("cbind", lapply(retList, function(fit) fit$coefficients))
-# 	fit2$contrasts = do.call("cbind", lapply(retList, function(fit) fit$contrasts))
-# 	fit2$stdev.unscaled = do.call("cbind", lapply(retList, function(fit) fit$stdev.unscaled))
-# 	fit2$pValue = do.call("cbind", lapply(retList, function(fit) fit$pValue))
-# 	fit2$df.prior = do.call("cbind", lapply(retList, function(fit) fit$df.prior))
-# 	fit2$s2.prior = do.call("cbind", lapply(retList, function(fit) fit$s2.prior))
-# 	fit2$var.prior = do.call("cbind", lapply(retList, function(fit) fit$var.prior))
-# 	fit2$s2.post = do.call("cbind", lapply(retList, function(fit) fit$s2.post))
-# 	fit2$t = do.call("cbind", lapply(retList, function(fit) fit$t))
-# 	# fit2$df.total = do.call("cbind", lapply(retList, function(fit) fit$df.total))
-# 	fit2$p.value = do.call("cbind", lapply(retList, function(fit) fit$p.value))
-# 	fit2$lods = do.call("cbind", lapply(retList, function(fit) fit$lods))
-
-# 	# colnames(fit2$pValue) = colnames(fit2$coefficients)
-# 	colnames(fit2$t) = 	colnames(fit2$coefficients)
-# 	# colnames(fit2$df.total) = colnames(fit2$coefficients)
-
-# 	# some values are shared, or almost identical across contrasts
-# 	if( !is.null(fit2$df.prior) ){
-# 		fit2$df.prior = mean(as.array(fit2$df.prior))
-# 		fit2$s2.prior = mean(as.array(fit2$s2.prior))
-# 	}
-# 	fit2$s2.post = rowMeans(fit2$s2.post)
-
-# 	# return covariance between coefficients
-# 	fit2$cov.coefficients = fit$cov.coefficients
-# 	fit2$cov.coefficients.list = fit$cov.coefficients.list
-
-# 	# fit2 
-# 	as(fit2, "MArrayLM2")
-# })
-
-
-
-# #' topTable for MArrayLMM_lmer
-# #'
-# #' topTable for MArrayLMM_lmer
-# #'
-# #' @param fit fit
-# #' @param coef coef
-# #' @param number number
-# #' @param genelist genelist
-# #' @param adjust.method adjust.method
-# #' @param sort.by sort.by
-# #' @param resort.by resort.by
-# #' @param p.value p.value
-# #' @param lfc lfc
-# #' @param confint confint
-# #'
-# #' @return results of topTable
-# #' @export
-# #' @rdname topTable-method
-# #' @aliases topTable,MArrayLMM_lmer-method
-# setMethod("topTable", "MArrayLMM_lmer",
-# function(fit, coef=NULL, number=10, genelist=fit$genes, adjust.method="BH",
-#               sort.by="B", resort.by=NULL, p.value=1, lfc=0, confint=FALSE){
-# 	topTable( fit@object, number=number,  adjust.method=adjust.method, sort.by= sort.by, resort.by=resort.by, p.value=p.value, lfc=lfc, confint=confint  )	
-# })
-
-
-# #' toptable for MArrayLMM_lmer
-# #'
-# #' toptable for MArrayLMM_lmer
-# #'
-# #' @param fit fit
-# #' @param coef coef
-# #' @param number number
-# #' @param genelist genelist
-# #' @param A A
-# #' @param eb eb
-# #' @param adjust.method adjust.method
-# #' @param sort.by sort.by
-# #' @param resort.by resort.by
-# #' @param p.value p.value
-# #' @param lfc lfc
-# #' @param confint confint
-# #' @param ... ...
-# #'
-# #' @return results of toptable
-# #' @export
-# #' @rdname toptable-method
-# #' @aliases toptable,MArrayLMM_lmer-method
-# setMethod("toptable", "MArrayLMM_lmer",
-# function(fit, coef=1, number=10, genelist=NULL, A=NULL, eb=NULL, adjust.method="BH",
-#               sort.by="B", resort.by=NULL, p.value=1, lfc=0, confint=FALSE,...){
-# 	topTable( fit@object, number=number,  adjust.method=adjust.method, sort.by= sort.by, resort.by=resort.by, p.value=p.value, lfc=lfc, confint=confint  )	
-# })
-
-# #' Example dataset for dream
-# #'
-# #' Simulated RNA-seq counts in 'countMatrix' and information in 'metadata'
-# #'
-# #' @docType data
-# #'
-# #' @usage data(varPartDEdata)
-# #'
-# #' @format matrix of RNA-seq counts
-# #'
-# #' @examples
-# #' data(varPartDEdata)
-# "varPartDEdata"
 
 
 

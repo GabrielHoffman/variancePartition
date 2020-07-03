@@ -101,52 +101,54 @@ fitVarPartModel(
 )
 }
 \arguments{
-\item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
+\item{exprObj}{matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package}
 
-\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)}
+\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}}
 
-\item{data}{data.frame with columns corresponding to formula}
+\item{data}{\code{data.frame} with columns corresponding to formula}
 
-\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option}
+\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.  See Details.}
 
-\item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
+\item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified}
 
-\item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE}
+\item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE}
 
 \item{showWarnings}{show warnings about model fit (default TRUE)}
 
 \item{fxn}{apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself}
 
-\item{control}{control settings for lmer()}
+\item{control}{control settings for \code{lmer()}}
 
 \item{quiet}{suppress message, default FALSE}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
-\item{...}{Additional arguments for lmer() or lm()}
+\item{...}{Additional arguments for \code{lmer()} or \code{lm()}}
 }
 \value{
-list() of where each entry is a model fit produced by lmer() or lm()
+\code{list()} of where each entry is a model fit produced by \code{lmer()} or \code{lm()}
 }
 \description{
 Fit linear (mixed) model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables.
 }
 \details{
-A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is ~ a + b + (1|c), then to model is 
+A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
 
-fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)
+\code{fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)}
 
-If there are no random effects, so formula is ~ a + b + c, a 'standard' linear model is used:
+If there are no random effects, so formula is \code{~ a + b + c}, a 'standard' linear model is used:
 
-fit <- lm( exprObj[j,] ~ a + b + c, data=data)
+\code{fit <- lm( exprObj[j,] ~ a + b + c, data=data)}
 
-In both cases, useWeights=TRUE causes weightsMatrix[j,] to be included as weights in the regression model.
+In both cases, \code{useWeights=TRUE} causes \code{weightsMatrix[j,]} to be included as weights in the regression model.
 
-Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using foreach/dopar to run loops in parallel.  Parallel processing must be enabled before calling this function.  See below.
+Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using \code{BiocParallel} to run in parallel.  Parallel processing must be enabled before calling this function.  See below.
 
 The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lm/lmer.
 
-Since this function returns a list of each model fit, using this function is slower and uses more memory than fitExtractVarPartModel().
+Since this function returns a list of each model fit, using this function is slower and uses more memory than \code{fitExtractVarPartModel()}.
+
+\code{REML=FALSE} uses maximum likelihood to estimate variance fractions.  This approach produced unbiased estimates, while \code{REML=TRUE} can show substantial bias.  See Vignette "3) Theory and practice of random effects and REML"
 }
 \examples{
 

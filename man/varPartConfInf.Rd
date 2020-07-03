@@ -21,17 +21,17 @@ varPartConfInf(
 )
 }
 \arguments{
-\item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
+\item{exprObj}{matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package}
 
-\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: ~ a + b + (1|c)}
+\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}}
 
-\item{data}{data.frame with columns corresponding to formula}
+\item{data}{\code{data.frame} with columns corresponding to formula}
 
-\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option}
+\item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option, but here for compatibility.}
 
-\item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an EList() from voom() or weightsMatrix is specified}
+\item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList} from \code{voom()} or \code{weightsMatrix} is specified}
 
-\item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from voom().  Used only if useWeights is TRUE}
+\item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE}
 
 \item{adjust}{remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables}
 
@@ -41,20 +41,20 @@ varPartConfInf(
 
 \item{colinearityCutoff}{cutoff used to determine if model is computationally singular}
 
-\item{control}{control settings for lmer()}
+\item{control}{control settings for \code{lmer()}}
 
 \item{nsim}{number of bootstrap datasets}
 
-\item{...}{Additional arguments for lmer() or lm()}
+\item{...}{Additional arguments for \code{lmer()} or l\code{m()}}
 }
 \value{
-list() of where each entry is the result for a gene.  Each entry is a matrix of the 95\% confidence interval of the variance fraction for each variable
+\code{list()} of where each entry is the result for a gene.  Each entry is a matrix of the 95\% confidence interval of the variance fraction for each variable
 }
 \description{
 Fit linear mixed model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Then perform parametric bootstrap sampling to get a 95\% confidence intervals for each variable for each gene.
 }
 \details{
-A linear mixed model is fit for each gene, and bootMer() is used to generate parametric bootstrap confidence intervals.  use.u=TRUE is used so that the \\hat(u) values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, use.u=FALSE assumes that  this dataset is a sample from a larger population.   Thus it simulates \\hat(u) based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, use.u=TRUE gives smaller confidence intervals that are appropriate in this case.
+A linear mixed model is fit for each gene, and \code{bootMer()} is used to generate parametric bootstrap confidence intervals.  \code{use.u=TRUE} is used so that the \deqn{\hat{u}} values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, \code{use.u=FALSE} assumes that  this dataset is a sample from a larger population.   Thus it simulates \deqn{\hat{u}} based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, \code{use.u=TRUE} gives smaller confidence intervals that are appropriate in this case.
 }
 \examples{
 

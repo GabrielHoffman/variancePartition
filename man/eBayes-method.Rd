@@ -30,5 +30,8 @@
 results of eBayes
 }
 \description{
-eBayes for MArrayLM2
+eBayes for MArrayLM2.  It simply returns the orginal input with no change
+}
+\details{
+Note that empirical Bayes is problematic for linear mixed models.  This function returns its original input with no change.  It is included here just for compatibility.
 }

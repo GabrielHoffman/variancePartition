@@ -41,7 +41,7 @@ sortCols(
 )
 }
 \arguments{
-\item{x}{object returned by extractVarPart() or fitExtractVarPartModel()}
+\item{x}{object returned by \code{extractVarPart()} or \code{fitExtractVarPartModel()}}
 
 \item{FUN}{function giving summary statistic to sort by.  Defaults to median}
 
@@ -55,7 +55,7 @@ sortCols(
 data.frame with columns sorted by mean value, with Residuals in last column
 }
 \description{
-Sort columns returned by extractVarPart() or fitExtractVarPartModel()
+Sort columns returned by \code{extractVarPart()} or \code{fitExtractVarPartModel()}
 }
 \examples{
 # library(variancePartition)
