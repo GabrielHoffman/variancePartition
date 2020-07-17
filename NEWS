@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.19.7
+-------------------------	
+	o Round numbers in plotContrasts()
+	o fix issues with strings are passed to formula arguments
+
 CHANGES IN VERSION 1.19.6
 -------------------------	
 	o New gives meaning full error message for dream(), etc when variable is not found in data.

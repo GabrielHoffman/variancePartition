@@ -54,6 +54,8 @@
 #' @export
 voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=bpparam(),...){
 
+	formula = as.formula( formula )
+
 	out <- list()
 
 	#	Check counts
