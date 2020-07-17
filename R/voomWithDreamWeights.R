@@ -50,7 +50,7 @@
 # vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
 #' 
 #' @importFrom lme4 VarCorr 
-#' @importFrom stats approxfun predict
+#' @importFrom stats approxfun predict as.formula
 #' @export
 voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=bpparam(),...){
 
