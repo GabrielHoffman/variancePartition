@@ -117,6 +117,8 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		# extract fitted values
 		fitted.values <- lapply( vpList, function(x) x$fitted.values)
 		fitted.values <- do.call("rbind", fitted.values )
+
+		design = NA
 	}else{
 
 		if( ! quiet) message("Fixed effect model, using limma directly...")
