@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.19.10
+--------------------------
+	o in voomWithDreamWeights() fix issue with returning design matrix	
+	o better error if counts can't be converted to matrix
+
 CHANGES IN VERSION 1.19.7
 -------------------------	
 	o Round numbers in plotContrasts()

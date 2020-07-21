@@ -71,6 +71,8 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 			if(length(Biobase::fData(counts))) out$genes <- Biobase::fData(counts)
 			if(length(Biobase::pData(counts))) out$targets <- Biobase::pData(counts)
 			counts <- Biobase::exprs(counts)
+		} else if( is.null(dim(counts)) ){
+			stop("counts is type '", class(counts), "' and can't be converted to matrix unambiguously")
 		} else {
 			counts <- as.matrix(counts)
 		}
