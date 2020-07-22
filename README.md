@@ -1,6 +1,6 @@
 # variancePartition
 
-Manuscript describing `dream` is ccepted to Bioinformatics
+Manuscript describing `dream` is accepted to Bioinformatics
 
 ## Install from GitHub
 
