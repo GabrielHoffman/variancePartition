@@ -64,7 +64,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	if(is(counts,"DGEList")) {
 		out$genes <- counts$genes
 		out$targets <- counts$samples
-		if(is.null(design) && diff(range(as.numeric(counts$sample$group)))>0) design <- model.matrix(~group,data=counts$samples)
+		# if(is.null(design) && diff(range(as.numeric(counts$sample$group)))>0) design <- model.matrix(~group,data=counts$samples)
 		if(is.null(lib.size)) lib.size <- counts$samples$lib.size*counts$samples$norm.factors
 		counts <- counts$counts
 	} else {
