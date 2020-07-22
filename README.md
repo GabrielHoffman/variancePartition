@@ -1,5 +1,7 @@
 # variancePartition
 
+Accepted to Bioinformatics
+
 ## Install from GitHub
 
 ```

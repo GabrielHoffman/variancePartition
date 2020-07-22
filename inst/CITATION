@@ -22,5 +22,5 @@ citEntry(entry="article",
    issue = "",
    pages = "",
    textVersion = 
-   paste("Hoffman GE, Roussos P (2018). dream: Powerful differential expression analysis for repeated measures designs. biorxiv, doi:10.1101/432567"))
+   paste("Hoffman GE, Roussos P (2018). dream: Powerful differential expression analysis for repeated measures designs. biorxiv, doi:10.1101/432567 (Accepted to Bioinformatics)"))
 
