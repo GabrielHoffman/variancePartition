@@ -58,6 +58,8 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 
 	out <- list()
 
+	design = NULL 
+	
 	#	Check counts
 	if(is(counts,"DGEList")) {
 		out$genes <- counts$genes
@@ -120,7 +122,6 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		fitted.values <- lapply( vpList, function(x) x$fitted.values)
 		fitted.values <- do.call("rbind", fitted.values )
 
-		design = NA
 	}else{
 
 		if( ! quiet) message("Fixed effect model, using limma directly...")
