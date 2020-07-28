@@ -203,6 +203,27 @@ fit = dream( vobjDream, form, metadata, L)
 topTable( fit, coef="L1", number=3 )
 ```
 
+### Comparing multiple coefficients
+
+So far contrasts have only involved the difference between two coefficients.  But contrasts can also compare linear combinations of coefficients.  A user can create contrasts 'manually', as long as the elements sum to 0.  Here, consider comparing `DiseaseSubtype0` to the mean of `DiseaseSubtype1` and `DiseaseSubtype2`
+
+```{r maual.contrasts, fig.width=8, fig.height=4}
+# the tests is DiseaseSubtype0 - (DiseaseSubtype1/2 + DiseaseSubtype2/2)
+# Note that the order of the coefficients must be the same as from getContrast()
+L3 = c(1, -1/2, -1/2, 0)
+
+# combine L1 and L2 contrasts with manually defind L3 contrast.
+Lall = cbind(L, data.frame(L3 = L3))
+
+# Note that each contrast must sum to 0
+plotContrasts(Lall)
+
+# fit dream model to evaluate contrasts
+fit = dream( vobjDream[1:10,], form, metadata, L=Lall)
+
+topTable(fit, coef="L3", number=3)
+```
+
 ### Joint hypothesis test of multiple coefficients
 Joint hypothesis testing of multiple coefficients at the same time can be performed by using an F-test.  Just like in limma, the results can be extracted using `topTable()`
 

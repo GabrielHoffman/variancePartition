@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.19.12
+--------------------------
+	o Improve documentation for contrasts in dream.Rmd
+	o check that contrasts sum to zero in plotContrasts.
+
 CHANGES IN VERSION 1.19.11
 --------------------------
 	o in voomWithDreamWeights() fix issue with not defining design
