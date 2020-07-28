@@ -48,19 +48,19 @@ residuals.MArrayLM2 = function( object, ...){
 }
 
 
-#' @importFrom limma residuals.MArrayLM
-#' @export  
-residuals.MArrayLM = function( object, ...){
+# #' @importFrom limma residuals.MArrayLM
+# # @export  
+# residuals.MArrayLM = function( object, ...){
 
-	if( is.null(object$residuals) ){
-		# use residuals computed by limma
-		res = limma::residuals.MArrayLM( object, ...)
-	}else{
-		# use precomputed residuals
-		res = object$residuals
-	}
-	res
-}
+# 	if( is.null(object$residuals) ){
+# 		# use residuals computed by limma
+# 		res = limma::residuals.MArrayLM( object, ...)
+# 	}else{
+# 		# use precomputed residuals
+# 		res = object$residuals
+# 	}
+# 	res
+# }
 
 
 # S4 methpds
