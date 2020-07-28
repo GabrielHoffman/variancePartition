@@ -3,7 +3,6 @@
 \docType{methods}
 \name{residuals,VarParFitList-method}
 \alias{residuals,VarParFitList-method}
-\alias{residuals}
 \title{Residuals from model fit}
 \usage{
 \S4method{residuals}{VarParFitList}(object, ...)

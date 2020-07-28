@@ -123,4 +123,9 @@ fit4 = eBayes( fit4 )
 # view top genes
 topTable( fit4 )
 
+# Compute residuals using dream
+fit5 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param, computeResiduals=TRUE)
+
+residuals(fit5, geneExpr[1:10,])
+
 }

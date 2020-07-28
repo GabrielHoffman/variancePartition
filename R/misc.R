@@ -324,9 +324,9 @@ ggColorHue <- function(n) {
 # # stop cluster
 # stopCluster(cl)
 #'
-#' @export
+#' @export methods
 #' @docType methods
-#' @aliases residuals
+#' @aliases residuals,VarParFitList-method
 setMethod("residuals", "VarParFitList",
   function(object, ...) {
 
