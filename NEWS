@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.19.13 
+--------------------------
+	o fix issues with residuals() 
+		- https://github.com/GabrielHoffman/variancePartition/issues/18
+	o fix issue exporting eBayes, topTable, etc
+
 CHANGES IN VERSION 1.19.12
 --------------------------
 	o Improve documentation for contrasts in dream.Rmd

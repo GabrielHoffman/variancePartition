@@ -2,25 +2,18 @@
 % Please edit documentation in R/fitMixedModelDE.R
 \name{residuals,MArrayLM2-method}
 \alias{residuals,MArrayLM2-method}
-\alias{residuals,MArrayLM-method}
 \title{residuals for MArrayLM2}
 \usage{
 \S4method{residuals}{MArrayLM2}(object, ...)
-
-\S4method{residuals}{MArrayLM}(object, ...)
 }
 \arguments{
-\item{object}{MArrayLM object from dream}
+\item{object}{MArrayLM2 object from dream}
 
 \item{...}{other arguments, currently ignored}
 }
 \value{
 results of residuals
-
-results of residuals
 }
 \description{
 residuals for MArrayLM2
-
-residuals for MArrayLM
 }
