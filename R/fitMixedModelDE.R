@@ -41,7 +41,7 @@ residuals.MArrayLM2 = function( object, ...){
 	if( is.null(object$residuals) ){
 		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
 	}
-	if( nargs() > 1 & is.null(suppressWarnings) ){
+	if( nargs() > 1 ){#& is.null(suppressWarnings) ){
 		warning("\n Second argument is ignored here,\n but can be passed for compatability with limma.\n Results are the same either way")
 	}
 	object$residuals
@@ -76,8 +76,13 @@ residuals.MArrayLM2 = function( object, ...){
 #' @export
 setMethod("residuals", "MArrayLM",
 	function( object, ...){
-		residuals.MArrayLM(object,...)
-		})
+		if( nargs() == 1 ){
+			result = object$residuals
+		}else{
+			result = residuals.MArrayLM(object,...)
+		}
+		result
+	})
 
 
 #' residuals for MArrayLM2
@@ -449,7 +454,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' # Compute residuals using dream
 #' fit5 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param, computeResiduals=TRUE)
 #' 
-#' residuals(fit5, geneExpr[1:10,])
+#' # Return residuals
+#' residuals(fit5)
 #' 
 #' @export
 #' @docType methods
