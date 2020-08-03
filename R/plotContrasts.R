@@ -55,9 +55,9 @@ plotContrasts = function( L ){
 		abs(sum(x)) < tol
 		})
 
-	if( any(!sumZero) ){
-		stop('Each contrast must sum to 0. ', paste(names(sumZero[!sumZero]), collapse=', '), ' fails')
-	}
+	# if( any(!sumZero) ){
+	# 	stop('Each contrast must sum to 0. ', paste(names(sumZero[!sumZero]), collapse=', '), ' fails')
+	# }
 
 	df = melt(t(L))
 	colnames(df)[1:2] = c("Var1", "Var2")
