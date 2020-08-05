@@ -20,4 +20,4 @@ See repo of [examples from the paper](https://github.com/GabrielHoffman/dream_an
 
 ### Reporting bugs
 
-Please help speed up bug fixes by providing a 'minimal reproducible example' that starts with a new R session.  I recommend the [reprex pacakge](https://reprex.tidyverse.org) to produce a GitHub-ready example that is reproducable from a fresh R session.
+Please help speed up bug fixes by providing a 'minimal reproducible example' that starts with a new R session.  I recommend the [reprex package](https://reprex.tidyverse.org) to produce a GitHub-ready example that is reproducable from a fresh R session.
