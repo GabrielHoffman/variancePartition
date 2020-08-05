@@ -137,7 +137,7 @@ setMethod("residuals", "MArrayLM2",
 #' # to estimate Batch1 directly instead of using it as the baseline
 #'
 #' @export
-#' @docType methods
+# @docType methods
 #' @rdname getContrast-method
 getContrast = function( exprObj, formula, data, coefficient){ 
 
@@ -458,7 +458,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' residuals(fit5)
 #' 
 #' @export
-#' @docType methods
+# @docType methods
 #' @rdname dream-method
 #' @importFrom pbkrtest get_SigmaG
 #' @importFrom BiocParallel bpiterate bpparam
@@ -1115,7 +1115,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 # stopCluster(cl)
 #'
 #' @export
-#' @docType methods
+# @docType methods
 #' @rdname plotCompareP-method
 plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquote(duplicateCorrelation~(-log[10]~p)), ylabel=bquote(dream~(-log[10]~p))){
 

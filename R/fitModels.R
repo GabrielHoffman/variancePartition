@@ -281,7 +281,6 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	# pb$update( responsePlaceholder$max_iter / responsePlaceholder$max_iter )
 	if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
-
 	# set name of each entry
 	names(res) <- rownames( exprObj )
 

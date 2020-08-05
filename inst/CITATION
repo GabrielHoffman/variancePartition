@@ -15,12 +15,12 @@ citEntry(entry="article",
 citEntry(entry="article",
    title = "dream: Powerful differential expression analysis for repeated measures designs",
    author = personList( as.person("Gabriel E. Hoffman"), as.person("Panos Roussos")),
-   year = 2018,
-   journal = "biorxiv",
-   doi = "10.1101/432567",
+   year = 2020,
+   journal = "Bioinformatics",
+   doi = "10.1093/bioinformatics/btaa687",
    volume = "",
    issue = "",
    pages = "",
    textVersion = 
-   paste("Hoffman GE, Roussos P (2018). dream: Powerful differential expression analysis for repeated measures designs. biorxiv, doi:10.1101/432567 (Accepted to Bioinformatics)"))
+   paste("Hoffman GE, Roussos P (2020). dream: Powerful differential expression analysis for repeated measures designs. Bioinformatics, doi:10.1093/bioinformatics/btaa687"))
 
