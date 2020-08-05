@@ -16,6 +16,8 @@ For stable release see [Bioconductor version](http://bioconductor.org/packages/v
 
 See [frequently asked questions](http://bioconductor.org/packages/devel/bioc/vignettes/variancePartition/inst/doc/FAQ.html)
 
+See repo of [examples from the paper](https://github.com/GabrielHoffman/dream_analysis)
+
 ### Reporting bugs
 
-Please help speed up bug fixes by providing a 'minimal reproducible example' that starts with a new R session. 
+Please help speed up bug fixes by providing a 'minimal reproducible example' that starts with a new R session.  I recommend the [reprex pacakge](https://reprex.tidyverse.org) to produce a GitHub-ready example that is reproducable from a fresh R session.
