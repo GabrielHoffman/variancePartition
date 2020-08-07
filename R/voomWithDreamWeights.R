@@ -50,17 +50,21 @@
 # vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
 #' 
 #' @importFrom lme4 VarCorr 
-#' @importFrom stats approxfun predict
+#' @importFrom stats approxfun predict as.formula
 #' @export
 voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=bpparam(),...){
 
+	formula = as.formula( formula )
+
 	out <- list()
 
+	design = NULL 
+	
 	#	Check counts
 	if(is(counts,"DGEList")) {
 		out$genes <- counts$genes
 		out$targets <- counts$samples
-		if(is.null(design) && diff(range(as.numeric(counts$sample$group)))>0) design <- model.matrix(~group,data=counts$samples)
+		# if(is.null(design) && diff(range(as.numeric(counts$sample$group)))>0) design <- model.matrix(~group,data=counts$samples)
 		if(is.null(lib.size)) lib.size <- counts$samples$lib.size*counts$samples$norm.factors
 		counts <- counts$counts
 	} else {
@@ -69,6 +73,8 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 			if(length(Biobase::fData(counts))) out$genes <- Biobase::fData(counts)
 			if(length(Biobase::pData(counts))) out$targets <- Biobase::pData(counts)
 			counts <- Biobase::exprs(counts)
+		} else if( is.null(dim(counts)) ){
+			stop("counts is type '", class(counts), "' and can't be converted to matrix unambiguously")
 		} else {
 			counts <- as.matrix(counts)
 		}
@@ -115,6 +121,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		# extract fitted values
 		fitted.values <- lapply( vpList, function(x) x$fitted.values)
 		fitted.values <- do.call("rbind", fitted.values )
+
 	}else{
 
 		if( ! quiet) message("Fixed effect model, using limma directly...")

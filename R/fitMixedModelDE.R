@@ -34,29 +34,36 @@ setAs("MArrayLM2", "FMT", function(from, to ){
 	res
 })
 
+# define S3 version of these functions
 
-#' residuals for MArrayLM2
-#'
-#' residuals for MArrayLM2
-#'
-#' @param object MArrayLM2 object from dream
-#' @param ... other arguments, currently ignored
-#'
-#' @return results of residuals
-#' @export
-#' @rdname residuals-method
-#' @aliases residuals,MArrayLM2-method
-setMethod("residuals", "MArrayLM2",
-function( object, ...){
+#' @export  
+residuals.MArrayLM2 = function( object, ...){
 	if( is.null(object$residuals) ){
 		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
 	}
-	if( nargs() > 1 & is.null(suppressWarnings) ){
+	if( nargs() > 1 ){#& is.null(suppressWarnings) ){
 		warning("\n Second argument is ignored here,\n but can be passed for compatability with limma.\n Results are the same either way")
 	}
 	object$residuals
-})
+}
 
+
+# #' @importFrom limma residuals.MArrayLM
+# # @export  
+# residuals.MArrayLM = function( object, ...){
+
+# 	if( is.null(object$residuals) ){
+# 		# use residuals computed by limma
+# 		res = limma::residuals.MArrayLM( object, ...)
+# 	}else{
+# 		# use precomputed residuals
+# 		res = object$residuals
+# 	}
+# 	res
+# }
+
+
+# S4 methpds
 
 #' residuals for MArrayLM
 #'
@@ -67,20 +74,31 @@ function( object, ...){
 #'
 #' @return results of residuals
 #' @export
-#' @importFrom limma residuals.MArrayLM
-#' @rdname residuals-method
-#' @aliases residuals,MArrayLM-method
 setMethod("residuals", "MArrayLM",
-function( object, ...){
-	if( is.null(object$residuals) ){
-		# use residuals computed by limma
-		res = residuals.MArrayLM( object, ...)
-	}else{
-		# use precomputed residuals
-		res = object$residuals
-	}
-	res
-})
+	function( object, ...){
+		if( nargs() == 1 ){
+			result = object$residuals
+		}else{
+			result = residuals.MArrayLM(object,...)
+		}
+		result
+	})
+
+
+#' residuals for MArrayLM2
+#'
+#' residuals for MArrayLM2
+#'
+#' @param object MArrayLM2 object from dream
+#' @param ... other arguments, currently ignored
+#'
+#' @return results of residuals
+#' @export
+setMethod("residuals", "MArrayLM2",
+	function( object, ...){
+		residuals.MArrayLM2(object,...)
+		})
+
 
 
 
@@ -119,7 +137,7 @@ function( object, ...){
 #' # to estimate Batch1 directly instead of using it as the baseline
 #'
 #' @export
-#' @docType methods
+# @docType methods
 #' @rdname getContrast-method
 getContrast = function( exprObj, formula, data, coefficient){ 
 
@@ -432,9 +450,15 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' 
 #' # view top genes
 #' topTable( fit4 )
+#'
+#' # Compute residuals using dream
+#' fit5 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param, computeResiduals=TRUE)
+#' 
+#' # Return residuals
+#' residuals(fit5)
 #' 
 #' @export
-#' @docType methods
+# @docType methods
 #' @rdname dream-method
 #' @importFrom pbkrtest get_SigmaG
 #' @importFrom BiocParallel bpiterate bpparam
@@ -957,6 +981,11 @@ assign("[.MArrayLM2",
 })
 
 
+setGeneric("eBayes", function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
+    trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1) ){
+
+	eBayes(fit, proportion, stdev.coef.lim, trend, robust, winsor.tail.p  )
+})
 
 
 #' eBayes for MArrayLM2
@@ -1086,7 +1115,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 # stopCluster(cl)
 #'
 #' @export
-#' @docType methods
+# @docType methods
 #' @rdname plotCompareP-method
 plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquote(duplicateCorrelation~(-log[10]~p)), ylabel=bquote(dream~(-log[10]~p))){
 

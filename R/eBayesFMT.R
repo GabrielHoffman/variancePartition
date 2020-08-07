@@ -158,7 +158,31 @@ eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 }
 
 
+#' toptable for definition
+#'
+#' toptable for definition
+#'
+#' @param fit fit
+#' @param coef coef
+#' @param number number
+#' @param genelist genelist
+#' @param adjust.method adjust.method
+#' @param sort.by sort.by
+#' @param resort.by resort.by
+#' @param p.value p.value
+#' @param lfc lfc
+#' @param confint confint
+#'
+#' @return results of toptable
+#' @export
+#' @importFrom stats qnorm
+#' @import limma
+#' @rdname toptable-method
+#' @aliases toptable,MArrayLM-method
+setGeneric("topTable", function(fit,coef=NULL,number=10,genelist=fit$genes,adjust.method="BH",sort.by="B",resort.by=NULL,p.value=1,lfc=0,confint=FALSE){
 
+	topTable(fit,coef=coef,number=number,genelist=genelist,adjust.method=adjust.method,sort.by=sort.by,resort.by=resort.by,p.value=p.value,lfc=lfc,confint=confint)	
+	})
 
 
 #' toptable for FMT
@@ -184,7 +208,7 @@ eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 #' @aliases toptable,FMT-method
 #' @keywords internal
 setMethod("topTable", "FMT",
-function (fit, coef = NULL, number = 10, genelist = fit$genes,
+function(fit, coef = NULL, number = 10, genelist = fit$genes,
     adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,
     lfc = 0, confint = FALSE){
 

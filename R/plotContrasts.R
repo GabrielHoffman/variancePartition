@@ -49,6 +49,16 @@ plotContrasts = function( L ){
 		stop(paste("Contrast names must be unique: ", paste(colnames(L), collapse=', ')))
 	}
 
+	# check that each contrast sum to zero
+	tol = sqrt(.Machine$double.eps)
+	sumZero = apply(L, 2, function(x){
+		abs(sum(x)) < tol
+		})
+
+	# if( any(!sumZero) ){
+	# 	stop('Each contrast must sum to 0. ', paste(names(sumZero[!sumZero]), collapse=', '), ' fails')
+	# }
+
 	df = melt(t(L))
 	colnames(df)[1:2] = c("Var1", "Var2")
 	df$Var1 = factor(df$Var1)
@@ -64,6 +74,6 @@ plotContrasts = function( L ){
 
 	ggplot(df, aes(Var2, y=Var1, fill=value)) + geom_tile(color="black") + theme_minimal() + theme(aspect.ratio=h/w,
 		panel.grid.major =element_blank(),
-		panel.grid.minor =element_blank(),plot.title = element_text(hjust = 0.5)) + scale_fill_gradient2(name="Contrast coef", limits=c(-1,1), low=alpha("blue",.8), mid="white", high=alpha("red", .8)) + xlab("Variable") + ylab("Contrasts") + ggtitle("Graphical representation of linear contrasts") + geom_text(aes(label=value), fontface = "bold")
+		panel.grid.minor =element_blank(),plot.title = element_text(hjust = 0.5)) + scale_fill_gradient2(name="Contrast coef", limits=c(-1,1), low=alpha("blue",.8), mid="white", high=alpha("red", .8)) + xlab("Variable") + ylab("Contrasts") + ggtitle("Graphical representation of linear contrasts") + geom_text(aes(label=round(value, 2)), fontface = "bold")
 }
 

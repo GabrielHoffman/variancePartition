@@ -202,7 +202,7 @@ setClass("varPartResults", representation(type = "character", adjustedFor="array
 #' as.matrix(varPart)
 #'
 #' @export
-#' @docType methods
+# @docType methods
 #' @aliases as.matrix
 setMethod("as.matrix", "varPartResults",
 function(x, ...)
@@ -248,7 +248,7 @@ function(x, ...)
 #' as.data.frame(varPart)
 #'
 #' @export
-#' @docType methods
+# @docType methods
 #' @aliases as.data.frame
 setMethod("as.data.frame", "varPartResults",
 function(x, row.names = NULL, optional = FALSE,...)
@@ -324,9 +324,9 @@ ggColorHue <- function(n) {
 # # stop cluster
 # stopCluster(cl)
 #'
-#' @export
-#' @docType methods
-#' @aliases residuals
+#' @export 
+# @docType methods
+#' @aliases residuals,VarParFitList-method
 setMethod("residuals", "VarParFitList",
   function(object, ...) {
 

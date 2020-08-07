@@ -1,5 +1,5 @@
 
- CHANGES IN VERSION 1.18.3 Bug fixes
+CHANGES IN VERSION 1.18.3 Bug fixes
 --------------------------
 	o fix issue with residuals() where examples fail
 	o fix issues with residuals() 
@@ -15,7 +15,7 @@
 	o Round numbers in plotContrasts()
 	o fix issues with strings are passed to formula arguments
 
- CHANGES IN VERSION 1.18.2 Bug fixes
+CHANGES IN VERSION 1.18.2 Bug fixes
 -------------------------	
 	o New gives meaning full error message for dream(), etc when variable is not found in data.
 

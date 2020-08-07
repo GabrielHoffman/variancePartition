@@ -1,5 +1,7 @@
 # variancePartition
 
+Manuscript describing `dream` is accepted to Bioinformatics (doi [10.1093/bioinformatics/btaa687](https://doi.org/10.1093/bioinformatics/btaa687))
+
 ## Install from GitHub
 
 ```
@@ -13,3 +15,9 @@ This is a developmental version.
 For stable release see [Bioconductor version](http://bioconductor.org/packages/variancePartition/)
 
 See [frequently asked questions](http://bioconductor.org/packages/devel/bioc/vignettes/variancePartition/inst/doc/FAQ.html)
+
+See repo of [examples from the paper](https://github.com/GabrielHoffman/dream_analysis)
+
+### Reporting bugs
+
+Please help speed up bug fixes by providing a 'minimal reproducible example' that starts with a new R session.  I recommend the [reprex package](https://reprex.tidyverse.org) to produce a GitHub-ready example that is reproducable from a fresh R session.
