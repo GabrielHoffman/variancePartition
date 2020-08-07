@@ -1,4 +1,4 @@
-CHANGES IN VERSION 1.19.13 
+CHANGES IN VERSION 1.19.14 
 --------------------------
 	o fix issue with residuals() where examples fail
 
