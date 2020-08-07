@@ -1,4 +1,20 @@
 
+ CHANGES IN VERSION 1.18.3 Bug fixes
+--------------------------
+	o fix issue with residuals() where examples fail
+	o fix issues with residuals() 
+		- https://github.com/GabrielHoffman/variancePartition/issues/18
+	o fix issue exporting eBayes, topTable, etc
+	o Improve documentation for contrasts in dream.Rmd
+	o check that contrasts sum to zero in plotContrasts.
+	o in voomWithDreamWeights() fix issue with not defining design
+		- https://github.com/GabrielHoffman/variancePartition/issues/17
+	o in voomWithDreamWeights() fix issue with returning design matrix	
+	o better error if counts can't be converted to matrix
+		- https://github.com/GabrielHoffman/variancePartition/issues/15
+	o Round numbers in plotContrasts()
+	o fix issues with strings are passed to formula arguments
+
  CHANGES IN VERSION 1.18.2 Bug fixes
 -------------------------	
 	o New gives meaning full error message for dream(), etc when variable is not found in data.
