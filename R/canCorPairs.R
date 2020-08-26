@@ -5,16 +5,16 @@
 #'
 #' Assess correlation between all pairs of variables in a formula 
 #'
-#' @param formula standard linear model formula (doesn't support random effects currently, so just change the syntax)
+#' @param formula standard additive linear model formula (doesn't support random effects currently, so just change the syntax)
 #' @param data data.frame with the data for the variables in the formula
 #' @param showWarnings default to true
 #'
 #' @details
 #' Canonical Correlation Analysis (CCA) is similar to correlation between two vectors, except that CCA can accommodate matricies as well.  For a pair of variables, canCorPairs assesses the degree to which they co-vary and contain the same information.  Variables in the formula can be a continuous variable or a discrete variable expanded to a matrix (which is done in the backend of a regression model).  For a pair of variables, canCorPairs uses CCA to compute the correlation between these variables and returns the pairwise correlation matrix.
 #' 
-#' Statistically, let rho be the array of correlation values returned by the standard R function cancor to compute CCA.  canCorPairs returns rho / sum(rho) which is the fraction of the maximum possible correlation.   
+#' Statistically, let rho be the array of correlation values returned by the standard R function cancor to compute CCA.  canCorPairs returns sqrt(mean(rho^2)), which is the fraction of the maximum possible correlation.
 #' 
-#' Note that CCA returns correlations values between 0 and 1
+#' Note that CCA returns correlation values between 0 and 1.
 #'
 #' @return 
 #' Matrix of correlation values between all pairs of variables.
@@ -94,7 +94,7 @@ canCorPairs = function(formula, data, showWarnings=TRUE){
 			keep = keep1 & keep2
 
 			fit <- cancor( variableList[[key1]][keep,,drop=FALSE], variableList[[key2]][keep,,drop=FALSE] )
-			sum(fit$cor) / length(fit$cor)
+			sqrt(mean(fit$cor^2))
 			},
 			error = function(e){
 			NA
