@@ -1,6 +1,8 @@
-CHANGES IN VERSION 1.19.15
+CHANGES IN VERSION 1.19.16
 --------------------------
 	o in canCorPairs() change statistic used to summarize CCA to Cramer's V.  The difference is very subtle, but is now based on first principles.
+	o in dream, check that data is a data.frame
+	o dream() defaults to computeResiduals=TRUE for compatability with zenith
 
 CHANGES IN VERSION 1.19.14 
 --------------------------

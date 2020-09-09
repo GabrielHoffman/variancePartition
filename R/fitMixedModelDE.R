@@ -377,7 +377,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
 #' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
-#' @param computeResiduals if TRUE, compute residuals and extract with \code{residuals(fit)}.  Setting to false saves memory
+#' @param computeResiduals if TRUE, compute residuals and extract with \code{residuals(fit)}.  Setting to FALSE saves memory
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.
 #' @param ... Additional arguments for \code{lmer()} or \code{lm()}
 #' 
@@ -465,7 +465,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats hatvalues
 # @importFrom lmerTest lmer
-dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=FALSE, REML=TRUE, ...){ 
+dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=TRUE, REML=TRUE, ...){ 
 
 	exprObjInit = exprObj
 	
@@ -473,6 +473,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	formula = stats::as.formula( formula )
 	ddf = match.arg(ddf)
 	colinearityCutoff = 0.999
+
+	if( ! is.data.frame(data) ){
+		stop("data must be a data.frame")
+	}
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
