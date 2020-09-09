@@ -16,7 +16,7 @@ dream(
   suppressWarnings = FALSE,
   quiet = FALSE,
   BPPARAM = bpparam(),
-  computeResiduals = FALSE,
+  computeResiduals = TRUE,
   REML = TRUE,
   ...
 )
@@ -44,7 +44,7 @@ dream(
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
-\item{computeResiduals}{if TRUE, compute residuals and extract with \code{residuals(fit)}.  Setting to false saves memory}
+\item{computeResiduals}{if TRUE, compute residuals and extract with \code{residuals(fit)}.  Setting to FALSE saves memory}
 
 \item{REML}{use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.}
 
