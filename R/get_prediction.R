@@ -2,11 +2,15 @@
 # June 2, 2020
 #
 
+setGeneric("get_prediction", function(fit, formula){
+	standardGeneric("get_prediction")
+	})
+
 #' Compute predicted value of formula for linear mixed model
 #'
-#' Compute predicted value of formula for linear mixed model for with lmer
+#' Compute predicted value of formula for linear mixed model for with \code{lmer}
 #'
-#' @param fit model fit with lmer
+#' @param fit model fit with \code{lmer}
 #' @param formula formula of fixed and random effects to predict
 #'
 #' @return Predicted values from formula using parameter estimates from fit linear mixed model
@@ -28,7 +32,7 @@
 #' 
 #' @import lme4
 #' @export
-get_prediction = function( fit, formula){
+setMethod('get_prediction', "lmerMod", function( fit, formula){
 
 	# initialize to zeros
 	pred_fixed = pred_rand = rep(0, length(fit@resp$y))
@@ -67,4 +71,43 @@ get_prediction = function( fit, formula){
 	y_pred = pred_rand + pred_fixed
 	names(y_pred) = rownames(dsgn)
 	y_pred
-}
+})
+
+
+#' Compute predicted value of formula for linear model
+#'
+#' Compute predicted value of formula for linear model for with \code{lm}
+#'
+#' @param fit model fit with \code{lm}
+#' @param formula formula ofeffects to predict
+#'
+#' @return Predicted values from formula using parameter estimates from fit linear model
+#' 
+#' @examples
+#' 
+#' library(lme4)
+#' 
+#' # fit model
+#' fit <- lm(Reaction ~ Days, sleepstudy)
+#' 
+#' # prediction of intercept
+#' get_prediction( fit, ~ 1)
+#'
+#' # prediction of Days without intercept
+#' get_prediction( fit, ~ 0 + Days)
+#' 
+#' @import lme4
+#' @export
+setMethod('get_prediction', "lm", function( fit, formula){
+
+	dsgn = model.matrix(formula, fit$model)
+    beta = coef(fit)[colnames(dsgn)]
+
+    y_pred = as.numeric(dsgn %*% beta)    
+    names(y_pred) = rownames(dsgn)
+
+    y_pred
+})
+
+
+

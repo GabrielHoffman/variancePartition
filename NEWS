@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.19.17
+--------------------------
+	o add get_prediction() for results of lm()
+
 CHANGES IN VERSION 1.19.16
 --------------------------
 	o in canCorPairs() change statistic used to summarize CCA to Cramer's V.  The difference is very subtle, but is now based on first principles.
