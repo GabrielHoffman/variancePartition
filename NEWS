@@ -1,6 +1,7 @@
 CHANGES IN VERSION 1.19.17
 --------------------------
 	o add get_prediction() for results of lm()
+	o improve documentation of get_prediction()
 
 CHANGES IN VERSION 1.19.16
 --------------------------

@@ -2,24 +2,31 @@
 # June 2, 2020
 #
 
-setGeneric("get_prediction", function(fit, formula){
-	standardGeneric("get_prediction")
-	})
-
-#' Compute predicted value of formula for linear mixed model
+#' Compute predicted value of formula for linear (mixed) model
 #'
-#' Compute predicted value of formula for linear mixed model for with \code{lmer}
+#' Compute predicted value of formula for linear (mixed) model for with \code{lm} or \code{lmer}
 #'
-#' @param fit model fit with \code{lmer}
+#' @param fit model fit with \code{lm} or \code{lmer}
 #' @param formula formula of fixed and random effects to predict
 #'
-#' @return Predicted values from formula using parameter estimates from fit linear mixed model
+#' @return Predicted values from formula using parameter estimates from fit linear (mixed) model
 #'
 #' @details Similar motivation as \code{lme4:::predict.merMod()}, but that function cannot use just a subset of the fixed effects: it either uses none or all.  Note that the intercept is included in the formula by default.  To exclude it from the prediction use \code{~ 0 + ...} syntax
 #' 
 #' @examples
 #' 
 #' library(lme4)
+#'
+#' # Linear model
+#' fit <- lm(Reaction ~ Days, sleepstudy)
+#' 
+#' # prediction of intercept
+#' get_prediction( fit, ~ 1)
+#'
+#' # prediction of Days without intercept
+#' get_prediction( fit, ~ 0 + Days)
+#'
+#' # Linear mixed model
 #' 
 #' # fit model
 #' fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
@@ -30,8 +37,11 @@ setGeneric("get_prediction", function(fit, formula){
 #' # predict Days and (Days | Subject) random effect, but exclude intercept
 #' get_prediction( fm1, ~ 0 + Days +  (Days | Subject))
 #' 
-#' @import lme4
 #' @export
+setGeneric("get_prediction", function(fit, formula){
+	standardGeneric("get_prediction")
+	})
+
 setMethod('get_prediction', "lmerMod", function( fit, formula){
 
 	# initialize to zeros
