@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.19.18
+--------------------------
+	o simplify calcVarPart for lm and lmer.  Add compatibility for glm
+	o Simplify checkModelStatus.merMod to allow formula (A|B) where A is continuous
+	o remove unused "adjust" arguments for clarity
+
 CHANGES IN VERSION 1.19.17
 --------------------------
 	o add get_prediction() for results of lm()

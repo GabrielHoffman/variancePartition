@@ -18,6 +18,7 @@
 # 	unlist(vc_indiv)
 # }
 
+setClass('FMT')
 
 # setClass('FMT', contains='MArrayLM2')
 

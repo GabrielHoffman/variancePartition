@@ -38,10 +38,15 @@
 #' get_prediction( fm1, ~ 0 + Days +  (Days | Subject))
 #' 
 #' @export
+#' @docType methods
+#' @rdname get_prediction-method
 setGeneric("get_prediction", function(fit, formula){
 	standardGeneric("get_prediction")
 	})
 
+#' @export
+#' @rdname get_prediction-method
+#' @aliases get_prediction,lmerMod-method
 setMethod('get_prediction', "lmerMod", function( fit, formula){
 
 	# initialize to zeros
@@ -84,30 +89,9 @@ setMethod('get_prediction', "lmerMod", function( fit, formula){
 })
 
 
-#' Compute predicted value of formula for linear model
-#'
-#' Compute predicted value of formula for linear model for with \code{lm}
-#'
-#' @param fit model fit with \code{lm}
-#' @param formula formula ofeffects to predict
-#'
-#' @return Predicted values from formula using parameter estimates from fit linear model
-#' 
-#' @examples
-#' 
-#' library(lme4)
-#' 
-#' # fit model
-#' fit <- lm(Reaction ~ Days, sleepstudy)
-#' 
-#' # prediction of intercept
-#' get_prediction( fit, ~ 1)
-#'
-#' # prediction of Days without intercept
-#' get_prediction( fit, ~ 0 + Days)
-#' 
-#' @import lme4
 #' @export
+#' @rdname get_prediction-method
+#' @aliases get_prediction,lm-method
 setMethod('get_prediction', "lm", function( fit, formula){
 
 	dsgn = model.matrix(formula, fit$model)
@@ -118,6 +102,15 @@ setMethod('get_prediction', "lm", function( fit, formula){
 
     y_pred
 })
+
+
+# # same as lme4:::reOnly(), but avoids error in R CMD check
+# reOnly = function (f, response = FALSE){
+#     reformulate(paste0("(", vapply(findbars(f), safeDeparse, 
+#         ""), ")"), response = if (response && length(f) == 3L) 
+#         f[[2]])
+# }
+
 
 
 

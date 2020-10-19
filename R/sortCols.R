@@ -90,7 +90,7 @@ setMethod("sortCols", "varPartResults",
 
  		# res = as.data.frame( res )
 
- 		vp = new( "varPartResults", res, type=x@type, adjustedFor=x@adjustedFor, method=x@method)
+ 		vp = new( "varPartResults", res, type=x@type, method=x@method)
 
  		return( vp )
  	}

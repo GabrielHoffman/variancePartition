@@ -11,8 +11,6 @@ varPartConfInf(
   REML = FALSE,
   useWeights = TRUE,
   weightsMatrix = NULL,
-  adjust = NULL,
-  adjustAll = FALSE,
   showWarnings = TRUE,
   colinearityCutoff = 0.999,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
@@ -32,10 +30,6 @@ varPartConfInf(
 \item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList} from \code{voom()} or \code{weightsMatrix} is specified}
 
 \item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE}
-
-\item{adjust}{remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables}
-
-\item{adjustAll}{adjust for all variables.  This computes the adjusted ICC with respect to all variables.  This overrides the previous argument, so all variables are include in adjust.}
 
 \item{showWarnings}{show warnings about model fit (default TRUE)}
 

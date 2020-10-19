@@ -4,8 +4,6 @@
 #' Extract variance statistics from list of models fit with \code{lm()} or \code{lmer()}
 #'
 #' @param modelList list of \code{lmer()} model fits
-#' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
-#' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables. This overrides the previous argument, so all variables are include in adjust.
 #' @param showWarnings show warnings about model fit (default TRUE)
 #' @param ... other arguments
 #'  
@@ -58,19 +56,15 @@
 # stopCluster(cl)
 #'
 #' @export
-extractVarPart <- function( modelList, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE,... ){
+extractVarPart <- function( modelList, showWarnings=TRUE,... ){
 
 	# get results from first model to enumerate all variables present
-	singleResult = calcVarPart( modelList[[1]], adjust, adjustAll, showWarnings=showWarnings,... )
-
-	# get variables to remove from denominator
-	# also, check variables
-	adjust = getAdjustVariables( names(singleResult), adjust, adjustAll)
+	singleResult = calcVarPart( modelList[[1]], showWarnings=showWarnings,... )
 
 	# for each model fit, get R^2 values
 	entry <- 1
 	varPart <- lapply( modelList, function( entry ) 
-		calcVarPart( entry, adjust, adjustAll, showWarnings=showWarnings,... )
+		calcVarPart( entry, showWarnings=showWarnings,... )
 	)
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))
@@ -79,17 +73,7 @@ extractVarPart <- function( modelList, adjust=NULL, adjustAll=FALSE, showWarning
 
 	modelType = ifelse(class(modelList[[1]])[1] == "lm", "anova", "linear mixed model")
 
-	if( is.null(adjust) ) adjust = NA
-
-	if( any(!is.na(adjust)) ){
-		method = "adjusted intra-class correlation"
-	}else{
-		method = "Variance explained (%)"
-	}	
-
-	res <- new("varPartResults", varPartMat, type=modelType, adjustedFor=array(adjust), method=method)
-	
-	return( res )
+	new("varPartResults", varPartMat, type=modelType, method="Variance explained (%)")
 }
 
 

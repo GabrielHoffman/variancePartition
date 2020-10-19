@@ -60,22 +60,24 @@ setMethod("checkModelStatus", "lmerMod",
 		# remove backticks with gsub manually
 		# solve issue that backticks are conserved is some but not all parts of lmer()
 
-		# random variables
-		randVar = as.character(attr(attr(fit@frame, "terms"), "predvars.random"))[-c(1,2)]
-		randVar = gsub("`", "", randVar)
-
-		# fixed variables
-		fixedVar = as.character(attr(attr(fit@frame, "terms"), "predvars.fixed"))[-c(1,2)]
-		fixedVar = gsub("`", "", fixedVar)
-
-		varType = attr(attr(fit@frame, "terms"), "dataClasses")[-1]
+		# Simplified testing of random versus fixed effects
+		# allows (A|B) only where A is continuous
 
 		# variables fit by regression
 		testVar = attr(attr(fit@frame, "terms"), "term.labels")
 		testVar = gsub("`", "", testVar)
 
+		# get type for each variable
 		# keep only tested variables
+		varType = attr(attr(fit@frame, "terms"), "dataClasses")[-1]
 		varType = varType[testVar]
+
+		# random effects
+		randVar = names(fit@flist)
+
+		# fixed effects
+		# starting with all variables, remove random variables
+		fixedVar = setdiff(testVar, randVar)		
 
 		for( i in 1:length(varType) ){
 
@@ -90,12 +92,8 @@ setMethod("checkModelStatus", "lmerMod",
 			}
 		}
 
-		if( (! dream) && showWarnings && isVaryingCoefficientModel( fit ) ){
-			stop(paste("Random slope models {i.e. ~ (var1 | var2) } are no longer supported\nfor estimating variance fractions.\nThey produced results that were not interpretable."))			
-		}
-
 		# show convergance message
-		if( showWarnings && !is.null(fit@optinfo$conv$lme4$messages) ){
+		if( showWarnings && !is.null(fit@optinfo$conv$lme4$messages) && (fit@optinfo$conv$lme4$messages != "boundary (singular) fit: see ?isSingular")){
 			stop(fit@optinfo$conv$lme4$messages)
 		}
 	}

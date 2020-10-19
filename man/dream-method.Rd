@@ -76,7 +76,10 @@ While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', 
 # load library
 # library(variancePartition)
 library(BiocParallel)
-register(SerialParam())
+
+# Intialize parallel backend with 4 cores
+library(BiocParallel)
+register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

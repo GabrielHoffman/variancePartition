@@ -20,8 +20,6 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option, but here for compatibility.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
-#' @param adjust remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables
-#' @param adjustAll adjust for all variables.  This computes the adjusted ICC with respect to all variables.  This overrides the previous argument, so all variables are include in adjust.
 #' @param showWarnings show warnings about model fit (default TRUE)
 #' @param colinearityCutoff cutoff used to determine if model is computationally singular
 #' @param control control settings for \code{lmer()}
@@ -63,7 +61,7 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 # stopCluster(cl)
 #'
 #' @export
-varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, adjust=NULL, adjustAll=FALSE, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),nsim=1000,...){ 
+varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),nsim=1000,...){ 
 
 	if( !is.numeric(nsim) || nsim <= 0 ){
 		stop("Must specify nsim as positive number")
@@ -85,7 +83,7 @@ varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE,
 	})
 
 	# fit the model and run the bootstrap function for each gene
-	res = fitVarPartModel( exprObj=exprObj, formula=formula, data=data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings,fxn=bootStrapFxn, colinearityCutoff=colinearityCutoff, control = control,...) #  adjust=adjust, adjustAll=adjustAll, 
+	res = fitVarPartModel( exprObj=exprObj, formula=formula, data=data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings,fxn=bootStrapFxn, colinearityCutoff=colinearityCutoff, control = control,...) 
 
 	res@method="bootstrap"
 

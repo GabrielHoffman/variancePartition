@@ -4,20 +4,10 @@
 \alias{extractVarPart}
 \title{Extract variance statistics}
 \usage{
-extractVarPart(
-  modelList,
-  adjust = NULL,
-  adjustAll = FALSE,
-  showWarnings = TRUE,
-  ...
-)
+extractVarPart(modelList, showWarnings = TRUE, ...)
 }
 \arguments{
 \item{modelList}{list of \code{lmer()} model fits}
-
-\item{adjust}{remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables}
-
-\item{adjustAll}{adjust for all variables.  This computes the adjusted ICC with respect to all variables. This overrides the previous argument, so all variables are include in adjust.}
 
 \item{showWarnings}{show warnings about model fit (default TRUE)}
 
