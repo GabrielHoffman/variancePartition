@@ -5,29 +5,48 @@
 \alias{calcVarPart}
 \alias{calcVarPart,lm-method}
 \alias{calcVarPart,lmerMod-method}
+\alias{calcVarPart,glm-method}
 \title{Compute variance statistics}
 \usage{
-calcVarPart(fit, adjust = NULL, adjustAll = FALSE, showWarnings = TRUE, ...)
+calcVarPart(fit, showWarnings = TRUE, ...)
 
-\S4method{calcVarPart}{lm}(fit, adjust = NULL, adjustAll = FALSE, showWarnings = TRUE, ...)
+\S4method{calcVarPart}{lm}(fit, showWarnings = TRUE, ...)
 
-\S4method{calcVarPart}{lmerMod}(fit, adjust = NULL, adjustAll = FALSE, showWarnings = TRUE, ...)
+\S4method{calcVarPart}{lmerMod}(fit, showWarnings = TRUE, ...)
+
+\S4method{calcVarPart}{glm}(fit, showWarnings = TRUE, ...)
 }
 \arguments{
 \item{fit}{model fit from lm() or lmer()}
-
-\item{adjust}{remove variation from specified variables from the denominator.  This computes the adjusted ICC with respect to the specified variables}
-
-\item{adjustAll}{adjust for all variables.  This computes the adjusted ICC with respect to all variables}
 
 \item{showWarnings}{show warnings about model fit (default TRUE)}
 
 \item{...}{additional arguments (not currently used)}
 }
 \value{
-fraction of variance explained / ICC for each variable in the model
+fraction of variance explained / ICC for each variable in the linear model
 }
 \description{
+For linear model, variance fractions are computed based on the sum of squares explained by each component.  For the linear mixed mode, the variance fractions are computed by variance component estimates for random effects and sum of squares for fixed effects.  
+
+For a generalized linear model, the variance fraction also includes the contribution of the link function so that fractions are reported on the linear (i.e. link) scale rather than the observed (i.e. response) scale. For linear regression with an identity link, fractions are the same on both scales.  But for logit or probit links, the fractions are not well defined on the observed scale due to the transformation imposed by the link function.  
+
+The variance implied by the link function is the variance of the corresponding distribution:
+	logit -> logistic distribution -> variance is pi^2/3
+probit -> standard normal distribution -> variance is 1
+
+Reviewed by
+Nakagawa and Schielzeth. 2012. A general and simple method for obtaining R2 from generalized linear mixed-effects models.  https://doi.org/10.1111/j.2041-210x.2012.00261.x
+
+Proposed by
+McKelvey and Zavoina. A statistical model for the analysis of ordinal level dependent variables. The Journal of Mathematical Sociology 4(1) 103-120 https://doi.org/10.1080/0022250X.1975.9989847
+
+Also see
+DeMaris. Explained Variance in Logistic Regression: A Monte Carlo Study of Proposed Measures. Sociological Methods & Research 2002 https://doi.org/10.1177/0049124102031001002
+
+We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the full model.  Instead, a variance partitioning approach evaluates the variance explained by each term in the model, so that the sum of each systematic plus random term sums to 1 (Hoffman and Schadt, 2016, Nakagawa and Schielzeth, 2012).
+}
+\details{
 Compute fraction of variation attributable to each variable in regression model.  Also interpretable as the intra-class correlation after correcting for all other variables in the model.
 }
 \examples{

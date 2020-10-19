@@ -18,14 +18,11 @@
 #'
 #' # load library
 #' # library(variancePartition)
-#' 
-#' # optional step to run analysis in parallel on multicore machines
-#' # Here, we used 4 threads
-#' library(doParallel)
-#' cl <- makeCluster(4)
-#' registerDoParallel(cl)
-#' # or by using the doSNOW package
 #'
+#' # Intialize parallel backend with 4 cores
+#' library(BiocParallel)
+#' register(SnowParam(4))
+#' 
 #' # load simulated data:
 #' data(varPartData)
 #' 
@@ -71,9 +68,9 @@ plotCorrStructure = function( fit, varNames = names(coef(fit)), reorder=TRUE,
 		stop("fit must be a linear mixed model fit of class lmerMod")
 	}
 
-	if( isVaryingCoefficientModel( fit) ){
-		stop("Plot does not work with varying coefficient model")
-	}
+	# if( isVaryingCoefficientModel( fit) ){
+	# 	stop("Plot does not work with varying coefficient model")
+	# }
 
 	# If any variable names are not in fit
 	if( any(!varNames %in% names(coef(fit))) ){

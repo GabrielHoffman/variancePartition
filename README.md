@@ -1,22 +1,28 @@
 # variancePartition
 
-Manuscript describing `dream` is accepted to Bioinformatics (doi [10.1093/bioinformatics/btaa687](https://doi.org/10.1093/bioinformatics/btaa687))
+Manuscript describing `dream` for differential expression in [Bioinformatics](https://doi.org/10.1093/bioinformatics/btaa687)
 
-## Install from GitHub
+Manuscript describing the `variancePartition` package in [BMC Bioinformatics](https://doi.org/10.1186/s12859-016-1323-z)
 
-```
+
+
+### Install from GitHub
+
+```r
 library(devtools)
 
 install_github("GabrielHoffman/variancePartition")
 ```
 
-This is a developmental version.
+### Notes
+This is a developmental version. For stable release see [Bioconductor version](http://bioconductor.org/packages/variancePartition/).
 
-For stable release see [Bioconductor version](http://bioconductor.org/packages/variancePartition/)
+For questions about specifying contrasts with dream, see [examples here](https://gist.github.com/GabrielHoffman/aa993222bae4d6b7d1caea2334aedbf7).
 
-See [frequently asked questions](http://bioconductor.org/packages/devel/bioc/vignettes/variancePartition/inst/doc/FAQ.html)
 
-See repo of [examples from the paper](https://github.com/GabrielHoffman/dream_analysis)
+See [frequently asked questions](http://bioconductor.org/packages/devel/bioc/vignettes/variancePartition/inst/doc/FAQ.html).
+
+See repo of [examples from the paper](https://github.com/GabrielHoffman/dream_analysis).
 
 ### Reporting bugs
 

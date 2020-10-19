@@ -158,7 +158,7 @@ iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks 
 #' @name varPartResults-class
 #' @rdname varPartResults-class
 #' @exportClass varPartResults
-setClass("varPartResults", representation(type = "character", adjustedFor="array", method="character"), contains="data.frame")
+setClass("varPartResults", representation(type = "character", method="character"), contains="data.frame")
 
 # # @export
 # setMethod("print", "varPartResults",
