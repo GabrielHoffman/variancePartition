@@ -399,7 +399,6 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'
 #' While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', ddf='Satterthwaite' can be used with \code{REML} as \code{TRUE} or \code{FALSE}.  Since the Kenward-Roger method gave the best power with an accurate control of false positive rate in our simulations, and since the Satterthwaite method with REML=TRUE gives p-values that are slightly closer to the Kenward-Roger p-values, \code{REML=TRUE} is the default.  See Vignette "3) Theory and practice of random effects and REML"
 #'
-#'
 #' @examples
 #'
 #' # load library
@@ -467,7 +466,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @importFrom BiocParallel bpiterate bpparam
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats hatvalues
-# @importFrom lmerTest lmer
+#' @import doParallel foreach
+#'
 dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=TRUE, REML=TRUE, ...){ 
 
 	exprObjInit = exprObj

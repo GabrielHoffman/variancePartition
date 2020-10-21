@@ -22,13 +22,9 @@ Extract variance statistics from list of models fit with \code{lm()} or \code{lm
 \examples{
 # library(variancePartition)
 
-# optional step to run analysis in parallel on multicore machines
-# Here, we used 4 threads
-library(doParallel)
-cl <- makeCluster(4)
-registerDoParallel(cl)
-on.exit(stopCluster(cl))
-# or by using the doSNOW package
+# Intialize parallel backend with 4 cores
+library(BiocParallel)
+register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
