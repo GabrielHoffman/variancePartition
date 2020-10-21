@@ -19,7 +19,7 @@
 #' @return
 #' \code{list()} of where each entry is a model fit produced by \code{lmer()} or \code{lm()}
 #' 
-#' @import splines gplots colorRamps lme4 pbkrtest ggplot2 limma foreach progress reshape2 iterators doParallel Biobase methods utils
+#' @import splines gplots colorRamps lme4 pbkrtest ggplot2 limma progress reshape2 iterators Biobase methods utils doParallel
 # dendextend 
 #' @importFrom MASS ginv
 # @importFrom RSpectra eigs_sym
@@ -227,9 +227,6 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 		# check size of stored objects
 		objSize = object.size( fxn(fitInit) ) * nrow(exprObj)
-
-		# total time = (time for 1 gene) * (# of genes) / 60 / (# of threads)
-		showTime = timediff[3] * nrow(exprObj) / 60 / getDoParWorkers()
 
 		if( !quiet ) message("Memory usage to store result: >", format(objSize, units = "auto"))
 
