@@ -106,7 +106,10 @@ exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount 
 # }
 
 
-iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks  = nrow(exprObj) / 500 ) {
+iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks = nrow(exprObj) / 500 ) {
+
+	# if there are fewer rows than chuncks, set n_chunks=1
+	n_chunks = ifelse( nrow(exprObj) >= n_chunks, n_chunks, 1)
 
 	# specify chunks
     idx <- parallel::splitIndices(nrow(exprObj), min(nrow(exprObj), n_chunks))
