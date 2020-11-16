@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.21.1
+--------------------------
+	o fix issue with dream and random slopes
+
 CHANGES IN VERSION 1.19.20
 --------------------------
 	o fix bug discovered when the number of features is less than the number of chunks in iterBatch()

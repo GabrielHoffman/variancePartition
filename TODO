@@ -1,3 +1,11 @@
+
+# November 2, 2020
+- integrate voomWithQualityWeights() with voomWithDreamWeights
+	o Need to convert lm.fit() calls to dream()
+	o Need to dream() to return hatvalues
+
+
+
 recommend placing a check to verify if the names in the info matrix, match with the names used in the formula and return an error if not
 
 
