@@ -403,7 +403,6 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'
 #' # load library
 #' # library(variancePartition)
-#' library(BiocParallel)
 #'
 #' # Intialize parallel backend with 4 cores
 #' library(BiocParallel)
@@ -757,7 +756,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		sigma = sapply( resList, function(x) x$ret$sigma)
 		names(sigma) = rownames(exprObj)
 
-		varComp = lapply(resList, function(x) as.data.frame(x$varComp))
+		varComp = lapply(resList, function(x){
+			x = unlist(x$varComp)
+			names(x) = gsub("\\.\\(Intercept\\)", '', names(x))
+			as.data.frame(t(x))
+		})
 		varComp = do.call("rbind", varComp)
 		rownames(varComp) = rownames(coefficients)
 

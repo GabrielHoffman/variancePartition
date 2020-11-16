@@ -75,7 +75,6 @@ While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', 
 
 # load library
 # library(variancePartition)
-library(BiocParallel)
 
 # Intialize parallel backend with 4 cores
 library(BiocParallel)
