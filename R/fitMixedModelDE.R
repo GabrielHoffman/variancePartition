@@ -193,6 +193,9 @@ getContrast = function( exprObj, formula, data, coefficient){
 	exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
 
+	# only retain columns used in the formula
+	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
+
 	REML=TRUE
 	useWeights=TRUE
 	weightsMatrix=NULL
@@ -348,8 +351,14 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 
 .checkNA = function(exprObj){
-	# check if values are NA
-	countNA = sum(is.nan(exprObj)) + sum(!is.finite(exprObj))
+
+	if( is(exprObj, "sparseMatrix") ){
+		countNA = sum(!is.finite(exprObj))
+	}else{
+		# check if values are NA
+		countNA = sum(is.nan(exprObj)) + sum(!is.finite(exprObj))
+	}
+
 	if( countNA > 0 ){
 		stop("There are ", countNA, " NA/NaN/Inf values in exprObj\nMissing data is not allowed")
 	}
@@ -473,6 +482,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	
 	exprObjMat = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
+
+	# only retain columns used in the formula
+	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
+
 	ddf = match.arg(ddf)
 	colinearityCutoff = 0.999
 

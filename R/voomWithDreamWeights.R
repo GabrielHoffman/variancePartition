@@ -56,6 +56,9 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 
 	formula = as.formula( formula )
 
+	# only retain columns used in the formula
+	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
+
 	out <- list()
 
 	design = NULL 

@@ -118,6 +118,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	# }
 	formula = stats::as.formula( formula )
 
+	# only retain columns used in the formula
+	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
+
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
@@ -436,6 +439,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 	# exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )
+
+	# only retain columns used in the formula
+	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
