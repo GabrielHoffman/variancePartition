@@ -10,12 +10,14 @@ test_residuals = function(){
 	# residuals
 	data(varPartData)
 
+	register(SerialParam())
+
 	# Compute dream to lmer
 	#######################
 
 	# compute residuals with dream
 	form <- ~ Batch + (1|Individual) + (1|Tissue)
-	fit = dream( geneExpr[1:10,], form, info, computeResiduals=TRUE)
+	fit = dream( geneExpr[1:10,], form, info)
 	res = residuals(fit, geneExpr[1:10,])
 
 	# compute with lmer
@@ -45,7 +47,7 @@ test_residuals = function(){
 	L = getContrast(geneExpr, form, info, c("Batch2", "Batch3"))
 
 
-	fit = dream( geneExpr[1:10,], form, info, L=L,computeResiduals=TRUE)
+	fit = dream( geneExpr[1:10,], form, info, L=L)
 	res = residuals(fit, geneExpr[1:10,])
 
 	# compute with lmer
@@ -58,7 +60,7 @@ test_residuals = function(){
 	
 	# compute residuals with dream
 	form <- ~ Batch 
-	fit = dream( geneExpr[1:10,], form, info, L=L,computeResiduals=TRUE)
+	fit = dream( geneExpr[1:10,], form, info)
 	res = residuals(fit, geneExpr[1:10,])
 
 	# compute with lmFit

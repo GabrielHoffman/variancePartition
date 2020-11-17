@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.21.2
+--------------------------
+	o Reduce size of data passed to each thread by only including variables used in the formula.  Applies to multiple functions
+	o add more unit tests
+
 CHANGES IN VERSION 1.21.1
 --------------------------
 	o fix issue with dream and random slopes
