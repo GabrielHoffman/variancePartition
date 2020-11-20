@@ -120,6 +120,9 @@ iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks 
     # Don't split into chunks smaller than min_chunk_size
     max_allowed_chunks <- floor(nrow(exprObj) / min_chunk_size)
 	n_chunks = min(n_chunks, max_allowed_chunks)
+    # Make sure we have at least 1 chunk (since we can get 0 if
+    # min_chunk_size > nrow)
+    n_chunks <- max(n_chunks, 1)
 
 	# specify chunks
     idx <- parallel::splitIndices(nrow(exprObj), min(nrow(exprObj), n_chunks))
