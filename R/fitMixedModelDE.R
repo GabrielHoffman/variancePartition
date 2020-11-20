@@ -723,11 +723,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		resList <- bpiterate( it, .eval_master, 
+		resList <- do.call(c, bpiterate( it, .eval_master,
 			data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
-			 REDUCE=c,
-		    reduce.in.order=TRUE,	
-			BPPARAM=BPPARAM)
+			BPPARAM=BPPARAM))
 	
 		
 		names(resList) = seq_len(length(resList))
