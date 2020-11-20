@@ -268,11 +268,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		res <- bpiterate( it, .eval_master, 
+		res <- do.call(c, bpiterate( it, .eval_master,
 			data2=data2, form=form, REML=REML, theta=fitInit@theta, fxn=fxn, control=control,..., 
-			 REDUCE=c,
-		    reduce.in.order=TRUE,	
-			BPPARAM=BPPARAM)	
+			BPPARAM=BPPARAM))
 
 		# if there is an error in evaluating fxn (usually in parallel backend)
 		if( is(res, 'remote_error') ){
@@ -566,11 +564,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		if( !quiet) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		varPart <- bpiterate( it, .eval_master, 
+		varPart <- do.call(c, bpiterate( it, .eval_master,
 			data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
-			 REDUCE=c,
-		    reduce.in.order=TRUE,	
-			BPPARAM=BPPARAM)
+			BPPARAM=BPPARAM))
 
 		modelType = "linear mixed model"
 	}
