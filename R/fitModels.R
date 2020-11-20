@@ -264,7 +264,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# Evaluate function
 		###################
 		
-		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
+		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100, BPPARAM = BPPARAM)
 		
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
@@ -560,7 +560,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# Evaluate function
 		####################
 
-		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
+		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100, BPPARAM = BPPARAM)
 
 		if( !quiet) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 

@@ -719,7 +719,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# Evaluate function
 		####################
 
-		it = iterBatch(exprObjMat, weightsMatrix, useWeights, n_chunks = 100)
+		it = iterBatch(exprObjMat, weightsMatrix, useWeights, n_chunks = 100, BPPARAM = BPPARAM)
 
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
