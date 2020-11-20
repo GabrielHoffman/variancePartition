@@ -106,10 +106,20 @@ exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount 
 # }
 
 
-iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks = nrow(exprObj) / 500 ) {
+iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks = nrow(exprObj) / 500, min_chunk_size = 20, BPPARAM = NULL ) {
+    # Adjust number of chunks upward to the next multiple of number of
+    # workers in BPPARAM, if this can be determined.
+    if (is(BPPARAM, "BiocParallelParam")) {
+        n_workers <- bpworkers(BPPARAM)
+        if (!is.null(n_workers) && is.numeric(n_workers) && n_workers >= 1) {
+            chunks_per_worker <- ceiling(n_chunks / n_workers)
+            n_chunks <- chunks_per_worker * n_workers
+        }
+    }
 
-	# if there are fewer rows than chuncks, set n_chunks=1
-	n_chunks = ifelse( nrow(exprObj) >= n_chunks, n_chunks, 1)
+    # Don't split into chunks smaller than min_chunk_size
+    max_allowed_chunks <- floor(nrow(exprObj) / min_chunk_size)
+	n_chunks = min(n_chunks, max_allowed_chunks)
 
 	# specify chunks
     idx <- parallel::splitIndices(nrow(exprObj), min(nrow(exprObj), n_chunks))
