@@ -352,9 +352,6 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 .checkNA = function(exprObj){
 
-
-	countNA = sum(!is.finite(exprObj))
-
 	if( is(exprObj, "sparseMatrix") || is( exprObj, "matrix") ){
 		countNA = sum(!is.finite(exprObj))
 	}else{		
