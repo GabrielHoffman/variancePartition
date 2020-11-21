@@ -352,12 +352,15 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 .checkNA = function(exprObj){
 
-	if( is(exprObj, "sparseMatrix") ){
-		countNA = sum(!is.finite(exprObj))
-	}else{
-		# check if values are NA
-		countNA = sum(is.nan(exprObj)) + sum(!is.finite(exprObj))
-	}
+
+	countNA = sum(!is.finite(exprObj))
+
+	# if( is(exprObj, "sparseMatrix") ){
+	# 	countNA = sum(!is.finite(exprObj))
+	# }else{
+	# 	# check if values are NA
+	# 	countNA = sum(!is.finite(exprObj)) # sum(is.nan(exprObj))
+	# }
 
 	if( countNA > 0 ){
 		stop("There are ", countNA, " NA/NaN/Inf values in exprObj\nMissing data is not allowed")
