@@ -195,7 +195,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	mesg <- "No random effects terms specified in formula"
 	method = ''
-	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
+	if( isTRUE(inherits(possibleError, "error") && identical(possibleError$message, mesg)) ){
 
 		# fit the model for testing
 		fit <- lm( eval(parse(text=form)), data=data,...)
@@ -215,7 +215,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	}else{
 
-		if( inherits(possibleError, "error") &&  grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+		if( isTRUE(inherits(possibleError, "error") &&  grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1) ){
 			stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
 		} 
 
