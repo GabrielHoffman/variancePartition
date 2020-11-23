@@ -514,7 +514,7 @@ colinearityScore = function(fit){
 .isDisconnected = function(){
 	i = NULL
 	possibleError <- tryCatch( suppressWarnings(foreach(i = seq_len(2)) %dopar% {i}), error = function(e) e)
-	return( inherits(possibleError, "error") && identical(possibleError$message, "invalid connection") )
+	return( isTRUE(inherits(possibleError, "error") && identical(possibleError$message, "invalid connection")) )
 }
 
 
