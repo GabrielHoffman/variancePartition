@@ -281,7 +281,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	}
 
 	# pb$update( responsePlaceholder$max_iter / responsePlaceholder$max_iter )
-	if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
+	if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
 	# set name of each entry
 	names(res) <- rownames( exprObj )
 
@@ -571,7 +571,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		modelType = "linear mixed model"
 	}
 
-	message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
+	message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))
 	colnames(varPartMat) <- names(varPart[[1]])
