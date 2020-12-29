@@ -195,7 +195,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	mesg <- "No random effects terms specified in formula"
 	method = ''
-	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
+	if( isTRUE(inherits(possibleError, "error") && identical(possibleError$message, mesg)) ){
 
 		# fit the model for testing
 		fit <- lm( eval(parse(text=form)), data=data,...)
@@ -215,7 +215,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	}else{
 
-		if( inherits(possibleError, "error") &&  grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+		if( isTRUE(inherits(possibleError, "error") &&  grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1) ){
 			stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
 		} 
 
@@ -264,15 +264,13 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# Evaluate function
 		###################
 		
-		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
+		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100, BPPARAM = BPPARAM)
 		
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		res <- bpiterate( it, .eval_master, 
+		res <- do.call(c, bpiterate( it, .eval_master,
 			data2=data2, form=form, REML=REML, theta=fitInit@theta, fxn=fxn, control=control,..., 
-			 REDUCE=c,
-		    reduce.in.order=TRUE,	
-			BPPARAM=BPPARAM)	
+			BPPARAM=BPPARAM))
 
 		# if there is an error in evaluating fxn (usually in parallel backend)
 		if( is(res, 'remote_error') ){
@@ -283,7 +281,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	}
 
 	# pb$update( responsePlaceholder$max_iter / responsePlaceholder$max_iter )
-	if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
+	if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
 	# set name of each entry
 	names(res) <- rownames( exprObj )
 
@@ -562,20 +560,18 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		# Evaluate function
 		####################
 
-		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100)
+		it = iterBatch(exprObj, weightsMatrix, useWeights, n_chunks = 100, BPPARAM = BPPARAM)
 
 		if( !quiet) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		varPart <- bpiterate( it, .eval_master, 
+		varPart <- do.call(c, bpiterate( it, .eval_master,
 			data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
-			 REDUCE=c,
-		    reduce.in.order=TRUE,	
-			BPPARAM=BPPARAM)
+			BPPARAM=BPPARAM))
 
 		modelType = "linear mixed model"
 	}
 
-	message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
+	message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))
 	colnames(varPartMat) <- names(varPart[[1]])
