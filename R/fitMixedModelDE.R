@@ -243,7 +243,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 	mesg <- "No random effects terms specified in formula"
 	method = ''
-	if( inherits(possibleError, "error") && identical(possibleError$message, mesg) ){
+	if( isTRUE(inherits(possibleError, "error") && identical(possibleError$message, mesg)) ){
 		
 		design = model.matrix( formula, data)
 
@@ -251,12 +251,12 @@ getContrast = function( exprObj, formula, data, coefficient){
 		names(L) = colnames(design)
 
 		 # detect error when variable in formula does not exist
-	}else if( inherits(possibleError, "error") && length( grep("object '.*' not found", possibleError$message)) > 0 ){
+	}else if( isTRUE(inherits(possibleError, "error") && length( grep("object '.*' not found", possibleError$message)) > 0) ){
 		stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
 	}
 	else{
 
-		if( inherits(possibleError, "error") && grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1 ){
+		if( isTRUE(inherits(possibleError, "error") && grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1) ){
 			stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
 		} 		
 
@@ -719,20 +719,18 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# Evaluate function
 		####################
 
-		it = iterBatch(exprObjMat, weightsMatrix, useWeights, n_chunks = 100)
+		it = iterBatch(exprObjMat, weightsMatrix, useWeights, n_chunks = 100, BPPARAM = BPPARAM)
 
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		resList <- bpiterate( it, .eval_master, 
+		resList <- do.call(c, bpiterate( it, .eval_master,
 			data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
-			 REDUCE=c,
-		    reduce.in.order=TRUE,	
-			BPPARAM=BPPARAM)
+			BPPARAM=BPPARAM))
 	
 		
 		names(resList) = seq_len(length(resList))
 
-		if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=0), "s"))		
+		if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
 
 		x = 1
 		# extract results
