@@ -60,6 +60,28 @@ setGeneric("calcVarPart", signature="fit",
 )
 
 
+# March 30, 2021
+# The results demond on order of variables in formula
+# https://github.com/GabrielHoffman/variancePartition/issues/30
+# This is a problem because anova() adds variables incrementally instead
+# 	of fitting a joint model
+#
+# #' @export
+# #' @rdname calcVarPart-method
+# #' @aliases calcVarPart,lm-method
+# setMethod("calcVarPart", "lm",
+# function(fit, showWarnings=TRUE, ...){
+
+# 	# check validity of model fit
+# 	checkModelStatus( fit, showWarnings, ...)
+
+# 	an = anova(fit)
+# 	varFrac = an[['Sum Sq']] / sum( an[['Sum Sq']] )
+# 	names(varFrac) = rownames(an)
+# 	varFrac
+# })
+
+# New version on March 30, 2021
 #' @export
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,lm-method
@@ -69,11 +91,59 @@ function(fit, showWarnings=TRUE, ...){
 	# check validity of model fit
 	checkModelStatus( fit, showWarnings, ...)
 
-	an = anova(fit)
-	varFrac = an[['Sum Sq']] / sum( an[['Sum Sq']] )
-	names(varFrac) = rownames(an)
-	varFrac
+	# create design matrix
+	dsgn = model.matrix(fit$terms, fit$model)
+
+	# loop through all groupings of variables:
+	# continuous variables are 1 column,
+	# categorical variables depend on the number of levels
+	# i=0 indicates the intercept, but skip this
+	# since it doesn't constribute to variance
+	fxeff = sapply( seq_len(max(fit$assign)), function(i){
+		idx = which(fit$assign == i)
+		dsgn[,idx,drop=FALSE] %*% fit$coefficients[idx]
+	})
+	colnames(fxeff) = attr(fit$terms,"term.labels")
+
+	# get sum of squares explained by each variable
+	fixedSS = apply(fxeff, 2, ss) 
+
+	# Total sum of squares bu summing predictions for each variable
+	ssFixedTotal = ss(rowSums(fxeff)) 
+
+	# scale SS by the sum and the total SS
+	# Evaluate sum of squares for each component
+	ssComp = sapply(names(fixedSS), function(key){
+		as.array(fixedSS[[key]] / sum(fixedSS) * ssFixedTotal)
+	})
+
+	# get residual sum of squares
+	ssComp['Residuals'] = RSS(fit) 
+
+	# get variance fractions by dividing each SS by total sum of squares
+	ssComp / sum(ssComp)
 })
+
+
+# Residual sum of squares
+RSS = function (object){
+    w <- object$weights
+    r <- residuals(object)
+    if (is.null(w)) 
+        w <- rep(1, length(r))
+    sum(w * residuals(object)^2)
+}
+
+# Sum of squares
+ss = function(x){
+	# sum((x-mean(x))^2)
+	# correct for the fact that var() gives the bias corrected value
+	var(x)*(length(x)-1)
+}
+
+
+
+
 
 #' @export
 #' @rdname calcVarPart-method

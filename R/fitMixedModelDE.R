@@ -36,7 +36,15 @@ setAs("MArrayLM2", "FMT", function(from, to ){
 
 # define S3 version of these functions
 
-#' @export  
+#' Residuals for result of dream
+#' 
+#' Residuals for result of dream
+#' 
+#' @param object See \code{?stats::residuals}
+#' @param ... See \code{?stats::residuals}
+#'
+#' @rawNamespace S3method("residuals", MArrayLM2)
+#' @export   
 residuals.MArrayLM2 = function( object, ...){
 	if( is.null(object$residuals) ){
 		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
@@ -238,7 +246,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 	# run lmer() to see if the model has random effects
 	# if less run lmer() in the loop
 	# else run lm()
-	responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights))
+	responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights, scale=FALSE))
 	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,control=control ), error = function(e) e)
 
 	mesg <- "No random effects terms specified in formula"
@@ -316,7 +324,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 		# df = as.numeric(contest(fit, L, ddf="Sat")['DenDF'])
 	}
 
-	sigma = attr(lme4::VarCorr(fit), "sc")
+	# sigma = attr(lme4::VarCorr(fit), "sc")
 
 	# get contrasts
 	# beta = as.matrix(sum(L * fixef(fit)), ncol=1)
@@ -339,13 +347,13 @@ getContrast = function( exprObj, formula, data, coefficient){
 	# pValue = 2*pt(as.numeric(abs(beta / SE)), df, lower.tail=FALSE)
 	pValue = as.numeric(cons[,'Pr(>F)'])
 
-	list(cons = cons,
-		df		= df,
-		sigma	= sigma,
-		beta	= beta,
-		SE		= SE,
-		pValue	= pValue,
-		vcov 	= V )
+	list(	cons 	= cons,
+			df		= df,
+			sigma	= sigma(fit),
+			beta	= beta,
+			SE		= SE,
+			pValue	= pValue,
+			vcov 	= V )
 }
 
 
@@ -487,13 +495,15 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	formula = stats::as.formula( formula )
 
 	# only retain columns used in the formula
+	# This reduces overhead for parallel processing with large datasets
 	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
+	data = droplevels(data)
 
 	ddf = match.arg(ddf)
 	colinearityCutoff = 0.999
 
 	if( ! is.data.frame(data) ){
-		stop("data must be a data.frame")
+		stop("data argument must be a data.frame")
 	}
 
 	# check dimensions of reponse and covariates
@@ -626,7 +636,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		# fit first model to initialize other model fits
 		# this make the other models converge faster
-		responsePlaceholder = nextElem(exprIter(exprObjMat, weightsMatrix, useWeights))
+		responsePlaceholder = nextElem(exprIter(exprObjMat, weightsMatrix, useWeights, scale=FALSE))
 
 		timeStart = proc.time()
 		fitInit <- lmerTest::lmer( eval(parse(text=form)), data=data,..., REML=REML, control=control )
@@ -660,8 +670,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta", total = nrow(exprObj), width= 60, clear=FALSE)
 
-		pids = .get_pids()
-
 		timeStart = proc.time()
 
 		# Define function for parallel evaluation
@@ -683,7 +691,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			}
 
 			ret = list(	coefficients 	= mod$beta, 
-						design 			= fit@pp$X, 
+						design 			= fit@pp$X,
+						# approximate df of residuals 
+						rdf 			= rdf.merMod(fit), 
+						# df of test statistics
 						df.residual 	= mod$df, 
 						Amean 			= mean(fit@frame[,1]), 
 						method 			= 'lmer',
@@ -705,7 +716,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 			list( 	ret 	= new("MArrayLM", ret),
 					varComp = varComp,
-					edf		= sum(hatvalues(fit)), # effective degrees of freedom as sum of diagonals of hat matrix
+					# effective degrees of freedom as sum of diagonals of hat matrix
+					edf		= sum(hatvalues(fit)), 
 					vcov 	= V)
 		}
 
@@ -719,7 +731,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# Evaluate function
 		####################
 
-		it = iterBatch(exprObjMat, weightsMatrix, useWeights, n_chunks = 100, BPPARAM = BPPARAM)
+		it = iterBatch(exprObjMat, weightsMatrix, useWeights, scale=FALSE, n_chunks = 100, BPPARAM = BPPARAM)
 
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
@@ -736,6 +748,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# extract results
 		coefficients = foreach( x = resList, .combine=cbind ) %do% {x$ret$coefficients}
 		df.residual = foreach( x = resList, .combine=cbind ) %do% {	x$ret$df.residual}
+		rdf = foreach( x = resList, .combine=cbind ) %do% {	x$ret$rdf}
 		pValue = foreach( x = resList, .combine=cbind ) %do% { x$ret$pValue }
 		stdev.unscaled  = foreach( x = resList, .combine=cbind ) %do% {x$ret$stdev.unscaled} 
 		if( computeResiduals ){
@@ -785,7 +798,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		ret = list( coefficients 	= coefficients,
 		 			design 			= design, 
-		 			df.residual 	= df.residual, 
+		 			rdf 			= c(rdf), 
+		 			df.residual		= df.residual, 
 		 			Amean 			= Amean, 
 		 			method 			= method, 
 		 			sigma 			= sigma, 
@@ -848,24 +862,25 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 #' These values are typically computed by eBayes
 #' 
 #' @param fit result of dream (MArrayLM2)
+#' @param sigma vector of standard errors used to compute t-statistic. Can be maximum likelihood estimates, or posterior means
 #'
 #' @return MArrayLM2 object with values computed
 #' 
 #' @importFrom stats pchisq pf
 #' @keywords internal
-.standard_transform = function(fit){
+.standard_transform = function(fit, sigma = fit$sigma){
 
-	# get values
-	coefficients <- fit$coefficients
-	stdev.unscaled <- fit$stdev.unscaled
-	sigma <- fit$sigma
-	df.residual <- fit$df.residual
-	
+	# If fit$df.prior is not defined, set df.prior to zero
+	if( ! is.null(fit$df.prior) ){
+		fit$df.total = fit$df.residual + fit$df.prior
+	}else{		
+		fit$df.total = fit$df.residual
+	}
+
 	# t-test
 	out = fit
-	out$t <- coefficients / stdev.unscaled / sigma
-	# out$df.total <- df.residual
-	out$p.value <- 2*pt(-abs(out$t),df=df.residual)
+	out$t <- fit$coefficients / fit$stdev.unscaled / sigma
+	out$p.value <- 2*pt(-abs(out$t), df=fit$df.total )
 
 	# F-test
 	if(!is.null(out$design) && is.fullrank(out$design)) {
@@ -879,7 +894,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			# this happends when only the intercept term is included
 			warning("No testable fixed effects were included in the model.\n  Running topTable() will fail.")
 		}else{
-			df = rowMeans(out[,realcoef]$df.residual)
+			df = rowMeans(out[,realcoef]$df.total)
 
 			F.stat <- classifyTestsF(out[,realcoef], df=df, fstat.only=TRUE)
 			out$F <- as.vector(F.stat)
@@ -891,6 +906,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 				out$F.p.value <- pf(out$F,df1,df2,lower.tail=FALSE)
 			}
 		}
+	}
+
+	# if fit$df.prior does not exist, then remove the df.total term
+	if( is.null(fit$df.prior) ){
+		out$df.total = NULL
 	}
 
 	out
@@ -932,7 +952,7 @@ assign("[.MArrayLM2",
 		obj = obj[i,]
 	}
 
-	# custom code to deal with df.total and df.residual
+	# custom code to deal with df.total, df.residual and rdf
 	if( is.null(ncol(object$df.total)) ){
 		if(!missing(i)){
 			obj$df.total = object$df.total[i]
@@ -966,6 +986,14 @@ assign("[.MArrayLM2",
 		}	
 		obj$df.residual = tmp
 	}
+
+	if( ! is.null(object$rdf) ){
+		if(!missing(i)){
+			obj$rdf = object$rdf[i]
+		}else{
+			obj$rdf = object$rdf
+		}
+	} 
 
 	# obj$pValue = object$pValue[i,j]
 	obj$s2.prior = object$s2.prior
@@ -1014,7 +1042,7 @@ setGeneric("eBayes", function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4)
 
 #' eBayes for MArrayLM2
 #'
-#' eBayes for MArrayLM2.  It simply returns the orginal input with no change
+#' eBayes for result of linear mixed model for with \code{dream()} using residual degrees of freedom approximated with \code{rdf.merMod()}
 #'
 #' @param fit fit
 #' @param proportion proportion
@@ -1023,68 +1051,90 @@ setGeneric("eBayes", function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4)
 #' @param robust robust
 #' @param winsor.tail.p winsor.tail.p 
 #'
-#' @return results of eBayes
-#' @details Note that empirical Bayes is problematic for linear mixed models.  This function returns its original input with no change.  It is included here just for compatibility.
+#' @return results of eBayes using approximated residual degrees of freedom
+#'
 #' @export
 #' @rdname eBayes-method
 #' @aliases eBayes,MArrayLM2-method
+#' @importFrom limma eBayes
+#' @seealso dream rdf.merMod
 setMethod("eBayes", "MArrayLM2",
 function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4), 
     trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)){
 
-	warning("Empirical Bayes moderated test is no longer supported for dream analysis\nReturning original results for use downstream")
+	# limma::eBayes() uses df.residual as the residual degrees of freedom,
+	# 	while dream() uses rdf.
+	# For linear models these values are always equal,
+	# but for linear mixed models, rdf must be computed separately 
+	# save df for test statistics
+	df.test = fit$df.residual
+	fit$df.residual = fit$rdf
 
-	fit
+	# Use limma::eBayes() but with new df.residual values
+	fit_eb = limma::eBayes(	fit 			= fit, 
+							proportion 		= proportion, 
+							stdev.coef.lim 	= stdev.coef.lim, 
+							trend 			= trend, 
+							robust 			= robust, 
+							winsor.tail.p 	= winsor.tail.p )
+
+	# re-set to the df.residual of the test statistics
+	fit_eb$df.residual = df.test
+	fit_eb$rdf = fit$rdf
+
+	# Calculate p-values using estimated degrees of freedom
+	# and posterior variance estimates
+	.standard_transform( fit_eb, sigma = sqrt(fit_eb$s2.post) ) 
 })
 
 
 
-# change_t_df
-#
-# change_t_df
-#
-# @param t t-statistic
-# @param df current degrees of freedom
-# @param d_target target degrees of freedom
-#
-# @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
-.change_t_df = function(t, df, d_target){
-  p = pt(abs(t), df, lower.tail=FALSE)
-  qt(p, d_target, lower.tail=FALSE)
-}
+# # change_t_df
+# #
+# # change_t_df
+# #
+# # @param t t-statistic
+# # @param df current degrees of freedom
+# # @param d_target target degrees of freedom
+# #
+# # @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
+# .change_t_df = function(t, df, d_target){
+#   p = pt(abs(t), df, lower.tail=FALSE)
+#   qt(p, d_target, lower.tail=FALSE)
+# }
 
-# standardized_t_stat
-#
-# standardized_t_stat
-#
-# @param fit model fit from dream()
-#
-# @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
-#
-# @details Since dream() used degrees of freedom estimated from the data, the t-statistics across genes have different df values used to compute p-values.  Therefore the order of the raw t-statistics doesn't correspond to the order of the p-values since the df is different for each gene.  This function resolved this issue by transofrming the t-statistics to all have the same df.  Under a fixed effects model, df = N - p, where N is the sample size and p is the number of covariates.  Here, df is the target degrees of freedom used in the transformation
-.standardized_t_stat = function( fit ){
+# # standardized_t_stat
+# #
+# # standardized_t_stat
+# #
+# # @param fit model fit from dream()
+# #
+# # @return Given a t-statistic with degrees of freedom df, return a new t-statistic corresponding to a target degrees of freedom.  Both t-statistics give the same p-value when compared to their respective degrees of freedom
+# #
+# # @details Since dream() used degrees of freedom estimated from the data, the t-statistics across genes have different df values used to compute p-values.  Therefore the order of the raw t-statistics doesn't correspond to the order of the p-values since the df is different for each gene.  This function resolved this issue by transofrming the t-statistics to all have the same df.  Under a fixed effects model, df = N - p, where N is the sample size and p is the number of covariates.  Here, df is the target degrees of freedom used in the transformation
+# .standardized_t_stat = function( fit ){
 
-  res = data.frame(t=as.numeric(fit$t), df.sat=as.numeric(fit$df.residual))
+#   res = data.frame(t=as.numeric(fit$t), df.sat=as.numeric(fit$df.residual))
 
-  # d_target = max(res$df.sat)
-  d_target = nrow(fit$design) - ncol(fit$design)
+#   # d_target = max(res$df.sat)
+#   d_target = nrow(fit$design) - ncol(fit$design)
 
-  res$t_dot = sign(res$t) * .change_t_df( res$t, res$df.sat, d_target )
+#   res$t_dot = sign(res$t) * .change_t_df( res$t, res$df.sat, d_target )
 
-  fit2 = fit
-  fit2$t = matrix(res$t_dot, nrow=nrow(fit$t))
-  rownames( fit2$t) = rownames( fit$t)
-  colnames( fit2$t) = colnames( fit$t)
+#   fit2 = fit
+#   fit2$t = matrix(res$t_dot, nrow=nrow(fit$t))
+#   rownames( fit2$t) = rownames( fit$t)
+#   colnames( fit2$t) = colnames( fit$t)
 
-  # fit2$df.residual = rep(d_target, nrow(res))
+#   # fit2$df.residual = rep(d_target, nrow(res))
 
-  # if df.prior is defined, set new df.total, since df.residual has changed
-  if( !is.null(fit2$df.prior) ){
-	fit2$df.total = fit2$df.residual + fit2$df.prior
-  }
+#   # if df.prior is defined, set new df.total, since df.residual has changed
+#   if( !is.null(fit2$df.prior) ){
+# 	fit2$df.total = fit2$df.residual + fit2$df.prior
+#   }
 
-  fit2
-}
+#   fit2
+# }
 
 
 #' Compare p-values from two analyses
@@ -1211,7 +1261,9 @@ setMethod("classifyTestsF", "MArrayLM2",
 	if(is.list(object)) {
 		if(is.null(object$t)) stop("tstat cannot be extracted from object")
 		computeCorrMat = ifelse(is.null(cor.matrix), TRUE, FALSE)
-		if(missing(df) && !is.null(object$df.prior) && !is.null(object$df.residual)) df <- object$df.prior+object$df.residual
+		if(missing(df) && !is.null(object$df.prior) && !is.null(object$df.residual)){
+			df <- object$df.prior + object$df.residual
+		}
 		tstat <- as.matrix(object$t)
 	} else {
 		tstat <- as.matrix(object)

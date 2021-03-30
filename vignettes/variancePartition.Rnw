@@ -242,7 +242,7 @@ calcVarPart(fit)
 \pagebreak
 \section{Interpretation}
 
-\Rpackage{variancePartition} fits a linear (mixed) model that jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while correcting for all others.  However, we note that like any multiple regression model, high correlation bewtween fixed or random effect variables (see Section \ref{sec:canCor}) can produce unstable estimates and it can be challanging to identify which variable is responsible for the expression variation.
+\Rpackage{variancePartition} fits a linear (mixed) model that jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while jointly correcting for all others.  However, we note that like any multiple regression model, high correlation bewtween fixed or random effect variables (see Section \ref{sec:canCor}) can produce unstable estimates and it can be challanging to identify which variable is responsible for the expression variation.
 
 The results of \Rpackage{variancePartition} give insight into the expression data at multiple levels.  Moreover, a single statistic often has multiple equivalent interpretations while only one is relevant to the biological question.  Analysis of the example data in Figure 1 gives some strong interpretations. 
 

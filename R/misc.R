@@ -58,12 +58,14 @@ exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount 
     	if( is.null(j) || j > n_features){
     		res = NULL
     	}else{
-	    	if( useWeights && !is.null(weights) ){    		
+	    	if( useWeights && !is.null(weights) ){ 
+
+	    		w = weights[j,]
+
 				# scale weights to have mean of 1, otherwise it affects the residual variance too much
+				# scale should be false when signa(fit) needs to be evaluted
 	    		if(scale){
-	    			w = weights[j,] /  mean(weights[j,])
-	    		}else{
-	    			w = weights[j,]
+	    			w = w / mean(w)
 	    		}
 	    	}else{
 	    		w = NULL		
@@ -105,7 +107,7 @@ exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount 
 #     it
 # }
 
-
+#' @importFrom BiocParallel bpworkers
 iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks = nrow(exprObj) / 500, min_chunk_size = 20, BPPARAM = NULL ) {
     # Adjust number of chunks upward to the next multiple of number of
     # workers in BPPARAM, if this can be determined. If any errors are
