@@ -27,11 +27,11 @@
 \item{winsor.tail.p}{winsor.tail.p}
 }
 \value{
-results of eBayes
+results of eBayes using approximated residual degrees of freedom
 }
 \description{
-eBayes for MArrayLM2.  It simply returns the orginal input with no change
+eBayes for result of linear mixed model for with \code{dream()} using residual degrees of freedom approximated with \code{rdf.merMod()}
 }
-\details{
-Note that empirical Bayes is problematic for linear mixed models.  This function returns its original input with no change.  It is included here just for compatibility.
+\seealso{
+dream rdf.merMod
 }

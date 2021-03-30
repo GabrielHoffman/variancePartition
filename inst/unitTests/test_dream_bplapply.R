@@ -152,7 +152,36 @@ test_dream = function(){
 
 
 
+# check that residual variance is computed correctly
+test_dream_sigma = function(){
 
+	library(lmerTest)
+	library(variancePartition)
+	library(BiocParallel)
+	library(RUnit)
+
+	data(varPartData)
+
+	form <- ~ Batch + (1|Individual) + (1|Tissue)
+
+	set.seed(1)
+
+	# fit dream with EList object
+	geneExpr[41,] = as.numeric(info$Batch) + rnorm(nrow(info), 0, 1)
+	w = matrix(5, ncol=ncol(geneExpr))
+	vobj = list(E = geneExpr[41,,drop=FALSE], weights = w)
+	vobj = as(vobj, "EList")
+
+	param1 = SerialParam()
+	fitd = dream( vobj, form, info, BPPARAM=param1)
+
+	# for same model with lmer
+	fitl = lmer( geneExpr[41,] ~ Batch + (1|Individual) + (1|Tissue), info, weights=array(w), REML=TRUE)
+
+	# The residual variance estimates are only equal of the weights
+	# are treated the same in each model
+	checkEquals( as.numeric(fitd$sigma), sigma(fitl) )
+}
 
 
 

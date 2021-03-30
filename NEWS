@@ -1,3 +1,17 @@
+CHANGES IN VERSION 1.21.4
+--------------------------
+	o variance fractions for fixed effects model is now computed using new method
+		- fixes subtle issue with previous version where estimates dependend on of terms in the formula
+		- https://github.com/GabrielHoffman/variancePartition/issues/30
+
+CHANGES IN VERSION 1.21.3
+--------------------------
+	o Faster aggregration after running multiple threads
+	o Pulled from https://github.com/GabrielHoffman/variancePartition/pull/27
+		- by Ryan C. Thompson
+	o eBayes() now works with dream for linear mixed models 
+		- add rdf.merMod 
+
 CHANGES IN VERSION 1.21.2
 --------------------------
 	o Reduce size of data passed to each thread by only including variables used in the formula.  Applies to multiple functions

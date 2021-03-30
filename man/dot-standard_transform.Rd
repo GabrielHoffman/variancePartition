@@ -4,10 +4,12 @@
 \alias{.standard_transform}
 \title{Compute standard post-processing values}
 \usage{
-.standard_transform(fit)
+.standard_transform(fit, sigma = fit$sigma)
 }
 \arguments{
 \item{fit}{result of dream (MArrayLM2)}
+
+\item{sigma}{vector of standard errors used to compute t-statistic. Can be maximum likelihood estimates, or posterior means}
 }
 \value{
 MArrayLM2 object with values computed
