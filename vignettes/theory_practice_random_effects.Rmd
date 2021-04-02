@@ -1,5 +1,5 @@
 ---
-title: "3) Theory and practice of random effects and REML"
+title: "Theory and practice of random effects and REML"
 author:
 - name: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
   affiliation: | 
