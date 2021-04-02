@@ -1,0 +1,10 @@
+pandoc: 2.11.3.2
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  FAQ: FAQ.html
+  additional_visualization: additional_visualization.html
+  dream: dream.html
+  theory_practice_random_effects: theory_practice_random_effects.html
+last_built: 2021-04-02T15:22Z
+
