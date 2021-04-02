@@ -16,6 +16,7 @@ install_github("GabrielHoffman/variancePartition")
 
 
 ## [Main Tutorial](https://hoffmg01.u.hpc.mssm.edu/software/variancePartition/variancePartition.pdf)
+## [Documentation site](https://gabrielhoffman.github.io/variancePartition/index.html)
 
 
 ### Notes
