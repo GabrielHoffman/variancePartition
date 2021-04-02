@@ -34,7 +34,6 @@ BiocStyle::latex(width=90)
 \small{Department of Genetics and Genomic Sciences}\\
 \small{Icahn School of Medicine at Mount Sinai}}
 
-
 \begin{document}
 
 \maketitle
@@ -242,7 +241,7 @@ calcVarPart(fit)
 \pagebreak
 \section{Interpretation}
 
-\Rpackage{variancePartition} fits a linear (mixed) model that jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while jointly correcting for all others.  However, we note that like any multiple regression model, high correlation bewtween fixed or random effect variables (see Section \ref{sec:canCor}) can produce unstable estimates and it can be challanging to identify which variable is responsible for the expression variation.
+\Rpackage{variancePartition} fits a linear (mixed) model that jointly considers the contribution of all specified variables on the expression of each gene.  It uses a multiple regression model so that the effect of each variable is assessed while jointly accounting for all others\footnote{\href{https://www.r-bloggers.com/2011/03/anova-–-type-iiiiii-ss-explained/}{Standard ANOVA} implemented in R involves refitting the model while dropping terms, but is aimed at hypothesis testing.  \Rpackage{variancePartition}'s \Rcode{calcVarPart} is aimed at estimating variance fractions.  It uses a single fit of the linear (mixed) model and evaluates the sum of squares of each term and the sum of squares of the total model fit.}. However, we note that like any multiple regression model, high correlation bewtween fixed or random effect variables (see Section \ref{sec:canCor}) can produce unstable estimates and it can be challanging to identify which variable is responsible for the expression variation.
 
 The results of \Rpackage{variancePartition} give insight into the expression data at multiple levels.  Moreover, a single statistic often has multiple equivalent interpretations while only one is relevant to the biological question.  Analysis of the example data in Figure 1 gives some strong interpretations. 
 

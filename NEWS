@@ -3,6 +3,7 @@ CHANGES IN VERSION 1.21.4
 	o variance fractions for fixed effects model is now computed using new method
 		- fixes subtle issue with previous version where estimates dependend on of terms in the formula
 		- https://github.com/GabrielHoffman/variancePartition/issues/30
+	o Update documentation
 
 CHANGES IN VERSION 1.21.3
 --------------------------
