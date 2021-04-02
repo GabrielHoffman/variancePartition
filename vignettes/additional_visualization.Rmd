@@ -16,7 +16,7 @@ output:
   BiocStyle::pdf_document: default
 package: variancePartition
 abstract: |
-  The correlation structure between samples in complex study designs can be decomposed into the contribution of multiple dimensions of variation.  \Rpackage{variancePartition} provides a statistical and visualization framework to interpret sources of variation.  Here I describe a visualization of the correlation structure between samples for a single gene.<br>  
+  The correlation structure between samples in complex study designs can be decomposed into the contribution of multiple dimensions of variation.  `variancePartition` provides a statistical and visualization framework to interpret sources of variation.  Here I describe a visualization of the correlation structure between samples for a single gene.<br>  
   variancePartition v`r packageVersion("variancePartition")`<br> 
   `r format(Sys.time(),'%B %d, %Y %H:%M:%S')`<br> 
 vignette: |
@@ -56,15 +56,16 @@ fit = fitList[[1]]
 
 ## By Individual
 ### Reorder samples
-```{r corStructa,out.width = "50%"}
+```{r corStructa, fig.width=7, fig.height=7}
 # Figure 1a
 # correlation structure based on similarity within Individual
 # reorder samples based on clustering
 plotCorrStructure( fit, "Individual" )
+
 ```
 
 ### Original order of samples
-```{r corStructb,out.width = "50%"}
+```{r corStructb, fig.width=7, fig.height=7}
 # Figure 1b
 # use original order of samples
 plotCorrStructure( fit, "Individual", reorder=FALSE )
@@ -72,7 +73,7 @@ plotCorrStructure( fit, "Individual", reorder=FALSE )
 
 ## By Tissue
 ### Reorder samples
-```{r corStructc,out.width = "50%"}
+```{r corStructc, fig.width=7, fig.height=7}
 # Figure 1c
 # correlation structure based on similarity within Tissue
 # reorder samples based on clustering
@@ -80,7 +81,7 @@ plotCorrStructure( fit, "Tissue" )
 ```
 
 ### Original order of samples
-```{r corStructd,out.width = "50%"}
+```{r corStructd, fig.width=7, fig.height=7}
 # Figure 1d
 # use original order of samples
 plotCorrStructure( fit, "Tissue", reorder=FALSE )
@@ -88,7 +89,7 @@ plotCorrStructure( fit, "Tissue", reorder=FALSE )
 
 ## By Individual and Tissue
 ### Reorder samples
-```{r corStructe,out.width = "50%"}
+```{r corStructe, fig.width=7, fig.height=7}
 # Figure 2a
 # correlation structure based on similarity within 
 # Individual *and* Tissue, reorder samples based on clustering
@@ -96,7 +97,7 @@ plotCorrStructure( fit )
 ```
 
 ### Original order of samples
-```{r corStructf,out.width = "50%"}
+```{r corStructf, fig.width=7, fig.height=7}
 # Figure 2b
 # use original order of samples
 plotCorrStructure( fit, reorder=FALSE )
