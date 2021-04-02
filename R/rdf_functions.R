@@ -99,9 +99,9 @@ rdf_from_matrices = function(A,B){
 #' @param method Use algorithm that is "linear" (default) or quadratic time in the number of samples
 #'
 #' @description 
-#' For a linear model with \eqn{n} samples and \eqn{p} covariates, \eqn{RSS/sigma^2 \sim \chi^2_{\nu}} where \eqn{\nu = n-p} is the residual degrees of freedom.  In the case of a linear mixed model, the distribution is no longer exactly a chi-square distribution, but can be approximated with a chi-square distribution. 
+#' For a linear model with \eqn{n} samples and \eqn{p} covariates, \eqn{RSS/\sigma^2 \sim \chi^2_{\nu}} where \eqn{\nu = n-p} is the residual degrees of freedom.  In the case of a linear mixed model, the distribution is no longer exactly a chi-square distribution, but can be approximated with a chi-square distribution. 
 #'
-#' Given the hat matrix, \code{H}, that maps between observed and fitted responses, the approximate residual degrees of freedom is \eqn{\nu = tr((I-H)^T(I-H))}.  For a linear model, this simplifies to the well known form \eqn{\nu = n - p}. In the more general case, such as a linear mixed model, the original form simplifies only to \eqn{n - 2tr(H) + tr(HH)} and is an approximation rather than being exact.  The third term here is quadratic time in the number of samples, \eqn{n} and can be computationally expensive to evaluate for larger datasets.  Here we develop a linear time algorithm that takes advantage of the fact that \eqn{H} is low rank.
+#' Given the hat matrix, \eqn{H}, that maps between observed and fitted responses, the approximate residual degrees of freedom is \eqn{\nu = tr((I-H)^T(I-H))}.  For a linear model, this simplifies to the well known form \eqn{\nu = n - p}. In the more general case, such as a linear mixed model, the original form simplifies only to \eqn{n - 2tr(H) + tr(HH)} and is an approximation rather than being exact.  The third term here is quadratic time in the number of samples, \eqn{n} and can be computationally expensive to evaluate for larger datasets.  Here we develop a linear time algorithm that takes advantage of the fact that \eqn{H} is low rank.
 #'
 #' \eqn{H} is computed as \eqn{A^TA + B^TB} for \code{A=CL} and \code{B=CR} defined in the code.  Since \eqn{A} and \eqn{B} are low rank, there is no need to compute \eqn{H} directly.  Instead, the terms \eqn{tr(H)} and \eqn{tr(HH)} can be computed using the eigen decompositions of \eqn{AA^T} and \eqn{BB^T} which is linear time in the number of samples.
 #'
@@ -208,7 +208,7 @@ plotVarianceEstimates = function(fit, fitEB, var_true = NULL, xmax = quantile(fi
   Method = y = NA 
 
   # x values where to evaluate the scaled chi-square density
-  x = seq(1e-4, xmax, length.out=1000)
+  x = seq(1e-3, xmax, length.out=1000)
 
   # MLE
   d_mle = density(fit$sigma^2, from=0, to=xmax)
@@ -242,8 +242,22 @@ plotVarianceEstimates = function(fit, fitEB, var_true = NULL, xmax = quantile(fi
 
   # compute prior density even when eBayes() uses trend=TRUE
   # so that the s2.prior is a vector
-  dst = sapply( 1:length(fitEB$s2.prior), function(i){
-  	dscchisq(x, (fitEB$s2.prior[i] / fitEB$df.prior[i]), fitEB$df.prior[i])
+
+  # these can be scalars or vectors (depending on robust and trend)
+  # if scalar, use rep() to create a vector
+  df.prior = fitEB$df.prior
+  s2.prior = fitEB$s2.prior  
+  n_genes = length(fitEB$s2.post)
+
+  if( length(df.prior) == 1){
+  	 df.prior = rep( df.prior, n_genes)
+  }
+  if( length(s2.prior) == 1){
+  	s2.prior = rep( s2.prior, n_genes)
+  }
+
+  dst = sapply( seq_len(n_genes), function(i){
+  	dscchisq(x, (s2.prior[i] / df.prior[i]), df.prior[i])
   })
   scale_chiSq_density = rowSums(dst) / ncol(dst)
 
@@ -271,3 +285,10 @@ plotVarianceEstimates = function(fit, fitEB, var_true = NULL, xmax = quantile(fi
   ymax = max(df_combine$y) * 1.05
   ggplot(df_combine, aes(x, y, color=Method)) + geom_line() + theme_bw(16) + theme(legend.position="right", aspect.ratio=1, plot.title = element_text(hjust = 0.5)) + scale_color_manual(values=col[levels(df_combine$Method)]) + xlab(bquote(hat(sigma)^2)) + ylab("Density") +scale_x_continuous(expand=c(0, 0), limits=c(0,xmax)) + scale_y_continuous(expand=c(0, 0), limits=c(0,ymax))
 }
+
+
+
+
+
+
+

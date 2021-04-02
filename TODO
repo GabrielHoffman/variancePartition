@@ -1,46 +1,5 @@
-
-
 March 30, 2021
-	dreamlet: dream for single cell analysis
-		weight by both reads and cell number
-		like muscat, except per-sample weights are used by voomWithDreamWeights
-			instead of lmFit: https://github.com/HelenaLC/muscat/blob/c93966305b1317b0caf5c6eb374826d6432b4a0a/R/utils-pbDS.R#L104
-		Should I weight voom or the lmFit step?
-
-dreamlet = function(snObj, form){
-
-	# for each cell type
-	fitList = lapply( assays(snObj), function(cellType){
-		
-		# get data for this cell type
-		geneExpr = assay(snObj, cellType)
-
-		# get samples with enough cells
-		# filter genes
-		geneExpr = filterByExpr(geneExpr)
-
-		# per sample weights
-		w = weights by cell types
-
-		# need to adapt voomByDreamWeights to allow per sample weights
-		vobj = voomByDreamWeights( geneExpr, form, info, weights=w)
-
-		# need to adapt dream to allow per sample weights
-		fit = dream(vobj, form, info, weights=w)
-
-		# finish eBayes
-		# only use trend if precion weights are not available
-		fit = eBayes(fit, robust, trend)
-
-		# return full results like muscat does
-		fit
-	})
-
-	# Add ashr on the results of topTable
-
-	fitList
-}
-
+	check dream + eBayes with trend and robust
 
 
 
