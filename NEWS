@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.21.5
+--------------------------
+	o Fix roxygen2 documentation to pass R CMD check
+
 CHANGES IN VERSION 1.21.4
 --------------------------
 	o variance fractions for fixed effects model is now computed using new method

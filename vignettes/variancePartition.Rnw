@@ -1,6 +1,8 @@
 %\VignetteIndexEntry{1) Tutorial on using variancePartition}
 %\VignettePackage{variancePartition}
 %\VignetteEngine{knitr::knitr}
+%\VignetteEncoding{UTF-8}
+
 
 % To compile this document
 % cd /Users/gabrielhoffman/workspace/repos

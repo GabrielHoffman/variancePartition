@@ -114,9 +114,9 @@ rdf_from_matrices = function(A,B){
 #' # Evaluate the approximate residual degrees of freedom
 #' rdf.merMod(fit)
 #'
-#' @import lme4
 #' @importFrom Matrix solve Diagonal diag crossprod tcrossprod t 
-#' @importFrom stats weights
+#' @importFrom stats weights hatvalues
+#' @importFrom lme4 isGLMM getME
 #' @seealso rdf_from_matrices
 # @method rdf merMod
 #' @export

@@ -42,6 +42,7 @@ icount2 = function (count){
 
 
 # Iterator over genes
+#' @importFrom iterators icount
 exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount = "icount"){
 
 	n_features = nrow(exprObj)
