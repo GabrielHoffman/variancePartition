@@ -196,10 +196,14 @@ getContrast = function( exprObj, formula, data, coefficient){
 	Lall
 }
 
+
+#' @importFrom stats as.formula
+#' @importFrom lme4 lmerControl lmer fixef
+#' @importFrom iterators nextElem
 .getContrastInit = function( exprObj, formula, data){ 
 
 	exprObj = as.matrix( exprObj )
-	formula = stats::as.formula( formula )
+	formula = as.formula( formula )
 
 	# only retain columns used in the formula
 	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
@@ -211,7 +215,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 	dream=TRUE
 	fxn=identity
 	colinearityCutoff=.999
-	control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" )
+	control = lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" )
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
@@ -295,6 +299,9 @@ getContrast = function( exprObj, formula, data, coefficient){
 # @export
 # @docType methods
 # @rdname eval_lmm-method
+#' @import foreach
+#' @importFrom lme4 fixef 
+#' @importFrom stats sigma
 .eval_lmm = function( fit, L, ddf ){
 
 	j = 1
@@ -357,7 +364,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 }
 
 
-
+#' @importFrom methods is
 .checkNA = function(exprObj){
 
 	if( is(exprObj, "sparseMatrix") || is( exprObj, "matrix") ){
@@ -484,15 +491,17 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @importFrom pbkrtest get_SigmaG
 #' @importFrom BiocParallel bpiterate bpparam
 #' @importFrom lme4 VarCorr 
-#' @importFrom stats hatvalues
-#' @import doParallel foreach
+#' @importFrom stats hatvalues as.formula
+#' @importFrom foreach foreach
+#' @importFrom methods as
+#' @import doParallel 
 #'
 dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=TRUE, REML=TRUE, ...){ 
 
 	exprObjInit = exprObj
 	
 	exprObjMat = as.matrix( exprObj )
-	formula = stats::as.formula( formula )
+	formula = as.formula( formula )
 
 	# only retain columns used in the formula
 	# This reduces overhead for parallel processing with large datasets

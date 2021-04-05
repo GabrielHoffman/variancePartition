@@ -69,6 +69,7 @@ setClass('FMT')
 #' topTable( fiteb )
 #'
 #' @keywords internal
+#' @importFrom methods as
 eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 
 	method = match.arg( method)
@@ -177,7 +178,7 @@ eBayesFMT = function( fit, data, Individual, method = c("VC", "WS")  ){
 #' @return results of toptable
 #' @export
 #' @importFrom stats qnorm
-#' @import limma
+#' @importFrom limma topTable
 #' @rdname toptable-method
 #' @aliases toptable,MArrayLM-method
 setGeneric("topTable", function(fit,coef=NULL,number=10,genelist=fit$genes,adjust.method="BH",sort.by="B",resort.by=NULL,p.value=1,lfc=0,confint=FALSE){
@@ -204,7 +205,7 @@ setGeneric("topTable", function(fit,coef=NULL,number=10,genelist=fit$genes,adjus
 #' @return results of toptable
 #' @export
 #' @importFrom stats qnorm
-#' @import limma
+#' @import limma 
 #' @rdname toptable-method
 #' @aliases toptable,FMT-method
 #' @keywords internal

@@ -39,6 +39,7 @@
 #' plotCorrMatrix( C )
 #'
 #' @importFrom stats model.matrix.lm cancor
+#' @importFrom utils combn
 #' @export
 canCorPairs = function(formula, data, showWarnings=TRUE){
 

@@ -19,14 +19,13 @@
 #' @return
 #' \code{list()} of where each entry is a model fit produced by \code{lmer()} or \code{lm()}
 #' 
-#' @import splines gplots colorRamps lme4 pbkrtest ggplot2 limma progress reshape2 iterators Biobase methods utils doParallel
-# dendextend 
 #' @importFrom MASS ginv
 # @importFrom RSpectra eigs_sym
 #' @importFrom grDevices colorRampPalette hcl
 #' @importFrom graphics abline axis hist image layout lines mtext par plot plot.new rect text title
 #' @importFrom stats anova as.dendrogram as.dist cancor coef cov2cor density dist fitted.values hclust lm median model.matrix order.dendrogram quantile reorder residuals sd terms var vcov pt qt
 #' @importFrom scales rescale
+#' @importFrom iterators nextElem
 #'
 #' @details 
 #' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
@@ -93,7 +92,7 @@
 #'
 #' # ExpressionSet example
 #' form <- ~ (1|sex) + (1|type) + score
-#' info2 <- pData(sample.ExpressionSet)
+#' info2 <- Biobase::pData(sample.ExpressionSet)
 #' results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 #' 
 # # Parallel processing using multiple cores with reduced memory usage
@@ -110,7 +109,11 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 # internal driver function
 #' @importFrom BiocParallel bpparam bpiterate bplapply
-#' @import lme4
+#' @importFrom methods is new
+#' @importFrom lme4 lmer 
+#' @importFrom progress progress_bar 
+#' @importFrom utils object.size
+#' @import foreach
 .fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=quiet, BPPARAM=bpparam(), ...){ 
 
 	# if( ! is(exprObj, "sparseMatrix")){
@@ -324,6 +327,7 @@ setMethod("fitVarPartModel", "EList",
 #' @export
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,ExpressionSet-method
+#' @importFrom Biobase ExpressionSet exprs
 setMethod("fitVarPartModel", "ExpressionSet",
   function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(), ...)
   {
@@ -335,6 +339,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' @export
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,sparseMatrix-method
+#' @importFrom Matrix sparseMatrix
 setMethod("fitVarPartModel", "sparseMatrix",
   function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(), ...)
   {
@@ -415,7 +420,7 @@ setMethod("fitVarPartModel", "sparseMatrix",
 #'
 #' # ExpressionSet example
 #' form <- ~ (1|sex) + (1|type) + score
-#' info2 <- pData(sample.ExpressionSet)
+#' info2 <- Biobase::pData(sample.ExpressionSet)
 #' varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
 #' 
 # # Parallel processing using multiple cores with reduced memory usage
@@ -433,6 +438,10 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 )
 
 # internal driver function
+#' @importFrom methods is new
+#' @importFrom lme4 lmer 
+#' @importFrom progress progress_bar
+#' @import foreach
 .fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(),...){ 
 
 	# exprObj = as.matrix( exprObj )

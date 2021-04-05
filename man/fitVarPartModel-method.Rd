@@ -196,7 +196,7 @@ data(sample.ExpressionSet, package="Biobase")
 
 # ExpressionSet example
 form <- ~ (1|sex) + (1|type) + score
-info2 <- pData(sample.ExpressionSet)
+info2 <- Biobase::pData(sample.ExpressionSet)
 results2 <- fitVarPartModel( sample.ExpressionSet, form, info2 )
 
 

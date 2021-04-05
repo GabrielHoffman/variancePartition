@@ -32,6 +32,7 @@
 #' # plot squared correlations
 #' plotCorrMatrix( C^2, dendrogram="none" )
 #' 
+#' @importFrom gplots heatmap.2
 #' @export
 plotCorrMatrix = function(C, dendrogram="both", sort=TRUE, margins=c(13,13), key.xlab="correlation", ...){
 

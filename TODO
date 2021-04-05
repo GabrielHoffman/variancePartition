@@ -2,7 +2,7 @@ March 30, 2021
 	check dream + eBayes with trend and robust
 
 
-
+#Authors@R: c(person("Gabriel", "Hoffman", role = c("aut", "cre"), email = "gabriel.hoffman@mssm.edu"))
 
 
 DONE!
