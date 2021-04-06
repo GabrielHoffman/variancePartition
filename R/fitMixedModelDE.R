@@ -748,7 +748,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
 			BPPARAM=BPPARAM))
 	
-		
+		browser() 
 		names(resList) = seq_len(length(resList))
 
 		if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
