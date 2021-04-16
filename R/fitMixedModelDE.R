@@ -567,7 +567,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	###########
 
 	univariateContrasts = FALSE
-	if( missing(L) ){
+	if( missing(L) || is.null(L) ){
 		# all univariate contrasts
 		L = .getAllUniContrasts( exprObj, formula, data)
 		univariateContrasts = TRUE

@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.21.6
+--------------------------
+	o in dream() allow L to be NULL
+
 CHANGES IN VERSION 1.21.5
 --------------------------
 	o Fix roxygen2 documentation to pass R CMD check
