@@ -168,8 +168,46 @@ getContrast = function( exprObj, formula, data, coefficient){
 	L
 }
 
+#' @importFrom rlang new_environment eval_tidy
+#' @export
+makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
+  coef_names <- .getFixefNames( formula, data)
+  e <- .getContrastExpressions(..., contrasts = contrasts)
+  L_uni <- .getAllUniContrasts(exprObj, formula, data)
+  L_uni_env <- new_environment(
+    c(asplit(L_uni, 2)),
+    caller_env()
+  )
+  L <- do.call(cbind, lapply(e, eval_tidy, env = levels_env))
+  rownames(L) <- rownames(L_uni)
+  names(dimnames(L)) <- c("Levels", "Contrasts")
+  L
+}
+
+#' @importFrom rlang enexprs parse_expr
+.getContrastExpressions = function(..., contrasts) {
+  e <- enexprs(...)
+  if (!missing(contrasts) && !is.null(contrasts) && length(contrasts) > 0) {
+    if (length(e) > 0) {
+      stop("Can't specify both ... and contrasts")
+    }
+    e <- lapply(as.character(unlist(contrasts)), parse_expr)
+  }
+  e_text <- vapply(e, deparse1, character(1))
+  if (is.null(names(e))) {
+    names(e) <- e_text
+  } else {
+    empty_names <- is.na(names(e)) | names(e) == ""
+    names(e)[empty_names] <- e_text[empty_names]
+  }
+  e
+}
+
 #' @importFrom lme4 nobars
 .getFixefNames = function( formula, data, ... ) {
+  if (!isRunableFormula(, formula, data)) {
+    stop("the fixed-effects model matrix is column rank deficient")
+  }
   ## See lme4::lFormula
   formula[[length(formula)]] <- nobars(formula[[length(formula)]])
   colnames(model.matrix(object = formula, data = data, ...))
