@@ -168,6 +168,13 @@ getContrast = function( exprObj, formula, data, coefficient){
 	L
 }
 
+#' @importFrom lme4 nobars
+.getFixefNames = function( formula, data, ... ) {
+  ## See lme4::lFormula
+  formula[[length(formula)]] <- nobars(formula[[length(formula)]])
+  colnames(model.matrix(object = formula, data = data, ...))
+}
+
 #' Get all univariate contrasts
 #'
 #' Get all univariate contrasts
@@ -180,27 +187,16 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'  Matrix testing each variable one at a time.  Contrasts are on rows
 #'
 #' @keywords internal
-.getAllUniContrasts = function( exprObj, formula, data){ 
-
-	Linit = .getContrastInit( exprObj, formula, data)
-
-	Lall = lapply( seq_len(length(Linit)), function(i){
-		Linit[i] = 1
-		Linit
-		})
-	names(Lall) = names(Linit)
-	Lall = do.call("rbind", Lall)
-
-	# remove intercept contrasts
-	# Lall[,-1,drop=FALSE]
-	Lall
-}
-
-#' @importFrom lme4 nobars
-.getFixefNames = function( formula, data, ... ) {
-  ## See lme4::lFormula
-  formula[[length(formula)]] <- nobars(formula[[length(formula)]])
-  colnames(model.matrix(object = formula, data = data, ...))
+.getAllUniContrasts = function( exprObj, formula, data){
+  fixef_names <- .getFixefNames(formula, data)
+  ## For large designs, might be worth using Matrix::Diagonal to make
+  ## a sparse diagonal matrix
+  L <- diag(x = 1, nrow = length(fixef_names))
+  dimnames(L) <- list(
+    Levels = fixef_names,
+    Contrasts = fixef_names
+  )
+  L
 }
 
 .getContrastInit = function( exprObj, formula, data ){
