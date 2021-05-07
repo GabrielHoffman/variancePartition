@@ -108,13 +108,14 @@ setGeneric("fitVarPartModel", signature="exprObj",
 )
 
 # internal driver function
-#' @importFrom BiocParallel bpparam bpiterate bplapply
+#' @importFrom BiocParallel bpparam bpiterate bplapply bpok
 #' @importFrom methods is new
 #' @importFrom lme4 lmer 
 #' @importFrom progress progress_bar 
 #' @importFrom utils object.size
 #' @import foreach
-.fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=quiet, BPPARAM=bpparam(), ...){ 
+#' @import lme4
+.fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=quiet, BPPARAM=bpparam(), ...){
 
 	# if( ! is(exprObj, "sparseMatrix")){
 	# 	exprObj = as.matrix( exprObj )	
@@ -271,14 +272,22 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		res <- do.call(c, bpiterate( it, .eval_master,
-			data2=data2, form=form, REML=REML, theta=fitInit@theta, fxn=fxn, control=control,..., 
-			BPPARAM=BPPARAM))
+    resList <- bpiterate( it, .eval_master,
+			data2=data2, form=form, REML=REML, theta=fitInit@theta, fxn=fxn, control=control,...,
+			BPPARAM=BPPARAM)
 
 		# if there is an error in evaluating fxn (usually in parallel backend)
-		if( is(res, 'remote_error') ){
-			stop("Error evaluating fxn:\n\n", res)
+		if( !bpok(list(resList)) ){
+      stop("Error evaluating fxn:\n\n", resList)
 		}
+		# It can also return a list of errors, or a list where only some elements are errors
+		if( !all(bpok(resList)) ){
+      first_error <- resList[[which(!bpok(resList))[1]]]
+      stop("Error evaluating fxn:\n\n", first_error)
+		}
+
+		# If no errors, then it's safe to concatenate all the results together.
+		resList <- do.call(c, resList)
 
 		method = "lmer"
 	}
@@ -431,7 +440,7 @@ setMethod("fitVarPartModel", "sparseMatrix",
 #' @export
 #' @docType methods
 #' @rdname fitExtractVarPartModel-method
-#' @importFrom BiocParallel bpparam bpiterate bplapply
+#' @importFrom BiocParallel bpparam bpiterate bplapply bpok
 setGeneric("fitExtractVarPartModel", signature="exprObj",
   function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(), ...)
       standardGeneric("fitExtractVarPartModel")
@@ -573,9 +582,25 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 		if( !quiet) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		varPart <- do.call(c, bpiterate( it, .eval_master,
-			data=data, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
-			BPPARAM=BPPARAM))
+		varPart <- bpiterate( it, .eval_master,
+			data=data, form=form, REML=REML, theta=fitInit@theta, control=control,...,
+			BPPARAM=BPPARAM)
+
+		# if there is an error in evaluating fxn (usually in parallel backend)
+		if( !bpok(list(varPart)) ){
+      stop("Error evaluating fxn:\n\n", varPart)
+		}
+		# It can also return a list of errors, or a list where only some elements are errors
+		if( !all(bpok(varPart)) ){
+      first_error <- varPart[[which(!bpok(varPart))[1]]]
+      stop("Error evaluating fxn:\n\n", first_error)
+		}
+
+		# If no errors, then it's safe to concatenate all the results together.
+		varPart <- do.call(c, varPart)
+
+		# If no errors, then it's safe to concatenate all the results together.
+		varPart <- do.call(c, varPart)
 
 		modelType = "linear mixed model"
 	}
