@@ -489,7 +489,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 # @docType methods
 #' @rdname dream-method
 #' @importFrom pbkrtest get_SigmaG
-#' @importFrom BiocParallel bpiterate bpparam
+#' @importFrom BiocParallel bpiterate bpparam bpok
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats hatvalues as.formula
 #' @importFrom foreach foreach
@@ -744,10 +744,23 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		if( !quiet ) message(paste0("Dividing work into ",attr(it, "n_chunks")," chunks..."))
 
-		resList <- do.call(c, bpiterate( it, .eval_master,
-			data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,..., 
-			BPPARAM=BPPARAM))
-	
+		resList <- bpiterate( it, .eval_master,
+		                      data2=data2, form=form, REML=REML, theta=fitInit@theta, control=control,...,
+		                      BPPARAM=BPPARAM)
+
+		# if there is an error in evaluating fxn (usually in parallel backend)
+		if( !bpok(list(resList)) ){
+      stop("Error evaluating fxn:\n\n", resList)
+		}
+		# It can also return a list of errors, or a list where only some elements are errors
+		if( !all(bpok(resList)) ){
+      first_error <- resList[[which(!bpok(resList))[1]]]
+      stop("Error evaluating fxn:\n\n", first_error)
+		}
+
+		# If no errors, then it's safe to concatenate all the results together.
+		resList <- do.call(c, resList)
+
 		names(resList) = seq_len(length(resList))
 
 		if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
