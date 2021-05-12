@@ -207,7 +207,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		# check that model fit is valid, and throw warning if not
 		checkModelStatus( fit, showWarnings=showWarnings, colinearityCutoff=colinearityCutoff )
 
-		res <- foreach(responsePlaceholder=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
+		resList <- foreach(responsePlaceholder=exprIter(exprObj, weightsMatrix, useWeights), .packages=c("splines","lme4") ) %do% {
 			# fit linear mixed model
 			fit = lm( eval(parse(text=form)), data=data, weights=responsePlaceholder$weights,na.action=stats::na.exclude,...)
 
@@ -295,9 +295,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	# pb$update( responsePlaceholder$max_iter / responsePlaceholder$max_iter )
 	if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
 	# set name of each entry
-	names(res) <- rownames( exprObj )
+	names(resList) <- rownames( exprObj )
 
- 	new( "VarParFitList", res, method=method )
+ 	new( "VarParFitList", resList, method=method )
 }
 
 ## matrix
