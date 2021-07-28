@@ -60,7 +60,7 @@ setMethod('get_prediction', "lmerMod", function( fit, formula){
 		#-------
 		# Get sum of BLUP's for the specified random effects
 
-		ran_form = lme4:::reOnly(formula)
+		ran_form = reOnly(formula)
 
 		pred_rand = predict(fit, re.form=ran_form, random.only=TRUE)
 	}
@@ -104,15 +104,6 @@ setMethod('get_prediction', "lm", function( fit, formula){
 
     y_pred
 })
-
-
-# # same as lme4:::reOnly(), but avoids error in R CMD check
-# reOnly = function (f, response = FALSE){
-#     reformulate(paste0("(", vapply(findbars(f), safeDeparse, 
-#         ""), ")"), response = if (response && length(f) == 3L) 
-#         f[[2]])
-# }
-
 
 
 

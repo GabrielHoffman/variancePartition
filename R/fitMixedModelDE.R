@@ -1349,3 +1349,11 @@ setMethod("classifyTestsF", "MArrayLM2",
 	new("TestResults",result)
 })
 
+
+
+
+
+
+
+
+

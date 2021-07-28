@@ -46,12 +46,19 @@ setMethod("checkModelStatus", "lmerMod",
 			stop("The variables specified in this model are redundant,\nso the design matrix is not full rank")
 		}
 
-		# check colinearity
-		###################
-		score = colinearityScore(fit)
+		# # check colinearity
+		# ###################
+		# score = colinearityScore(fit)
 
-		if( score > colinearityCutoff ){
-			stop(paste("Colinear score =", format(score, digits=4), ">", colinearityCutoff,"\nCovariates in the formula are so strongly correlated that the\nparameter estimates from this model are not meaningful.\nDropping one or more of the covariates will fix this problem"))
+		# if( score > colinearityCutoff ){
+		# 	stop(paste("Colinear score =", format(score, digits=4), ">", colinearityCutoff,"\nCovariates in the formula are so strongly correlated that the\nparameter estimates from this model are not meaningful.\nDropping one or more of the covariates will fix this problem"))
+		# }
+
+		# Check condition number of covariance matrix
+		condNum = kappa(cov2cor(as.matrix(vcov(fit)))) # exact=TRUE
+
+		if( condNum > 1e8 ){
+			stop(paste0("Condition number (", format(condNum, digits=1), ") is very high.\nCovariates in the formula are so strongly correlated that the\nparameter estimates from this model are not meaningful.\nDropping one or more of the covariates will fix this problem"))
 		}
 
 		# check that factors are random and continuous variables are fixed
