@@ -68,10 +68,10 @@ rdf_from_matrices = function(A,B){
 	# Even though this is a eigen decomp of a crossprod
 	# the eigen-values can be very slightly negative.
 	# catch this error and drop very small values
-	tryCatch({
-		dcmp_A <- eigen(tcrossprod(A))
+	dcmp_A = tryCatch({
+		eigen(tcrossprod(A))
 		}, error = function(e){
-			dcmp_A <- eigen(tcrossprod(drop0(A, tol=1e-12)))
+			eigen(tcrossprod(drop0(A, tol=1e-12)))
 		})
 
 	# drop eigen-values less than tol
