@@ -14,10 +14,11 @@
 isRunableFormula = function( exprObj, formula, data){ 
 
   isRunable <- TRUE
-  tryCatch(
+  tryCatch( {
     control <- lmerControl(check.rankX="stop.deficient")
-    lFormula( formula = formula, data = data, control = control ),
-    error = function(e) {
+    lFormula( formula = formula, data = data, control = control )
+    }
+    , error = function(e) {
       mesg <- "the fixed-effects model matrix is column rank deficient"
       if (any(grepl(mesg, e$message))) {
         isRunable <<- FALSE
@@ -26,3 +27,4 @@ isRunableFormula = function( exprObj, formula, data){
   )
   isRunable
 }
+

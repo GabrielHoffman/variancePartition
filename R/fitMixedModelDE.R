@@ -483,6 +483,13 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
 
+	# check if variables in formula has NA's
+	hasNA = hasMissingData(formula, data)
+
+	if( any(hasNA) ){
+	warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE)
+	}
+
 	# assign weightsMatrix from exprObj
 	if( is( exprObj, "EList") ){
 		if( useWeights ){

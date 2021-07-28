@@ -59,6 +59,14 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	# only retain columns used in the formula
 	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
 
+	# check if variables in formula has NA's
+	hasNA = hasMissingData(formula, data)
+
+	if( any(hasNA) ){
+		txt = paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\n  Missing data is not supported")
+		stop( txt )
+	}
+
 	out <- list()
 
 	design = NULL 
