@@ -2,6 +2,7 @@
 # variancePartition 1.21.7
 	- Merge changes to contrast code: https://github.com/GabrielHoffman/variancePartition/pull/32
 	- Merge improvments to error checking: https://github.com/GabrielHoffman/variancePartition/pull/28
+	- New warning/error if variables in formula have missing data
 
 # variancePartition 1.21.6
 	- in dream() allow L to be NULL
