@@ -9,9 +9,7 @@ Manuscript describing the `variancePartition` package in [BMC Bioinformatics](ht
 ### Install from GitHub
 
 ```r
-library(devtools)
-
-install_github("GabrielHoffman/variancePartition")
+devtools::install_github("GabrielHoffman/variancePartition")
 ```
 
 
