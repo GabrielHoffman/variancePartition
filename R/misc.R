@@ -555,6 +555,21 @@ hasMissingData = function(form, info){
 
 
 
+#' Adapted from lme4:::reOnly
+#'
+#' Adapted from lme4:::reOnly
+#' 
+#' @param f formula
+#' @param response (FALSE) is there a response in the formula
+#'
+#' @importFrom lme4 findbars
+#' @importFrom stats reformulate
+reOnly = function(f, response = FALSE){
+    reformulate(paste0("(", vapply(findbars(f), deparse1, ""), 
+        ")"), response = if (response && length(f) == 3L) 
+        f[[2]])
+}
+
 
 
 

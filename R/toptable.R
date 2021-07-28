@@ -116,7 +116,11 @@ function (fit, coef = NULL, number = 10, genelist = fit$genes,
         if (sort.by != "none"){
             sort.by <- "F"
         }
-        tab = topTableF(fit, number = number, genelist = genelist,
+        # tab = topTableF(fit, number = number, genelist = genelist,
+        #     adjust.method = adjust.method, sort.by = sort.by,
+        #     p.value = p.value, lfc = lfc)
+
+        tab = limma::topTable(fit, number = number, genelist = genelist,
             adjust.method = adjust.method, sort.by = sort.by,
             p.value = p.value, lfc = lfc)
 
