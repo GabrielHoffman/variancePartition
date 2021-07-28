@@ -50,7 +50,7 @@
 # # Evaluate RDF
 # rdf_from_matrices(A, B)
 # 
-# @import Matrix
+#' @importFrom Matrix drop0 
 #' @seealso rdf.merMod
 #'
 rdf_from_matrices = function(A,B){
@@ -64,7 +64,15 @@ rdf_from_matrices = function(A,B){
 
 	# A
 	#####
-	dcmp_A = eigen(tcrossprod(A))
+
+	# Even though this is a eigen decomp of a crossprod
+	# the eigen-values can be very slightly negative.
+	# catch this error and drop very small values
+	tryCatch({
+		dcmp_A <- eigen(tcrossprod(A))
+		}, error = function(){
+			dcmp_A <- eigen(tcrossprod(drop0(A, tol=1e-12)))
+		})
 
 	# drop eigen-values less than tol
 	tol = 1e-12
