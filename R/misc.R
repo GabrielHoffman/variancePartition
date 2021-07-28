@@ -538,3 +538,25 @@ colinearityScore = function(fit){
 }
 
 
+
+# return array indicating if variable in formula has missing data
+hasMissingData = function(form, info){
+
+	# get variable names
+	variableNames = all.vars(form)
+
+	# return indicator of any NA's
+	sapply(variableNames, function(v){
+		any(is.na(info[[v]]))
+		})
+}
+
+
+
+
+
+
+
+
+
+

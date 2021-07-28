@@ -130,6 +130,13 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
 
+	# check if variables in formula has NA's
+	hasNA = hasMissingData(formula, data)
+
+	if( any(hasNA) ){
+		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE)
+	}
+
 	# check if all genes have variance
 	if( ! is(exprObj, "sparseMatrix")){
 		# check if values are NA
@@ -464,6 +471,13 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
 
+	# check if variables in formula has NA's
+	hasNA = hasMissingData(formula, data)
+
+	if( any(hasNA) ){
+		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE)
+	}
+
 	if( ! is(exprObj, "sparseMatrix")){
 		# check if values are NA
 		countNA = sum(is.nan(exprObj)) + sum(!is.finite(exprObj))
@@ -595,9 +609,6 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
       first_error <- varPart[[which(!bpok(varPart))[1]]]
       stop("Error evaluating fxn:\n\n", first_error)
 		}
-
-		# If no errors, then it's safe to concatenate all the results together.
-		varPart <- do.call(c, varPart)
 
 		# If no errors, then it's safe to concatenate all the results together.
 		varPart <- do.call(c, varPart)
