@@ -9,20 +9,20 @@
 #' @param formula formula
 #' @param data data
 #'
+#' @importFrom lme4 lFormula lmerControl
 #' @export
 isRunableFormula = function( exprObj, formula, data){ 
 
-	isRunable = TRUE
-
-	possibleError <- tryCatch( 
-		# variancePartition:::.getContrastInit(res$geneExpr$E, form_mod, data[colnames(res$geneExpr),])
-		.getContrastInit(exprObj, formula, data)
-		, error = function(e) e)
-
-	mesg <- "the fixed-effects model matrix is column rank deficient"
-	if( isTRUE(inherits(possibleError, "error") && grep(mesg, possibleError$message) == 1) ){
-		isRunable = FALSE
-	}
-
-	isRunable
+  isRunable <- TRUE
+  tryCatch(
+    control <- lmerControl(check.rankX="stop.deficient")
+    lFormula( formula = formula, data = data, control = control ),
+    error = function(e) {
+      mesg <- "the fixed-effects model matrix is column rank deficient"
+      if (any(grepl(mesg, e$message))) {
+        isRunable <<- FALSE
+      }
+    }
+  )
+  isRunable
 }

@@ -168,6 +168,51 @@ getContrast = function( exprObj, formula, data, coefficient){
 	L
 }
 
+#' @importFrom rlang new_environment eval_tidy
+#' @export
+makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
+  coef_names <- .getFixefNames( formula, data)
+  e <- .getContrastExpressions(..., contrasts = contrasts)
+  L_uni <- .getAllUniContrasts(exprObj, formula, data)
+  L_uni_env <- new_environment(
+    c(asplit(L_uni, 2)),
+    caller_env()
+  )
+  L <- do.call(cbind, lapply(e, eval_tidy, env = levels_env))
+  rownames(L) <- rownames(L_uni)
+  names(dimnames(L)) <- c("Levels", "Contrasts")
+  L
+}
+
+#' @importFrom rlang enexprs parse_expr
+.getContrastExpressions = function(..., contrasts) {
+  e <- enexprs(...)
+  if (!missing(contrasts) && !is.null(contrasts) && length(contrasts) > 0) {
+    if (length(e) > 0) {
+      stop("Can't specify both ... and contrasts")
+    }
+    e <- lapply(as.character(unlist(contrasts)), parse_expr)
+  }
+  e_text <- vapply(e, deparse1, character(1))
+  if (is.null(names(e))) {
+    names(e) <- e_text
+  } else {
+    empty_names <- is.na(names(e)) | names(e) == ""
+    names(e)[empty_names] <- e_text[empty_names]
+  }
+  e
+}
+
+#' @importFrom lme4 nobars
+.getFixefNames = function( formula, data, ... ) {
+  if (!isRunableFormula(, formula, data)) {
+    stop("the fixed-effects model matrix is column rank deficient")
+  }
+  ## See lme4::lFormula
+  formula[[length(formula)]] <- nobars(formula[[length(formula)]])
+  colnames(model.matrix(object = formula, data = data, ...))
+}
+
 #' Get all univariate contrasts
 #'
 #' Get all univariate contrasts
@@ -180,108 +225,26 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'  Matrix testing each variable one at a time.  Contrasts are on rows
 #'
 #' @keywords internal
-.getAllUniContrasts = function( exprObj, formula, data){ 
-
-	Linit = .getContrastInit( exprObj, formula, data)
-
-	Lall = lapply( seq_len(length(Linit)), function(i){
-		Linit[i] = 1
-		Linit
-		})
-	names(Lall) = names(Linit)
-	Lall = do.call("rbind", Lall)
-
-	# remove intercept contrasts
-	# Lall[,-1,drop=FALSE]
-	Lall
+.getAllUniContrasts = function( exprObj, formula, data){
+  fixef_names <- .getFixefNames(formula, data)
+  ## For large designs, might be worth using Matrix::Diagonal to make
+  ## a sparse diagonal matrix
+  L <- diag(x = 1, nrow = length(fixef_names))
+  dimnames(L) <- list(
+    Levels = fixef_names,
+    Contrasts = fixef_names
+  )
+  L
 }
 
-
-#' @importFrom stats as.formula
-#' @importFrom lme4 lmerControl lmer fixef
-#' @importFrom iterators nextElem
-.getContrastInit = function( exprObj, formula, data){ 
-
-	exprObj = as.matrix( exprObj )
-	formula = as.formula( formula )
-
-	# only retain columns used in the formula
-	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
-
-	REML=TRUE
-	useWeights=TRUE
-	weightsMatrix=NULL
-	showWarnings=FALSE
-	dream=TRUE
-	fxn=identity
-	colinearityCutoff=.999
-	control = lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" )
-
-	# check dimensions of reponse and covariates
-	if( ncol(exprObj) != nrow(data) ){		
-		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e. rows)" )
-	}
-
-	# if weightsMatrix is not specified, set useWeights to FALSE
-	if( useWeights && is.null(weightsMatrix) ){
-		# warning("useWeights was ignored: no weightsMatrix was specified")
-		useWeights = FALSE
-	}
-
-	# if useWeights, and (weights and expression are the same size)
-	if( useWeights && !identical( dim(exprObj), dim(weightsMatrix)) ){
-		 stop( "exprObj and weightsMatrix must be the same dimensions" )
-	}
-
-	# If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
-	if( ! identical(colnames(exprObj), rownames(data)) ){
-		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
-	}
-
-	# add response (i.e. exprObj[j,]) to formula
-	# Use term 'responsePlaceholder' to store the value of reponse j (exprObj[j,])
-	# This is not an ideal way to structure the evaluation of response j.
-	# 	The formula is evaluated a different scope, (i.e. within lmer()), and there is no need to pass the
-	# 	entire exprObj object into that scope.  With lexical scope, I found it was possible that  
-	# 	the value of exprObj[j,] could be different when evaluated in the lower scope
-	# This placeholder term addresses that issue
-	form = paste( "responsePlaceholder$E", paste(as.character( formula), collapse=''))
-
-	# run lmer() to see if the model has random effects
-	# if less run lmer() in the loop
-	# else run lm()
-	responsePlaceholder = nextElem(exprIter(exprObj, weightsMatrix, useWeights, scale=FALSE))
-	possibleError <- tryCatch( lmer( eval(parse(text=form)), data=data,control=control ), error = function(e) e)
-
-	mesg <- "No random effects terms specified in formula"
-	method = ''
-	if( isTRUE(inherits(possibleError, "error") && identical(possibleError$message, mesg)) ){
-		
-		design = model.matrix( formula, data)
-
-		L = rep(0, ncol(design))
-		names(L) = colnames(design)
-
-		 # detect error when variable in formula does not exist
-	}else if( isTRUE(inherits(possibleError, "error") && length( grep("object '.*' not found", possibleError$message)) > 0) ){
-		stop("Variable in formula is not found: ", gsub("object '(.*)' not found", "\\1", possibleError$message) )
-	}
-	else{
-
-		if( isTRUE(inherits(possibleError, "error") && grep('the fixed-effects model matrix is column rank deficient', possibleError$message) == 1) ){
-			stop(paste(possibleError$message, "\n\nSuggestion: rescale fixed effect variables.\nThis will not change the variance fractions or p-values."))
-		} 		
-
-		fit = lmer( eval(parse(text=form)), data=data,control=control, REML=TRUE )
-		
-		L = rep(0, length(fixef(fit)))
-		names(L) = names(fixef(fit))
-	}
-	L
+.getContrastInit = function( exprObj, formula, data ){
+  ## exprObj was used in a previous implementation but is no longer
+  ## needed
+  fixef_names <- .getFixefNames(formula, data)
+  L <- rep(0, length(fixef_names))
+  names(L) <- fixef_names
+  L
 }
-
-
-
 
 # Evaluate contrasts for linear mixed model
 # 
