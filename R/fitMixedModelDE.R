@@ -168,7 +168,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 	L
 }
 
-#' @importFrom rlang new_environment eval_tidy
+#' @importFrom rlang new_environment eval_tidy caller_env
 #' @export
 makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
   coef_names <- .getFixefNames( formula, data)
