@@ -189,17 +189,17 @@ topTable( fit, coef="DiseaseSubtype2 - DiseaseSubtype1", number=3 )
 
 ### Comparing multiple coefficients
 
-So far contrasts have only involved the difference between two coefficients.  But contrasts can also compare any linear combination of coefficients.  Here, consider comparing `DiseaseSubtype0` to the mean of `DiseaseSubtype1` and `DiseaseSubtype2`
+So far contrasts have only involved the difference between two coefficients.  But contrasts can also compare any linear combination of coefficients.  Here, consider comparing `DiseaseSubtype0` to the mean of `DiseaseSubtype1` and `DiseaseSubtype2`. Note you can also customize the name of the contrast.
 
 ```{r maual.contrasts, fig.width=8, fig.height=4}
-L2 = makeContrastsDream( form, metadata, contrasts = "DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2")
+L2 = makeContrastsDream( form, metadata, contrasts = c(Test1 = "DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"))
 
 plotContrasts(L2)
 
 # fit dream model to evaluate contrasts
 fit = dream( vobjDream[1:10,], form, metadata, L=L2)
 
-topTable(fit, coef="DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2", number=3)
+topTable(fit, coef="Test1", number=3)
 ```
 
 ### Joint hypothesis test of multiple coefficients
