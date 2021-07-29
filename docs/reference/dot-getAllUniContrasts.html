@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.7</span>
       </span>
     </div>
 
@@ -104,9 +104,12 @@
       <a href="../articles/dream.html">dream: Differential expression testing with linear mixed models for repeated measures</a>
     </li>
     <li>
-      <a href="../articles/theory_practice_random_effects.html">3) Theory and practice of random effects and REML</a>
+      <a href="../articles/theory_practice_random_effects.html">Theory and practice of random effects and REML</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -138,15 +141,11 @@
     <p>Get all univariate contrasts</p>
     </div>
 
-    <pre class="usage"><span class='fu'>.getAllUniContrasts</span><span class='op'>(</span><span class='va'>exprObj</span>, <span class='va'>formula</span>, <span class='va'>data</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>.getAllUniContrasts</span><span class='op'>(</span><span class='va'>formula</span>, <span class='va'>data</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>exprObj</th>
-      <td><p>matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package</p></td>
-    </tr>
     <tr>
       <th>formula</th>
       <td><p>specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: <code>~ a + b + (1|c)</code>  Formulas with only fixed effects also work</p></td>
