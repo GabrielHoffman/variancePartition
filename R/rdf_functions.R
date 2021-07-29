@@ -234,18 +234,23 @@ plotVarianceEstimates = function(fit, fitEB, var_true = NULL, xmax = quantile(fi
 	              		y = c(0, ymax, 0)))
    }
 
+
+  # define colors
+  col = c("MLE" = "red", "EB prior" = "orange", "EB posterior" = "blue")
+
   # True variance
   if( ! is.null(var_true) ){
-  	if( var(var_true) > 0){
-	    d_true = density(var_true, from=0, to=xmax)
-	    df_combine = rbind(df_combine, 
-	      data.frame(Method = "True variance", x=d_true$x, y = d_true$y))
-	}else{
-		ymax = max(df_combine$y)
-		df_combine = rbind(df_combine, data.frame(Method = "True variance", 
-						x = c(var_true[1] - .01, var_true[1], var_true[1] + 0.01),
-	              		y = c(0, ymax, 0)))
-	}
+  	col = c("True variance" = "green", col)
+		if( var(var_true) > 0){
+		  d_true = density(var_true, from=0, to=xmax)
+		  df_combine = rbind(df_combine, 
+		    data.frame(Method = "True variance", x=d_true$x, y = d_true$y))
+		}else{
+			ymax = max(df_combine$y)
+			df_combine = rbind(df_combine, data.frame(Method = "True variance", 
+							x = c(var_true[1] - .01, var_true[1], var_true[1] + 0.01),
+			            		y = c(0, ymax, 0)))
+		}
   }
 
   # compute prior density even when eBayes() uses trend=TRUE
@@ -280,15 +285,12 @@ plotVarianceEstimates = function(fit, fitEB, var_true = NULL, xmax = quantile(fi
 		df_combine = rbind(df_combine, data.frame(Method = "EB prior", 
 						x = c(fitEB$s2.prior - .01, fitEB$s2.prior, fitEB$s2.prior + 0.01),
 	              		y = c(0, ymax, 0)))
-		
 	}
 
   # order methods
   df_combine$Method = factor(df_combine$Method, c("True variance", "MLE", "EB prior", "EB posterior"))
+  df_combine$Method = droplevels(df_combine$Method)
   
-  # define colors
-  col = c("True variance" = "green", "MLE" = "red", "EB prior" = "orange", "EB posterior" = "blue")
-
   # plot
   ymax = max(df_combine$y) * 1.05
   ggplot(df_combine, aes(x, y, color=Method)) + geom_line() + theme_bw(16) + theme(legend.position="right", aspect.ratio=1, plot.title = element_text(hjust = 0.5)) + scale_color_manual(values=col[levels(df_combine$Method)]) + xlab(bquote(hat(sigma)^2)) + ylab("Density") +scale_x_continuous(expand=c(0, 0), limits=c(0,xmax)) + scale_y_continuous(expand=c(0, 0), limits=c(0,ymax))
