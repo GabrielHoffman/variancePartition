@@ -4,11 +4,9 @@
 \alias{.getAllUniContrasts}
 \title{Get all univariate contrasts}
 \usage{
-.getAllUniContrasts(exprObj, formula, data)
+.getAllUniContrasts(formula, data)
 }
 \arguments{
-\item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
-
 \item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work}
 
 \item{data}{data.frame with columns corresponding to formula}
