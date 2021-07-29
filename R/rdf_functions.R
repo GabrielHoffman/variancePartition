@@ -139,6 +139,9 @@ rdf.merMod = function(model, method=c("linear", "quadratic")) {
     if( method == 'linear'){
 	    sqrtW <- Diagonal(x = sqrt(weights(model, type = "prior")))
 
+	    # Pass Bioconductor check
+	    L = Lambdat = Zt = RX = X = RZX = NULL
+
 	    rdf <- with(getME(model, c("L", "Lambdat", "Zt", "RX", "X", 
 	        "RZX")), {
 	        CL <- solve(L, solve(L, Lambdat %*% Zt %*% sqrtW, system = "P"), 
