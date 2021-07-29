@@ -94,10 +94,10 @@ fit = dream( geneExpr[1:10,], form, info)
 # view top genes
 topTable( fit )
 
-# get contrast matrix testing if the coefficient for Batch2 is 
-# different from coefficient for Batch3
+# get contrast matrix testing if the coefficient for Batch3 is 
+# different from coefficient for Batch2
 # The variable of interest must be a fixed effect
-L = getContrast( geneExpr, form, info, c("Batch2", "Batch3"))
+L = makeContrastsDream(form, info, contrasts=c("Batch3 - Batch2"))
 
 # plot contrasts
 plotContrasts( L )
@@ -108,7 +108,7 @@ plotContrasts( L )
 fit2 = dream( geneExpr[1:10,], form, info, L)
 
 # view top genes
-topTable( fit2 )
+topTable( fit2, coef="Batch3 - Batch2" )
 
 # Parallel processing using multiple cores with reduced memory usage
 param = SnowParam(4, "SOCK", progressbar=TRUE)
@@ -118,16 +118,13 @@ fit3 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
 # Use lmFit in the backend
 # Need to run eBayes afterward
 form <- ~ Batch 
-fit4 = dream( geneExpr[1:10,], form, info)
+fit4 = dream( geneExpr[1:10,], form, info, L)
 fit4 = eBayes( fit4 )
 
 # view top genes
-topTable( fit4 )
+topTable( fit4, coef="Batch3 - Batch2" )
 
 # Compute residuals using dream
-fit5 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param, computeResiduals=TRUE)
-
-# Return residuals
-residuals(fit5)
+residuals(fit4)
 
 }
