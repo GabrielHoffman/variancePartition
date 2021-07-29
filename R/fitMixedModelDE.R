@@ -153,7 +153,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 		stop("Length of coefficient array limited to 2")
 	}
 
-	L = .getContrastInit( exprObj, formula, data)
+	L = .getContrastInit( formula, data)
 
 	# assign coefficient coding
 	if( any(!coefficient %in% names(L)) ){
@@ -168,22 +168,84 @@ getContrast = function( exprObj, formula, data, coefficient){
 	L
 }
 
+
+#' Construct Matrix of Custom Contrasts
+#' 
+#' Construct the contrast matrix corresponding to specified contrasts of a set of parameters.
+#'
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
+#' @param data data.frame with columns corresponding to formula 
+#' @param contrasts character vector specifying contrasts
+#' 
+#' @return
+#' matrix of linear contrasts between regression coefficients
+#'
+#' @details
+#' This function expresses contrasts between a set of parameters as a numeric matrix. The parameters are usually the coefficients from a linear (mixed) model fit, so the matrix specifies which comparisons between the coefficients are to be extracted from the fit. The output from this function is usually used as input to \code{dream()}.
+#'
+#' This function is inspired by \code{limma::makeContrasts()} but is designed to be compatible with linear mixed models for \code{dream()}
+#'
+#' @examples
+#' # load library
+#' # library(variancePartition)
+#' 
+#' # Intialize parallel backend with 4 cores
+#' library(BiocParallel)
+#' register(SnowParam(4))
+#' 
+#' # load simulated data:
+#' # geneExpr: matrix of gene expression values
+#' # info: information/metadata about each sample
+#' data(varPartData)
+#' 
+#' form <- ~ 0 + Batch + (1|Individual) + (1|Tissue) 
+#' 
+#' # Define contrasts
+#' L = makeContrastsDream( form, info, contrasts = c('Batch1 - Batch2', "Batch3 - Batch4", "Batch1 - (Batch3 - Batch4)/2"))
+#' 
+#' # show contrasts matrix
+#' L
+#' 
+#' # Plot to visualize contrasts matrix
+#' plotContrasts(L)
+#' 
+#' # Fit linear mixed model for each gene
+#' # run on just 10 genes for time
+#' fit = dream( geneExpr[1:10,], form, info, L=L)
+#' 
+#' # examine contrasts after fitting
+#' head(coef(fit))
+#' 
+#' # show results from first contrast
+#' topTable(fit, coef="Batch1 - Batch2")
+#' 
+#' # show results from second contrast
+#' topTable(fit, coef="Batch3 - Batch4")
+#' 
+#' # show results from third contrast
+#' topTable(fit, coef="Batch1 - (Batch3 - Batch4)/2")
+#'
 #' @importFrom rlang new_environment eval_tidy caller_env
 #' @export
-makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
-    coef_names <- .getFixefNames( formula, data)
-    e <- .getContrastExpressions(..., contrasts = contrasts)
-    L_uni <- .getAllUniContrasts(exprObj, formula, data)
-    L_uni_env <- new_environment(
-        c(asplit(L_uni, 2)),
-        caller_env()
-    )
-    L <- do.call(cbind, lapply(e, eval_tidy, env = L_uni_env)) ## Fixed line
-    rownames(L) <- rownames(L_uni)
-    names(dimnames(L)) <- c("Levels", "Contrasts")
-    L
+makeContrastsDream = function(formula, data, ..., contrasts=NULL){
+	if( is.null(contrasts) ){
+		stop("Specify constrasts")
+	}
+  coef_names <- .getFixefNames( formula, data)
+  e <- .getContrastExpressions(..., contrasts = contrasts)
+  if (length(e) == 0) {
+      stop("Need at least one contrast")
+  }
+  L_uni <- .getAllUniContrasts(formula, data)
+  L_uni_env <- new_environment(
+    c(asplit(L_uni, 2)),
+    caller_env()
+  )
+  L <- do.call(cbind, lapply(e, eval_tidy, env = L_uni_env))
+  rownames(L) <- rownames(L_uni)
+  names(dimnames(L)) <- c("Levels", "Contrasts")
+  L
 }
-
 
 #' @importFrom rlang enexprs parse_expr
 .getContrastExpressions = function(..., contrasts) {
@@ -218,7 +280,6 @@ makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
 #'
 #' Get all univariate contrasts
 #'
-#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
 #'
@@ -226,7 +287,7 @@ makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
 #'  Matrix testing each variable one at a time.  Contrasts are on rows
 #'
 #' @keywords internal
-.getAllUniContrasts = function( exprObj, formula, data){
+.getAllUniContrasts = function( formula, data){
   fixef_names <- .getFixefNames(formula, data)
   ## For large designs, might be worth using Matrix::Diagonal to make
   ## a sparse diagonal matrix
@@ -238,9 +299,7 @@ makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
   L
 }
 
-.getContrastInit = function( exprObj, formula, data ){
-  ## exprObj was used in a previous implementation but is no longer
-  ## needed
+.getContrastInit = function( formula, data ){
   fixef_names <- .getFixefNames(formula, data)
   L <- rep(0, length(fixef_names))
   names(L) <- fixef_names
@@ -540,7 +599,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	univariateContrasts = FALSE
 	if( missing(L) || is.null(L) ){
 		# all univariate contrasts
-		L = .getAllUniContrasts( exprObj, formula, data)
+		L = .getAllUniContrasts( formula, data)
 		univariateContrasts = TRUE
 	}else{
 		# format contrasts 
@@ -564,7 +623,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		# L = L[,!tst,drop=FALSE]
 
 		# add all univariate contrasts
-		Luni = .getAllUniContrasts( exprObj, formula, data)
+		Luni = .getAllUniContrasts( formula, data)
 		L = cbind(L, Luni)
 	}
 
