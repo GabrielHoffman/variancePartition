@@ -165,14 +165,17 @@ Note that if a random effect is not specified, `dream()` automatically uses `lmF
 ### Using contrasts to compare coefficients
 You can also perform a hypothesis test of the *difference* between two or more coefficients by using a contrast matrix.  The contrasts are evaluated at the time of the model fit and the results can be extracted with `topTable()`.  This behaves like `makeContrasts()` and `contrasts.fit()` in limma.
 
- Make sure to inspect your contrast matrix to confirm it is testing what you intend. 
-```{r contrast, eval=TRUE, fig.width=7, fig.height=2}
-form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual)  
-L = getContrast( vobjDream, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
+ Multiple contrasts can be evaluated at the same time, in order to save computation time.  Make sure to inspect your contrast matrix to confirm it is testing what you intend. 
+```{r contrast, eval=TRUE, fig.width=8, fig.height=3}
+form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual) 
+
+L = makeContrastsDream( form, metadata, 
+  contrasts = c("DiseaseSubtype2 - DiseaseSubtype1", "DiseaseSubtype1 - DiseaseSubtype0"))
 
 # Visualize contrast matrix
 plotContrasts(L) 
 ```
+
 ```{r fit.contrast}
 # fit dream model with contrasts
 fit = dream( vobjDream, form, metadata, L)
@@ -181,47 +184,22 @@ fit = dream( vobjDream, form, metadata, L)
 colnames(fit)
 
 # extract results from first contrast
-topTable( fit, coef="L1", number=3 )
-```
-
-Multiple contrasts can be evaluated at the same time, in order to save computation time:
-```{r contrast.combine, eval=TRUE, fig.width=7, fig.height=3}
-form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual) 
-
-# define and then cbind contrasts
-L1 = getContrast( vobjDream, form, metadata, c("DiseaseSubtype2", "DiseaseSubtype1"))
-L2 = getContrast( vobjDream, form, metadata, c("DiseaseSubtype1", "DiseaseSubtype0"))
-L = cbind(L1, L2)     
-
-# Visualize contrasts
-plotContrasts(L) 
-
-# fit both contrasts
-fit = dream( vobjDream, form, metadata, L)
-
-# extract results from first contrast
-topTable( fit, coef="L1", number=3 )
+topTable( fit, coef="DiseaseSubtype2 - DiseaseSubtype1", number=3 )
 ```
 
 ### Comparing multiple coefficients
 
-So far contrasts have only involved the difference between two coefficients.  But contrasts can also compare linear combinations of coefficients.  A user can create contrasts 'manually', as long as the elements sum to 0.  Here, consider comparing `DiseaseSubtype0` to the mean of `DiseaseSubtype1` and `DiseaseSubtype2`
+So far contrasts have only involved the difference between two coefficients.  But contrasts can also compare any linear combination of coefficients.  Here, consider comparing `DiseaseSubtype0` to the mean of `DiseaseSubtype1` and `DiseaseSubtype2`
 
 ```{r maual.contrasts, fig.width=8, fig.height=4}
-# the tests is DiseaseSubtype0 - (DiseaseSubtype1/2 + DiseaseSubtype2/2)
-# Note that the order of the coefficients must be the same as from getContrast()
-L3 = c(1, -1/2, -1/2, 0)
+L2 = makeContrastsDream( form, metadata, contrasts = "DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2")
 
-# combine L1 and L2 contrasts with manually defind L3 contrast.
-Lall = cbind(L, data.frame(L3 = L3))
-
-# Note that each contrast must sum to 0
-plotContrasts(Lall)
+plotContrasts(L2)
 
 # fit dream model to evaluate contrasts
-fit = dream( vobjDream[1:10,], form, metadata, L=Lall)
+fit = dream( vobjDream[1:10,], form, metadata, L=L2)
 
-topTable(fit, coef="L3", number=3)
+topTable(fit, coef="DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2", number=3)
 ```
 
 ### Joint hypothesis test of multiple coefficients
