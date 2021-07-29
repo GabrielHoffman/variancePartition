@@ -175,6 +175,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
+#' @param ... additional arguments
 #' @param contrasts character vector specifying contrasts
 #' 
 #' @return
