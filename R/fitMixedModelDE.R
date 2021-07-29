@@ -256,6 +256,7 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL){
       stop("Can't specify both ... and contrasts")
     }
     e <- lapply(as.character(unlist(contrasts)), parse_expr)
+    names(e) <- names(unlist(contrasts))
   }
   e_text <- vapply(e, deparse1, character(1))
   if (is.null(names(e))) {
