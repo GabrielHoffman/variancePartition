@@ -171,18 +171,19 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @importFrom rlang new_environment eval_tidy caller_env
 #' @export
 makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
-  coef_names <- .getFixefNames( formula, data)
-  e <- .getContrastExpressions(..., contrasts = contrasts)
-  L_uni <- .getAllUniContrasts(exprObj, formula, data)
-  L_uni_env <- new_environment(
-    c(asplit(L_uni, 2)),
-    caller_env()
-  )
-  L <- do.call(cbind, lapply(e, eval_tidy, env = levels_env))
-  rownames(L) <- rownames(L_uni)
-  names(dimnames(L)) <- c("Levels", "Contrasts")
-  L
+    coef_names <- .getFixefNames( formula, data)
+    e <- .getContrastExpressions(..., contrasts = contrasts)
+    L_uni <- .getAllUniContrasts(exprObj, formula, data)
+    L_uni_env <- new_environment(
+        c(asplit(L_uni, 2)),
+        caller_env()
+    )
+    L <- do.call(cbind, lapply(e, eval_tidy, env = L_uni_env)) ## Fixed line
+    rownames(L) <- rownames(L_uni)
+    names(dimnames(L)) <- c("Levels", "Contrasts")
+    L
 }
+
 
 #' @importFrom rlang enexprs parse_expr
 .getContrastExpressions = function(..., contrasts) {
