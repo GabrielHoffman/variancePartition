@@ -38,6 +38,10 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 	if( length(coefficient) > 2){
 		stop("Length of coefficient array limited to 2")
+	} else if (length(coefficient) == 0) {
+		stop("Need at least one coefficient")
+	} else if (any(is.na(coefficient))) {
+		stop("Coefficient must not be NA")
 	}
 
 	L = .getContrastInit( formula, data)
