@@ -18,19 +18,13 @@
 #' # info: information/metadata about each sample
 #' data(varPartData)
 #' 
-#' # get contrast matrix testing if the coefficient for Batch2 is zero 
+#' # 1) get contrast matrix testing if the coefficient for Batch2 is zero 
+#' # 2) get contrast matrix testing if the coefficient for Batch2 is different from Batch3 
 #' form <- ~ Batch + (1|Individual) + (1|Tissue) 
-#' L1 = getContrast( geneExpr, form, info, "Batch3")
-#' 
-#' # get contrast matrix testing if the coefficient for Batch2 is different from Batch3 
-#' form <- ~ Batch + (1|Individual) + (1|Tissue) 
-#' L2 = getContrast( geneExpr, form, info, c("Batch2", "Batch3"))
-#' 
-#' # combine contrasts into single matrix
-#' L_combined = cbind(L1, L2)
+#' L = makeContrastsDream(form, info, contrasts=c("Batch2", "Batch3 - Batch2"))
 #' 
 #' # plot contrasts
-#' plotContrasts( L_combined )
+#' plotContrasts( L )
 #' 
 #' @importFrom reshape2 melt
 #' @import ggplot2
