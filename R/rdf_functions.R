@@ -67,11 +67,11 @@ rdf_from_matrices = function(A,B){
 
 	# Even though this is a eigen decomp of a crossprod
 	# the eigen-values can be very slightly negative.
-	# catch this error and drop very small values
+	# catch this error and perform SVD instead
 	dcmp_A = tryCatch({
 		eigen(tcrossprod(A))
 		}, error = function(e){
-			eigen(tcrossprod(drop0(A, tol=1e-9)))
+			with(svd(A, nv=0), list(vectors = u, values = d^2))
 		})
 
 	# drop eigen-values less than tol
