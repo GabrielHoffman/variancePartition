@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>canCorPairs — canCorPairs • variancePartition</title>
+<title>Adapted from lme4:::reOnly — reOnly • variancePartition</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="canCorPairs — canCorPairs" />
-<meta property="og:description" content="Assess correlation between all pairs of variables in a formula" />
+<meta property="og:title" content="Adapted from lme4:::reOnly — reOnly" />
+<meta property="og:description" content="Adapted from lme4:::reOnly" />
 
 
 
@@ -132,63 +132,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>canCorPairs</h1>
-    <small class="dont-index">Source: <a href='https://github.com/GabrielHoffman/variancePartition/blob/master/R/canCorPairs.R'><code>R/canCorPairs.R</code></a></small>
-    <div class="hidden name"><code>canCorPairs.Rd</code></div>
+    <h1>Adapted from lme4:::reOnly</h1>
+    <small class="dont-index">Source: <a href='https://github.com/GabrielHoffman/variancePartition/blob/master/R/misc.R'><code>R/misc.R</code></a></small>
+    <div class="hidden name"><code>reOnly.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Assess correlation between all pairs of variables in a formula</p>
+    <p>Adapted from lme4:::reOnly</p>
     </div>
 
-    <pre class="usage"><span class='fu'>canCorPairs</span><span class='op'>(</span><span class='va'>formula</span>, <span class='va'>data</span>, showWarnings <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>reOnly</span><span class='op'>(</span><span class='va'>f</span>, response <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>formula</th>
-      <td><p>standard additive linear model formula (doesn't support random effects currently, so just change the syntax)</p></td>
+      <th>f</th>
+      <td><p>formula</p></td>
     </tr>
     <tr>
-      <th>data</th>
-      <td><p>data.frame with the data for the variables in the formula</p></td>
-    </tr>
-    <tr>
-      <th>showWarnings</th>
-      <td><p>default to true</p></td>
+      <th>response</th>
+      <td><p>(FALSE) is there a response in the formula</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Matrix of correlation values between all pairs of variables.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Canonical Correlation Analysis (CCA) is similar to correlation between two vectors, except that CCA can accommodate matricies as well.  For a pair of variables, canCorPairs assesses the degree to which they co-vary and contain the same information.  Variables in the formula can be a continuous variable or a discrete variable expanded to a matrix (which is done in the backend of a regression model).  For a pair of variables, canCorPairs uses CCA to compute the correlation between these variables and returns the pairwise correlation matrix.</p>
-<p>Statistically, let rho be the array of correlation values returned by the standard R function cancor to compute CCA.  canCorPairs returns sqrt(mean(rho^2)), which is the fraction of the maximum possible correlation.  When comparing a two vectors, or a vector and a matrix, this gives the save value as the absolute correlation.  When comparing two sets of categorical variables (i.e. expanded to two matricies), this is equivalent to Cramer's V statistic.</p>
-<p>Note that CCA returns correlation values between 0 and 1.</p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># load library</span>
-<span class='co'># library(variancePartition)</span>
-
-<span class='co'># load simulated data:</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>varPartData</span><span class='op'>)</span>
-
-<span class='co'># specify formula</span>
-<span class='va'>form</span> <span class='op'>&lt;-</span> <span class='op'>~</span> <span class='va'>Individual</span> <span class='op'>+</span> <span class='va'>Tissue</span> <span class='op'>+</span> <span class='va'>Batch</span> <span class='op'>+</span> <span class='va'>Age</span> <span class='op'>+</span> <span class='va'>Height</span>
-
-<span class='co'># Compute Canonical Correlation Analysis (CCA)</span>
-<span class='co'># between all pairs of variables</span>
-<span class='co'># returns absolute correlation value  </span>
-<span class='va'>C</span> <span class='op'>=</span> <span class='fu'>canCorPairs</span><span class='op'>(</span> <span class='va'>form</span>, <span class='va'>info</span><span class='op'>)</span>
-
-<span class='co'># Plot correlation matrix</span>
-<span class='fu'><a href='plotCorrMatrix.html'>plotCorrMatrix</a></span><span class='op'>(</span> <span class='va'>C</span> <span class='op'>)</span>
-</div><div class='img'><img src='canCorPairs-1.png' alt='' width='700' height='433' /></div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

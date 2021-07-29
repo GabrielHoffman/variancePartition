@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.8</span>
       </span>
     </div>
 
@@ -105,7 +105,7 @@
         <div class="abstract">
       <p class="abstract">Abstract</p>
       <p><strong>D</strong>ifferential expression for <strong>re</strong>pe<strong>a</strong>ted <strong>m</strong>easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual. The analysis fits seamlessly into the widely used workflow of limma/voom <span class="citation">(Law et al. 2014)</span>. <br><br> Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements. Dream achieves this by combining multiple statistical concepts into a single statistical model. The model includes: <br><br>
-      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.21.7<br> July 29, 2021 14:44:12<br></p>
+      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.21.8<br> July 29, 2021 15:42:14<br></p>
     </div>
     
 <!---
@@ -263,9 +263,9 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div id="comparing-multiple-coefficients" class="section level3">
 <h3 class="hasAnchor">
 <a href="#comparing-multiple-coefficients" class="anchor"></a>Comparing multiple coefficients</h3>
-<p>So far contrasts have only involved the difference between two coefficients. But contrasts can also compare any linear combination of coefficients. Here, consider comparing <code>DiseaseSubtype0</code> to the mean of <code>DiseaseSubtype1</code> and <code>DiseaseSubtype2</code></p>
+<p>So far contrasts have only involved the difference between two coefficients. But contrasts can also compare any linear combination of coefficients. Here, consider comparing <code>DiseaseSubtype0</code> to the mean of <code>DiseaseSubtype1</code> and <code>DiseaseSubtype2</code>. Note you can also customize the name of the contrast.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">L2</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, contrasts <span class="op">=</span> <span class="st">"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">L2</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Test1 <span class="op">=</span> <span class="st">"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu"><a href="../reference/plotContrasts.html">plotContrasts</a></span><span class="op">(</span><span class="va">L2</span><span class="op">)</span></code></pre></div>
 <p><img src="dream_files/figure-html/maual.contrasts-1.png" width="768"></p>
@@ -273,7 +273,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <code class="sourceCode R"><span class="co"># fit dream model to evaluate contrasts</span>
 <span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">metadata</span>, L<span class="op">=</span><span class="va">L2</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Test1"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
 <pre><code>##                                     logFC  AveExpr         t      P.Value    adj.P.Val     z.std
 ## ENST00000456159.1 gene=MET     -0.9830788 2.458926 -6.349967 3.385843e-06 3.385843e-05 -4.645908
 ## ENST00000418210.2 gene=TMEM64  -1.0343236 4.715367 -8.899162 1.603627e-05 5.403575e-05 -4.313951
@@ -383,7 +383,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] edgeR_3.32.1             variancePartition_1.21.7 BiocParallel_1.24.1     
+## [1] edgeR_3.32.1             variancePartition_1.21.8 BiocParallel_1.24.1     
 ## [4] limma_3.46.0             ggplot2_3.3.5            pander_0.6.4            
 ## [7] knitr_1.33              
 ## 
