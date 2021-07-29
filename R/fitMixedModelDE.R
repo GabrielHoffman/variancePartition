@@ -173,6 +173,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
   coef_names <- .getFixefNames( formula, data)
   e <- .getContrastExpressions(..., contrasts = contrasts)
+  assert_that(length(e) > 0)
   L_uni <- .getAllUniContrasts(exprObj, formula, data)
   L_uni_env <- new_environment(
     c(asplit(L_uni, 2)),
