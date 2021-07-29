@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.7</span>
       </span>
     </div>
 
@@ -104,9 +104,12 @@
       <a href="../articles/dream.html">dream: Differential expression testing with linear mixed models for repeated measures</a>
     </li>
     <li>
-      <a href="../articles/theory_practice_random_effects.html">3) Theory and practice of random effects and REML</a>
+      <a href="../articles/theory_practice_random_effects.html">Theory and practice of random effects and REML</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -229,7 +232,7 @@
 <span class='co'># after correction for all other variables</span>
 <span class='va'>varPart</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitExtractVarPartModel.html'>fitExtractVarPartModel</a></span><span class='op'>(</span> <span class='va'>geneExpr</span>, <span class='va'>form</span>, <span class='va'>info</span> <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Dividing work into 10 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:11 s</span></div><div class='input'> 
+#&gt; <span class='message'>Total:10 s</span></div><div class='input'> 
 <span class='co'># violin plot of contribution of each variable to total variance</span>
 <span class='co'># sort columns by median value</span>
 <span class='fu'><a href='plotVarPart.html'>plotVarPart</a></span><span class='op'>(</span> <span class='fu'>sortCols</span><span class='op'>(</span> <span class='va'>varPart</span> <span class='op'>)</span> <span class='op'>)</span>

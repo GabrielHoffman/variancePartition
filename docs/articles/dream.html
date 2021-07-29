@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.7</span>
       </span>
     </div>
 
@@ -63,9 +63,12 @@
       <a href="../articles/dream.html">dream: Differential expression testing with linear mixed models for repeated measures</a>
     </li>
     <li>
-      <a href="../articles/theory_practice_random_effects.html">3) Theory and practice of random effects and REML</a>
+      <a href="../articles/theory_practice_random_effects.html">Theory and practice of random effects and REML</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -85,7 +88,7 @@
 
       
 
-      </header><script src="dream_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="dream_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>dream: Differential expression testing with linear mixed models for repeated measures</h1>
@@ -102,7 +105,7 @@
         <div class="abstract">
       <p class="abstract">Abstract</p>
       <p><strong>D</strong>ifferential expression for <strong>re</strong>pe<strong>a</strong>ted <strong>m</strong>easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual. The analysis fits seamlessly into the widely used workflow of limma/voom <span class="citation">(Law et al. 2014)</span>. <br><br> Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements. Dream achieves this by combining multiple statistical concepts into a single statistical model. The model includes: <br><br>
-      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.21.3<br> April 02, 2021 11:32:50<br></p>
+      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.21.7<br> July 29, 2021 14:44:12<br></p>
     </div>
     
 <!---
@@ -141,7 +144,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <a href="#standard-rna-seq-processing" class="anchor"></a>Standard RNA-seq processing</h1>
 <p>This tutorial assumes that the reader is familiar with the limma/voom workflow for RNA-seq. Process raw count data using limma/voom.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">'variancePartition'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://bioconductor.org/packages/variancePartition">'variancePartition'</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://bioinf.wehi.edu.au/edgeR">'edgeR'</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/Bioconductor/BiocParallel">'BiocParallel'</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">varPartDEdata</span><span class="op">)</span>
@@ -230,46 +233,28 @@ Dream uses a linear model model to increase power and decrease false positives f
 <h3 class="hasAnchor">
 <a href="#using-contrasts-to-compare-coefficients" class="anchor"></a>Using contrasts to compare coefficients</h3>
 <p>You can also perform a hypothesis test of the <em>difference</em> between two or more coefficients by using a contrast matrix. The contrasts are evaluated at the time of the model fit and the results can be extracted with <code><a href="../reference/topTable.html">topTable()</a></code>. This behaves like <code>makeContrasts()</code> and <code>contrasts.fit()</code> in limma.</p>
-<p>Make sure to inspect your contrast matrix to confirm it is testing what you intend.</p>
+<p>Multiple contrasts can be evaluated at the same time, in order to save computation time. Make sure to inspect your contrast matrix to confirm it is testing what you intend.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">DiseaseSubtype</span> <span class="op">+</span> <span class="va">Sex</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span>  
-<span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="../reference/getContrast.html">getContrast</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2"</span>, <span class="st">"DiseaseSubtype1"</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">DiseaseSubtype</span> <span class="op">+</span> <span class="va">Sex</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> 
+
+<span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, 
+  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2 - DiseaseSubtype1"</span>, <span class="st">"DiseaseSubtype1 - DiseaseSubtype0"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># Visualize contrast matrix</span>
 <span class="fu"><a href="../reference/plotContrasts.html">plotContrasts</a></span><span class="op">(</span><span class="va">L</span><span class="op">)</span> </code></pre></div>
-<p><img src="dream_files/figure-html/contrast-1.png" width="672"></p>
+<p><img src="dream_files/figure-html/contrast-1.png" width="768"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># fit dream model with contrasts</span>
 <span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, <span class="va">L</span><span class="op">)</span>
 
 <span class="co"># get names of available coefficients and contrasts for testing</span>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "L1"              "DiseaseSubtype0" "DiseaseSubtype1" "DiseaseSubtype2" "SexM"</code></pre>
+<pre><code>## [1] "DiseaseSubtype2 - DiseaseSubtype1" "DiseaseSubtype1 - DiseaseSubtype0"
+## [3] "DiseaseSubtype0"                   "DiseaseSubtype1"                  
+## [5] "DiseaseSubtype2"                   "SexM"</code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># extract results from first contrast</span>
-<span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"L1"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></code></pre></div>
-<pre><code>##                                       logFC  AveExpr         t      P.Value  adj.P.Val     z.std
-## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.384718 2.857043e-05 0.02857043 -4.184572
-## ENST00000593466.1 gene=DDA1      -1.7265709 3.901579 -3.516848 2.168824e-03 0.99955525 -3.066084
-## ENST00000200676.3 gene=CETP       1.4777422 3.723438  3.732332 8.085141e-03 0.99955525  2.648493</code></pre>
-<p>Multiple contrasts can be evaluated at the same time, in order to save computation time:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">DiseaseSubtype</span> <span class="op">+</span> <span class="va">Sex</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> 
-
-<span class="co"># define and then cbind contrasts</span>
-<span class="va">L1</span> <span class="op">=</span> <span class="fu"><a href="../reference/getContrast.html">getContrast</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2"</span>, <span class="st">"DiseaseSubtype1"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">L2</span> <span class="op">=</span> <span class="fu"><a href="../reference/getContrast.html">getContrast</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype1"</span>, <span class="st">"DiseaseSubtype0"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cbind.html">cbind</a></span><span class="op">(</span><span class="va">L1</span>, <span class="va">L2</span><span class="op">)</span>     
-
-<span class="co"># Visualize contrasts</span>
-<span class="fu"><a href="../reference/plotContrasts.html">plotContrasts</a></span><span class="op">(</span><span class="va">L</span><span class="op">)</span> </code></pre></div>
-<p><img src="dream_files/figure-html/contrast.combine-1.png" width="672"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># fit both contrasts</span>
-<span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, <span class="va">L</span><span class="op">)</span>
-
-<span class="co"># extract results from first contrast</span>
-<span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"L1"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"DiseaseSubtype2 - DiseaseSubtype1"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></code></pre></div>
 <pre><code>##                                       logFC  AveExpr         t      P.Value  adj.P.Val     z.std
 ## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.384718 2.857043e-05 0.02857043 -4.184572
 ## ENST00000593466.1 gene=DDA1      -1.7265709 3.901579 -3.516848 2.168824e-03 0.99955525 -3.066084
@@ -278,23 +263,17 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div id="comparing-multiple-coefficients" class="section level3">
 <h3 class="hasAnchor">
 <a href="#comparing-multiple-coefficients" class="anchor"></a>Comparing multiple coefficients</h3>
-<p>So far contrasts have only involved the difference between two coefficients. But contrasts can also compare linear combinations of coefficients. A user can create contrasts ‘manually,’ as long as the elements sum to 0. Here, consider comparing <code>DiseaseSubtype0</code> to the mean of <code>DiseaseSubtype1</code> and <code>DiseaseSubtype2</code></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># the tests is DiseaseSubtype0 - (DiseaseSubtype1/2 + DiseaseSubtype2/2)</span>
-<span class="co"># Note that the order of the coefficients must be the same as from getContrast()</span>
-<span class="va">L3</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="fl">0</span><span class="op">)</span>
+<p>So far contrasts have only involved the difference between two coefficients. But contrasts can also compare any linear combination of coefficients. Here, consider comparing <code>DiseaseSubtype0</code> to the mean of <code>DiseaseSubtype1</code> and <code>DiseaseSubtype2</code></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">L2</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, contrasts <span class="op">=</span> <span class="st">"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"</span><span class="op">)</span>
 
-<span class="co"># combine L1 and L2 contrasts with manually defind L3 contrast.</span>
-<span class="va">Lall</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cbind.html">cbind</a></span><span class="op">(</span><span class="va">L</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>L3 <span class="op">=</span> <span class="va">L3</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># Note that each contrast must sum to 0</span>
-<span class="fu"><a href="../reference/plotContrasts.html">plotContrasts</a></span><span class="op">(</span><span class="va">Lall</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/plotContrasts.html">plotContrasts</a></span><span class="op">(</span><span class="va">L2</span><span class="op">)</span></code></pre></div>
 <p><img src="dream_files/figure-html/maual.contrasts-1.png" width="768"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># fit dream model to evaluate contrasts</span>
-<span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">metadata</span>, L<span class="op">=</span><span class="va">Lall</span><span class="op">)</span>
+<span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">metadata</span>, L<span class="op">=</span><span class="va">L2</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"L3"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
 <pre><code>##                                     logFC  AveExpr         t      P.Value    adj.P.Val     z.std
 ## ENST00000456159.1 gene=MET     -0.9830788 2.458926 -6.349967 3.385843e-06 3.385843e-05 -4.645908
 ## ENST00000418210.2 gene=TMEM64  -1.0343236 4.715367 -8.899162 1.603627e-05 5.403575e-05 -4.313951
@@ -304,7 +283,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <h3 class="hasAnchor">
 <a href="#joint-hypothesis-test-of-multiple-coefficients" class="anchor"></a>Joint hypothesis test of multiple coefficients</h3>
 <p>Joint hypothesis testing of multiple coefficients at the same time can be performed by using an F-test. Just like in limma, the results can be extracted using <code><a href="../reference/topTable.html">topTable()</a></code></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># extract results from first contrast</span>
 <span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2"</span>, <span class="st">"DiseaseSubtype1"</span><span class="op">)</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></code></pre></div>
 <pre><code>##                                DiseaseSubtype2 DiseaseSubtype1  AveExpr         F      P.Value
@@ -322,14 +301,14 @@ Dream uses a linear model model to increase power and decrease false positives f
 <h2 class="hasAnchor">
 <a href="#small-sample-method" class="anchor"></a>Small-sample method</h2>
 <p>For small datasets, the Kenward-Roger method can be more powerful. But it is <strong>substantially</strong> more computationally intensive.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fitmmKR</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, ddf<span class="op">=</span><span class="st">"Kenward-Roger"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="variancepartition-plot" class="section level2">
 <h2 class="hasAnchor">
 <a href="#variancepartition-plot" class="anchor"></a>variancePartition plot</h2>
 <p>Dream and variancePartition share the same underlying linear mixed model framework. A variancePartition analysis can indicate important variables that should be included as fixed or random effects in the dream analysis.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Note: this could be run with either vobj from voom()</span>
 <span class="co"># or vobjDream from voomWithDreamWeights()</span>
 <span class="co"># The resuylts are similar</span>
@@ -343,7 +322,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <h2 class="hasAnchor">
 <a href="#compare-p-values-from-dream-and-duplicatecorrelation" class="anchor"></a>Compare p-values from dream and duplicateCorrelation</h2>
 <p>In order to understand the empircal difference between dream and duplication correlation, we can plot the <span class="math inline">\(-\log_{10}\)</span> p-values from both methods.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Compare p-values and make plot</span>
 <span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span><span class="va">fitDupCor</span>, coef<span class="op">=</span><span class="st">"Disease1"</span>, number<span class="op">=</span><span class="cn">Inf</span>, sort.by<span class="op">=</span><span class="st">"none"</span><span class="op">)</span><span class="op">$</span><span class="va">P.Value</span>
 <span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span><span class="va">fitmm</span>, number<span class="op">=</span><span class="cn">Inf</span>, sort.by<span class="op">=</span><span class="st">"none"</span><span class="op">)</span><span class="op">$</span><span class="va">P.Value</span>
@@ -364,7 +343,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <ul>
 <li>Specify parameters with the BPPARAM argument.</li>
 </ul>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Request 4 cores, and enable the progress bar</span>
 <span class="co"># This is the ideal for Linux, OS X and Windows</span>
 <span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
@@ -376,7 +355,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <ul>
 <li>Set parameters globally for the entire R session</li>
 </ul>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">register</a></span><span class="op">(</span><span class="va">param</span><span class="op">)</span>
 
@@ -387,7 +366,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div id="session-info" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-info" class="anchor"></a>Session info</h1>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-apple-darwin19.6.0 (64-bit)
@@ -401,36 +380,36 @@ Dream uses a linear model model to increase power and decrease false positives f
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
 ## attached base packages:
-## [1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] edgeR_3.32.1             variancePartition_1.21.3 Biobase_2.50.0          
-## [4] BiocGenerics_0.36.0      scales_1.1.1             BiocParallel_1.24.1     
-## [7] limma_3.46.0             ggplot2_3.3.3            pander_0.6.3            
+## [1] edgeR_3.32.1             variancePartition_1.21.7 BiocParallel_1.24.1     
+## [4] limma_3.46.0             ggplot2_3.3.5            pander_0.6.4            
+## [7] knitr_1.33              
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] nlme_3.1-152        bitops_1.0-6        fs_1.5.0            pbkrtest_0.5.1     
+##  [1] nlme_3.1-152        bitops_1.0-7        fs_1.5.0            pbkrtest_0.5.1     
 ##  [5] doParallel_1.0.16   progress_1.2.2      rprojroot_2.0.2     numDeriv_2016.8-1.1
-##  [9] tools_4.0.3         backports_1.2.1     bslib_0.2.4         utf8_1.2.1         
-## [13] R6_2.5.0            KernSmooth_2.23-18  DBI_1.1.1           colorspace_2.0-0   
-## [17] withr_2.4.1         tidyselect_1.1.0    prettyunits_1.1.1   compiler_4.0.3     
-## [21] textshaping_0.3.3   desc_1.3.0          labeling_0.4.2      sass_0.3.1         
-## [25] caTools_1.18.1      pkgdown_1.6.1       systemfonts_1.0.1   stringr_1.4.0      
-## [29] digest_0.6.27       minqa_1.2.4         rmarkdown_2.7       colorRamps_2.3     
-## [33] pkgconfig_2.0.3     htmltools_0.5.1.1   lme4_1.1-26         highr_0.8          
-## [37] fastmap_1.1.0       rlang_0.4.10        jquerylib_0.1.3     generics_0.1.0     
-## [41] farver_2.1.0        jsonlite_1.7.2      gtools_3.8.2        dplyr_1.0.5        
-## [45] magrittr_2.0.1      Matrix_1.3-2        Rcpp_1.0.6          munsell_0.5.0      
-## [49] fansi_0.4.2         lifecycle_1.0.0     stringi_1.5.3       yaml_2.2.1         
-## [53] MASS_7.3-53.1       gplots_3.1.1        plyr_1.8.6          grid_4.0.3         
-## [57] crayon_1.4.1        lattice_0.20-41     splines_4.0.3       hms_1.0.0          
-## [61] locfit_1.5-9.4      knitr_1.31          pillar_1.5.1        boot_1.3-27        
-## [65] reshape2_1.4.4      codetools_0.2-18    glue_1.4.2          evaluate_0.14      
-## [69] vctrs_0.3.6         nloptr_1.2.2.2      foreach_1.5.1       gtable_0.3.0       
-## [73] purrr_0.3.4         tidyr_1.1.3         assertthat_0.2.1    cachem_1.0.4       
-## [77] xfun_0.22           broom_0.7.5         ragg_1.1.2          tibble_3.1.0       
-## [81] snow_0.4-3          lmerTest_3.1-3      iterators_1.0.13    memoise_2.0.0      
-## [85] statmod_1.4.35      ellipsis_0.3.1</code></pre>
+##  [9] tools_4.0.3         backports_1.2.1     bslib_0.2.5.1       utf8_1.2.1         
+## [13] R6_2.5.0            KernSmooth_2.23-20  DBI_1.1.1           BiocGenerics_0.36.1
+## [17] colorspace_2.0-2    withr_2.4.2         tidyselect_1.1.1    prettyunits_1.1.1  
+## [21] compiler_4.0.3      textshaping_0.3.5   Biobase_2.50.0      desc_1.3.0         
+## [25] labeling_0.4.2      sass_0.4.0          caTools_1.18.2      scales_1.1.1       
+## [29] pkgdown_1.6.1       systemfonts_1.0.2   stringr_1.4.0       digest_0.6.27      
+## [33] minqa_1.2.4         rmarkdown_2.9       pkgconfig_2.0.3     htmltools_0.5.1.1  
+## [37] lme4_1.1-27.1       highr_0.9           fastmap_1.1.0       rlang_0.4.11       
+## [41] jquerylib_0.1.4     generics_0.1.0      farver_2.1.0        jsonlite_1.7.2     
+## [45] gtools_3.9.2        dplyr_1.0.7         magrittr_2.0.1      Matrix_1.3-4       
+## [49] Rcpp_1.0.7          munsell_0.5.0       fansi_0.5.0         lifecycle_1.0.0    
+## [53] stringi_1.7.3       yaml_2.2.1          MASS_7.3-54         gplots_3.1.1       
+## [57] plyr_1.8.6          grid_4.0.3          parallel_4.0.3      crayon_1.4.1       
+## [61] lattice_0.20-44     splines_4.0.3       hms_1.1.0           locfit_1.5-9.4     
+## [65] pillar_1.6.1        boot_1.3-28         reshape2_1.4.4      codetools_0.2-18   
+## [69] glue_1.4.2          evaluate_0.14       vctrs_0.3.8         nloptr_1.2.2.2     
+## [73] foreach_1.5.1       gtable_0.3.0        purrr_0.3.4         tidyr_1.1.3        
+## [77] assertthat_0.2.1    cachem_1.0.5        xfun_0.24           broom_0.7.8        
+## [81] ragg_1.1.3          tibble_3.1.3        snow_0.4-3          lmerTest_3.1-3     
+## [85] iterators_1.0.13    memoise_2.0.0       statmod_1.4.36      ellipsis_0.3.2</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
