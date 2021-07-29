@@ -71,7 +71,7 @@ rdf_from_matrices = function(A,B){
 	dcmp_A = tryCatch({
 		eigen(tcrossprod(A))
 		}, error = function(e){
-			eigen(tcrossprod(drop0(A, tol=1e-12)))
+			eigen(tcrossprod(drop0(A, tol=1e-9)))
 		})
 
 	# drop eigen-values less than tol
