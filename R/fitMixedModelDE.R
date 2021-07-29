@@ -178,7 +178,7 @@ makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
     c(asplit(L_uni, 2)),
     caller_env()
   )
-  L <- do.call(cbind, lapply(e, eval_tidy, env = levels_env))
+  L <- do.call(cbind, lapply(e, eval_tidy, env = L_uni_env))
   rownames(L) <- rownames(L_uni)
   names(dimnames(L)) <- c("Levels", "Contrasts")
   L
