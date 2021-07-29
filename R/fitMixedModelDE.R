@@ -173,12 +173,15 @@ getContrast = function( exprObj, formula, data, coefficient){
 makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
   coef_names <- .getFixefNames( formula, data)
   e <- .getContrastExpressions(..., contrasts = contrasts)
+  if (length(e) == 0) {
+      stop("Need at least one contrast")
+  }
   L_uni <- .getAllUniContrasts(exprObj, formula, data)
   L_uni_env <- new_environment(
     c(asplit(L_uni, 2)),
     caller_env()
   )
-  L <- do.call(cbind, lapply(e, eval_tidy, env = levels_env))
+  L <- do.call(cbind, lapply(e, eval_tidy, env = L_uni_env))
   rownames(L) <- rownames(L_uni)
   names(dimnames(L)) <- c("Levels", "Contrasts")
   L
@@ -192,6 +195,7 @@ makeContrastsDream = function (exprObj, formula, data, ..., contrasts) {
       stop("Can't specify both ... and contrasts")
     }
     e <- lapply(as.character(unlist(contrasts)), parse_expr)
+    names(e) <- names(unlist(contrasts))
   }
   e_text <- vapply(e, deparse1, character(1))
   if (is.null(names(e))) {
