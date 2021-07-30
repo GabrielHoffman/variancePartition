@@ -28,7 +28,7 @@ data(varPartData)
 # 1) get contrast matrix testing if the coefficient for Batch2 is zero 
 # 2) get contrast matrix testing if the coefficient for Batch2 is different from Batch3 
 form <- ~ Batch + (1|Individual) + (1|Tissue) 
-L = makeContrastsDream(form, info, contrasts=c("Batch2", "Batch3 - Batch2"))
+L = makeContrastsDream(form, info, contrasts=c("Batch2", Batch_3_vs_2 = "Batch3 - Batch2"))
 
 # plot contrasts
 plotContrasts( L )
