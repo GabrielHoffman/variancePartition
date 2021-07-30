@@ -11,7 +11,7 @@ makeContrastsDream(formula, data, ..., contrasts = NULL)
 
 \item{data}{data.frame with columns corresponding to formula}
 
-\item{...}{additional arguments}
+\item{...}{expressions, or character strings which can be parsed to expressions, specifying contrasts}
 
 \item{contrasts}{character vector specifying contrasts}
 }
@@ -25,6 +25,8 @@ Construct the contrast matrix corresponding to specified contrasts of a set of p
 This function expresses contrasts between a set of parameters as a numeric matrix. The parameters are usually the coefficients from a linear (mixed) model fit, so the matrix specifies which comparisons between the coefficients are to be extracted from the fit. The output from this function is usually used as input to \code{dream()}.
 
 This function is inspired by \code{limma::makeContrasts()} but is designed to be compatible with linear mixed models for \code{dream()}
+
+Names in ... and contrasts will be used as column names in the returned value.
 }
 \examples{
 # load library
@@ -42,7 +44,7 @@ data(varPartData)
 form <- ~ 0 + Batch + (1|Individual) + (1|Tissue) 
 
 # Define contrasts
-L = makeContrastsDream( form, info, contrasts = c('Batch1 - Batch2', "Batch3 - Batch4", "Batch1 - (Batch3 - Batch4)/2"))
+L = makeContrastsDream( form, info, contrasts = c(Batch1_vs_2 = "Batch1 - Batch2", Batch3_vs_4 = "Batch3 - Batch4", Batch1_vs_34 = "Batch1 - (Batch3 + Batch4)/2"))
 
 # show contrasts matrix
 L
@@ -58,12 +60,12 @@ fit = dream( geneExpr[1:10,], form, info, L=L)
 head(coef(fit))
 
 # show results from first contrast
-topTable(fit, coef="Batch1 - Batch2")
+topTable(fit, coef="Batch1_vs_2")
 
 # show results from second contrast
-topTable(fit, coef="Batch3 - Batch4")
+topTable(fit, coef="Batch3_vs_4")
 
 # show results from third contrast
-topTable(fit, coef="Batch1 - (Batch3 - Batch4)/2")
+topTable(fit, coef="Batch1_vs_34")
 
 }
