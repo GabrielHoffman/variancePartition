@@ -1,6 +1,8 @@
 
 # variancePartition 1.21.8
 	- update dream vignette
+	- update documentation for makeContrastsDream()
+	- fix error in rdf_from_matrices() with eigen() failing
 
 # variancePartition 1.21.7
 	- Merge changes to contrast code: https://github.com/GabrielHoffman/variancePartition/pull/32
