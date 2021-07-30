@@ -133,28 +133,26 @@ rdf.merMod = function(model, method=c("linear", "quadratic")) {
 	method = match.arg(method)
 
 	# code adapted from lme4:::hatvalues.merMod
-    if (isGLMM(model)) 
-        warning("the hat matrix may not make sense for GLMMs")
+	if (isGLMM(model)) 
+		warning("the hat matrix may not make sense for GLMMs")
 
-    if( method == 'linear'){
-	    sqrtW <- Diagonal(x = sqrt(weights(model, type = "prior")))
+	if( method == 'linear'){
+		sqrtW <- Diagonal(x = sqrt(weights(model, type = "prior")))
 
-	    # Pass Bioconductor check
-	    L = Lambdat = Zt = RX = X = RZX = NULL
+		# Pass Bioconductor check
+		L = Lambdat = Zt = RX = X = RZX = NULL
 
-	    rdf <- with(getME(model, c("L", "Lambdat", "Zt", "RX", "X", 
-	        "RZX")), {
-	        CL <- solve(L, solve(L, Lambdat %*% Zt %*% sqrtW, system = "P"), 
-	            system = "L")
-	        CR <- solve(t(RX), t(X) %*% sqrtW - crossprod(RZX, CL))
-	        # if (fullHatMatrix) 
-	        #     crossprod(CL) + crossprod(CR)
-	        # else colSums(CR^2) + colSums(CL^2)
+		rdf <- with(getME(model, c("L", "Lambdat", "Zt", "RX", "X", "RZX")), {
+			CL <- solve(L, solve(L, Lambdat %*% Zt %*% sqrtW, system = "P"), system = "L")
+			CR <- solve(t(RX), t(X) %*% sqrtW - crossprod(RZX, CL))
+			# if (fullHatMatrix) 
+			#     crossprod(CL) + crossprod(CR)
+			# else colSums(CR^2) + colSums(CL^2)
 
-	        # H = crossprod(CL) + crossprod(CR)
-	        # compute residual degrees of freedom as if using H, but use only CL and CR
-	        rdf_from_matrices(CL, CR)
-	    })
+			# H = crossprod(CL) + crossprod(CR)
+			# compute residual degrees of freedom as if using H, but use only CL and CR
+			rdf_from_matrices(CL, CR)
+			})
 	}else{
 		H = hatvalues(model, fullHatMatrix=TRUE)   
 
