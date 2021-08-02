@@ -134,6 +134,15 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL){
   L <- do.call(cbind, lapply(e, eval_tidy, env = L_uni_env))
   rownames(L) <- rownames(L_uni)
   names(dimnames(L)) <- c("Levels", "Contrasts")
+
+  # detect univariate contrasts
+  anyUnivariate = apply(L, 1, function(x) sum(x!=0))
+
+  if( any(anyUnivariate) ){
+    txt = paste("All univariate contrasts are already included.\nManually specifying them here can cause issues downstream.\nTerms: ", paste0(names(which(anyUnivariate !=0)), collapse = ', '))
+    warning(txt)
+  }
+
   L
 }
 
