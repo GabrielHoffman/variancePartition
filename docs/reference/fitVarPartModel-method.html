@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.9</span>
       </span>
     </div>
 
@@ -333,7 +333,7 @@
 <span class='co'># after correction for all other variables</span>
 <span class='va'>varPart</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitExtractVarPartModel.html'>fitExtractVarPartModel</a></span><span class='op'>(</span> <span class='va'>geneExpr</span>, <span class='va'>form</span>, <span class='va'>info</span> <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Dividing work into 10 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:10 s</span></div><div class='input'> 
+#&gt; <span class='message'>Total:11 s</span></div><div class='input'> 
 <span class='co'># violin plot of contribution of each variable to total variance</span>
 <span class='co'># also sort columns</span>
 <span class='fu'><a href='plotVarPart.html'>plotVarPart</a></span><span class='op'>(</span> <span class='fu'><a href='sortCols.html'>sortCols</a></span><span class='op'>(</span> <span class='va'>varPart</span> <span class='op'>)</span> <span class='op'>)</span>
@@ -343,7 +343,7 @@
 <span class='co'># Step 1: fit model for each gene, store model fit for each gene in a list</span>
 <span class='va'>results</span> <span class='op'>&lt;-</span> <span class='fu'>fitVarPartModel</span><span class='op'>(</span> <span class='va'>geneExpr</span>, <span class='va'>form</span>, <span class='va'>info</span> <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Memory usage to store result: &gt;8.9 Mb</span></div><div class='output co'>#&gt; <span class='message'>Dividing work into 10 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:11 s</span></div><div class='input'>
+#&gt; <span class='message'>Total:12 s</span></div><div class='input'>
 <span class='co'># Step 2: extract variance fractions</span>
 <span class='va'>varPart</span> <span class='op'>&lt;-</span> <span class='fu'><a href='extractVarPart.html'>extractVarPart</a></span><span class='op'>(</span> <span class='va'>results</span> <span class='op'>)</span>
 
@@ -355,7 +355,7 @@
 <span class='va'>info2</span> <span class='op'>&lt;-</span> <span class='fu'>Biobase</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/Biobase/man/phenoData.html'>pData</a></span><span class='op'>(</span><span class='va'>sample.ExpressionSet</span><span class='op'>)</span>
 <span class='va'>results2</span> <span class='op'>&lt;-</span> <span class='fu'>fitVarPartModel</span><span class='op'>(</span> <span class='va'>sample.ExpressionSet</span>, <span class='va'>form</span>, <span class='va'>info2</span> <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Memory usage to store result: &gt;15.2 Mb</span></div><div class='output co'>#&gt; <span class='message'>Dividing work into 25 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:123 s</span></div><div class='input'>
+#&gt; <span class='message'>Total:207 s</span></div><div class='input'>
 
 </div></pre>
   </div>

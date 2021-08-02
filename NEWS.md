@@ -1,4 +1,7 @@
 
+# variancePartition 1.21.9
+	- fix bug with makeContrastsDream() 
+
 # variancePartition 1.21.8
 	- update dream vignette
 	- update documentation for makeContrastsDream()

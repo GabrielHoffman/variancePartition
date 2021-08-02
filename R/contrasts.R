@@ -136,10 +136,10 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL){
   names(dimnames(L)) <- c("Levels", "Contrasts")
 
   # detect univariate contrasts
-  anyUnivariate = apply(L, 1, function(x) sum(x!=0))
+  anyUnivariate = apply(L, 2, function(x) sum(x!=0))
 
-  if( any(anyUnivariate) ){
-    txt = paste("All univariate contrasts are already included.\nManually specifying them here can cause issues downstream.\nTerms: ", paste0(names(which(anyUnivariate !=0)), collapse = ', '))
+  if( any(anyUnivariate == 1) ){
+    txt = paste("All univariate contrasts are already included.\n  Manually specifying them here can cause issues downstream.\n  Terms: ", paste0(names(which(anyUnivariate == 1)), collapse = ', '))
     warning(txt)
   }
 
