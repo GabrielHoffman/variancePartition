@@ -122,14 +122,10 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @importFrom rlang new_environment eval_tidy caller_env
 #' @export
 makeContrastsDream = function(formula, data, ..., contrasts=NULL){
-	if( is.null(contrasts) ){
-		stop("Specify constrasts")
-	}
-  coef_names <- .getFixefNames( formula, data)
   e <- .getContrastExpressions(..., contrasts = contrasts)
-  if (length(e) == 0) {
-      stop("Need at least one contrast")
-  }
+	if( length(e) == 0 ){
+		stop("Must specify at least one contrast")
+	}
   L_uni <- .getAllUniContrasts(formula, data)
   L_uni_env <- new_environment(
     c(asplit(L_uni, 2)),
