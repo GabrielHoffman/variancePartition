@@ -147,6 +147,13 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL){
     e <- lapply(as.character(unlist(contrasts)), parse_expr)
     names(e) <- names(unlist(contrasts))
   }
+  # Allow contrasts to be specified as string literals in addition to
+  # unquoted expressions.
+  for (i in seq_along(e)) {
+    if (is.character(e[[i]])) {
+      e[[i]] <- parse_expr(e[[i]])
+    }
+  }
   e_text <- vapply(e, deparse1, character(1))
   if (is.null(names(e))) {
     names(e) <- e_text
