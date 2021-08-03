@@ -4,7 +4,13 @@
 \alias{makeContrastsDream}
 \title{Construct Matrix of Custom Contrasts}
 \usage{
-makeContrastsDream(formula, data, ..., contrasts = NULL)
+makeContrastsDream(
+  formula,
+  data,
+  ...,
+  contrasts = NULL,
+  suppressWarnings = FALSE
+)
 }
 \arguments{
 \item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work}
@@ -14,6 +20,8 @@ makeContrastsDream(formula, data, ..., contrasts = NULL)
 \item{...}{expressions, or character strings which can be parsed to expressions, specifying contrasts}
 
 \item{contrasts}{character vector specifying contrasts}
+
+\item{suppressWarnings}{(default FALSE). suppress warnings for univariate contrasts}
 }
 \value{
 matrix of linear contrasts between regression coefficients

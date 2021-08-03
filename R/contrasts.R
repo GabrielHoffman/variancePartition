@@ -68,6 +68,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param data data.frame with columns corresponding to formula 
 #' @param ... expressions, or character strings which can be parsed to expressions, specifying contrasts
 #' @param contrasts character vector specifying contrasts
+#' @param suppressWarnings (default FALSE). suppress warnings for univariate contrasts
 #' 
 #' @return
 #' matrix of linear contrasts between regression coefficients
@@ -121,7 +122,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'
 #' @importFrom rlang new_environment eval_tidy caller_env
 #' @export
-makeContrastsDream = function(formula, data, ..., contrasts=NULL){
+makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnings=FALSE){
   e <- .getContrastExpressions(..., contrasts = contrasts)
 	if( length(e) == 0 ){
 		stop("Must specify at least one contrast")
@@ -138,7 +139,7 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL){
   # detect univariate contrasts
   anyUnivariate = apply(L, 2, function(x) sum(x!=0))
 
-  if( any(anyUnivariate == 1) ){
+  if( ! suppressWarnings & any(anyUnivariate == 1) ){
     txt = paste("All univariate contrasts are already included.\n  Manually specifying them here can cause issues downstream.\n  Terms: ", paste0(names(which(anyUnivariate == 1)), collapse = ', '))
     warning(txt)
   }
