@@ -1,4 +1,8 @@
 
+# variancePartition 1.21.10
+	- add suppressWarnings flag to makeContrastsDream() 
+	- ensure that z.std is finite
+
 # variancePartition 1.21.9
 	- fix bug with makeContrastsDream() 
 
