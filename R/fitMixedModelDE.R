@@ -732,7 +732,8 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	# t-test
 	out = fit
 	out$t <- fit$coefficients / fit$stdev.unscaled / sigma
-	out$p.value <- 2*pt(-abs(out$t), df=fit$df.total )
+	out$p.value <- 2*pt(abs(out$t), df=fit$df.total, lower.tail=FALSE )
+	# out$p.value.loge <- log(2) + pt(abs(out$t), df=fit$df.total, lower.tail=FALSE, log.p=TRUE )
 
 	# F-test
 	if(!is.null(out$design) && is.fullrank(out$design)) {
