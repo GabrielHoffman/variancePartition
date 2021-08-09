@@ -1,4 +1,7 @@
 
+# variancePartition 1.23.1
+	- New freeze for Bioconductor devel branch
+
 # variancePartition 1.21.10
 	- add suppressWarnings flag to makeContrastsDream() 
 	- ensure that z.std is finite
