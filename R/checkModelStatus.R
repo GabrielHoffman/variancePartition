@@ -8,16 +8,16 @@
 #	2) Any coefficient is NA
 #	3) a categorical variable is modeled as a fixed effect
 setGeneric("checkModelStatus", signature="fit",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999 )
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE )
       standardGeneric("checkModelStatus")
 )
 
 setMethod("checkModelStatus", "lm",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999 )
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  )
 	{
 		# if no intercept is specified, give warning
 		if( showWarnings && length(which(names(coef(fit)) == "(Intercept)")) == 0 ){
-			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
+			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!", immediate.=immediate)
 		}
 
 		# if any coefficient is NA
@@ -34,11 +34,11 @@ setMethod("checkModelStatus", "lm",
 )
 
 setMethod("checkModelStatus", "lmerMod",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999 )
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  )
 	{
 		# if no intercept is specified, give warning
 		if( !dream && showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
-			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!")
+			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!", immediate.=immediate)
 		}
 
 		# if any coefficient is NA

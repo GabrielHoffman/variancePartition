@@ -37,11 +37,10 @@ test_usingWeights_fitExtractVarPartModel= function(){
 	vp2 = fitExtractVarPartModel( vobj$E, form, metadata, weightsMatrix=vobj$weights )
 	vp3 = fitExtractVarPartModel( vobj$E, form, metadata, weightsMatrix=vobj$weights, useWeights=FALSE )
 
-
 	checkEquals(vp1, vp2)
 
 	# should NOT be equal
-	checkTrue(max(data.frame(vp2) - data.frame(vp3)) > 0)
+	checkTrue(max(as.data.frame(vp2) - as.data.frame(vp3)) > 0)
 }
 
 

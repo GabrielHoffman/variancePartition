@@ -1,4 +1,8 @@
 
+# variancePartition 1.23.2
+	- add flag to checkModelStatus() so warnings are thrown immediately
+	- fix export of as.data.frame
+
 # variancePartition 1.23.1
 	- New freeze for Bioconductor devel branch
 
