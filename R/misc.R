@@ -239,6 +239,7 @@ function(x, ...)
 	return( as.matrix(df) )
 })
 
+
 #' Convert to data.frame
 #' 
 #' Convert varPartResults to data.frame
@@ -271,19 +272,23 @@ function(x, ...)
 #' as.data.frame(varPart)
 #'
 #' @export
-# @docType methods
-#' @aliases as.data.frame
-setMethod("as.data.frame", "varPartResults",
-function(x, row.names = NULL, optional = FALSE,...)
-{
-	df = as.data.frame( x@.Data )
+#' @rawNamespace S3method("as.data.frame", 'varPartResults')
+# @rdname as.data.frame
+# @method as.data.frame varPartResults
+# S3/S4 combo for varPartResults
+as.data.frame.varPartResults <- function(x, row.names=NULL, optional=FALSE, ...){
+    df = as.data.frame( x@.Data )
 	colnames(df) = names(x)
 	rownames(df) = x@row.names
-	# colnames(df) = colnames(x)
-	# rownames(df) = rownames(x)
+	df
+}
 
-	return( df )
-})
+# @rdname as.data.frame-methods
+# @aliases as.data.frame,varPartResults,varPartResults-method
+# setMethod("as.data.frame", "varPartResults", as.data.frame.varPartResults)
+
+
+
 
 #' Default colors for ggplot
 #' 
