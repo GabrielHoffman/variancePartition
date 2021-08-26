@@ -123,7 +123,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 			# 2) fitted values
 			list( sd = attr(VarCorr(fit), 'sc'),
 				fitted.values = predict(fit) )
-			}, BPPARAM=BPPARAM )
+			}, BPPARAM=BPPARAM, quiet=quiet )
 
 		fit = list()
 		fit$sigma <- sapply( vpList, function(x) x$sd)	
