@@ -153,6 +153,7 @@ setMethod("plotVarPart", "varPartResults",
 #'
 #' @param varPart object returned by extractVarPart() or fitExtractVarPartModel()
 #' @param col color of bars for each variable
+#' @param width specify width of bars
 #'
 #' @return Returns ggplot2 barplot
 #' @examples
@@ -182,7 +183,7 @@ setMethod("plotVarPart", "varPartResults",
 # # stop cluster
 # stopCluster(cl)
 #' @export
-plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey85") ){
+plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL ){
 
 	if( !is.matrix(varPart) && !is.data.frame(varPart)){
 		stop("Argument must be a matrix or data.frame")
@@ -219,7 +220,7 @@ plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey8
 	# Flip order of columns for use with ggplot2 2.2.0
 	# Nov 17, 2016
 	fig = ggplot(df, aes(x = gene, y = value, fill = variable)) + 
-		geom_bar(stat = "identity") + theme_bw() + 
+		geom_bar(stat = "identity", width=width) + theme_bw() + 
 		theme(panel.grid.major = element_blank(), 
 		panel.grid.minor = element_blank()) + coord_flip() + 
 		xlab("") + theme(plot.title=element_text(hjust=0.5)) 
