@@ -4,12 +4,18 @@
 \alias{plotPercentBars}
 \title{Bar plot of variance fractions}
 \usage{
-plotPercentBars(varPart, col = c(ggColorHue(ncol(varPart) - 1), "grey85"))
+plotPercentBars(
+  varPart,
+  col = c(ggColorHue(ncol(varPart) - 1), "grey85"),
+  width = NULL
+)
 }
 \arguments{
 \item{varPart}{object returned by extractVarPart() or fitExtractVarPartModel()}
 
 \item{col}{color of bars for each variable}
+
+\item{width}{specify width of bars}
 }
 \value{
 Returns ggplot2 barplot
