@@ -1,4 +1,7 @@
 
+# variancePartition 1.23.3
+	- add calcVarPart() support for a range of GLM/GLMM's
+
 # variancePartition 1.23.2
 	- add flag to checkModelStatus() so warnings are thrown immediately
 	- fix export of as.data.frame

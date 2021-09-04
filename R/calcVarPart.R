@@ -14,10 +14,10 @@
 #' @param ... additional arguments (not currently used)
 #' 
 #' @return
-#' fraction of variance explained / ICC for each variable in the linear model 
+#' fraction of variance explained / ICC for each variable in the regression model 
 #' 
-#' @description
-#' For linear model, variance fractions are computed based on the sum of squares explained by each component.  For the linear mixed mode, the variance fractions are computed by variance component estimates for random effects and sum of squares for fixed effects.  
+#' @details
+#' For linear model, variance fractions are computed based on the sum of squares explained by each component.  For the linear mixed model, the variance fractions are computed by variance component estimates for random effects and sum of squares for fixed effects.  
 #'
 #' For a generalized linear model, the variance fraction also includes the contribution of the link function so that fractions are reported on the linear (i.e. link) scale rather than the observed (i.e. response) scale. For linear regression with an identity link, fractions are the same on both scales.  But for logit or probit links, the fractions are not well defined on the observed scale due to the transformation imposed by the link function.  
 #'
@@ -25,13 +25,20 @@
 #' 	logit -> logistic distribution -> variance is pi^2/3
 #'	probit -> standard normal distribution -> variance is 1
 #'
-#' Reviewed by
+#' Reviewed by:
+#' 
 #' Nakagawa and Schielzeth. 2012. A general and simple method for obtaining R2 from generalized linear mixed-effects models.  https://doi.org/10.1111/j.2041-210x.2012.00261.x
+#' 
+#' Application to GLMs by:
 #'
-#' Proposed by
+#' Nakagawa, Johnson and Schielzeth. 2017. The coefficient of determination R2 and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded. https://doi.org/10.1098/rsif.2017.0213
+#'
+#' Proposed by:
+#' 
 #' McKelvey and Zavoina. A statistical model for the analysis of ordinal level dependent variables. The Journal of Mathematical Sociology 4(1) 103-120 https://doi.org/10.1080/0022250X.1975.9989847
 #'
-#' Also see
+#' Also see:
+#' 
 #' DeMaris. Explained Variance in Logistic Regression: A Monte Carlo Study of Proposed Measures. Sociological Methods & Research 2002 https://doi.org/10.1177/0049124102031001002
 #'
 #' We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the full model.  Instead, a variance partitioning approach evaluates the variance explained by each term in the model, so that the sum of each systematic plus random term sums to 1 (Hoffman and Schadt, 2016, Nakagawa and Schielzeth, 2012).
@@ -173,21 +180,62 @@ function(fit, showWarnings=TRUE,...){
 setMethod("calcVarPart", "glm",
 function(fit, showWarnings=TRUE, ...){
 
-	N = nrow(fit$model)
+	checkModelStatus( fit, showWarnings, ...)
+
+	cvp_glm(fit, showWarnings, ...)
+})
+
+
+#' @export
+#' @rdname calcVarPart-method
+#' @aliases calcVarPart,negbin-method
+setMethod("calcVarPart", "negbin",
+function(fit, showWarnings=TRUE, ...){
+
+	checkModelStatus( fit, showWarnings, ...)
+
+	cvp_glm(fit, showWarnings, ...)
+})
+
+# Compute distribution variances for GLMs described Nakagawa, 2017
+#' @importFrom stats family
+getDistrVar = function( fit ){
+
+	# compute residual term for each link
+	famLink = with(family(fit), paste(gsub('\\(.*', '', family), link))
+
+	distVar = switch(famLink,
+		"binomial logit" = (pi^2)/3,
+		"binomial probit" = 1,
+		"gaussian identity" = var(residuals(fit)),
+		"poisson log" = {
+				beta_0 =  coef(summary(fit))['(Intercept)','Estimate']
+				log(1 + 1/exp(beta_0))
+				},
+		"Negative Binomial log" = {
+				beta_0 = coef(summary(fit))['(Intercept)','Estimate']
+
+				if( is(fit, "negbin") ) theta = fit$theta
+				if( is(fit, "glmerMod") ) theta = getME(fit, "glmer.nb.theta")
+				log(1 + 1/exp(beta_0) + 1/theta)
+				})
+
+	if( is.null(distVar) ){
+		stop("glm family/link not supported: ", famLink)
+	}
+	distVar
+}
+
+# evaluate GLM's
+cvp_glm = function(fit, showWarnings=TRUE,...){
+
+	# N = nrow(fit$model)
 
 	# Compute eta for each term
 	# predicted value in linear space for each term
 	Eta = predict(fit, type="terms")
 
-	# compute residual term for each link
-	distVar = switch( fit$family$link , 
-			"logit" = (pi^2)/3,
-			"probit" = 1,
-			"identity" = var(fit$residuals) )
-
-	if( is.null(distVar) ){
-		stop("glm link not supported: ", fit$family$link )
-	}
+	distVar = getDistrVar( fit )
 
 	# variance on linear scale
 	# get variance of each term
@@ -198,10 +246,46 @@ function(fit, showWarnings=TRUE, ...){
 	varFrac_linear = var_term / sum( var_term )
 	names(varFrac_linear) = c(colnames(Eta), "Residuals")
 
-	return( varFrac_linear )
+	varFrac_linear
+}
+
+
+
+#' @export
+#' @rdname calcVarPart-method
+#' @aliases calcVarPart,glmer-method
+setMethod("calcVarPart", "glmerMod",
+function(fit, showWarnings=TRUE, ...){
+
+	checkModelStatus( fit, showWarnings, ...)
+
+	cvp_glmm(fit, showWarnings, ...)
 })
 
 
+# evaluate GLMM's
+cvp_glmm = function(fit, showWarnings=TRUE,...){
+
+	# Extract variance components
+	vc = getVarianceComponents(fit)
+
+	# extract distribution-specific variance
+	vc$Residuals = getDistrVar( fit )
+
+	vc = unlist(vc)
+
+	# create fractions
+	varFrac = vc / sum(vc)
+
+	# remove ".(Intercept)" string
+	names(varFrac) = gsub("\\.\\(Intercept\\)", "", names(varFrac))
+
+	varFrac
+}
+
+
+
+#' @importFrom lme4 VarCorr fixef
 getVarianceComponents = function( fit ){
 	
 	varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
