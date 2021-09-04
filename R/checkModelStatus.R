@@ -34,8 +34,23 @@ setMethod("checkModelStatus", "lm",
 )
 
 setMethod("checkModelStatus", "lmerMod",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  )
-	{
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
+	run_model_check_mixed( fit, showWarnings, dream, colinearityCutoff, immediate )
+})
+
+
+setMethod("checkModelStatus", "glmerMod",
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
+	run_model_check_mixed( fit, showWarnings, dream, colinearityCutoff, immediate )
+})
+
+setMethod("checkModelStatus", "negbin",
+  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
+	# run_model_check( fit, showWarnings, dream, colinearityCutoff, immediate )
+})
+
+
+run_model_check_mixed = function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
 		# if no intercept is specified, give warning
 		if( !dream && showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
 			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!", immediate.=immediate)
@@ -104,7 +119,6 @@ setMethod("checkModelStatus", "lmerMod",
 			stop(fit@optinfo$conv$lme4$messages)
 		}
 	}
-)
 
 
 
