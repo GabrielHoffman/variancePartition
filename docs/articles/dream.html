@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.23.3</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
 
       
 
-      </header><script src="dream_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
+      </header><script src="dream_files/header-attrs-2.10/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>dream: Differential expression testing with linear mixed models for repeated measures</h1>
@@ -105,7 +105,7 @@
         <div class="abstract">
       <p class="abstract">Abstract</p>
       <p><strong>D</strong>ifferential expression for <strong>re</strong>pe<strong>a</strong>ted <strong>m</strong>easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual. The analysis fits seamlessly into the widely used workflow of limma/voom <span class="citation">(Law et al. 2014)</span>. <br><br> Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements. Dream achieves this by combining multiple statistical concepts into a single statistical model. The model includes: <br><br>
-      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.21.10<br> August 03, 2021 09:33:09<br></p>
+      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.23.3<br> September 03, 2021 21:17:01<br></p>
     </div>
     
 <!---
@@ -368,7 +368,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <a href="#session-info" class="anchor"></a>Session info</h1>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## R version 4.0.3 (2020-10-10)
+<pre><code>## R version 4.1.1 (2021-08-10)
 ## Platform: x86_64-apple-darwin19.6.0 (64-bit)
 ## Running under: macOS Catalina 10.15.7
 ## 
@@ -383,33 +383,33 @@ Dream uses a linear model model to increase power and decrease false positives f
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] edgeR_3.32.1             variancePartition_1.21.8 BiocParallel_1.24.1     
-## [4] limma_3.46.0             ggplot2_3.3.5            pander_0.6.4            
-## [7] knitr_1.33              
+## [1] edgeR_3.34.0             variancePartition_1.23.3 BiocParallel_1.26.2     
+## [4] limma_3.48.3             ggplot2_3.3.5            pander_0.6.4            
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] nlme_3.1-152        bitops_1.0-7        fs_1.5.0            pbkrtest_0.5.1     
 ##  [5] doParallel_1.0.16   progress_1.2.2      rprojroot_2.0.2     numDeriv_2016.8-1.1
-##  [9] tools_4.0.3         backports_1.2.1     bslib_0.2.5.1       utf8_1.2.1         
-## [13] R6_2.5.0            KernSmooth_2.23-20  DBI_1.1.1           BiocGenerics_0.36.1
+##  [9] tools_4.1.1         backports_1.2.1     bslib_0.2.5.1       utf8_1.2.2         
+## [13] R6_2.5.1            KernSmooth_2.23-20  DBI_1.1.1           BiocGenerics_0.38.0
 ## [17] colorspace_2.0-2    withr_2.4.2         tidyselect_1.1.1    prettyunits_1.1.1  
-## [21] compiler_4.0.3      textshaping_0.3.5   Biobase_2.50.0      desc_1.3.0         
+## [21] compiler_4.1.1      textshaping_0.3.5   Biobase_2.52.0      desc_1.3.0         
 ## [25] labeling_0.4.2      sass_0.4.0          caTools_1.18.2      scales_1.1.1       
 ## [29] pkgdown_1.6.1       systemfonts_1.0.2   stringr_1.4.0       digest_0.6.27      
-## [33] minqa_1.2.4         rmarkdown_2.9       pkgconfig_2.0.3     htmltools_0.5.1.1  
+## [33] minqa_1.2.4         rmarkdown_2.10      pkgconfig_2.0.3     htmltools_0.5.2    
 ## [37] lme4_1.1-27.1       highr_0.9           fastmap_1.1.0       rlang_0.4.11       
 ## [41] jquerylib_0.1.4     generics_0.1.0      farver_2.1.0        jsonlite_1.7.2     
 ## [45] gtools_3.9.2        dplyr_1.0.7         magrittr_2.0.1      Matrix_1.3-4       
 ## [49] Rcpp_1.0.7          munsell_0.5.0       fansi_0.5.0         lifecycle_1.0.0    
-## [53] stringi_1.7.3       yaml_2.2.1          MASS_7.3-54         gplots_3.1.1       
-## [57] plyr_1.8.6          grid_4.0.3          parallel_4.0.3      crayon_1.4.1       
-## [61] lattice_0.20-44     splines_4.0.3       hms_1.1.0           locfit_1.5-9.4     
-## [65] pillar_1.6.1        boot_1.3-28         reshape2_1.4.4      codetools_0.2-18   
-## [69] glue_1.4.2          evaluate_0.14       vctrs_0.3.8         nloptr_1.2.2.2     
-## [73] foreach_1.5.1       gtable_0.3.0        purrr_0.3.4         tidyr_1.1.3        
-## [77] assertthat_0.2.1    cachem_1.0.5        xfun_0.24           broom_0.7.8        
-## [81] ragg_1.1.3          tibble_3.1.3        snow_0.4-3          lmerTest_3.1-3     
-## [85] iterators_1.0.13    memoise_2.0.0       statmod_1.4.36      ellipsis_0.3.2</code></pre>
+## [53] stringi_1.7.4       yaml_2.2.1          MASS_7.3-54         gplots_3.1.1       
+## [57] plyr_1.8.6          grid_4.1.1          parallel_4.1.1      crayon_1.4.1       
+## [61] lattice_0.20-44     splines_4.1.1       hms_1.1.0           locfit_1.5-9.4     
+## [65] knitr_1.33          pillar_1.6.2        boot_1.3-28         reshape2_1.4.4     
+## [69] codetools_0.2-18    glue_1.4.2          evaluate_0.14       vctrs_0.3.8        
+## [73] nloptr_1.2.2.2      foreach_1.5.1       gtable_0.3.0        purrr_0.3.4        
+## [77] tidyr_1.1.3         assertthat_0.2.1    cachem_1.0.6        xfun_0.25          
+## [81] broom_0.7.9         ragg_1.1.3          tibble_3.1.4        snow_0.4-3         
+## [85] lmerTest_3.1-3      iterators_1.0.13    memoise_2.0.0       statmod_1.4.36     
+## [89] ellipsis_0.3.2</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
