@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compare p-values from two analyses — plotCompareP • variancePartition</title>
+<title>Convert to data.frame — as.data.frame.varPartResults • variancePartition</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Compare p-values from two analyses — plotCompareP" />
-<meta property="og:description" content="Plot -log10 p-values from two analyses and color based on donor component from variancePartition analysis" />
+<meta property="og:title" content="Convert to data.frame — as.data.frame.varPartResults" />
+<meta property="og:description" content="Convert varPartResults to data.frame" />
 
 
 
@@ -132,94 +132,69 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compare p-values from two analyses</h1>
-    <small class="dont-index">Source: <a href='https://github.com/GabrielHoffman/variancePartition/blob/master/R/fitMixedModelDE.R'><code>R/fitMixedModelDE.R</code></a></small>
-    <div class="hidden name"><code>plotCompareP-method.Rd</code></div>
+    <h1>Convert to data.frame</h1>
+    <small class="dont-index">Source: <a href='https://github.com/GabrielHoffman/variancePartition/blob/master/R/misc.R'><code>R/misc.R</code></a></small>
+    <div class="hidden name"><code>as.data.frame.varPartResults.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot -log10 p-values from two analyses and color based on donor component from variancePartition analysis</p>
+    <p>Convert varPartResults to data.frame</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotCompareP</span><span class='op'>(</span>
-  <span class='va'>p1</span>,
-  <span class='va'>p2</span>,
-  <span class='va'>vpDonor</span>,
-  <span class='va'>dupcorvalue</span>,
-  fraction <span class='op'>=</span> <span class='fl'>0.2</span>,
-  xlabel <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/bquote.html'>bquote</a></span><span class='op'>(</span><span class='va'>duplicateCorrelation</span> <span class='op'>~</span> <span class='op'>(</span><span class='op'>-</span><span class='va'>log</span><span class='op'>[</span><span class='fl'>10</span><span class='op'>]</span> <span class='op'>~</span> <span class='va'>p</span><span class='op'>)</span><span class='op'>)</span>,
-  ylabel <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/bquote.html'>bquote</a></span><span class='op'>(</span><span class='va'>dream</span> <span class='op'>~</span> <span class='op'>(</span><span class='op'>-</span><span class='va'>log</span><span class='op'>[</span><span class='fl'>10</span><span class='op'>]</span> <span class='op'>~</span> <span class='va'>p</span><span class='op'>)</span><span class='op'>)</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='co'># S3 method for varPartResults</span>
+<span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>x</span>, row.names <span class='op'>=</span> <span class='cn'>NULL</span>, optional <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>p1</th>
-      <td><p>p-value from first analysis</p></td>
+      <th>x</th>
+      <td><p>varPartResults</p></td>
     </tr>
     <tr>
-      <th>p2</th>
-      <td><p>p-value from second analysis</p></td>
+      <th>row.names</th>
+      <td><p>pass thru to generic</p></td>
     </tr>
     <tr>
-      <th>vpDonor</th>
-      <td><p>donor component for each gene from variancePartition analysis</p></td>
+      <th>optional</th>
+      <td><p>pass thru to generic</p></td>
     </tr>
     <tr>
-      <th>dupcorvalue</th>
-      <td><p>scalar donor component from duplicateCorrelation</p></td>
-    </tr>
-    <tr>
-      <th>fraction</th>
-      <td><p>fraction of highest/lowest values to use for best fit lines</p></td>
-    </tr>
-    <tr>
-      <th>xlabel</th>
-      <td><p>for x-axis</p></td>
-    </tr>
-    <tr>
-      <th>ylabel</th>
-      <td><p>label for y-axis</p></td>
+      <th>...</th>
+      <td><p>other arguments.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>ggplot2 plot</p>
+    <p>data.frame</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># load library</span>
+    <pre class="examples"><div class='input'><span class='co'># load library</span>
 <span class='co'># library(variancePartition)</span>
-
-<span class='co'># Intialize parallel backend with 4 cores</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/Bioconductor/BiocParallel'>BiocParallel</a></span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/pkg/BiocParallel/man/register.html'>register</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html'>SnowParam</a></span><span class='op'>(</span><span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># load simulated data:</span>
 <span class='co'># geneExpr: matrix of gene expression values</span>
 <span class='co'># info: information/metadata about each sample</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>varPartData</span><span class='op'>)</span>
 
-<span class='co'># Perform very simple analysis for demonstration</span>
+<span class='co'># Specify variables to consider</span>
+<span class='co'># Age is continuous so we model it as a fixed effect</span>
+<span class='co'># Individual and Tissue are both categorical, so we model them as random effects</span>
+<span class='va'>form</span> <span class='op'>&lt;-</span> <span class='op'>~</span> <span class='va'>Age</span> <span class='op'>+</span> <span class='op'>(</span><span class='fl'>1</span><span class='op'>|</span><span class='va'>Individual</span><span class='op'>)</span> <span class='op'>+</span> <span class='op'>(</span><span class='fl'>1</span><span class='op'>|</span><span class='va'>Tissue</span><span class='op'>)</span> 
 
-<span class='co'># Analysis 1</span>
-<span class='va'>form</span> <span class='op'>&lt;-</span> <span class='op'>~</span> <span class='va'>Batch</span> 
-<span class='va'>fit</span> <span class='op'>=</span> <span class='fu'><a href='dream.html'>dream</a></span><span class='op'>(</span> <span class='va'>geneExpr</span>, <span class='va'>form</span>, <span class='va'>info</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Fixed effect model, using limma directly...</span></div><div class='output co'>#&gt; <span class='message'>User can apply eBayes() afterwards...</span></div><div class='input'><span class='va'>fit</span> <span class='op'>=</span> <span class='fu'>eBayes</span><span class='op'>(</span> <span class='va'>fit</span> <span class='op'>)</span>
-<span class='va'>res</span> <span class='op'>=</span> <span class='fu'><a href='topTable.html'>topTable</a></span><span class='op'>(</span> <span class='va'>fit</span>, number<span class='op'>=</span><span class='cn'>Inf</span>, coef<span class='op'>=</span><span class='st'>"Batch3"</span> <span class='op'>)</span>
-
-<span class='co'># Analysis 2</span>
-<span class='va'>form</span> <span class='op'>&lt;-</span> <span class='op'>~</span> <span class='va'>Batch</span> <span class='op'>+</span> <span class='op'>(</span><span class='fl'>1</span><span class='op'>|</span><span class='va'>Tissue</span><span class='op'>)</span>
-<span class='va'>fit2</span> <span class='op'>=</span> <span class='fu'><a href='dream.html'>dream</a></span><span class='op'>(</span> <span class='va'>geneExpr</span>, <span class='va'>form</span>, <span class='va'>info</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Dividing work into 10 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:16 s</span></div><div class='input'><span class='va'>res2</span> <span class='op'>=</span> <span class='fu'><a href='topTable.html'>topTable</a></span><span class='op'>(</span> <span class='va'>fit2</span>, number<span class='op'>=</span><span class='cn'>Inf</span>, coef<span class='op'>=</span><span class='st'>"Batch3"</span> <span class='op'>)</span>
-
-<span class='co'># Compare p-values</span>
-<span class='fu'>plotCompareP</span><span class='op'>(</span> <span class='va'>res</span><span class='op'>$</span><span class='va'>P.Value</span>, <span class='va'>res2</span><span class='op'>$</span><span class='va'>P.Value</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span><span class='op'>)</span>, <span class='fl'>.3</span> <span class='op'>)</span>
-</div><div class='img'><img src='plotCompareP-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
-
+<span class='co'># Fit model</span>
+<span class='va'>varPart</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitExtractVarPartModel.html'>fitExtractVarPartModel</a></span><span class='op'>(</span> <span class='va'>geneExpr</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='op'>]</span>, <span class='va'>form</span>, <span class='va'>info</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Dividing work into 1 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>Total:1 s</span></div><div class='input'>
+<span class='co'># convert to matrix</span>
+<span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>varPart</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;       Individual     Tissue          Age  Residuals
+#&gt; gene1  0.8903140 0.02468013 4.354738e-05 0.08496235
+#&gt; gene2  0.8060311 0.10101965 3.336677e-04 0.09261554
+#&gt; gene3  0.8899215 0.03629917 1.374661e-03 0.07240463
+#&gt; gene4  0.7688228 0.12531927 1.014409e-03 0.10484354
+#&gt; gene5  0.6997222 0.20910367 3.871476e-05 0.09113540</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

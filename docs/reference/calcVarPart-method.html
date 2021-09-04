@@ -40,18 +40,7 @@
 
 
 <meta property="og:title" content="Compute variance statistics — calcVarPart" />
-<meta property="og:description" content="For linear model, variance fractions are computed based on the sum of squares explained by each component.  For the linear mixed mode, the variance fractions are computed by variance component estimates for random effects and sum of squares for fixed effects.
-For a generalized linear model, the variance fraction also includes the contribution of the link function so that fractions are reported on the linear (i.e. link) scale rather than the observed (i.e. response) scale. For linear regression with an identity link, fractions are the same on both scales.  But for logit or probit links, the fractions are not well defined on the observed scale due to the transformation imposed by the link function.
-The variance implied by the link function is the variance of the corresponding distribution:
-	logit -&amp;gt; logistic distribution -&amp;gt; variance is pi^2/3
-probit -&amp;gt; standard normal distribution -&amp;gt; variance is 1
-Reviewed by
-Nakagawa and Schielzeth. 2012. A general and simple method for obtaining R2 from generalized linear mixed-effects models.  https://doi.org/10.1111/j.2041-210x.2012.00261.x
-Proposed by
-McKelvey and Zavoina. A statistical model for the analysis of ordinal level dependent variables. The Journal of Mathematical Sociology 4(1) 103-120 https://doi.org/10.1080/0022250X.1975.9989847
-Also see
-DeMaris. Explained Variance in Logistic Regression: A Monte Carlo Study of Proposed Measures. Sociological Methods &amp;amp; Research 2002 https://doi.org/10.1177/0049124102031001002
-We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the full model.  Instead, a variance partitioning approach evaluates the variance explained by each term in the model, so that the sum of each systematic plus random term sums to 1 (Hoffman and Schadt, 2016, Nakagawa and Schielzeth, 2012)." />
+<meta property="og:description" content="Compute fraction of variation attributable to each variable in regression model.  Also interpretable as the intra-class correlation after correcting for all other variables in the model." />
 
 
 
@@ -83,7 +72,7 @@ We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the ful
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.23.3</span>
       </span>
     </div>
 
@@ -149,18 +138,7 @@ We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the ful
     </div>
 
     <div class="ref-description">
-    <p>For linear model, variance fractions are computed based on the sum of squares explained by each component.  For the linear mixed mode, the variance fractions are computed by variance component estimates for random effects and sum of squares for fixed effects.</p>
-<p>For a generalized linear model, the variance fraction also includes the contribution of the link function so that fractions are reported on the linear (i.e. link) scale rather than the observed (i.e. response) scale. For linear regression with an identity link, fractions are the same on both scales.  But for logit or probit links, the fractions are not well defined on the observed scale due to the transformation imposed by the link function.</p>
-<p>The variance implied by the link function is the variance of the corresponding distribution:
-	logit -&gt; logistic distribution -&gt; variance is pi^2/3
-probit -&gt; standard normal distribution -&gt; variance is 1</p>
-<p>Reviewed by
-Nakagawa and Schielzeth. 2012. A general and simple method for obtaining R2 from generalized linear mixed-effects models.  https://doi.org/10.1111/j.2041-210x.2012.00261.x</p>
-<p>Proposed by
-McKelvey and Zavoina. A statistical model for the analysis of ordinal level dependent variables. The Journal of Mathematical Sociology 4(1) 103-120 https://doi.org/10.1080/0022250X.1975.9989847</p>
-<p>Also see
-DeMaris. Explained Variance in Logistic Regression: A Monte Carlo Study of Proposed Measures. Sociological Methods &amp; Research 2002 https://doi.org/10.1177/0049124102031001002</p>
-<p>We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the full model.  Instead, a variance partitioning approach evaluates the variance explained by each term in the model, so that the sum of each systematic plus random term sums to 1 (Hoffman and Schadt, 2016, Nakagawa and Schielzeth, 2012).</p>
+    <p>Compute fraction of variation attributable to each variable in regression model.  Also interpretable as the intra-class correlation after correcting for all other variables in the model.</p>
     </div>
 
     <pre class="usage"><span class='fu'>calcVarPart</span><span class='op'>(</span><span class='va'>fit</span>, showWarnings <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
@@ -172,6 +150,12 @@ DeMaris. Explained Variance in Logistic Regression: A Monte Carlo Study of Propo
 <span class='fu'>calcVarPart</span><span class='op'>(</span><span class='va'>fit</span>, showWarnings <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for glm</span>
+<span class='fu'>calcVarPart</span><span class='op'>(</span><span class='va'>fit</span>, showWarnings <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S4 method for negbin</span>
+<span class='fu'>calcVarPart</span><span class='op'>(</span><span class='va'>fit</span>, showWarnings <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S4 method for glmerMod</span>
 <span class='fu'>calcVarPart</span><span class='op'>(</span><span class='va'>fit</span>, showWarnings <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -193,10 +177,23 @@ DeMaris. Explained Variance in Logistic Regression: A Monte Carlo Study of Propo
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>fraction of variance explained / ICC for each variable in the linear model</p>
+    <p>fraction of variance explained / ICC for each variable in the regression model</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Compute fraction of variation attributable to each variable in regression model.  Also interpretable as the intra-class correlation after correcting for all other variables in the model.</p>
+    <p>For linear model, variance fractions are computed based on the sum of squares explained by each component.  For the linear mixed model, the variance fractions are computed by variance component estimates for random effects and sum of squares for fixed effects.</p>
+<p>For a generalized linear model, the variance fraction also includes the contribution of the link function so that fractions are reported on the linear (i.e. link) scale rather than the observed (i.e. response) scale. For linear regression with an identity link, fractions are the same on both scales.  But for logit or probit links, the fractions are not well defined on the observed scale due to the transformation imposed by the link function.</p>
+<p>The variance implied by the link function is the variance of the corresponding distribution:
+	logit -&gt; logistic distribution -&gt; variance is pi^2/3
+probit -&gt; standard normal distribution -&gt; variance is 1</p>
+<p>Reviewed by:</p>
+<p>Nakagawa and Schielzeth. 2012. A general and simple method for obtaining R2 from generalized linear mixed-effects models.  https://doi.org/10.1111/j.2041-210x.2012.00261.x</p>
+<p>Application to GLMs by:</p>
+<p>Nakagawa, Johnson and Schielzeth. 2017. The coefficient of determination R2 and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded. https://doi.org/10.1098/rsif.2017.0213</p>
+<p>Proposed by:</p>
+<p>McKelvey and Zavoina. A statistical model for the analysis of ordinal level dependent variables. The Journal of Mathematical Sociology 4(1) 103-120 https://doi.org/10.1080/0022250X.1975.9989847</p>
+<p>Also see:</p>
+<p>DeMaris. Explained Variance in Logistic Regression: A Monte Carlo Study of Proposed Measures. Sociological Methods &amp; Research 2002 https://doi.org/10.1177/0049124102031001002</p>
+<p>We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the full model.  Instead, a variance partitioning approach evaluates the variance explained by each term in the model, so that the sum of each systematic plus random term sums to 1 (Hoffman and Schadt, 2016, Nakagawa and Schielzeth, 2012).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/lme4/lme4/'>lme4</a></span><span class='op'>)</span>

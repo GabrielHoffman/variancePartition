@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.21.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.23.3</span>
       </span>
     </div>
 
@@ -141,7 +141,11 @@
     <p>Bar plot of variance fractions for a subset of genes</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotPercentBars</span><span class='op'>(</span><span class='va'>varPart</span>, col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='ggColorHue.html'>ggColorHue</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>varPart</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>1</span><span class='op'>)</span>, <span class='st'>"grey85"</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>plotPercentBars</span><span class='op'>(</span>
+  <span class='va'>varPart</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='ggColorHue.html'>ggColorHue</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>varPart</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>1</span><span class='op'>)</span>, <span class='st'>"grey85"</span><span class='op'>)</span>,
+  width <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -153,6 +157,10 @@
     <tr>
       <th>col</th>
       <td><p>color of bars for each variable</p></td>
+    </tr>
+    <tr>
+      <th>width</th>
+      <td><p>specify width of bars</p></td>
     </tr>
     </table>
 
