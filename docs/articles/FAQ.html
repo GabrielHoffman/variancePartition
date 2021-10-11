@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.23.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.23.4</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
 
       
 
-      </header><script src="FAQ_files/header-attrs-2.10/header-attrs.js"></script><div class="row">
+      </header><script src="FAQ_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Frequently asked questions</h1>
@@ -104,7 +104,7 @@
     
         <div class="abstract">
       <p class="abstract">Abstract</p>
-      <p>Errors and warnings in <code>variancePartition</code> are mostly designed to let the user know that there is an isssue with the model. Note that some of these warnings and errors can be overridden by specifying <code>suppressWarnings=TRUE</code> for <code><a href="../reference/dream.html">dream()</a></code> and <code>showWarnings=FALSE</code> for <code><a href="../reference/fitExtractVarPartModel.html">fitExtractVarPartModel()</a></code> and <code><a href="../reference/fitVarPartModel.html">fitVarPartModel()</a></code>. Here is a guide to interperting interpreting warnings and errors from <code>variancePartition</code> and <code>dream</code>. Note that some of the document can be found in “1) Tutorial on using variancePartition.”</p>
+      <p>Errors and warnings in <code>variancePartition</code> are mostly designed to let the user know that there is an isssue with the model. Note that some of these warnings and errors can be overridden by specifying <code>suppressWarnings=TRUE</code> for <code><a href="../reference/dream.html">dream()</a></code> and <code>showWarnings=FALSE</code> for <code><a href="../reference/fitExtractVarPartModel.html">fitExtractVarPartModel()</a></code> and <code><a href="../reference/fitVarPartModel.html">fitVarPartModel()</a></code>. Here is a guide to interperting interpreting warnings and errors from <code>variancePartition</code> and <code>dream</code>. Note that some of the document can be found in “1) Tutorial on using variancePartition”.</p>
     </div>
     
 <!---
@@ -153,11 +153,11 @@ rmarkdown::render('FAQ.Rmd')
 </li>
 <li>
 <p><code>Error in checkNlevels(reTrms$flist, n = n, control): number of levels of each grouping factor must be &lt; number of observations</code></p>
-<p>This arises when using a varying coefficient model that examines the effect of one variable inside subsets of the data defined by another: <code>~(A+0|B)</code>. See Section “Variation within multiple subsets of the data.” There must be enough observations of each level of the variable B with each level of variable A. Consider an example with samples from multiple tissues from a set of individual where we are interested in the variation across individuals within each tissue using the formula: <code>~(Tissue+0|Individual)</code>. This analysis will only work if there are multiple samples from the same individual in at least one tissue. If all tissues only have one sample per individual, the analysis will fail and <code>variancePartition</code> will give this error.</p>
+<p>This arises when using a varying coefficient model that examines the effect of one variable inside subsets of the data defined by another: <code>~(A+0|B)</code>. See Section “Variation within multiple subsets of the data”. There must be enough observations of each level of the variable B with each level of variable A. Consider an example with samples from multiple tissues from a set of individual where we are interested in the variation across individuals within each tissue using the formula: <code>~(Tissue+0|Individual)</code>. This analysis will only work if there are multiple samples from the same individual in at least one tissue. If all tissues only have one sample per individual, the analysis will fail and <code>variancePartition</code> will give this error.</p>
 </li>
 <li>
 <p><code>Problem with varying coefficient model in formula: should have form (A+0|B)</code></p>
-<p>When analyzing the variation of one variable inside another (see Section “Variation within multiple subsets of the data.”), the formula most be specified as <code>(Tissue+0|Individual)</code>. This error occurs when the formula contains <code>(Tissue|Individual)</code> instead.</p>
+<p>When analyzing the variation of one variable inside another (see Section “Variation within multiple subsets of the data”.), the formula most be specified as <code>(Tissue+0|Individual)</code>. This error occurs when the formula contains <code>(Tissue|Individual)</code> instead.</p>
 </li>
 <li><p><code>fatal error in wrapper code</code></p></li>
 <li><p><code>Error in mcfork() : unable to fork, possible reason: Cannot allocate memory</code></p></li>
