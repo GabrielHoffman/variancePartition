@@ -1,4 +1,7 @@
 
+# variancePartition 1.23.4
+	- convert some warnings to errors
+
 # variancePartition 1.23.3
 	- add calcVarPart() support for a range of GLM/GLMM's
 

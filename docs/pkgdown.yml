@@ -1,4 +1,4 @@
-pandoc: 2.14.0.3
+pandoc: 2.14.2
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
@@ -6,5 +6,5 @@ articles:
   additional_visualization: additional_visualization.html
   dream: dream.html
   theory_practice_random_effects: theory_practice_random_effects.html
-last_built: 2021-09-04T01:11Z
+last_built: 2021-10-11T16:33Z
 

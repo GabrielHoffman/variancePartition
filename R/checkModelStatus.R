@@ -17,7 +17,9 @@ setMethod("checkModelStatus", "lm",
 	{
 		# if no intercept is specified, give warning
 		if( showWarnings && length(which(names(coef(fit)) == "(Intercept)")) == 0 ){
-			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!", immediate.=immediate)
+			txt = "No Intercept term was specified in the formula"
+			stop(txt)
+			# warning(txt, immediate.=immediate)
 		}
 
 		# if any coefficient is NA
@@ -53,7 +55,9 @@ setMethod("checkModelStatus", "negbin",
 run_model_check_mixed = function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
 		# if no intercept is specified, give warning
 		if( !dream && showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
-			warning("No Intercept term was specified in the formula:\nThe results will not behave as expected and may be very wrong!!", immediate.=immediate)
+			txt = "No Intercept term was specified in the formula."
+			stop(txt)
+			# warning(txt, immediate.=immediate)
 		}
 
 		# if any coefficient is NA
@@ -105,7 +109,8 @@ run_model_check_mixed = function( fit, showWarnings=TRUE, dream=FALSE, colineari
 
 			# if factor is not random
 			if( (showWarnings && ! dream) && varType[i] %in% c("factor", "character") && (! names(varType)[i] %in% randVar) ){
-				stop(paste("Categorical variables modeled as fixed effect:", paste(names(varType)[i], collapse=', '), "\nThe results will not behave as expected and may be very wrong!!"))		
+				txt = paste("Categorical variables modeled as fixed effect:", paste(names(varType)[i], collapse=', '), "\nMust model either _all_ or _no_ categorical variables as random effects here")
+				stop(txt)
 			}
 
 			# If numeric/double is not fixed
