@@ -21,28 +21,32 @@
 #'
 #' For a generalized linear model, the variance fraction also includes the contribution of the link function so that fractions are reported on the linear (i.e. link) scale rather than the observed (i.e. response) scale. For linear regression with an identity link, fractions are the same on both scales.  But for logit or probit links, the fractions are not well defined on the observed scale due to the transformation imposed by the link function.  
 #'
-#' The variance implied by the link function is the variance of the corresponding distribution:
-#' 	logit -> logistic distribution -> variance is pi^2/3
-#'	probit -> standard normal distribution -> variance is 1
+#' The variance implied by the link function is the variance of the corresponding distribution:  
 #'
-#' Reviewed by:
+#'  logit -> logistic distribution -> variance is pi^2/3  
+#'
+#'  probit -> standard normal distribution -> variance is 1
+#'
+#' For the Poisson distribution with rate \eqn{\lambda}, the variance is \eqn{log(1 + 1/\lambda)}.
+#'
+#' For the negative binomial distribution with rate \eqn{\lambda} and shape \eqn{\theta}, the variance is \eqn{log(1 + 1/\lambda + 1/\theta)}.
+#'
+#' Variance decomposition is reviewed by Nakagawa and Schielzeth (2012), and expanded to other GLMs by Nakagawa, Johnson and Schielzeth (2017).  See McKelvey and Zavoina (1975) for early work on applying to GLMs.  Also see DeMaris (2002)
+#'
+#' We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the full model.  Instead, a variance partitioning approach evaluates the variance explained by each term in the model, so that the sum of each systematic plus random term sums to 1 (Hoffman and Schadt, 2016; Nakagawa and Schielzeth, 2012).
+#'
+#' @references{
+#'   \insertRef{nakagawa2017coefficient}{variancePartition}
+#'
+#'   \insertRef{nakagawa2013general}{variancePartition}
+#'
+#'   \insertRef{mckelvey1975statistical}{variancePartition}
+#'
+#'   \insertRef{demaris2002explained}{variancePartition}
+#'
+#'   \insertRef{hoffman2016variancepartition}{variancePartition}
+#' }
 #' 
-#' Nakagawa and Schielzeth. 2012. A general and simple method for obtaining R2 from generalized linear mixed-effects models.  https://doi.org/10.1111/j.2041-210x.2012.00261.x
-#' 
-#' Application to GLMs by:
-#'
-#' Nakagawa, Johnson and Schielzeth. 2017. The coefficient of determination R2 and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded. https://doi.org/10.1098/rsif.2017.0213
-#'
-#' Proposed by:
-#' 
-#' McKelvey and Zavoina. A statistical model for the analysis of ordinal level dependent variables. The Journal of Mathematical Sociology 4(1) 103-120 https://doi.org/10.1080/0022250X.1975.9989847
-#'
-#' Also see:
-#' 
-#' DeMaris. Explained Variance in Logistic Regression: A Monte Carlo Study of Proposed Measures. Sociological Methods & Research 2002 https://doi.org/10.1177/0049124102031001002
-#'
-#' We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the full model.  Instead, a variance partitioning approach evaluates the variance explained by each term in the model, so that the sum of each systematic plus random term sums to 1 (Hoffman and Schadt, 2016, Nakagawa and Schielzeth, 2012).
-#'
 #' @examples
 #' library(lme4)
 #' data(varPartData)
@@ -189,6 +193,7 @@ function(fit, showWarnings=TRUE, ...){
 #' @export
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,negbin-method
+#' @importFrom aod negbin
 setMethod("calcVarPart", "negbin",
 function(fit, showWarnings=TRUE, ...){
 

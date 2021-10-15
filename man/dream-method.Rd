@@ -57,7 +57,7 @@ MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-v
 Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
 }
 \details{
-A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
+A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression (Hoffman and Roussos, 2021).  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
 
 \code{fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)}
 
@@ -127,4 +127,9 @@ topTable( fit4, coef="Batch3 - Batch2" )
 # Compute residuals using dream
 residuals(fit4)
 
+}
+\references{
+{
+  \insertRef{hoffman2021dream}{variancePartition}
+}
 }

@@ -11,6 +11,7 @@ voomWithDreamWeights(
   lib.size = NULL,
   normalize.method = "none",
   span = 0.5,
+  weights = NULL,
   plot = FALSE,
   save.plot = FALSE,
   quiet = FALSE,
@@ -30,6 +31,8 @@ voomWithDreamWeights(
 \item{normalize.method}{the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the \code{method} argument of \code{normalizeBetweenArrays} when the data is single-channel.  Any normalization factors found in \code{counts} will still be used even if \code{normalize.method="none"}.}
 
 \item{span}{width of the lowess smoothing window as a proportion.}
+
+\item{weights}{Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}}
 
 \item{plot}{logical, should a plot of the mean-variance trend be displayed?}
 
