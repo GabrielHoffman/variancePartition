@@ -1,6 +1,9 @@
+# variancePartition 1.23.5
+	- use `RhpcBLASctl::omp_set_num_threads(1)` to use only 1 OpenMP thread for linear algebra within each BiocParallel process
 
 # variancePartition 1.23.4
 	- convert some warnings to errors
+	- add proper handling of weights to `voomWithDreamWeights()`
 
 # variancePartition 1.23.3
 	- add calcVarPart() support for a range of GLM/GLMM's

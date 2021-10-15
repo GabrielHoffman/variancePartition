@@ -239,7 +239,7 @@ setMethod("residuals", "MArrayLM2",
 #' MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)
 #'
 #' @details 
-#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
+#' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression (Hoffman and Roussos, 2021).  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
 #'
 #' \code{fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)}
 #'
@@ -253,6 +253,9 @@ setMethod("residuals", "MArrayLM2",
 #'
 #' While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', ddf='Satterthwaite' can be used with \code{REML} as \code{TRUE} or \code{FALSE}.  Since the Kenward-Roger method gave the best power with an accurate control of false positive rate in our simulations, and since the Satterthwaite method with REML=TRUE gives p-values that are slightly closer to the Kenward-Roger p-values, \code{REML=TRUE} is the default.  See Vignette "3) Theory and practice of random effects and REML"
 #'
+#' @references{
+#'   \insertRef{hoffman2021dream}{variancePartition}
+#' }
 #' @examples
 #'
 #' # load library
@@ -318,6 +321,7 @@ setMethod("residuals", "MArrayLM2",
 #' @importFrom stats hatvalues as.formula
 #' @importFrom foreach foreach
 #' @importFrom methods as
+#' @importFrom RhpcBLASctl omp_set_num_threads
 #' @import doParallel 
 #'
 dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=TRUE, REML=TRUE, ...){ 
@@ -563,6 +567,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		.eval_master = function( obj, data2, form, REML, theta, control, na.action=stats::na.exclude,... ){
 
+			# use only 1 OpenMP thread for linear algebra
+			omp_set_num_threads(1)
+
 			lapply(seq_len(nrow(obj$E)), function(j){
 				.eval_models( list(E=obj$E[j,], weights=obj$weights[j,]), data2, form, REML, theta, control, na.action,...)
 			})
@@ -581,12 +588,12 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 
 		# if there is an error in evaluating fxn (usually in parallel backend)
 		if( !bpok(list(resList)) ){
-      stop("Error evaluating fxn:\n\n", resList)
+      		stop("Error evaluating fxn:\n\n", resList)
 		}
 		# It can also return a list of errors, or a list where only some elements are errors
 		if( !all(bpok(resList)) ){
-      first_error <- resList[[which(!bpok(resList))[1]]]
-      stop("Error evaluating fxn:\n\n", first_error)
+		      first_error <- resList[[which(!bpok(resList))[1]]]
+		      stop("Error evaluating fxn:\n\n", first_error)
 		}
 
 		# If no errors, then it's safe to concatenate all the results together.

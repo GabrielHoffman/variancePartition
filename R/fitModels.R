@@ -26,6 +26,7 @@
 #' @importFrom stats anova as.dendrogram as.dist cancor coef cov2cor density dist fitted.values hclust lm median model.matrix order.dendrogram quantile reorder residuals sd terms var vcov pt qt
 #' @importFrom scales rescale
 #' @importFrom iterators nextElem
+#' @import Rdpack
 #'
 #' @details 
 #' A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
@@ -111,6 +112,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 #' @importFrom BiocParallel bpparam bpiterate bplapply bpok
 #' @importFrom methods is new
 #' @importFrom lme4 lmer 
+#' @importFrom RhpcBLASctl omp_set_num_threads
 #' @importFrom progress progress_bar 
 #' @importFrom utils object.size
 #' @import foreach
@@ -266,6 +268,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 		}
 
 		.eval_master = function( obj, data2, form, REML, theta, fxn, control, na.action=stats::na.exclude,... ){
+
+			# use only 1 OpenMP thread for linear algebra
+			omp_set_num_threads(1)
 
 			lapply(seq_len(nrow(obj$E)), function(j){
 				.eval_models( list(E=obj$E[j,], weights=obj$weights[j,]), data2, form, REML, theta, fxn, control, na.action,...)
@@ -456,6 +461,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 # internal driver function
 #' @importFrom methods is new
 #' @importFrom lme4 lmer 
+#' @importFrom RhpcBLASctl omp_set_num_threads
 #' @importFrom progress progress_bar
 #' @import foreach
 .fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(),...){ 
@@ -583,6 +589,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 		}
 
 		.eval_master = function( obj, data, form, REML, theta, control, na.action=stats::na.exclude,... ){
+
+			# use only 1 OpenMP thread for linear algebra
+			omp_set_num_threads(1)
 
 			lapply(seq_len(nrow(obj$E)), function(j){
 				.eval_models( list(E=obj$E[j,], weights=obj$weights[j,]), data, form, REML, theta, control, na.action,...)

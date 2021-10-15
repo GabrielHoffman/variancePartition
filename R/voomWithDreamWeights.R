@@ -11,6 +11,7 @@
 #' @param lib.size numeric vector containing total library sizes for each sample.  Defaults to the normalized (effective) library sizes in \code{counts} if \code{counts} is a \code{DGEList} or to the columnwise count totals if \code{counts} is a matrix.
 #' @param normalize.method the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the \code{method} argument of \code{normalizeBetweenArrays} when the data is single-channel.  Any normalization factors found in \code{counts} will still be used even if \code{normalize.method="none"}.
 #' @param span width of the lowess smoothing window as a proportion.
+#' @param weights Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
 #' @param quiet suppress message, default FALSE
@@ -52,7 +53,7 @@
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict as.formula
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=bpparam(),...){
+voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, weights = NULL, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=bpparam(),...){
 
 	formula = as.formula( formula )
 
@@ -117,7 +118,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 			stop("Must specify argument 'data'\n")
 		}
 		# fit linear mixed model
-		vpList = fitVarPartModel( y, formula, data, showWarnings=FALSE, ...,fxn = function(fit){
+		vpList = fitVarPartModel( y, formula, data, weightsMatrix=weights, showWarnings=FALSE, ...,fxn = function(fit){
 			# extract 
 			# 1) sqrt residual variance (i.e. residual standard deviation)
 			# 2) fitted values
@@ -138,7 +139,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		if( ! quiet) message("Fixed effect model, using limma directly...")
 
 		design = model.matrix(formula, data)
-		fit <- lmFit(y,design,...)
+		fit <- lmFit(y,design,weights=weights,...)
 
 		if(fit$rank < ncol(design)) {
 			j <- fit$pivot[1:fit$rank]

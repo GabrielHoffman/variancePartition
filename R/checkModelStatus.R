@@ -46,6 +46,7 @@ setMethod("checkModelStatus", "glmerMod",
 	run_model_check_mixed( fit, showWarnings, dream, colinearityCutoff, immediate )
 })
 
+#' @importFrom aod negbin
 setMethod("checkModelStatus", "negbin",
   function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
 	# run_model_check( fit, showWarnings, dream, colinearityCutoff, immediate )
