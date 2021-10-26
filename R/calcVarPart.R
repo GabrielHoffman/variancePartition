@@ -11,6 +11,7 @@
 #'
 #' @param fit model fit from lm() or lmer()
 #' @param showWarnings show warnings about model fit (default TRUE)
+#' @param returnFractions default: TRUE.  If TRUE return fractions that sum to 1.  Else return unscaled variance components.
 #' @param ... additional arguments (not currently used)
 #' 
 #' @return
@@ -66,7 +67,7 @@
 #' @docType methods
 #' @rdname calcVarPart-method
 setGeneric("calcVarPart", signature="fit",
-  function(fit, showWarnings=TRUE, ...)
+  function(fit, showWarnings=TRUE, returnFractions=TRUE, ...)
       standardGeneric("calcVarPart")
 )
 
@@ -97,7 +98,7 @@ setGeneric("calcVarPart", signature="fit",
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,lm-method
 setMethod("calcVarPart", "lm",
-function(fit, showWarnings=TRUE, ...){
+function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
 
 	# check validity of model fit
 	checkModelStatus( fit, showWarnings, ...)
@@ -131,8 +132,14 @@ function(fit, showWarnings=TRUE, ...){
 	# get residual sum of squares
 	ssComp['Residuals'] = RSS(fit) 
 
-	# get variance fractions by dividing each SS by total sum of squares
-	ssComp / sum(ssComp)
+	if( returnFractions ){
+		# get variance fractions by dividing each SS by total sum of squares
+		res = ssComp / sum(ssComp)
+	}else{
+		res = ssComp
+	}
+
+	res
 })
 
 
@@ -160,7 +167,7 @@ ss = function(x){
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,lmerMod-method
 setMethod("calcVarPart", "lmerMod",
-function(fit, showWarnings=TRUE,...){
+function(fit, showWarnings=TRUE, returnFractions=TRUE,...){
 
 	# check validity of model fit
 	checkModelStatus( fit, showWarnings, ...)
@@ -168,13 +175,17 @@ function(fit, showWarnings=TRUE,...){
 	# extract variance components
 	vc = unlist(getVarianceComponents(fit))
 
-	# create fractions
-	varFrac = vc / sum(vc)
+	if( returnFractions ){
+		# create fractions
+		res = vc / sum(vc)
+	}else{
+		res = vc
+	}
 
 	# remove ".(Intercept)" string
-	names(varFrac) = gsub("\\.\\(Intercept\\)", "", names(varFrac))
+	names(res) = gsub("\\.\\(Intercept\\)", "", names(res))
 
-	varFrac
+	res
 })
 
 
@@ -182,11 +193,11 @@ function(fit, showWarnings=TRUE,...){
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,glm-method
 setMethod("calcVarPart", "glm",
-function(fit, showWarnings=TRUE, ...){
+function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
 
 	checkModelStatus( fit, showWarnings, ...)
 
-	cvp_glm(fit, showWarnings, ...)
+	cvp_glm(fit, showWarnings, returnFractions=returnFractions,...)
 })
 
 
@@ -195,11 +206,11 @@ function(fit, showWarnings=TRUE, ...){
 #' @aliases calcVarPart,negbin-method
 #' @importFrom aod negbin
 setMethod("calcVarPart", "negbin",
-function(fit, showWarnings=TRUE, ...){
+function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
 
 	checkModelStatus( fit, showWarnings, ...)
 
-	cvp_glm(fit, showWarnings, ...)
+	cvp_glm(fit, showWarnings, returnFractions=returnFractions, ...)
 })
 
 # Compute distribution variances for GLMs described Nakagawa, 2017
@@ -232,7 +243,7 @@ getDistrVar = function( fit ){
 }
 
 # evaluate GLM's
-cvp_glm = function(fit, showWarnings=TRUE,...){
+cvp_glm = function(fit, showWarnings=TRUE, returnFractions=TRUE,...){
 
 	# N = nrow(fit$model)
 
@@ -247,11 +258,16 @@ cvp_glm = function(fit, showWarnings=TRUE,...){
 	# append with variance due to link function
 	var_term = c(apply(Eta, 2, var), distVar)
 
-	# compute fraction
-	varFrac_linear = var_term / sum( var_term )
-	names(varFrac_linear) = c(colnames(Eta), "Residuals")
+	names(var_term) = c(colnames(Eta), "Residuals")
 
-	varFrac_linear
+	if( returnFractions ){
+		# compute fraction
+		res = var_term / sum( var_term )
+	}else{
+		res = var_term
+	}
+
+	res
 }
 
 
@@ -260,16 +276,16 @@ cvp_glm = function(fit, showWarnings=TRUE,...){
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,glmer-method
 setMethod("calcVarPart", "glmerMod",
-function(fit, showWarnings=TRUE, ...){
+function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
 
 	checkModelStatus( fit, showWarnings, ...)
 
-	cvp_glmm(fit, showWarnings, ...)
+	cvp_glmm(fit, showWarnings, returnFractions=returnFractions, ...)
 })
 
 
 # evaluate GLMM's
-cvp_glmm = function(fit, showWarnings=TRUE,...){
+cvp_glmm = function(fit, showWarnings=TRUE, returnFractions=TRUE,...){
 
 	# Extract variance components
 	vc = getVarianceComponents(fit)
@@ -279,13 +295,17 @@ cvp_glmm = function(fit, showWarnings=TRUE,...){
 
 	vc = unlist(vc)
 
-	# create fractions
-	varFrac = vc / sum(vc)
-
 	# remove ".(Intercept)" string
-	names(varFrac) = gsub("\\.\\(Intercept\\)", "", names(varFrac))
+	names(vc) = gsub("\\.\\(Intercept\\)", "", names(vc))
 
-	varFrac
+	if( returnFractions ){
+		# create fractions
+		res = vc / sum(vc)
+	}else{
+		res = vc
+	}
+
+	res
 }
 
 

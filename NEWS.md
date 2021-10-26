@@ -1,5 +1,9 @@
+# variancePartition 1.23.6
+	- update `calcVarPart()` with argument `scale=TRUE` allowing the use to disable scaling to fractions
+
 # variancePartition 1.23.5
 	- use `RhpcBLASctl::omp_set_num_threads(1)` to use only 1 OpenMP thread for linear algebra within each BiocParallel process
+	- update `dream()` so `useWeights=FALSE` works with `lmFit()`
 
 # variancePartition 1.23.4
 	- convert some warnings to errors
