@@ -450,11 +450,18 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 			message("User can apply eBayes() afterwards...")
 		}
 
-		# weights are always used
 		design = model.matrix( formula, data)
 
-		# least squares fit
-		ret = lmFit( exprObj, design, weights=weightsMatrix )
+		if( useWeights ){			
+			# least squares fit
+			ret = lmFit( exprObj, design, weights=weightsMatrix )
+		}else{
+			if( "weights" %in% names(exprObj)){
+				exprObj$weights = NULL
+			}
+			ret = lmFit( exprObj, design )
+		}
+
 
 		if( computeResiduals ){
 			# Evaluate residuals here, since can't be evaluate after contrasts.fit() is run
