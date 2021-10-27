@@ -1,5 +1,5 @@
 # variancePartition 1.23.6
-	- update `calcVarPart()` with argument `scale=TRUE` allowing the use to disable scaling to fractions
+	- update `calcVarPart()` with argument `scale=TRUE` allowing the user to disable scaling to fractions
 
 # variancePartition 1.23.5
 	- use `RhpcBLASctl::omp_set_num_threads(1)` to use only 1 OpenMP thread for linear algebra within each BiocParallel process
@@ -447,8 +447,6 @@
 	- rename sort.varParFrac to sortCols
 	- support ExpressionSet
 	- change options for plotStratifyBy()
-
-# Before Bioconductor submission
 
 # variancePartition 0.0.12
 	- add plotStratifyBy()
