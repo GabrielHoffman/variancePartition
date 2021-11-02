@@ -52,6 +52,7 @@
 #' 
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict as.formula
+#' @importFrom limma asMatrixWeights
 #' @export
 voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, weights = NULL, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=bpparam(),...){
 
@@ -112,11 +113,23 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	# Fit regression model
 	#---------------------
 
+	# use pre-specified weights, if available
+
 	if( .isMixedModelFormula( formula ) ){
 
 		if( missing(data) ){
 			stop("Must specify argument 'data'\n")
 		}
+
+		if( !is.null(weights) ){
+
+			# if weights is a per-sample vector
+			if( length(weights) == ncol(y) ){
+				# convert weights vector to matrix
+				weights = asMatrixWeights(weights, dim(y))
+			}
+		}
+
 		# fit linear mixed model
 		vpList = fitVarPartModel( y, formula, data, weightsMatrix=weights, showWarnings=FALSE, ...,fxn = function(fit){
 			# extract 
@@ -219,6 +232,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		out$targets <- data.frame(lib.size=lib.size)
 	else
 		out$targets$lib.size <- lib.size
+
 	if(save.plot) {
 		out$voom.xy <- list(x=sx,y=sy,xlab="log2( count size + 0.5 )",ylab="Sqrt( standard deviation )")
 		out$voom.line <- l

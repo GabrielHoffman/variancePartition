@@ -1,3 +1,6 @@
+# variancePartition 1.25.1
+	- update handling of `weights` in `voomWithDreamWeights()` and add `applyQualityWeights()`
+
 # variancePartition 1.23.6
 	- update `calcVarPart()` with argument `scale=TRUE` allowing the user to disable scaling to fractions
 
