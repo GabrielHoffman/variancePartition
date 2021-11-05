@@ -1,3 +1,6 @@
+# variancePartition 1.25.2
+	- change `plotPercentBars()` to use generic S4
+
 # variancePartition 1.25.1
 	- update handling of `weights` in `voomWithDreamWeights()` and add `applyQualityWeights()`
 

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.23.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.25.2</span>
       </span>
     </div>
 
@@ -224,13 +224,18 @@
     <p>MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is <code>~ a + b + (1|c)</code>, then the model is</p>
+    <p>A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression (Hoffman and Roussos, 2021).  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is <code>~ a + b + (1|c)</code>, then the model is</p>
 <p><code>fit &lt;- lmer( exprObj[j,] ~ a + b + (1|c), data=data)</code></p>
 <p><code>useWeights=TRUE</code> causes <code>weightsMatrix[j,]</code> to be included as weights in the regression model.</p>
 <p>Note: Fitting the model for 20,000 genes can be computationally intensive.  To accelerate computation, models can be fit in parallel using <code>BiocParallel</code> to run code in parallel.  Parallel processing must be enabled before calling this function.  See below.</p>
 <p>The regression model is fit for each gene separately. Samples with missing values in either gene expression or metadata are omitted by the underlying call to lmer.</p>
 <p>Hypothesis tests and degrees of freedom are producted by <code>lmerTest</code> and <code>pbkrtest</code> pacakges</p>
 <p>While <code>REML=TRUE</code> is required by <code>lmerTest</code> when ddf='Kenward-Roger', ddf='Satterthwaite' can be used with <code>REML</code> as <code>TRUE</code> or <code>FALSE</code>.  Since the Kenward-Roger method gave the best power with an accurate control of false positive rate in our simulations, and since the Satterthwaite method with REML=TRUE gives p-values that are slightly closer to the Kenward-Roger p-values, <code>REML=TRUE</code> is the default.  See Vignette "3) Theory and practice of random effects and REML"</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Hoffman GE, Roussos P (2021).
+&#8220;dream: Powerful differential expression analysis for repeated measures designs.&#8221;
+<em>Bioinformatics</em>, <b>37</b>(2), 192--201.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -308,7 +313,7 @@
 <span class='va'>param</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html'>SnowParam</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='st'>"SOCK"</span>, progressbar<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='va'>fit3</span> <span class='op'>=</span> <span class='fu'>dream</span><span class='op'>(</span> <span class='va'>geneExpr</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>,<span class='op'>]</span>, <span class='va'>form</span>, <span class='va'>info</span>, <span class='va'>L</span>, BPPARAM <span class='op'>=</span> <span class='va'>param</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Dividing work into 1 chunks...</span></div><div class='output co'>#&gt; <span class='message'>iteration: </span></div><div class='output co'>#&gt; <span class='message'>1</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:4 s</span></div><div class='input'>
+#&gt; <span class='message'>Total:5 s</span></div><div class='input'>
 <span class='co'># Fit fixed effect model for each gene</span>
 <span class='co'># Use lmFit in the backend</span>
 <span class='co'># Need to run eBayes afterward</span>

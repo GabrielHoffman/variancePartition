@@ -39,9 +39,6 @@
 #' # violin plot of contribution of each variable to total variance
 #' plotVarPart( sortCols( varPart ) )
 #' 
-# # stop cluster
-# stopCluster(cl)
-#'
 #' @export
 #' @docType methods
 #' @rdname plotVarPart-method
@@ -147,6 +144,7 @@ setMethod("plotVarPart", "varPartResults",
 	return( fig )
 }
 
+
 #' Bar plot of variance fractions
 #'
 #' Bar plot of variance fractions for a subset of genes
@@ -179,11 +177,48 @@ setMethod("plotVarPart", "varPartResults",
 #'
 #' # Move the legend to the top
 #' plotPercentBars( varPart[1:5,] ) + theme(legend.position="top") 
-#' 
-# # stop cluster
-# stopCluster(cl)
+#'
 #' @export
-plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL ){
+#' @docType methods
+#' @rdname plotPercentBars-method
+setGeneric("plotPercentBars", signature="varPart",
+	function( varPart, col=c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL)
+      standardGeneric("plotPercentBars")
+)
+
+
+#' @export
+#' @rdname plotPercentBars-method
+#' @aliases plotPercentBars,matrix-method
+setMethod("plotPercentBars", "matrix",
+	function( varPart, col=c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL){
+ 		.plotPercentBars( varPart, col, width)
+ 	}
+)
+
+#' @export
+#' @rdname plotPercentBars-method
+#' @aliases plotPercentBars,varPartResults-method
+setMethod("plotPercentBars", "data.frame",
+	function( varPart, col=c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL){
+ 		.plotPercentBars( varPart, col, width)
+ 	}
+)
+
+#' @export
+#' @rdname plotPercentBars-method
+#' @aliases plotPercentBars,matrix-method
+setMethod("plotPercentBars", "varPartResults",
+	function( varPart, col=c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL){
+		
+	.plotPercentBars( data.frame(varPart, check.names=FALSE), col, width)
+ 	}
+)
+
+
+
+
+.plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL ){
 
 	if( !is.matrix(varPart) && !is.data.frame(varPart)){
 		stop("Argument must be a matrix or data.frame")
