@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Test if formula is full rank on this dataset — isRunableFormula • variancePartition</title>
+<title>Apply pre-specified sample weights — applyQualityWeights • variancePartition</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Test if formula is full rank on this dataset — isRunableFormula" />
-<meta property="og:description" content="Test if formula is full rank on this dataset" />
+<meta property="og:title" content="Apply pre-specified sample weights — applyQualityWeights" />
+<meta property="og:description" content="Apply pre-specified sample weights by scaling existing precision weights" />
 
 
 
@@ -132,34 +132,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Test if formula is full rank on this dataset</h1>
-    <small class="dont-index">Source: <a href='https://github.com/GabrielHoffman/variancePartition/blob/master/R/isRunableFormula.R'><code>R/isRunableFormula.R</code></a></small>
-    <div class="hidden name"><code>isRunableFormula.Rd</code></div>
+    <h1>Apply pre-specified sample weights</h1>
+    <small class="dont-index">Source: <a href='https://github.com/GabrielHoffman/variancePartition/blob/master/R/applyQualityWeights.R'><code>R/applyQualityWeights.R</code></a></small>
+    <div class="hidden name"><code>applyQualityWeights.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Test if formula is full rank on this dataset</p>
+    <p>Apply pre-specified sample weights by scaling existing precision weights</p>
     </div>
 
-    <pre class="usage"><span class='fu'>isRunableFormula</span><span class='op'>(</span><span class='va'>exprObj</span>, <span class='va'>formula</span>, <span class='va'>data</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>applyQualityWeights</span><span class='op'>(</span><span class='va'>vobj</span>, <span class='va'>weights</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>exprObj</th>
-      <td><p>expression object</p></td>
+      <th>vobj</th>
+      <td><p><code>EList</code> from <code>voom</code> or <code>voomWithDreamWeights</code>.</p></td>
     </tr>
     <tr>
-      <th>formula</th>
-      <td><p>formula</p></td>
-    </tr>
-    <tr>
-      <th>data</th>
-      <td><p>data</p></td>
+      <th>weights</th>
+      <td><p>sample level weights</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Apply pre-specified sample-level weights to the existing precision weights estimated from the data.  While the <code><a href='https://rdrr.io/pkg/limma/man/voomWithQualityWeights.html'>limma::voomWithQualityWeights</a></code> function of Lui et al. (2015) estimates the sample-level weights from <code>voom</code> fit, here the weights are fixed beforehand.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Liu R, Holik AZ, Su S, Jansz N, Chen K, Leong HS, Blewitt ME, Asselin-Labat M, Smyth GK, Ritchie ME (2015).
+&#8220;Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses.&#8221;
+<em>Nucleic acids research</em>, <b>43</b>(15), e97--e97.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/limma/man/voomWithQualityWeights.html'>limma::voomWithQualityWeights</a></code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

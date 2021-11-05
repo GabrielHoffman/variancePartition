@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Linear mixed model confidence intervals — varPartConfInf • variancePartition</title>
+<title>Bar plot of variance fractions — plotPercentBars • variancePartition</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Linear mixed model confidence intervals — varPartConfInf" />
-<meta property="og:description" content="Fit linear mixed model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Then perform parametric bootstrap sampling to get a 95% confidence intervals for each variable for each gene." />
+<meta property="og:title" content="Bar plot of variance fractions — plotPercentBars" />
+<meta property="og:description" content="Bar plot of variance fractions for a subset of genes" />
 
 
 
@@ -132,89 +132,65 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Linear mixed model confidence intervals</h1>
-    <small class="dont-index">Source: <a href='https://github.com/GabrielHoffman/variancePartition/blob/master/R/confidenceIntervals.R'><code>R/confidenceIntervals.R</code></a></small>
-    <div class="hidden name"><code>varPartConfInf.Rd</code></div>
+    <h1>Bar plot of variance fractions</h1>
+    <small class="dont-index">Source: <a href='https://github.com/GabrielHoffman/variancePartition/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
+    <div class="hidden name"><code>plotPercentBars-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Fit linear mixed model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Then perform parametric bootstrap sampling to get a 95% confidence intervals for each variable for each gene.</p>
+    <p>Bar plot of variance fractions for a subset of genes</p>
     </div>
 
-    <pre class="usage"><span class='fu'>varPartConfInf</span><span class='op'>(</span>
-  <span class='va'>exprObj</span>,
-  <span class='va'>formula</span>,
-  <span class='va'>data</span>,
-  REML <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  useWeights <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  weightsMatrix <span class='op'>=</span> <span class='cn'>NULL</span>,
-  showWarnings <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  colinearityCutoff <span class='op'>=</span> <span class='fl'>0.999</span>,
-  control <span class='op'>=</span> <span class='fu'>lme4</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/lme4/man/lmerControl.html'>lmerControl</a></span><span class='op'>(</span>calc.derivs <span class='op'>=</span> <span class='cn'>FALSE</span>, check.rankX <span class='op'>=</span> <span class='st'>"stop.deficient"</span><span class='op'>)</span>,
-  nsim <span class='op'>=</span> <span class='fl'>1000</span>,
-  <span class='va'>...</span>
+    <pre class="usage"><span class='fu'>plotPercentBars</span><span class='op'>(</span>
+  <span class='va'>varPart</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='ggColorHue.html'>ggColorHue</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>varPart</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>1</span><span class='op'>)</span>, <span class='st'>"grey85"</span><span class='op'>)</span>,
+  width <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for matrix</span>
+<span class='fu'>plotPercentBars</span><span class='op'>(</span>
+  <span class='va'>varPart</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='ggColorHue.html'>ggColorHue</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>varPart</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>1</span><span class='op'>)</span>, <span class='st'>"grey85"</span><span class='op'>)</span>,
+  width <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for data.frame</span>
+<span class='fu'>plotPercentBars</span><span class='op'>(</span>
+  <span class='va'>varPart</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='ggColorHue.html'>ggColorHue</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>varPart</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>1</span><span class='op'>)</span>, <span class='st'>"grey85"</span><span class='op'>)</span>,
+  width <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for varPartResults</span>
+<span class='fu'>plotPercentBars</span><span class='op'>(</span>
+  <span class='va'>varPart</span>,
+  col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='ggColorHue.html'>ggColorHue</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>varPart</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>1</span><span class='op'>)</span>, <span class='st'>"grey85"</span><span class='op'>)</span>,
+  width <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>exprObj</th>
-      <td><p>matrix of expression data (g genes x n samples), or <code>ExpressionSet</code>, or <code>EList</code> returned by <code>voom()</code> from the <code>limma</code> package</p></td>
+      <th>varPart</th>
+      <td><p>object returned by extractVarPart() or fitExtractVarPartModel()</p></td>
     </tr>
     <tr>
-      <th>formula</th>
-      <td><p>specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: <code>~ a + b + (1|c)</code></p></td>
+      <th>col</th>
+      <td><p>color of bars for each variable</p></td>
     </tr>
     <tr>
-      <th>data</th>
-      <td><p><code>data.frame</code> with columns corresponding to formula</p></td>
-    </tr>
-    <tr>
-      <th>REML</th>
-      <td><p>use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option, but here for compatibility.</p></td>
-    </tr>
-    <tr>
-      <th>useWeights</th>
-      <td><p>if TRUE, analysis uses heteroskedastic error estimates from <code>voom()</code>.  Value is ignored unless exprObj is an <code>EList</code> from <code>voom()</code> or <code>weightsMatrix</code> is specified</p></td>
-    </tr>
-    <tr>
-      <th>weightsMatrix</th>
-      <td><p>matrix the same dimension as exprObj with observation-level weights from <code>voom()</code>.  Used only if useWeights is TRUE</p></td>
-    </tr>
-    <tr>
-      <th>showWarnings</th>
-      <td><p>show warnings about model fit (default TRUE)</p></td>
-    </tr>
-    <tr>
-      <th>colinearityCutoff</th>
-      <td><p>cutoff used to determine if model is computationally singular</p></td>
-    </tr>
-    <tr>
-      <th>control</th>
-      <td><p>control settings for <code><a href='https://rdrr.io/pkg/lme4/man/lmer.html'>lmer()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>nsim</th>
-      <td><p>number of bootstrap datasets</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Additional arguments for <code><a href='https://rdrr.io/pkg/lme4/man/lmer.html'>lmer()</a></code> or l<code>m()</code></p></td>
+      <th>width</th>
+      <td><p>specify width of bars</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code><a href='https://rdrr.io/r/base/list.html'>list()</a></code> of where each entry is the result for a gene.  Each entry is a matrix of the 95% confidence interval of the variance fraction for each variable</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>A linear mixed model is fit for each gene, and <code><a href='https://rdrr.io/pkg/lme4/man/bootMer.html'>bootMer()</a></code> is used to generate parametric bootstrap confidence intervals.  <code>use.u=TRUE</code> is used so that the $$\hat{u}$$ values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, <code>use.u=FALSE</code> assumes that  this dataset is a sample from a larger population.   Thus it simulates $$\hat{u}$$ based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, <code>use.u=TRUE</code> gives smaller confidence intervals that are appropriate in this case.</p>
+    <p>Returns ggplot2 barplot</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># load library</span>
-<span class='co'># library(variancePartition)</span>
+    <pre class="examples"><div class='input'><span class='co'># library(variancePartition)</span>
 
 <span class='co'># Intialize parallel backend with 4 cores</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/Bioconductor/BiocParallel'>BiocParallel</a></span><span class='op'>)</span>
@@ -226,15 +202,18 @@
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>varPartData</span><span class='op'>)</span>
 
 <span class='co'># Specify variables to consider</span>
-<span class='co'># Age is continuous so we model it as a fixed effect</span>
-<span class='co'># Individual and Tissue are both categorical, so we model them as random effects</span>
-<span class='va'>form</span> <span class='op'>&lt;-</span> <span class='op'>~</span> <span class='va'>Age</span> <span class='op'>+</span> <span class='op'>(</span><span class='fl'>1</span><span class='op'>|</span><span class='va'>Individual</span><span class='op'>)</span> <span class='op'>+</span> <span class='op'>(</span><span class='fl'>1</span><span class='op'>|</span><span class='va'>Tissue</span><span class='op'>)</span> 
+<span class='va'>form</span> <span class='op'>&lt;-</span> <span class='op'>~</span> <span class='va'>Age</span> <span class='op'>+</span> <span class='op'>(</span><span class='fl'>1</span><span class='op'>|</span><span class='va'>Individual</span><span class='op'>)</span> <span class='op'>+</span> <span class='op'>(</span><span class='fl'>1</span><span class='op'>|</span><span class='va'>Tissue</span><span class='op'>)</span>
 
-<span class='co'># Compute bootstrap confidence intervals for each variable for each gene</span>
-<span class='va'>resCI</span> <span class='op'>&lt;-</span> <span class='fu'>varPartConfInf</span><span class='op'>(</span> <span class='va'>geneExpr</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='op'>]</span>, <span class='va'>form</span>, <span class='va'>info</span>, nsim<span class='op'>=</span><span class='fl'>100</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Memory usage to store result: &gt;4.6 Kb</span></div><div class='output co'>#&gt; <span class='message'>Dividing work into 1 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:13 s</span></div><div class='input'>
-
+<span class='co'># Fit model</span>
+<span class='va'>varPart</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitExtractVarPartModel.html'>fitExtractVarPartModel</a></span><span class='op'>(</span> <span class='va'>geneExpr</span>, <span class='va'>form</span>, <span class='va'>info</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Dividing work into 10 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>Total:11 s</span></div><div class='input'>
+<span class='co'># Bar plot for a subset of genes showing variance fractions</span>
+<span class='fu'>plotPercentBars</span><span class='op'>(</span> <span class='va'>varPart</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='op'>]</span> <span class='op'>)</span>
+</div><div class='img'><img src='plotPercentBars-method-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Move the legend to the top</span>
+<span class='fu'>plotPercentBars</span><span class='op'>(</span> <span class='va'>varPart</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,<span class='op'>]</span> <span class='op'>)</span> <span class='op'>+</span> <span class='fu'>theme</span><span class='op'>(</span>legend.position<span class='op'>=</span><span class='st'>"top"</span><span class='op'>)</span> 
+</div><div class='img'><img src='plotPercentBars-method-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
