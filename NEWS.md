@@ -1,3 +1,6 @@
+# variancePartition 1.25.3
+	- add genes argument to `plotPercentBars()` 
+
 # variancePartition 1.25.2
 	- change `plotPercentBars()` to use generic S4
 

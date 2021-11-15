@@ -1095,8 +1095,8 @@ plotCompareP = function( p1, p2, vpDonor, dupcorvalue, fraction=.2, xlabel=bquot
 #' @param ... additional arguments
 #' 
 #' @details Works like limma::classifyTestsF, except object can have a list of covariance matrices object$cov.coefficients.list, instead of just one in object$cov.coefficients
-#' @seealso limma::classifyTestsF
-#' @export
+#' @seealso \code{limma::classifyTestsF}
+# @export
 setGeneric("classifyTestsF", signature="object",
   function(object, ...)
       standardGeneric("classifyTestsF")
@@ -1115,9 +1115,9 @@ setGeneric("classifyTestsF", signature="object",
 #' @param fstat.only logical, if 'TRUE' then return the overall F-statistic as for 'FStat' instead of classifying the test results
 #' 
 #' @details Works like limma::classifyTestsF, except object can have a list of covariance matrices object$cov.coefficients.list, instead of just one in object$cov.coefficients
-#' @seealso limma::classifyTestsF
+#' @seealso \code{limma::classifyTestsF}
 #' @importFrom stats qf
-#' @export
+# @export
 setMethod("classifyTestsF", "MArrayLM2",
   function(object,cor.matrix=NULL, df=Inf, p.value=0.01, fstat.only=FALSE) {
 #	Use F-tests to classify vectors of t-test statistics into outcomes
