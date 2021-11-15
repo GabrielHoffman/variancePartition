@@ -6,36 +6,42 @@
 \alias{plotPercentBars,matrix-method}
 \alias{plotPercentBars,data.frame-method}
 \alias{plotPercentBars,varPartResults-method}
-\title{Bar plot of variance fractions}
+\title{Bar plot of gene fractions}
 \usage{
 plotPercentBars(
-  varPart,
-  col = c(ggColorHue(ncol(varPart) - 1), "grey85"),
+  x,
+  col = c(ggColorHue(ncol(x) - 1), "grey85"),
+  genes = rownames(x),
   width = NULL
 )
 
 \S4method{plotPercentBars}{matrix}(
-  varPart,
-  col = c(ggColorHue(ncol(varPart) - 1), "grey85"),
+  x,
+  col = c(ggColorHue(ncol(x) - 1), "grey85"),
+  genes = rownames(x),
   width = NULL
 )
 
 \S4method{plotPercentBars}{data.frame}(
-  varPart,
-  col = c(ggColorHue(ncol(varPart) - 1), "grey85"),
+  x,
+  col = c(ggColorHue(ncol(x) - 1), "grey85"),
+  genes = rownames(x),
   width = NULL
 )
 
 \S4method{plotPercentBars}{varPartResults}(
-  varPart,
-  col = c(ggColorHue(ncol(varPart) - 1), "grey85"),
+  x,
+  col = c(ggColorHue(ncol(x) - 1), "grey85"),
+  genes = rownames(x),
   width = NULL
 )
 }
 \arguments{
-\item{varPart}{object returned by extractVarPart() or fitExtractVarPartModel()}
+\item{x}{object storing fractions}
 
 \item{col}{color of bars for each variable}
+
+\item{genes}{name of genes to plot}
 
 \item{width}{specify width of bars}
 }
@@ -43,7 +49,7 @@ plotPercentBars(
 Returns ggplot2 barplot
 }
 \description{
-Bar plot of variance fractions for a subset of genes
+Bar plot of fractions for a subset of genes
 }
 \examples{
 # library(variancePartition)

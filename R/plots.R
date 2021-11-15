@@ -145,12 +145,13 @@ setMethod("plotVarPart", "varPartResults",
 }
 
 
-#' Bar plot of variance fractions
+#' Bar plot of gene fractions
 #'
-#' Bar plot of variance fractions for a subset of genes
+#' Bar plot of fractions for a subset of genes
 #'
-#' @param varPart object returned by extractVarPart() or fitExtractVarPartModel()
+#' @param x object storing fractions
 #' @param col color of bars for each variable
+#' @param genes name of genes to plot
 #' @param width specify width of bars
 #'
 #' @return Returns ggplot2 barplot
@@ -181,8 +182,8 @@ setMethod("plotVarPart", "varPartResults",
 #' @export
 #' @docType methods
 #' @rdname plotPercentBars-method
-setGeneric("plotPercentBars", signature="varPart",
-	function( varPart, col=c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL)
+setGeneric("plotPercentBars", signature="x",
+	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL)
       standardGeneric("plotPercentBars")
 )
 
@@ -191,8 +192,22 @@ setGeneric("plotPercentBars", signature="varPart",
 #' @rdname plotPercentBars-method
 #' @aliases plotPercentBars,matrix-method
 setMethod("plotPercentBars", "matrix",
-	function( varPart, col=c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL){
- 		.plotPercentBars( varPart, col, width)
+	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL){
+
+		gene = unique(genes)
+		idx = match(genes, rownames(x))
+		idx = idx[!is.na(idx)]
+		
+		if( length(idx) == 0 ){
+			stop("No genes left after filtering")
+		}
+
+		if( length(idx) != length(genes) ){
+			txt = paste(length(genes) - length(idx), "genes were not found")
+			warning(txt)
+		}
+
+ 		.plotPercentBars( x[idx,], col, width)
  	}
 )
 
@@ -200,8 +215,22 @@ setMethod("plotPercentBars", "matrix",
 #' @rdname plotPercentBars-method
 #' @aliases plotPercentBars,varPartResults-method
 setMethod("plotPercentBars", "data.frame",
-	function( varPart, col=c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL){
- 		.plotPercentBars( varPart, col, width)
+	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL){
+
+		gene = unique(genes)
+		idx = match(genes, rownames(x))
+		idx = idx[!is.na(idx)]
+
+		if( length(idx) == 0 ){
+			stop("No genes left after filtering")
+		}
+
+		if( length(idx) != length(genes) ){
+			txt = paste(length(genes) - length(idx), "genes were not found")
+			warning(txt)
+		}
+
+ 		.plotPercentBars( x[idx,], col, width)
  	}
 )
 
@@ -209,9 +238,22 @@ setMethod("plotPercentBars", "data.frame",
 #' @rdname plotPercentBars-method
 #' @aliases plotPercentBars,matrix-method
 setMethod("plotPercentBars", "varPartResults",
-	function( varPart, col=c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL){
+	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL){
 		
-	.plotPercentBars( data.frame(varPart, check.names=FALSE), col, width)
+	gene = unique(genes)
+	idx = match(genes, rownames(x))
+	idx = idx[!is.na(idx)]
+
+	if( length(idx) == 0 ){
+		stop("No genes left after filtering")
+	}
+
+	if( length(idx) != length(genes) ){
+		txt = paste(length(genes) - length(idx), "genes were not found")
+		warning(txt)
+	}
+			
+	.plotPercentBars( data.frame(x[idx,], check.names=FALSE), col, width)
  	}
 )
 

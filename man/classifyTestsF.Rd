@@ -18,5 +18,5 @@ For each gene, classify a series of related t-statistics as up, down or not sign
 Works like limma::classifyTestsF, except object can have a list of covariance matrices object$cov.coefficients.list, instead of just one in object$cov.coefficients
 }
 \seealso{
-limma::classifyTestsF
+\code{limma::classifyTestsF}
 }
