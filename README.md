@@ -1,8 +1,12 @@
 # variancePartition
 
-Manuscript describing `dream` for differential expression in [Bioinformatics](https://doi.org/10.1093/bioinformatics/btaa687)
+Manuscript describing `dream` for differential expression: 
 
-Manuscript describing the `variancePartition` package in [BMC Bioinformatics](https://doi.org/10.1186/s12859-016-1323-z)
+- [Hoffman and Roussos, Bioinformatics (2021)](https://doi.org/10.1093/bioinformatics/btaa687)
+
+Manuscript describing the `variancePartition` package:
+
+- [Hoffman and Schadt, BMC Bioinformatics (2016)](https://doi.org/10.1186/s12859-016-1323-z)
 
 
 
