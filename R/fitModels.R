@@ -119,6 +119,9 @@ setGeneric("fitVarPartModel", signature="exprObj",
 #' @import lme4
 .fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=quiet, BPPARAM=bpparam(), ...){
 
+	# convert to data.frame
+	data = as.data.frame(data)
+
 	# if( ! is(exprObj, "sparseMatrix")){
 	# 	exprObj = as.matrix( exprObj )	
 	# }
@@ -465,6 +468,9 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 #' @importFrom progress progress_bar
 #' @import foreach
 .fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=bpparam(),...){ 
+
+	# convert to data.frame
+	data = as.data.frame(data)
 
 	# exprObj = as.matrix( exprObj )
 	formula = stats::as.formula( formula )

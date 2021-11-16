@@ -331,6 +331,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 	exprObjMat = as.matrix( exprObj )
 	formula = as.formula( formula )
 
+	# convert to data.frame
+	data = as.data.frame(data)
+
 	# only retain columns used in the formula
 	# This reduces overhead for parallel processing with large datasets
 	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
