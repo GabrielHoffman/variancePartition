@@ -40,9 +40,7 @@ Names in ... and contrasts will be used as column names in the returned value.
 # load library
 # library(variancePartition)
 
-# Intialize parallel backend with 4 cores
 library(BiocParallel)
-register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

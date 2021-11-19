@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.25.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.25.4</span>
       </span>
     </div>
 
@@ -105,7 +105,7 @@
         <div class="abstract">
       <p class="abstract">Abstract</p>
       <p><strong>D</strong>ifferential expression for <strong>re</strong>pe<strong>a</strong>ted <strong>m</strong>easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual. The analysis fits seamlessly into the widely used workflow of limma/voom <span class="citation">(Law et al. 2014)</span>. <br><br> Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements. Dream achieves this by combining multiple statistical concepts into a single statistical model. The model includes: <br><br>
-      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.25.2<br> November 04, 2021 22:05:14<br></p>
+      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.25.4<br> November 19, 2021 13:43:24<br></p>
     </div>
     
 <!---
@@ -199,17 +199,17 @@ Dream uses a linear model model to increase power and decrease false positives f
 <code class="sourceCode R"><span class="co"># Specify parallel processing parameters</span>
 <span class="co"># this is used implicitly by dream() to run in parallel</span>
 <span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">register</a></span><span class="op">(</span><span class="va">param</span><span class="op">)</span>
 
 <span class="co"># The variable to be tested must be a fixed effect</span>
 <span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Disease</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> 
 
 <span class="co"># estimate weights using linear mixed model of dream</span>
-<span class="va">vobjDream</span> <span class="op">=</span> <span class="fu"><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">metadata</span> <span class="op">)</span>
+<span class="va">vobjDream</span> <span class="op">=</span> <span class="fu"><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">metadata</span>, BPPARAM<span class="op">=</span><span class="va">param</span> <span class="op">)</span>
 
 <span class="co"># Fit the dream model on each gene</span>
 <span class="co"># By default, uses the Satterthwaite approximation for the hypothesis test</span>
-<span class="va">fitmm</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span> <span class="op">)</span></code></pre></div>
+<span class="va">fitmm</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span> <span class="op">)</span>
+<span class="va">fitmm</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fitmm</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Examine design matrix</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fitmm</span><span class="op">$</span><span class="va">design</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
@@ -220,10 +220,14 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Get results of hypothesis test on coefficients of interest</span>
 <span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span> <span class="va">fitmm</span>, coef<span class="op">=</span><span class="st">'Disease1'</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></code></pre></div>
-<pre><code>##                                    logFC  AveExpr        t      P.Value    adj.P.Val     z.std
-## ENST00000283033.5 gene=TXNDC11  1.556233 3.567624 68.62592 3.701410e-27 3.701410e-24 10.793327
-## ENST00000257181.9 gene=PRPF38A  1.380549 4.398270 35.53035 6.311837e-21 3.155919e-18  9.384662
-## ENST00000421974.2 gene=ATP6V0E2 1.386821 3.478030 22.35157 1.289327e-16 3.584329e-14  8.274558</code></pre>
+<pre><code>##                                   logFC  AveExpr        t      P.Value    adj.P.Val        B
+## ENST00000283033.5 gene=TXNDC11 1.556233 3.567624 31.02068 3.099042e-21 3.099042e-18 38.15636
+## ENST00000257181.9 gene=PRPF38A 1.380549 4.398270 21.59222 1.683871e-17 8.419354e-15 29.93271
+## ENST00000525790.1 gene=TDRKH   1.508341 3.184931 19.51845 1.767605e-16 5.892017e-14 27.78202
+##                                   z.std
+## ENST00000283033.5 gene=TXNDC11 9.459336
+## ENST00000257181.9 gene=PRPF38A 8.513757
+## ENST00000525790.1 gene=TDRKH   8.236879</code></pre>
 <p>Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here. Therefore, the t-statistics are not directly comparable since they have different degrees of freedom. In order to be able to compare test statistics, we report <code>z.std</code> which is the p-value transformed into a signed z-score. This can be used for downstream analysis.</p>
 <p>Note that if a random effect is not specified, <code><a href="../reference/dream.html">dream()</a></code> automatically uses <code>lmFit()</code>, but the user must run <code>eBayes()</code> afterward.</p>
 <div id="advanced-hypothesis-testing" class="section level2">
@@ -238,7 +242,8 @@ Dream uses a linear model model to increase power and decrease false positives f
 <code class="sourceCode R"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">DiseaseSubtype</span> <span class="op">+</span> <span class="va">Sex</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> 
 
 <span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, 
-  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2 - DiseaseSubtype1"</span>, <span class="st">"DiseaseSubtype1 - DiseaseSubtype0"</span><span class="op">)</span><span class="op">)</span>
+  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2 - DiseaseSubtype1"</span>, 
+                <span class="st">"DiseaseSubtype1 - DiseaseSubtype0"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># Visualize contrast matrix</span>
 <span class="fu"><a href="../reference/plotContrasts.html">plotContrasts</a></span><span class="op">(</span><span class="va">L</span><span class="op">)</span> </code></pre></div>
@@ -246,6 +251,7 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># fit dream model with contrasts</span>
 <span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, <span class="va">L</span><span class="op">)</span>
+<span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>
 
 <span class="co"># get names of available coefficients and contrasts for testing</span>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></code></pre></div>
@@ -255,29 +261,39 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># extract results from first contrast</span>
 <span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"DiseaseSubtype2 - DiseaseSubtype1"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></code></pre></div>
-<pre><code>##                                       logFC  AveExpr         t      P.Value  adj.P.Val     z.std
-## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.384718 2.857043e-05 0.02857043 -4.184572
-## ENST00000593466.1 gene=DDA1      -1.7265709 3.901579 -3.516848 2.168824e-03 0.99955525 -3.066084
-## ENST00000200676.3 gene=CETP       1.4777422 3.723438  3.732332 8.085141e-03 0.99955525  2.648493</code></pre>
+<pre><code>##                                       logFC  AveExpr         t      P.Value  adj.P.Val          B
+## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.114589 3.698015e-05 0.03698015  0.1470282
+## ENST00000593466.1 gene=DDA1      -1.7265709 3.901579 -3.700902 1.205688e-03 0.60284415 -1.2751588
+## ENST00000200676.3 gene=CETP       1.4777422 3.723438  3.910146 3.397163e-03 0.99951347 -1.4383266
+##                                      z.std
+## ENST00000355624.3 gene=RAB11FIP2 -4.125580
+## ENST00000593466.1 gene=DDA1      -3.237531
+## ENST00000200676.3 gene=CETP       2.929309</code></pre>
 </div>
 <div id="comparing-multiple-coefficients" class="section level3">
 <h3 class="hasAnchor">
 <a href="#comparing-multiple-coefficients" class="anchor"></a>Comparing multiple coefficients</h3>
 <p>So far contrasts have only involved the difference between two coefficients. But contrasts can also compare any linear combination of coefficients. Here, consider comparing <code>DiseaseSubtype0</code> to the mean of <code>DiseaseSubtype1</code> and <code>DiseaseSubtype2</code>. Note you can also customize the name of the contrast.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">L2</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Test1 <span class="op">=</span> <span class="st">"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">L2</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, contrasts <span class="op">=</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Test1 <span class="op">=</span> <span class="st">"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu"><a href="../reference/plotContrasts.html">plotContrasts</a></span><span class="op">(</span><span class="va">L2</span><span class="op">)</span></code></pre></div>
 <p><img src="dream_files/figure-html/maual.contrasts-1.png" width="768"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># fit dream model to evaluate contrasts</span>
 <span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">metadata</span>, L<span class="op">=</span><span class="va">L2</span><span class="op">)</span>
+<span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>
 
 <span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Test1"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
-<pre><code>##                                     logFC  AveExpr         t      P.Value    adj.P.Val     z.std
-## ENST00000456159.1 gene=MET     -0.9830788 2.458926 -6.349967 3.385843e-06 3.385843e-05 -4.645908
-## ENST00000418210.2 gene=TMEM64  -1.0343236 4.715367 -8.899162 1.603627e-05 5.403575e-05 -4.313951
-## ENST00000555834.1 gene=RPS6KL1 -0.8954794 5.272063 -5.636526 1.621072e-05 5.403575e-05 -4.311559</code></pre>
+<pre><code>##                                    logFC  AveExpr         t      P.Value    adj.P.Val        B
+## ENST00000456159.1 gene=MET    -0.9830788 2.458926 -6.975124 3.529901e-08 3.529901e-07 8.662257
+## ENST00000570099.1 gene=YPEL3  -0.9512918 2.063331 -6.648837 6.060469e-07 2.172997e-06 7.230067
+## ENST00000418210.2 gene=TMEM64 -1.0343236 4.715367 -6.655755 6.518991e-07 2.172997e-06 7.694536
+##                                   z.std
+## ENST00000456159.1 gene=MET    -5.512889
+## ENST00000570099.1 gene=YPEL3  -4.989280
+## ENST00000418210.2 gene=TMEM64 -4.975171</code></pre>
 </div>
 <div id="joint-hypothesis-test-of-multiple-coefficients" class="section level3">
 <h3 class="hasAnchor">
@@ -286,15 +302,15 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># extract results from first contrast</span>
 <span class="fu"><a href="../reference/topTable.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2"</span>, <span class="st">"DiseaseSubtype1"</span><span class="op">)</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></code></pre></div>
-<pre><code>##                                DiseaseSubtype2 DiseaseSubtype1  AveExpr         F      P.Value
-## ENST00000418210.2 gene=TMEM64         5.301001        5.211674 4.715367 1330.8479 6.020760e-12
-## ENST00000555834.1 gene=RPS6KL1        5.662699        5.719196 5.272063  846.4267 4.670490e-11
-## ENST00000589123.1 gene=NFIC           6.545195        6.181023 5.855335  531.9997 3.802383e-10
+<pre><code>##                                DiseaseSubtype2 DiseaseSubtype1  AveExpr        F      P.Value
+## ENST00000418210.2 gene=TMEM64         5.301001        5.211674 4.715367 744.4317 5.216149e-23
+## ENST00000555834.1 gene=RPS6KL1        5.662699        5.719196 5.272063 657.9520 2.377852e-22
+## ENST00000589123.1 gene=NFIC           6.545195        6.181023 5.855335 519.2464 4.314166e-21
 ##                                   adj.P.Val    F.std
-## ENST00000418210.2 gene=TMEM64  6.020760e-11 25.83581
-## ENST00000555834.1 gene=RPS6KL1 2.335245e-10 23.78717
-## ENST00000589123.1 gene=NFIC    1.267461e-09 21.69022</code></pre>
-<p>Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here. Therefore, the F-statistics are not directly comparable since they have different degrees of freedom. In order to be able to compare test statistics, we report <code>F.std</code> which is the p-value transformed into an F-statistic with <span class="math inline">\(df_1={\text{number of coefficiets tested}}\)</span> and <span class="math inline">\(df_2=\infty\)</span>. This can be used for downstream analysis.</p>
+## ENST00000418210.2 gene=TMEM64  5.216149e-22 51.30770
+## ENST00000555834.1 gene=RPS6KL1 1.188926e-21 49.79067
+## ENST00000589123.1 gene=NFIC    1.438055e-20 46.89238</code></pre>
+<p>Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here. Therefore, the F-statistics are not directly comparable since they have different degrees of freedom. In order to be able to compare test statistics, we report <code>F.std</code> which is the p-value transformed into an F-statistic with <span class="math inline">\(df_1\)</span> the number of coefficients tested and <span class="math inline">\(df_2=\infty\)</span>. This can be used for downstream analysis.</p>
 </div>
 </div>
 <div id="small-sample-method" class="section level2">
@@ -302,7 +318,8 @@ Dream uses a linear model model to increase power and decrease false positives f
 <a href="#small-sample-method" class="anchor"></a>Small-sample method</h2>
 <p>For small datasets, the Kenward-Roger method can be more powerful. But it is <strong>substantially</strong> more computationally intensive.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fitmmKR</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, ddf<span class="op">=</span><span class="st">"Kenward-Roger"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">fitmmKR</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, ddf<span class="op">=</span><span class="st">"Kenward-Roger"</span><span class="op">)</span>
+<span class="va">fitmmKR</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fitmmKR</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="variancepartition-plot" class="section level2">
 <h2 class="hasAnchor">
@@ -339,7 +356,6 @@ Dream uses a linear model model to increase power and decrease false positives f
 <h1 class="hasAnchor">
 <a href="#parallel-processing" class="anchor"></a>Parallel processing</h1>
 <p>variancePartition functions including <code><a href="../reference/dream.html">dream()</a></code>, <code><a href="../reference/fitExtractVarPartModel.html">fitExtractVarPartModel()</a></code> and <code><a href="../reference/fitVarPartModel.html">fitVarPartModel()</a></code> can take advange of multicore machines to speed up analysis. It uses the <a href="http://bioconductor.org/packages/BiocParallel/">BiocParallel</a> package to manage the parallelization.</p>
-<p>There are multiple ways to use parallel processing depending on your needs</p>
 <ul>
 <li>Specify parameters with the BPPARAM argument.</li>
 </ul>
@@ -347,27 +363,15 @@ Dream uses a linear model model to increase power and decrease false positives f
 <code class="sourceCode R"><span class="co"># Request 4 cores, and enable the progress bar</span>
 <span class="co"># This is the ideal for Linux, OS X and Windows</span>
 <span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">fitmm</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, BPPARAM<span class="op">=</span><span class="va">param</span><span class="op">)</span>
-
-<span class="co"># Or disable parallel processing and just do serial </span>
-<span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html">SerialParam</a></span><span class="op">(</span><span class="op">)</span>
 <span class="va">fitmm</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, BPPARAM<span class="op">=</span><span class="va">param</span><span class="op">)</span></code></pre></div>
-<ul>
-<li>Set parameters globally for the entire R session</li>
-</ul>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">register</a></span><span class="op">(</span><span class="va">param</span><span class="op">)</span>
-
-<span class="co"># uses global parallel processing settings</span>
-<span class="va">fitmm</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span> <span class="op">)</span></code></pre></div>
-<p>By default <code>BPPARAM</code> and the global setttings are set the results of <code><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">bpparam()</a></code>. But note that using <code><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam()</a></code> can <em>dramatically</em> reduce the memory usage needed for parallel processing because it reduces memory redundancy between threads.</p>
+<p>By default <code>BPPARAM = SerialParam()</code>.</p>
+<!---
+By default `BPPARAM` and the global setttings are set the results of `bpparam()`.  But note that using `SnowParam()` can *dramatically* reduce the memory usage needed for parallel processing because it reduces memory redundancy between threads.
+--->
 </div>
 <div id="session-info" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-info" class="anchor"></a>Session info</h1>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.1.1 (2021-08-10)
 ## Platform: x86_64-apple-darwin19.6.0 (64-bit)
 ## Running under: macOS Catalina 10.15.7
@@ -383,33 +387,34 @@ Dream uses a linear model model to increase power and decrease false positives f
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] edgeR_3.34.1             variancePartition_1.23.4 BiocParallel_1.26.2     
+## [1] edgeR_3.34.1             variancePartition_1.25.4 BiocParallel_1.26.2     
 ## [4] limma_3.48.3             ggplot2_3.3.5            pander_0.6.4            
+## [7] knitr_1.36              
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] nlme_3.1-153        bitops_1.0-7        fs_1.5.0            pbkrtest_0.5.1     
-##  [5] doParallel_1.0.16   progress_1.2.2      rprojroot_2.0.2     numDeriv_2016.8-1.1
-##  [9] tools_4.1.1         backports_1.2.1     bslib_0.3.0         utf8_1.2.2         
-## [13] R6_2.5.1            KernSmooth_2.23-20  DBI_1.1.1           BiocGenerics_0.38.0
-## [17] colorspace_2.0-2    withr_2.4.2         tidyselect_1.1.1    prettyunits_1.1.1  
-## [21] compiler_4.1.1      textshaping_0.3.5   Biobase_2.52.0      desc_1.4.0         
-## [25] labeling_0.4.2      sass_0.4.0          caTools_1.18.2      scales_1.1.1       
-## [29] pkgdown_1.6.1       systemfonts_1.0.2   stringr_1.4.0       digest_0.6.28      
-## [33] minqa_1.2.4         rmarkdown_2.11      pkgconfig_2.0.3     htmltools_0.5.2    
-## [37] lme4_1.1-27.1       highr_0.9           fastmap_1.1.0       rlang_0.4.11       
-## [41] jquerylib_0.1.4     generics_0.1.0      farver_2.1.0        jsonlite_1.7.2     
-## [45] gtools_3.9.2        dplyr_1.0.7         magrittr_2.0.1      Matrix_1.3-4       
-## [49] Rcpp_1.0.7          munsell_0.5.0       fansi_0.5.0         lifecycle_1.0.1    
-## [53] stringi_1.7.5       yaml_2.2.1          MASS_7.3-54         gplots_3.1.1       
-## [57] plyr_1.8.6          grid_4.1.1          parallel_4.1.1      crayon_1.4.1       
-## [61] lattice_0.20-45     splines_4.1.1       hms_1.1.1           locfit_1.5-9.4     
-## [65] knitr_1.36          pillar_1.6.3        boot_1.3-28         reshape2_1.4.4     
-## [69] codetools_0.2-18    glue_1.4.2          evaluate_0.14       vctrs_0.3.8        
-## [73] nloptr_1.2.2.2      foreach_1.5.1       gtable_0.3.0        purrr_0.3.4        
-## [77] tidyr_1.1.4         assertthat_0.2.1    cachem_1.0.6        xfun_0.26          
-## [81] broom_0.7.9         ragg_1.1.3          tibble_3.1.5        snow_0.4-3         
-## [85] lmerTest_3.1-3      iterators_1.0.13    memoise_2.0.0       statmod_1.4.36     
-## [89] ellipsis_0.3.2</code></pre>
+##  [1] nlme_3.1-153         bitops_1.0-7         fs_1.5.0             pbkrtest_0.5.1      
+##  [5] doParallel_1.0.16    progress_1.2.2       rprojroot_2.0.2      numDeriv_2016.8-1.1 
+##  [9] tools_4.1.1          backports_1.2.1      bslib_0.3.0          utf8_1.2.2          
+## [13] R6_2.5.1             KernSmooth_2.23-20   DBI_1.1.1            BiocGenerics_0.38.0 
+## [17] colorspace_2.0-2     withr_2.4.2          tidyselect_1.1.1     prettyunits_1.1.1   
+## [21] compiler_4.1.1       textshaping_0.3.5    Biobase_2.52.0       desc_1.4.0          
+## [25] labeling_0.4.2       sass_0.4.0           caTools_1.18.2       scales_1.1.1        
+## [29] pkgdown_1.6.1        systemfonts_1.0.2    stringr_1.4.0        digest_0.6.28       
+## [33] minqa_1.2.4          rmarkdown_2.11       aod_1.3.1            RhpcBLASctl_0.21-247
+## [37] pkgconfig_2.0.3      htmltools_0.5.2      lme4_1.1-27.1        highr_0.9           
+## [41] fastmap_1.1.0        rlang_0.4.11         farver_2.1.0         jquerylib_0.1.4     
+## [45] generics_0.1.0       jsonlite_1.7.2       gtools_3.9.2         dplyr_1.0.7         
+## [49] magrittr_2.0.1       Matrix_1.3-4         Rcpp_1.0.7           munsell_0.5.0       
+## [53] fansi_0.5.0          lifecycle_1.0.1      stringi_1.7.5        yaml_2.2.1          
+## [57] MASS_7.3-54          gplots_3.1.1         plyr_1.8.6           grid_4.1.1          
+## [61] parallel_4.1.1       crayon_1.4.1         lattice_0.20-45      splines_4.1.1       
+## [65] hms_1.1.1            locfit_1.5-9.4       pillar_1.6.3         boot_1.3-28         
+## [69] reshape2_1.4.4       codetools_0.2-18     glue_1.4.2           evaluate_0.14       
+## [73] vctrs_0.3.8          nloptr_1.2.2.2       Rdpack_2.1.2         foreach_1.5.1       
+## [77] gtable_0.3.0         purrr_0.3.4          tidyr_1.1.4          assertthat_0.2.1    
+## [81] cachem_1.0.6         xfun_0.26            rbibutils_2.2.3      broom_0.7.9         
+## [85] ragg_1.1.3           snow_0.4-3           tibble_3.1.5         lmerTest_3.1-3      
+## [89] iterators_1.0.13     memoise_2.0.0        statmod_1.4.36       ellipsis_0.3.2</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">

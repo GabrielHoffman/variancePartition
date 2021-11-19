@@ -62,6 +62,9 @@ rdf_from_matrices = function(A,B){
 
 	# Compute spectral decomposition  of sparse matrix using eigen decomposition of crossproduct
 
+	# Pass BiocCheck
+	u = d = NA
+
 	# A
 	#####
 

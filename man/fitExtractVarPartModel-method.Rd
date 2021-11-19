@@ -20,7 +20,7 @@ fitExtractVarPartModel(
   showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -34,7 +34,7 @@ fitExtractVarPartModel(
   showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -48,7 +48,7 @@ fitExtractVarPartModel(
   showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -62,7 +62,7 @@ fitExtractVarPartModel(
   showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -76,7 +76,7 @@ fitExtractVarPartModel(
   showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -90,7 +90,7 @@ fitExtractVarPartModel(
   showWarnings = TRUE,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 }
@@ -145,9 +145,7 @@ The regression model is fit for each gene separately. Samples with missing value
 # load library
 # library(variancePartition)
 
-# Intialize parallel backend with 4 cores
 library(BiocParallel)
-register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

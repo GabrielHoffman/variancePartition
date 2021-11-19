@@ -9,13 +9,13 @@ dream(
   formula,
   data,
   L,
-  ddf = c("Satterthwaite", "Kenward-Roger"),
+  ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"),
   useWeights = TRUE,
   weightsMatrix = NULL,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   suppressWarnings = FALSE,
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   computeResiduals = TRUE,
   REML = TRUE,
   ...
@@ -30,7 +30,7 @@ dream(
 
 \item{L}{contrast matrix specifying a linear combination of fixed effects to test}
 
-\item{ddf}{Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets.}
+\item{ddf}{Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 20 samples.}
 
 \item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified}
 
@@ -76,9 +76,7 @@ While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', 
 # load library
 # library(variancePartition)
 
-# Intialize parallel backend with 4 cores
 library(BiocParallel)
-register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
@@ -90,6 +88,7 @@ form <- ~ Batch + (1|Individual) + (1|Tissue)
 # Fit linear mixed model for each gene
 # run on just 10 genes for time
 fit = dream( geneExpr[1:10,], form, info)
+fit = eBayes(fit)
 
 # view top genes
 topTable( fit )
@@ -104,8 +103,8 @@ plotContrasts( L )
 
 # Fit linear mixed model for each gene
 # run on just 10 genes for time
-# Note that that dream() is not compatible with eBayes()
 fit2 = dream( geneExpr[1:10,], form, info, L)
+fit = eBayes(fit)
 
 # view top genes
 topTable( fit2, coef="Batch3 - Batch2" )
@@ -113,10 +112,10 @@ topTable( fit2, coef="Batch3 - Batch2" )
 # Parallel processing using multiple cores with reduced memory usage
 param = SnowParam(4, "SOCK", progressbar=TRUE)
 fit3 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
+fit = eBayes(fit)
 
 # Fit fixed effect model for each gene
 # Use lmFit in the backend
-# Need to run eBayes afterward
 form <- ~ Batch 
 fit4 = dream( geneExpr[1:10,], form, info, L)
 fit4 = eBayes( fit4 )

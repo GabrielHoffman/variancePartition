@@ -217,6 +217,9 @@ function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
 #' @importFrom stats family
 getDistrVar = function( fit ){
 
+	# Pass BiocCheck
+	link = NA
+
 	# compute residual term for each link
 	famLink = with(family(fit), paste(gsub('\\(.*', '', family), link))
 

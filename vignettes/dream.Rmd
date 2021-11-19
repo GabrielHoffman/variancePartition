@@ -138,17 +138,17 @@ Otherwise dream uses the same workflow as limma with `topTable()`, since any sta
 # Specify parallel processing parameters
 # this is used implicitly by dream() to run in parallel
 param = SnowParam(4, "SOCK", progressbar=TRUE)
-register(param)
 
 # The variable to be tested must be a fixed effect
 form <- ~ Disease + (1|Individual) 
 
 # estimate weights using linear mixed model of dream
-vobjDream = voomWithDreamWeights( geneExpr, form, metadata )
+vobjDream = voomWithDreamWeights( geneExpr, form, metadata, BPPARAM=param )
 
 # Fit the dream model on each gene
 # By default, uses the Satterthwaite approximation for the hypothesis test
 fitmm = dream( vobjDream, form, metadata )
+fitmm = eBayes(fitmm)
 ```
 ```{r lmm.print}
 # Examine design matrix
@@ -170,7 +170,8 @@ You can also perform a hypothesis test of the *difference* between two or more c
 form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual) 
 
 L = makeContrastsDream( form, metadata, 
-  contrasts = c("DiseaseSubtype2 - DiseaseSubtype1", "DiseaseSubtype1 - DiseaseSubtype0"))
+  contrasts = c("DiseaseSubtype2 - DiseaseSubtype1", 
+                "DiseaseSubtype1 - DiseaseSubtype0"))
 
 # Visualize contrast matrix
 plotContrasts(L) 
@@ -179,6 +180,7 @@ plotContrasts(L)
 ```{r fit.contrast}
 # fit dream model with contrasts
 fit = dream( vobjDream, form, metadata, L)
+fit = eBayes(fit)
 
 # get names of available coefficients and contrasts for testing
 colnames(fit)
@@ -192,12 +194,14 @@ topTable( fit, coef="DiseaseSubtype2 - DiseaseSubtype1", number=3 )
 So far contrasts have only involved the difference between two coefficients.  But contrasts can also compare any linear combination of coefficients.  Here, consider comparing `DiseaseSubtype0` to the mean of `DiseaseSubtype1` and `DiseaseSubtype2`. Note you can also customize the name of the contrast.
 
 ```{r maual.contrasts, fig.width=8, fig.height=4}
-L2 = makeContrastsDream( form, metadata, contrasts = c(Test1 = "DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"))
+L2 = makeContrastsDream( form, metadata, contrasts = 
+  c(Test1 = "DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"))
 
 plotContrasts(L2)
 
 # fit dream model to evaluate contrasts
 fit = dream( vobjDream[1:10,], form, metadata, L=L2)
+fit = eBayes(fit)
 
 topTable(fit, coef="Test1", number=3)
 ```
@@ -209,13 +213,14 @@ Joint hypothesis testing of multiple coefficients at the same time can be perfor
 # extract results from first contrast
 topTable( fit, coef=c("DiseaseSubtype2", "DiseaseSubtype1"), number=3 )
 ```
-Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here.  Therefore, the F-statistics are not directly comparable since they have different degrees of freedom.  In order to be able to compare test statistics, we report `F.std` which is the p-value transformed into an F-statistic with $df_1={\text{number of coefficiets tested}}$ and $df_2=\infty$.  This can be used for downstream analysis.
+Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here.  Therefore, the F-statistics are not directly comparable since they have different degrees of freedom.  In order to be able to compare test statistics, we report `F.std` which is the p-value transformed into an F-statistic with $df_1$ the number of coefficients tested and $df_2=\infty$.  This can be used for downstream analysis.
 
 
 ## Small-sample method
 For small datasets, the Kenward-Roger method can be more powerful.  But it is **substantially** more computationally intensive.
 ```{r kr, eval=FALSE}
 fitmmKR = dream( vobjDream, form, metadata, ddf="Kenward-Roger")
+fitmmKR = eBayes(fitmmKR)
 ```
 
 ## variancePartition plot
@@ -251,32 +256,22 @@ The duplicateCorrelation method estimates a single variance term genome-wide eve
 # Parallel processing
 variancePartition functions including `dream()`, `fitExtractVarPartModel()` and `fitVarPartModel()` can take advange of multicore machines to speed up analysis.  It uses the [BiocParallel](http://bioconductor.org/packages/BiocParallel/) package to manage the parallelization.
 
-There are multiple ways to use parallel processing depending on your needs
-
 - Specify parameters with the BPPARAM argument.
 ```{r parallel, eval=FALSE}
 # Request 4 cores, and enable the progress bar
 # This is the ideal for Linux, OS X and Windows
 param = SnowParam(4, "SOCK", progressbar=TRUE)
 fitmm = dream( vobjDream, form, metadata, BPPARAM=param)
-
-# Or disable parallel processing and just do serial 
-param = SerialParam()
-fitmm = dream( vobjDream, form, metadata, BPPARAM=param)
 ```
-- Set parameters globally for the entire R session
-```{r parallel2, eval=FALSE}
-param = SnowParam(4, "SOCK", progressbar=TRUE)
-register(param)
+By default `BPPARAM = SerialParam()`. 
 
-# uses global parallel processing settings
-fitmm = dream( vobjDream, form, metadata )
-```
 
+<!---
 By default `BPPARAM` and the global setttings are set the results of `bpparam()`.  But note that using `SnowParam()` can *dramatically* reduce the memory usage needed for parallel processing because it reduces memory redundancy between threads.
+--->
 
 # Session info
-```{r sessionInfo}
+```{r sessionInfo, echo=FALSE}
 sessionInfo()
 ```
 

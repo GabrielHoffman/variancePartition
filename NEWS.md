@@ -1,3 +1,8 @@
+# variancePartition 1.25.4
+	- in `dream()` set default `ddf = "adaptive"`, which uses "KR" for less than 12 samples 
+	- all functions default tp `BPPARAM=SerialParam()`
+	- add `eBayes()` to vignette for `dream()`
+
 # variancePartition 1.25.3
 	- add genes argument to `plotPercentBars()` 
 

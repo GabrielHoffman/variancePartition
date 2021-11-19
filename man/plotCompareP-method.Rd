@@ -40,9 +40,7 @@ Plot -log10 p-values from two analyses and color based on donor component from v
 # load library
 # library(variancePartition)
 
-# Intialize parallel backend with 4 cores
 library(BiocParallel)
-register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values
