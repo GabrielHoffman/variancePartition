@@ -42,6 +42,7 @@
 #' 
 #' # fit dream model 
 #' res = dream( vobj, form, metadata)
+#' res = eBayes(res)
 #' 
 #' # extract results
 #' topTable(res, coef="Disease1")
@@ -54,7 +55,7 @@
 #' @importFrom stats approxfun predict as.formula
 #' @importFrom limma asMatrixWeights
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, weights = NULL, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=bpparam(),...){
+voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, weights = NULL, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=SerialParam(),...){
 
 	formula = as.formula( formula )
 

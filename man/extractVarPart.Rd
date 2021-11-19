@@ -22,9 +22,7 @@ Extract variance statistics from list of models fit with \code{lm()} or \code{lm
 \examples{
 # library(variancePartition)
 
-# Intialize parallel backend with 4 cores
 library(BiocParallel)
-register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

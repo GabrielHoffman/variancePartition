@@ -34,9 +34,7 @@ Plot correlation structure of a gene based on random effects
 # load library
 # library(variancePartition)
 
-# Intialize parallel backend with 4 cores
 library(BiocParallel)
-register(SnowParam(4))
 
 # load simulated data:
 data(varPartData)

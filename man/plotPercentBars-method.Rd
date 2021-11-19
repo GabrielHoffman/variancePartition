@@ -54,9 +54,7 @@ Bar plot of fractions for a subset of genes
 \examples{
 # library(variancePartition)
 
-# Intialize parallel backend with 4 cores
 library(BiocParallel)
-register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

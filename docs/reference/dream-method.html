@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variancePartition</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.25.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.25.4</span>
       </span>
     </div>
 
@@ -146,13 +146,13 @@
   <span class='va'>formula</span>,
   <span class='va'>data</span>,
   <span class='va'>L</span>,
-  ddf <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Satterthwaite"</span>, <span class='st'>"Kenward-Roger"</span><span class='op'>)</span>,
+  ddf <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"adaptive"</span>, <span class='st'>"Satterthwaite"</span>, <span class='st'>"Kenward-Roger"</span><span class='op'>)</span>,
   useWeights <span class='op'>=</span> <span class='cn'>TRUE</span>,
   weightsMatrix <span class='op'>=</span> <span class='cn'>NULL</span>,
   control <span class='op'>=</span> <span class='fu'>lme4</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/lme4/man/lmerControl.html'>lmerControl</a></span><span class='op'>(</span>calc.derivs <span class='op'>=</span> <span class='cn'>FALSE</span>, check.rankX <span class='op'>=</span> <span class='st'>"stop.deficient"</span><span class='op'>)</span>,
   suppressWarnings <span class='op'>=</span> <span class='cn'>FALSE</span>,
   quiet <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  BPPARAM <span class='op'>=</span> <span class='fu'>bpparam</span><span class='op'>(</span><span class='op'>)</span>,
+  BPPARAM <span class='op'>=</span> <span class='fu'>SerialParam</span><span class='op'>(</span><span class='op'>)</span>,
   computeResiduals <span class='op'>=</span> <span class='cn'>TRUE</span>,
   REML <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>...</span>
@@ -179,7 +179,7 @@
     </tr>
     <tr>
       <th>ddf</th>
-      <td><p>Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets.</p></td>
+      <td><p>Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for &lt;= 12 samples.</p></td>
     </tr>
     <tr>
       <th>useWeights</th>
@@ -242,9 +242,7 @@
 <span class='co'># load library</span>
 <span class='co'># library(variancePartition)</span>
 
-<span class='co'># Intialize parallel backend with 4 cores</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/Bioconductor/BiocParallel'>BiocParallel</a></span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/pkg/BiocParallel/man/register.html'>register</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html'>SnowParam</a></span><span class='op'>(</span><span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># load simulated data:</span>
 <span class='co'># geneExpr: matrix of gene expression values</span>
@@ -257,7 +255,7 @@
 <span class='co'># run on just 10 genes for time</span>
 <span class='va'>fit</span> <span class='op'>=</span> <span class='fu'>dream</span><span class='op'>(</span> <span class='va'>geneExpr</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>,<span class='op'>]</span>, <span class='va'>form</span>, <span class='va'>info</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Dividing work into 1 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:5 s</span></div><div class='input'>
+#&gt; <span class='message'>Total:1 s</span></div><div class='input'>
 <span class='co'># view top genes</span>
 <span class='fu'><a href='topTable.html'>topTable</a></span><span class='op'>(</span> <span class='va'>fit</span> <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Removing intercept from test coefficients</span></div><div class='output co'>#&gt;             Batch2       Batch3      Batch4     AveExpr          F   P.Value
@@ -295,7 +293,7 @@
 <span class='co'># Note that that dream() is not compatible with eBayes()</span>
 <span class='va'>fit2</span> <span class='op'>=</span> <span class='fu'>dream</span><span class='op'>(</span> <span class='va'>geneExpr</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>,<span class='op'>]</span>, <span class='va'>form</span>, <span class='va'>info</span>, <span class='va'>L</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Dividing work into 1 chunks...</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Total:5 s</span></div><div class='input'>
+#&gt; <span class='message'>Total:1 s</span></div><div class='input'>
 <span class='co'># view top genes</span>
 <span class='fu'><a href='topTable.html'>topTable</a></span><span class='op'>(</span> <span class='va'>fit2</span>, coef<span class='op'>=</span><span class='st'>"Batch3 - Batch2"</span> <span class='op'>)</span>
 </div><div class='output co'>#&gt;               logFC     AveExpr           t   P.Value adj.P.Val       z.std

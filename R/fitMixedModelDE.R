@@ -224,7 +224,7 @@ setMethod("residuals", "MArrayLM2",
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
-#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets.
+#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 20 samples.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
 #' @param control control settings for \code{lmer()}
@@ -261,9 +261,7 @@ setMethod("residuals", "MArrayLM2",
 #' # load library
 #' # library(variancePartition)
 #'
-#' # Intialize parallel backend with 4 cores
 #' library(BiocParallel)
-#' register(SnowParam(4))
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
@@ -275,6 +273,7 @@ setMethod("residuals", "MArrayLM2",
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
 #' fit = dream( geneExpr[1:10,], form, info)
+#' fit = eBayes(fit)
 #'
 #' # view top genes
 #' topTable( fit )
@@ -289,8 +288,8 @@ setMethod("residuals", "MArrayLM2",
 #' 
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
-#' # Note that that dream() is not compatible with eBayes()
 #' fit2 = dream( geneExpr[1:10,], form, info, L)
+#' fit = eBayes(fit)
 #' 
 #' # view top genes
 #' topTable( fit2, coef="Batch3 - Batch2" )
@@ -298,10 +297,10 @@ setMethod("residuals", "MArrayLM2",
 #' # Parallel processing using multiple cores with reduced memory usage
 #' param = SnowParam(4, "SOCK", progressbar=TRUE)
 #' fit3 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
+#' fit = eBayes(fit)
 #'
 #' # Fit fixed effect model for each gene
 #' # Use lmFit in the backend
-#' # Need to run eBayes afterward
 #' form <- ~ Batch 
 #' fit4 = dream( geneExpr[1:10,], form, info, L)
 #' fit4 = eBayes( fit4 )
@@ -316,7 +315,7 @@ setMethod("residuals", "MArrayLM2",
 # @docType methods
 #' @rdname dream-method
 #' @importFrom pbkrtest get_SigmaG
-#' @importFrom BiocParallel bpiterate bpparam bpok
+#' @importFrom BiocParallel bpiterate bpok SerialParam
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats hatvalues as.formula
 #' @importFrom foreach foreach
@@ -324,7 +323,7 @@ setMethod("residuals", "MArrayLM2",
 #' @importFrom RhpcBLASctl omp_set_num_threads
 #' @import doParallel 
 #'
-dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=bpparam(), computeResiduals=TRUE, REML=TRUE, ...){ 
+dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=SerialParam(), computeResiduals=TRUE, REML=TRUE, ...){ 
 
 	exprObjInit = exprObj
 	
@@ -368,6 +367,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("Satterthwaite", "Kenward-
 		.checkNA( exprObj )
 	}
 
+	# "adaptive" (Default) uses KR for <= 20 samples.
+	if( ddf == "adaptive" ){
+		ddf = ifelse( ncol(exprObj) <= 20, "Kenward-Roger", 'Satterthwaite')
+	}
 
 	if( !(ddf %in% c("Kenward-Roger", 'Satterthwaite')) ){
 		stop("Specify ddf correctly")
@@ -1026,9 +1029,7 @@ function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
 #' # load library
 #' # library(variancePartition)
 #'
-#' # Intialize parallel backend with 4 cores
 #' library(BiocParallel)
-#' register(SnowParam(4))
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values

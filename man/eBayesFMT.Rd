@@ -27,7 +27,6 @@ Yu, L., Zhang, J., Brock, G. et al. Fully moderated t-statistic in linear modeli
 # load library
 # library(variancePartition)
 library(BiocParallel)
-register(SerialParam())
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

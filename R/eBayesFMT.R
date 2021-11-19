@@ -48,7 +48,6 @@ setClass('FMT')
 #' # load library
 #' # library(variancePartition)
 #' library(BiocParallel)
-#' register(SerialParam())
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values

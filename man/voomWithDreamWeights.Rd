@@ -15,7 +15,7 @@ voomWithDreamWeights(
   plot = FALSE,
   save.plot = FALSE,
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 }
@@ -72,6 +72,7 @@ vobj = voomWithDreamWeights( dge[1:20,], form, metadata)
 
 # fit dream model 
 res = dream( vobj, form, metadata)
+res = eBayes(res)
 
 # extract results
 topTable(res, coef="Disease1")

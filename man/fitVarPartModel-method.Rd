@@ -21,7 +21,7 @@ fitVarPartModel(
   fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -36,7 +36,7 @@ fitVarPartModel(
   fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -51,7 +51,7 @@ fitVarPartModel(
   fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -66,7 +66,7 @@ fitVarPartModel(
   fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -81,7 +81,7 @@ fitVarPartModel(
   fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -96,7 +96,7 @@ fitVarPartModel(
   fxn = identity,
   control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
   quiet = FALSE,
-  BPPARAM = bpparam(),
+  BPPARAM = SerialParam(),
   ...
 )
 }
@@ -155,9 +155,7 @@ Since this function returns a list of each model fit, using this function is slo
 # load library
 # library(variancePartition)
 
-# Intialize parallel backend with 4 cores
 library(BiocParallel)
-register(SnowParam(4))
 
 # load simulated data:
 # geneExpr: matrix of gene expression values

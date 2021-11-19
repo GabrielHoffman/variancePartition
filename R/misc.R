@@ -326,9 +326,7 @@ ggColorHue <- function(n) {
 #' # load library
 #' # library(variancePartition)
 #'
-#' # Intialize parallel backend with 4 cores
 #' library(BiocParallel)
-#' register(SnowParam(4))
 #'
 #' # load simulated data:
 #' # geneExpr: matrix of gene expression values
