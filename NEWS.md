@@ -1,3 +1,6 @@
+# variancePartition 1.25.5
+	- add `getTreat()` to evaluate `treat()`/`topTreat()` seamlessly on results of `dream()`
+
 # variancePartition 1.25.4
 	- in `dream()` set default `ddf = "adaptive"`, which uses "KR" for less than 12 samples 
 	- all functions default tp `BPPARAM=SerialParam()`
