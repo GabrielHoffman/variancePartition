@@ -614,7 +614,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 
 		names(resList) = seq_len(length(resList))
 
-		if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits = 0, scientific = FALSE), "s"))
+		if( !quiet ) message("\nTotal:", paste(format((proc.time() - timeStart)[3], digits=1, scientific = FALSE), "s"))
 
 		x = 1
 		# extract results

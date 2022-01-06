@@ -101,6 +101,28 @@ The simulated dataset included as an example contains measurements of 200 genes 
 
 \subsection{Standard application}
 
+
+<<test, cache=TRUE, results='hide', fig.height=4, fig.width=4>>=
+# load library
+library('variancePartition')
+
+# load simulated data:
+# geneExpr: matrix of gene expression values
+# info: information/metadata about each sample
+data(varPartData)
+
+form <- ~ Age + (1|Individual) + (1|Tissue) + (1|Batch) 
+
+browser()
+varPart <- fitExtractVarPartModel( geneExpr, form, info )
+
+# vp <- sortCols( varPart )
+
+# plotPercentBars( vp[1:10,] )
+
+# plotVarPart( vp )
+@
+
 <<simResult, cache=TRUE, results='hide', fig.height=4, fig.width=4>>=
 # load library
 library('variancePartition')
