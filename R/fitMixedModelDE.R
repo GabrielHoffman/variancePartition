@@ -224,7 +224,7 @@ setMethod("residuals", "MArrayLM2",
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
-#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 20 samples.
+#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 10 samples.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
 #' @param control control settings for \code{lmer()}
@@ -367,9 +367,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		.checkNA( exprObj )
 	}
 
-	# "adaptive" (Default) uses KR for <= 20 samples.
+	# "adaptive" (Default) uses KR for <= 10 samples.
 	if( ddf == "adaptive" ){
-		ddf = ifelse( ncol(exprObj) <= 20, "Kenward-Roger", 'Satterthwaite')
+		ddf = ifelse( ncol(exprObj) <= 10, "Kenward-Roger", 'Satterthwaite')
 	}
 
 	if( !(ddf %in% c("Kenward-Roger", 'Satterthwaite')) ){
