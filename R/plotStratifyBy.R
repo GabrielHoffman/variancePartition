@@ -103,8 +103,12 @@ plotStratify = function( formula, data, xlab, ylab, main, sortBy, colorBy, sort=
     	# if colors are specified and all levels of xval are represented
     	if( sum(levels(data.st[[xval]]) %in% names(colorBy)) == nlevels(data.st[[xval]]) ){
 
-    		i = match(levels(data.st[[ord]]), levels(data.st[[xval]]) )
- 			pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
+    # 		i = match(levels(data.st[[ord]]), levels(data.st[[xval]]) )
+ 			# pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
+
+ 			i = match(levels(data.st[[xval]]), names(colorBy) )
+
+ 			pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy)[i])
  		}else{
 
 	        # color boxes by colorBy variable in data.st
@@ -232,8 +236,10 @@ plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL
     	# if colors are specified and all levels of xval are represented
     	if( sum(levels(geneExpr[[xval]]) %in% names(colorBy)) == nlevels(geneExpr[[xval]]) ){
 
-    		i = match(levels(geneExpr[[ord]]), levels(geneExpr[[xval]]) )
- 			pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
+    # 		i = match(levels(geneExpr[[ord]]), levels(geneExpr[[xval]]) )
+ 			# pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
+ 			i = match(levels(data.st[[xval]]), names(colorBy) )
+ 			pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy)[i])
  		}else{
 
 	        # color boxes by colorBy variable in geneExpr
