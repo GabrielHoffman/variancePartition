@@ -1,3 +1,6 @@
+# variancePartition 1.25.6
+	- fix small plotting bug in `plotStratify()` and `plotStratifyBy()`
+
 # variancePartition 1.25.5
 	- add `getTreat()` to evaluate `treat()`/`topTreat()` seamlessly on results of `dream()`
 

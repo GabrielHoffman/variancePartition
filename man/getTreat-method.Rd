@@ -4,7 +4,7 @@
 \alias{getTreat}
 \alias{getTreat,MArrayLM-method}
 \alias{getTreat,MArrayLM2-method}
-\title{toptable for definition}
+\title{Test if coefficient is different from a specified value}
 \usage{
 getTreat(fit, lfc = log2(1.2), coef = 1, number = 10, sort.by = "p")
 
@@ -27,7 +27,7 @@ getTreat(fit, lfc = log2(1.2), coef = 1, number = 10, sort.by = "p")
 results of getTreat
 }
 \description{
-toptable for definition
+Test if coefficient is different from a specified value
 }
 \examples{
 
