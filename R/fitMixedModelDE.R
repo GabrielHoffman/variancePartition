@@ -354,7 +354,16 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 	hasNA = hasMissingData(formula, data)
 
 	if( any(hasNA) ){
-	warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE)
+		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE)
+
+		# drop samples with missing data in formula variables
+	    idx = sapply(all.vars(formula), function(v) {
+	        which(is.na(data[[v]]))
+	    })
+	    idx = unlist(idx)
+	    
+	    data = data[-idx,,drop=FALSE]
+	    exprObj = exprObj[,-idx,drop=FALSE]
 	}
 
 	# assign weightsMatrix from exprObj

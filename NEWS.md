@@ -1,3 +1,9 @@
+# variancePartition 1.25.8
+	- small bug fixes
+
+# variancePartition 1.25.7
+	- `dream()` now drops samples with missing data gracefully
+
 # variancePartition 1.25.6
 	- fix small plotting bug in `plotStratify()` and `plotStratifyBy()`
 
