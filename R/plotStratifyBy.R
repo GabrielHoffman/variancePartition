@@ -238,7 +238,7 @@ plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL
 
     # 		i = match(levels(geneExpr[[ord]]), levels(geneExpr[[xval]]) )
  			# pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
- 			i = match(levels(data.st[[xval]]), names(colorBy) )
+ 			i = match(levels(geneExpr[[xval]]), names(colorBy) )
  			pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy)[i])
  		}else{
 

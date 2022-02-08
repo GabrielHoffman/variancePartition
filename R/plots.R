@@ -203,7 +203,7 @@ setMethod("plotPercentBars", "matrix",
 			warning(txt)
 		}
 
- 		.plotPercentBars( x[idx,], col, width)
+ 		.plotPercentBars( as.data.frame(x[idx,]), col, width)
  	}
 )
 
