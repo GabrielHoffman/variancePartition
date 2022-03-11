@@ -1,10 +1,13 @@
-pandoc: 2.14.2
-pkgdown: 1.6.1
+pandoc: 2.16.2
+pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   FAQ: FAQ.html
   additional_visualization: additional_visualization.html
   dream: dream.html
   theory_practice_random_effects: theory_practice_random_effects.html
-last_built: 2021-11-19T18:24Z
+last_built: 2022-03-11T15:04Z
+urls:
+  reference: http://gabrielhoffman.github.io/variancePartition/reference
+  article: http://gabrielhoffman.github.io/variancePartition/articles
 

@@ -1,3 +1,6 @@
+# variancePartition 1.25.9
+	- for `getContrast()` and `makeContrastsDream()` make sure formula argument is a formula and not a string
+
 # variancePartition 1.25.8
 	- small bug fixes
 

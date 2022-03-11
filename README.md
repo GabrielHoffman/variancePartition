@@ -1,13 +1,11 @@
-# variancePartition
 
-Manuscript describing `dream` for differential expression: 
+`variancePartition` quantifies and interprets multiple sources of biological and technical variation in gene expression experiments.  The package a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.  The `dream()` function performs differential expression analysis for datasets with repeated measures or high dimensional batch effects.
 
-- [Hoffman and Roussos, Bioinformatics (2021)](https://doi.org/10.1093/bioinformatics/btaa687)
+<img src="man/figures/variancePartition.png" align="center" alt="" style="padding-left:10px;" />
 
-Manuscript describing the `variancePartition` package:
 
-- [Hoffman and Schadt, BMC Bioinformatics (2016)](https://doi.org/10.1186/s12859-016-1323-z)
 
+### [Main Tutorial](https://hoffmg01.u.hpc.mssm.edu/software/variancePartition/variancePartition.pdf)
 
 
 ### Install from GitHub
@@ -16,9 +14,6 @@ Manuscript describing the `variancePartition` package:
 devtools::install_github("GabrielHoffman/variancePartition")
 ```
 
-
-## [Main Tutorial](https://hoffmg01.u.hpc.mssm.edu/software/variancePartition/variancePartition.pdf)
-## [Documentation site](https://gabrielhoffman.github.io/variancePartition/index.html)
 
 
 ### Notes
@@ -34,3 +29,12 @@ See repo of [examples from the paper](https://github.com/GabrielHoffman/dream_an
 ### Reporting bugs
 
 Please help speed up bug fixes by providing a 'minimal reproducible example' that starts with a new R session.  I recommend the [reprex package](https://reprex.tidyverse.org) to produce a GitHub-ready example that is reproducable from a fresh R session.
+
+## References
+Manuscript describing `dream` for differential expression: 
+
+- [Hoffman and Roussos, Bioinformatics (2021)](https://doi.org/10.1093/bioinformatics/btaa687)
+
+Manuscript describing the `variancePartition` package:
+
+- [Hoffman and Schadt, BMC Bioinformatics (2016)](https://doi.org/10.1186/s12859-016-1323-z)
