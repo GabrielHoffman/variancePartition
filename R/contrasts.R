@@ -43,6 +43,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 	} else if (any(is.na(coefficient))) {
 		stop("Coefficient must not be NA")
 	}
+  formula = as.formula(formula)
 
 	L = .getContrastInit( formula, data)
 
@@ -125,6 +126,9 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
 	if( length(e) == 0 ){
 		stop("Must specify at least one contrast")
 	}
+
+  formula = as.formula(formula)
+  
   L_uni <- .getAllUniContrasts(formula, data)
   L_uni_env <- new_environment(
     c(asplit(L_uni, 2)),

@@ -1,0 +1,10 @@
+
+url: http://gabrielhoffman.github.io/variancePartition
+
+authors:
+  "Gabriel Hoffman":
+    href: http://gabrielhoffman.github.io
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
