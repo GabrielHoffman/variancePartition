@@ -257,8 +257,6 @@ setMethod("residuals", "MArrayLM2",
 #'   \insertRef{hoffman2021dream}{variancePartition}
 #' }
 #' @examples
-#'
-#' # load library
 #' # library(variancePartition)
 #'
 #' library(BiocParallel)
@@ -360,10 +358,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 	    idx = sapply(all.vars(formula), function(v) {
 	        which(is.na(data[[v]]))
 	    })
-	    idx = unlist(idx)
+	    idx = unique(unlist(idx))
 	    
 	    data = data[-idx,,drop=FALSE]
 	    exprObj = exprObj[,-idx,drop=FALSE]
+	    exprObjMat = as.matrix( exprObj )
 	}
 
 	# assign weightsMatrix from exprObj
