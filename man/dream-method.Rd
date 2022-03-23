@@ -72,8 +72,6 @@ Hypothesis tests and degrees of freedom are producted by \code{lmerTest} and \co
 While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', ddf='Satterthwaite' can be used with \code{REML} as \code{TRUE} or \code{FALSE}.  Since the Kenward-Roger method gave the best power with an accurate control of false positive rate in our simulations, and since the Satterthwaite method with REML=TRUE gives p-values that are slightly closer to the Kenward-Roger p-values, \code{REML=TRUE} is the default.  See Vignette "3) Theory and practice of random effects and REML"
 }
 \examples{
-
-# load library
 # library(variancePartition)
 
 library(BiocParallel)
