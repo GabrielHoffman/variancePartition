@@ -9,7 +9,8 @@ makeContrastsDream(
   data,
   ...,
   contrasts = NULL,
-  suppressWarnings = FALSE
+  suppressWarnings = FALSE,
+  nullOnError = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ makeContrastsDream(
 \item{contrasts}{character vector specifying contrasts}
 
 \item{suppressWarnings}{(default FALSE). suppress warnings for univariate contrasts}
+
+\item{nullOnError}{(default FALSE). When a contrast entry is invalid, throw warning and return NULL for that contrast entry}
 }
 \value{
 matrix of linear contrasts between regression coefficients
