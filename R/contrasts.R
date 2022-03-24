@@ -70,6 +70,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @param ... expressions, or character strings which can be parsed to expressions, specifying contrasts
 #' @param contrasts character vector specifying contrasts
 #' @param suppressWarnings (default FALSE). suppress warnings for univariate contrasts
+#' @param nullOnError (default FALSE). When a contrast entry is invalid, throw warning and return NULL for that contrast entry
 #' 
 #' @return
 #' matrix of linear contrasts between regression coefficients
@@ -121,7 +122,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'
 #' @importFrom rlang new_environment eval_tidy caller_env
 #' @export
-makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnings=FALSE){
+makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnings=FALSE, nullOnError=FALSE){
   e <- .getContrastExpressions(..., contrasts = contrasts)
 	if( length(e) == 0 ){
 		stop("Must specify at least one contrast")
@@ -134,7 +135,26 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
     c(asplit(L_uni, 2)),
     caller_env()
   )
-  L <- do.call(cbind, lapply(e, eval_tidy, env = L_uni_env))
+  # L <- do.call(cbind, lapply(e, eval_tidy, env = L_uni_env))
+
+  # add ability to drop problematic contrasts
+  # if a contrast is invalid, throw warning and return null for just that entry
+  eval_tidy_safe = function(expr, data = NULL, env = caller_env(),nullOnError=TRUE){
+
+    if( nullOnError ){
+      tryCatch( eval_tidy(expr, data, env), error = function(err){
+        warning(paste("makeContrastsDream:", err$message), immediate.=TRUE, call.=FALSE)
+        NULL
+        })
+    }else{
+      eval_tidy(expr, data, env)
+    }
+  }
+  # nullOnError can only by TRUE if more than 1 contrast is specified
+  nullOnError = nullOnError & (length(contrasts)>1) 
+  res = lapply(e, eval_tidy_safe, env = L_uni_env, nullOnError=nullOnError)
+  L <- do.call(cbind, res)
+
   rownames(L) <- rownames(L_uni)
   names(dimnames(L)) <- c("Levels", "Contrasts")
 

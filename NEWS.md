@@ -1,5 +1,6 @@
 # variancePartition 1.25.11
  - fix bug in `dream()` for variables with NA values
+ - improve handling of invalid contrasts in `makeContrastsDream()`
 
 # variancePartition 1.25.9
  - for `getContrast()` and `makeContrastsDream()` make sure formula argument is a formula and not a string
