@@ -137,7 +137,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 	hasNA = hasMissingData(formula, data)
 
 	if( any(hasNA) ){
-		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE)
+		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE, call.=FALSE)
 	}
 
 	# check if all genes have variance
@@ -483,7 +483,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 	hasNA = hasMissingData(formula, data)
 
 	if( any(hasNA) ){
-		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE)
+		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE, call.=FALSE)
 	}
 
 	if( ! is(exprObj, "sparseMatrix")){
