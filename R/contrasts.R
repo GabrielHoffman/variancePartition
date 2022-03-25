@@ -155,15 +155,17 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
   res = lapply(e, eval_tidy_safe, env = L_uni_env, nullOnError=nullOnError)
   L <- do.call(cbind, res)
 
-  rownames(L) <- rownames(L_uni)
-  names(dimnames(L)) <- c("Levels", "Contrasts")
+  if( !is.null(L) ){
+    rownames(L) <- rownames(L_uni)
+    names(dimnames(L)) <- c("Levels", "Contrasts")
 
-  # detect univariate contrasts
-  anyUnivariate = apply(L, 2, function(x) sum(x!=0))
+    # detect univariate contrasts
+    anyUnivariate = apply(L, 2, function(x) sum(x!=0))
 
-  if( ! suppressWarnings & any(anyUnivariate == 1) ){
-    txt = paste("All univariate contrasts are already included.\n  Manually specifying them here can cause issues downstream.\n  Terms: ", paste0(names(which(anyUnivariate == 1)), collapse = ', '))
-    warning(txt)
+    if( ! suppressWarnings & any(anyUnivariate == 1) ){
+      txt = paste("All univariate contrasts are already included.\n  Manually specifying them here can cause issues downstream.\n  Terms: ", paste0(names(which(anyUnivariate == 1)), collapse = ', '))
+      warning(txt)
+    }
   }
 
   L
