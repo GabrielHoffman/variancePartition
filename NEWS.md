@@ -1,3 +1,6 @@
+# variancePartition 1.25.12
+ - in `makeContrastsDream()`, fix issue where terms with colon cause and error
+
 # variancePartition 1.25.11
  - fix bug in `dream()` for variables with NA values
  - improve handling of invalid contrasts in `makeContrastsDream()`
