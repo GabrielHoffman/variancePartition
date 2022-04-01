@@ -8,7 +8,7 @@
 
 <br>
 
-### [Main Tutorial](https://hoffmg01.u.hpc.mssm.edu/software/variancePartition/variancePartition.pdf)
+#### [Tutorial on variance partitioning](https://hoffmg01.u.hpc.mssm.edu/software/variancePartition/variancePartition.pdf)
 
 <br>
 

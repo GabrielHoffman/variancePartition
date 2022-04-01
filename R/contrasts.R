@@ -123,7 +123,13 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @importFrom rlang new_environment eval_tidy caller_env
 #' @export
 makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnings=FALSE, nullOnError=FALSE){
+
+  # address special case of matching terms with colon (:)
+  # since colon is implciitly converted to dot internally somewhere
+  contrasts = gsub(":", '.', contrasts)
+
   e <- .getContrastExpressions(..., contrasts = contrasts)
+
 	if( length(e) == 0 ){
 		stop("Must specify at least one contrast")
 	}
@@ -131,6 +137,10 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
   formula = as.formula(formula)
   
   L_uni <- .getAllUniContrasts(formula, data)
+
+  # address special case of matching terms with colon (:)
+  colnames(L_uni) = gsub(":", '.', colnames(L_uni))
+
   L_uni_env <- new_environment(
     c(asplit(L_uni, 2)),
     caller_env()
