@@ -8,8 +8,8 @@ Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
 Description: Quantify and interpret multiple sources of biological and technical variation in gene expression experiments. Uses a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.  Includes dream differential expression analysis for repeated measures.
 VignetteBuilder: knitr
 License: GPL-2
-URL: http://bioconductor.org/packages/variancePartition, https://gabrielhoffman.github.io/variancePartition
-BugReports: https://github.com/GabrielHoffman/variancePartition/issues
+URL: http://bioconductor.org/packages/variancePartition, https://DiseaseNeuroGenomics.github.io/variancePartition
+BugReports: https://github.com/DiseaseNeuroGenomics/variancePartition/issues
 Suggests:
     BiocStyle,
     knitr,
