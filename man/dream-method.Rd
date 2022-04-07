@@ -12,7 +12,7 @@ dream(
   ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"),
   useWeights = TRUE,
   weightsMatrix = NULL,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  control = vpcontrol,
   suppressWarnings = FALSE,
   quiet = FALSE,
   BPPARAM = SerialParam(),

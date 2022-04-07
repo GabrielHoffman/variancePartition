@@ -30,7 +30,7 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 #' \code{list()} of where each entry is the result for a gene.  Each entry is a matrix of the 95\% confidence interval of the variance fraction for each variable 
 #'
 #' @details 
-#' A linear mixed model is fit for each gene, and \code{bootMer()} is used to generate parametric bootstrap confidence intervals.  \code{use.u=TRUE} is used so that the \deqn{\hat{u}} values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, \code{use.u=FALSE} assumes that  this dataset is a sample from a larger population.   Thus it simulates \deqn{\hat{u}} based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, \code{use.u=TRUE} gives smaller confidence intervals that are appropriate in this case.
+#' A linear mixed model is fit for each gene, and \code{bootMer()} is used to generate parametric bootstrap confidence intervals.  \code{use.u=TRUE} is used so that the \eqn{\hat{u}} values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, \code{use.u=FALSE} assumes that  this dataset is a sample from a larger population.   Thus it simulates \eqn{\hat{u}} based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, \code{use.u=TRUE} gives smaller confidence intervals that are appropriate in this case.
 #'
 #' @examples
 #'
@@ -56,11 +56,14 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 # stopCluster(cl)
 #'
 #' @export
-varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),nsim=1000,...){ 
+varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = vpcontrol, nsim=1000,...){
 
 	if( !is.numeric(nsim) || nsim <= 0 ){
 		stop("Must specify nsim as positive number")
 	}
+
+	# need derivs in boostrapping
+	control$calc.derivs = TRUE
 
 	formula = stats::as.formula( formula )
 
@@ -71,7 +74,7 @@ varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE,
 			# use bootMer from lme4 to sample to bootstraps and refit the model
 			# use.u=TRUE says that the \hat{u} values from the random effects are used
 			bootRes = lme4::bootMer( fit, calcVarPart, use.u=TRUE, nsim=nsim, parallel="no", ncpus=1)
-			apply( bootRes$t, 2, function(x) quantile(x, c(0.025, 0.975)))
+			apply( bootRes$t, 2, function(x) quantile(x, c(0.025, 0.975), na.rm=TRUE))
 		}else if( "lm" %in% class(fit)){
 			stop("Bootstrap of fixed effect ANOVA model not currently supported")
 		}
