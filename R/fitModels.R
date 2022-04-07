@@ -1,6 +1,12 @@
+## default control for lmer fits
+vpcontrol <- lme4::lmerControl(calc.derivs = FALSE,
+                               check.rankX = "stop.deficient",
+                               check.conv.singular =
+                                 lme4::.makeCC("ignore", tol = 1e-4))
+
 
 #' Fit linear (mixed) model
-#' 
+#'
 #' Fit linear (mixed) model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables.
 #'
 #' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
@@ -102,7 +108,7 @@
 #' @docType methods
 #' @rdname fitVarPartModel-method
 setGeneric("fitVarPartModel", signature="exprObj",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(),...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,showWarnings=TRUE,fxn=identity, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(),...)
       standardGeneric("fitVarPartModel")
 )
 
@@ -115,7 +121,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 #' @importFrom utils object.size
 #' @import foreach
 #' @import lme4
-.fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=quiet, BPPARAM=SerialParam(), ...){
+.fitVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, colinearityCutoff=.999,control = vpcontrol, quiet=quiet, BPPARAM=SerialParam(), ...){
 
 	# convert to data.frame
 	data = as.data.frame(data)
@@ -317,7 +323,7 @@ setGeneric("fitVarPartModel", signature="exprObj",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,matrix-method
 setMethod("fitVarPartModel", "matrix",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitVarPartModel(exprObj, formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, quiet=quiet, BPPARAM=BPPARAM,...)
   }
@@ -328,7 +334,7 @@ setMethod("fitVarPartModel", "matrix",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,data.frame-method
 setMethod("fitVarPartModel", "data.frame",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitVarPartModel( as.matrix(exprObj), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, quiet=quiet, BPPARAM=BPPARAM, ...)
   }
@@ -339,7 +345,7 @@ setMethod("fitVarPartModel", "data.frame",
 #' @rdname fitVarPartModel-method
 #' @aliases fitVarPartModel,EList-method
 setMethod("fitVarPartModel", "EList",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitVarPartModel( as.matrix(exprObj$E), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights, showWarnings=showWarnings, fxn=fxn, control=control, quiet=quiet, BPPARAM=BPPARAM,...)
   }
@@ -351,7 +357,7 @@ setMethod("fitVarPartModel", "EList",
 #' @aliases fitVarPartModel,ExpressionSet-method
 #' @importFrom Biobase ExpressionSet exprs
 setMethod("fitVarPartModel", "ExpressionSet",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE,fxn=identity, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitVarPartModel( as.matrix(exprs(exprObj)), formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, quiet=quiet, BPPARAM=BPPARAM, ...)
   }
@@ -363,7 +369,7 @@ setMethod("fitVarPartModel", "ExpressionSet",
 #' @aliases fitVarPartModel,sparseMatrix-method
 #' @importFrom Matrix sparseMatrix
 setMethod("fitVarPartModel", "sparseMatrix",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, showWarnings=TRUE,fxn=identity, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitVarPartModel( exprObj, formula, data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings, fxn=fxn, control=control, quiet=quiet, BPPARAM=BPPARAM, ...)
   }
@@ -453,7 +459,7 @@ setMethod("fitVarPartModel", "sparseMatrix",
 #' @rdname fitExtractVarPartModel-method
 #' @importFrom BiocParallel SerialParam bpiterate bplapply bpok
 setGeneric("fitExtractVarPartModel", signature="exprObj",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
       standardGeneric("fitExtractVarPartModel")
 )
 
@@ -463,7 +469,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 #' @importFrom RhpcBLASctl omp_set_num_threads
 #' @importFrom progress progress_bar
 #' @import foreach
-.fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(),...){ 
+.fitExtractVarPartModel <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(),...){
 
 	# convert to data.frame
 	data = as.data.frame(data)
@@ -643,7 +649,7 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,matrix-method
 setMethod("fitExtractVarPartModel", "matrix",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitExtractVarPartModel(exprObj, formula, data,
                      REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix,  showWarnings=showWarnings, control=control, quiet=quiet,
@@ -656,7 +662,7 @@ setMethod("fitExtractVarPartModel", "matrix",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,data.frame-method
 setMethod("fitExtractVarPartModel", "data.frame",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitExtractVarPartModel( as.matrix(exprObj), formula, data,
                      REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix,  showWarnings=showWarnings, control=control, quiet=quiet,
@@ -669,10 +675,10 @@ setMethod("fitExtractVarPartModel", "data.frame",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,EList-method
 setMethod("fitExtractVarPartModel", "EList",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE,  showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE,  showWarnings=TRUE, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitExtractVarPartModel( as.matrix(exprObj$E), formula, data,
-                     REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights,  showWarnings=showWarnings, control=control, quiet=quiet,  
+                     REML=REML, useWeights=useWeights, weightsMatrix=exprObj$weights,  showWarnings=showWarnings, control=control, quiet=quiet,
                          BPPARAM=BPPARAM, ...)
   }
 )
@@ -682,10 +688,10 @@ setMethod("fitExtractVarPartModel", "EList",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,ExpressionSet-method
 setMethod("fitExtractVarPartModel", "ExpressionSet",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitExtractVarPartModel( as.matrix(exprs(exprObj)), formula, data,
-                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix,  showWarnings=showWarnings, control=control, quiet=quiet, 
+                     REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix,  showWarnings=showWarnings, control=control, quiet=quiet,
                      	 BPPARAM=BPPARAM,...)
   }
 )
@@ -695,7 +701,7 @@ setMethod("fitExtractVarPartModel", "ExpressionSet",
 #' @rdname fitExtractVarPartModel-method
 #' @aliases fitExtractVarPartModel,sparseMatrix-method
 setMethod("fitExtractVarPartModel", "sparseMatrix",
-  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ), quiet=FALSE, BPPARAM=SerialParam(), ...)
+  function(exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL,  showWarnings=TRUE, control = vpcontrol, quiet=FALSE, BPPARAM=SerialParam(), ...)
   {
     .fitExtractVarPartModel( exprObj, formula, data,
                      REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix,  showWarnings=showWarnings, control=control, quiet=quiet,

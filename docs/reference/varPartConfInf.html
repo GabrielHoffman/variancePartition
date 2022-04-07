@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.25.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.25.13</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
   weightsMatrix <span class="op">=</span> <span class="cn">NULL</span>,
   showWarnings <span class="op">=</span> <span class="cn">TRUE</span>,
   colinearityCutoff <span class="op">=</span> <span class="fl">0.999</span>,
-  control <span class="op">=</span> <span class="fu">lme4</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmerControl.html" class="external-link">lmerControl</a></span><span class="op">(</span>calc.derivs <span class="op">=</span> <span class="cn">FALSE</span>, check.rankX <span class="op">=</span> <span class="st">"stop.deficient"</span><span class="op">)</span>,
+  control <span class="op">=</span> <span class="va">vpcontrol</span>,
   nsim <span class="op">=</span> <span class="fl">1000</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
@@ -106,7 +106,7 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>A linear mixed model is fit for each gene, and <code><a href="https://rdrr.io/pkg/lme4/man/bootMer.html" class="external-link">bootMer()</a></code> is used to generate parametric bootstrap confidence intervals.  <code>use.u=TRUE</code> is used so that the $$\hat{u}$$ values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, <code>use.u=FALSE</code> assumes that  this dataset is a sample from a larger population.   Thus it simulates $$\hat{u}$$ based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, <code>use.u=TRUE</code> gives smaller confidence intervals that are appropriate in this case.</p>
+    <p>A linear mixed model is fit for each gene, and <code><a href="https://rdrr.io/pkg/lme4/man/bootMer.html" class="external-link">bootMer()</a></code> is used to generate parametric bootstrap confidence intervals.  <code>use.u=TRUE</code> is used so that the \(\hat{u}\) values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, <code>use.u=FALSE</code> assumes that  this dataset is a sample from a larger population.   Thus it simulates \(\hat{u}\) based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, <code>use.u=TRUE</code> gives smaller confidence intervals that are appropriate in this case.</p>
     </div>
 
     <div class="section level2">
@@ -132,7 +132,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Memory usage to store result: &gt;4.6 Kb</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:9 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:8 s</span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 </code></pre></div>

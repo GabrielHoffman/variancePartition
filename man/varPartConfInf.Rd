@@ -13,7 +13,7 @@ varPartConfInf(
   weightsMatrix = NULL,
   showWarnings = TRUE,
   colinearityCutoff = 0.999,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  control = vpcontrol,
   nsim = 1000,
   ...
 )
@@ -48,7 +48,7 @@ varPartConfInf(
 Fit linear mixed model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Then perform parametric bootstrap sampling to get a 95\% confidence intervals for each variable for each gene.
 }
 \details{
-A linear mixed model is fit for each gene, and \code{bootMer()} is used to generate parametric bootstrap confidence intervals.  \code{use.u=TRUE} is used so that the \deqn{\hat{u}} values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, \code{use.u=FALSE} assumes that  this dataset is a sample from a larger population.   Thus it simulates \deqn{\hat{u}} based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, \code{use.u=TRUE} gives smaller confidence intervals that are appropriate in this case.
+A linear mixed model is fit for each gene, and \code{bootMer()} is used to generate parametric bootstrap confidence intervals.  \code{use.u=TRUE} is used so that the \eqn{\hat{u}} values from the random effects are used as estimated and are not re-sampled.  This gives confidence intervals as if additional data were generated from these same current samples.  Conversely, \code{use.u=FALSE} assumes that  this dataset is a sample from a larger population.   Thus it simulates \eqn{\hat{u}} based on the estimated variance parameter.  This approach gives confidence intervals as if additional data were collected from the larger population from which this dataset is sampled.  Overall, \code{use.u=TRUE} gives smaller confidence intervals that are appropriate in this case.
 }
 \examples{
 

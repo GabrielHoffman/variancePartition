@@ -52,7 +52,7 @@ setMethod("checkModelStatus", "negbin",
 	# run_model_check( fit, showWarnings, dream, colinearityCutoff, immediate )
 })
 
-
+#' @importFrom lme4 isSingular
 run_model_check_mixed = function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
 		# if no intercept is specified, give warning
 		if( !dream && showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
@@ -120,8 +120,8 @@ run_model_check_mixed = function( fit, showWarnings=TRUE, dream=FALSE, colineari
 			}
 		}
 
-		# show convergance message
-		if( showWarnings && !is.null(fit@optinfo$conv$lme4$messages) && (fit@optinfo$conv$lme4$messages != "boundary (singular) fit: see ?isSingular")){
+		# show convergance message, if model is not singular
+		if( showWarnings && !is.null(fit@optinfo$conv$lme4$messages) && ! isSingular(fit)){
 			stop(fit@optinfo$conv$lme4$messages)
 		}
 	}

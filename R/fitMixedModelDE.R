@@ -319,12 +319,12 @@ setMethod("residuals", "MArrayLM2",
 #' @importFrom foreach foreach
 #' @importFrom methods as
 #' @importFrom RhpcBLASctl omp_set_num_threads
-#' @import doParallel 
+#' @import doParallel
 #'
-dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = lme4::lmerControl(calc.derivs=FALSE, check.rankX="stop.deficient" ),suppressWarnings=FALSE, quiet=FALSE, BPPARAM=SerialParam(), computeResiduals=TRUE, REML=TRUE, ...){ 
+dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = vpcontrol,suppressWarnings=FALSE, quiet=FALSE, BPPARAM=SerialParam(), computeResiduals=TRUE, REML=TRUE, ...){
 
 	exprObjInit = exprObj
-	
+
 	exprObjMat = as.matrix( exprObj )
 	formula = as.formula( formula )
 

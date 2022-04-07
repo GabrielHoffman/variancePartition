@@ -19,7 +19,7 @@ fitVarPartModel(
   weightsMatrix = NULL,
   showWarnings = TRUE,
   fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  control = vpcontrol,
   quiet = FALSE,
   BPPARAM = SerialParam(),
   ...
@@ -34,7 +34,7 @@ fitVarPartModel(
   weightsMatrix = NULL,
   showWarnings = TRUE,
   fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  control = vpcontrol,
   quiet = FALSE,
   BPPARAM = SerialParam(),
   ...
@@ -49,7 +49,7 @@ fitVarPartModel(
   weightsMatrix = NULL,
   showWarnings = TRUE,
   fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  control = vpcontrol,
   quiet = FALSE,
   BPPARAM = SerialParam(),
   ...
@@ -64,7 +64,7 @@ fitVarPartModel(
   weightsMatrix = NULL,
   showWarnings = TRUE,
   fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  control = vpcontrol,
   quiet = FALSE,
   BPPARAM = SerialParam(),
   ...
@@ -79,7 +79,7 @@ fitVarPartModel(
   weightsMatrix = NULL,
   showWarnings = TRUE,
   fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  control = vpcontrol,
   quiet = FALSE,
   BPPARAM = SerialParam(),
   ...
@@ -94,7 +94,7 @@ fitVarPartModel(
   weightsMatrix = NULL,
   showWarnings = TRUE,
   fxn = identity,
-  control = lme4::lmerControl(calc.derivs = FALSE, check.rankX = "stop.deficient"),
+  control = vpcontrol,
   quiet = FALSE,
   BPPARAM = SerialParam(),
   ...
