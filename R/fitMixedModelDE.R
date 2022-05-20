@@ -218,15 +218,15 @@ setMethod("residuals", "MArrayLM2",
 
 #' Differential expression with linear mixed model
 #' 
-#' Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
+#' Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix \code{L}
 #'
-#' @param exprObj matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.
+#' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by voom() from the limma package
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by \code{contrasts.fit()} are run.
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
 #' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 10 samples.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
-#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
+#' @param weightsMatrix matrix the same dimension as \code{exprObj} with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
 #' @param control control settings for \code{lmer()}
 #' @param suppressWarnings if TRUE, do not stop because of warnings or errors in model fit
 #' @param quiet suppress message, default FALSE
@@ -307,7 +307,7 @@ setMethod("residuals", "MArrayLM2",
 #' topTable( fit4, coef="Batch3 - Batch2" )
 #'
 #' # Compute residuals using dream
-#' residuals(fit4)
+#' residuals(fit4)[1:4, 1:4]
 #' 
 #' @export
 # @docType methods

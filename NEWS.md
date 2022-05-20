@@ -1,3 +1,6 @@
+# variancePartition 1.26.1
+ - patch to update docs
+
 # variancePartition 1.25.13
  - Fix compatibility issue with lme4 1.1.29
   - reported https://github.com/GabrielHoffman/variancePartition/issues/51
