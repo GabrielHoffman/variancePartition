@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.25.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,7 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L</p>
+    <p>Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix <code>L</code></p>
     </div>
 
     <div class="section level2">
@@ -81,9 +81,9 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>exprObj</dt>
-<dd><p>matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package</p></dd>
+<dd><p>matrix of expression data (g genes x n samples), or <code>ExpressionSet</code>, or <code>EList</code> returned by voom() from the limma package</p></dd>
 <dt>formula</dt>
-<dd><p>specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: <code>~ a + b + (1|c)</code>  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.</p></dd>
+<dd><p>specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: <code>~ a + b + (1|c)</code>  Formulas with only fixed effects also work, and <code>lmFit()</code> followed by <code>contrasts.fit()</code> are run.</p></dd>
 <dt>data</dt>
 <dd><p>data.frame with columns corresponding to formula</p></dd>
 <dt>L</dt>
@@ -93,7 +93,7 @@
 <dt>useWeights</dt>
 <dd><p>if TRUE, analysis uses heteroskedastic error estimates from <code>voom()</code>.  Value is ignored unless exprObj is an <code>EList()</code> from <code>voom()</code> or <code>weightsMatrix</code> is specified</p></dd>
 <dt>weightsMatrix</dt>
-<dd><p>matrix the same dimension as exprObj with observation-level weights from <code>voom()</code>.  Used only if useWeights is TRUE</p></dd>
+<dd><p>matrix the same dimension as <code>exprObj</code> with observation-level weights from <code>voom()</code>.  Used only if useWeights is TRUE</p></dd>
 <dt>control</dt>
 <dd><p>control settings for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code></p></dd>
 <dt>suppressWarnings</dt>
@@ -148,7 +148,7 @@
 <span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.8 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.9 s</span>
 <span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># view top genes</span></span>
@@ -242,194 +242,12 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.05984159 -10.4664549 -0.06322915 0.94965664 0.9496566 -4.600657</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Compute residuals using dream</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals</a></span><span class="op">(</span><span class="va">fit4</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                s1         s2         s3         s4          s5         s6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   2.1965877 -7.2102826  1.3618545  0.8055865  1.55724286 -1.1942742</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   1.2703414  0.6885371 -0.8045642  2.0594469  4.68340559  1.4332043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   1.9394647  0.8003329 -1.7723606  3.0120196  3.11155613  0.3958749</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   2.7662714 -2.4954702 -3.5198043  5.2286010  0.03130904 -0.6924954</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   4.0439076  4.4820283 -1.6509028  5.8226155  7.74394380 -0.0987728</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -0.4278849  4.7475502 -0.8861352  0.3271335 -3.95220107  4.6931383</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7   1.9670872  0.1873020 -2.0285783  4.6117061  6.61726814  4.3222764</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -3.2413964  3.8267136 -3.1055429 -3.9039946 -0.44723156  3.6286274</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9   1.3570111 -0.7100476  7.2187536 -1.5048873  1.21394776 -2.0993174</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  1.6577801  3.3791902  2.8353022  2.6916210 -2.66665576 -1.4178804</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                s7         s8        s9         s10        s11        s12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   2.2714387 -6.4521834 -1.338343 -2.58511144  5.0292965  1.7324080</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   2.7491670  1.6122264 -2.915358 -2.29928466 -5.2119845  1.3605012</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   0.2312880  2.6976167  2.060159 -6.57050571  2.4374639 -4.4467684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   1.6846899  0.1084275  1.073703  0.67278512 -8.8025164 -2.7101996</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -1.5213168  6.8302299 -3.488045 -7.98545695  1.2349414  0.6190696</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -0.9012517 -4.2797725  1.558969 -5.36417582 -3.4413691  1.2466601</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -2.2677826  4.5544329  3.265306 -1.03146907 -4.4072051 -2.4861299</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   2.2099811 -5.3443534  1.373906  0.01117346  0.1944437 -1.9514303</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -1.5343968  2.8175870  2.307048 -5.10531060 -1.8884255  6.3884447</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  1.2080880 -2.1370239 -0.440741 -7.76804314 -1.1988419 -4.1220500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              s13         s14        s15        s16        s17        s18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   5.297555 -0.02159871  0.3937486  3.7672534 -2.9980670  1.0059378</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -1.696922 -0.14219416  1.4622057 -6.4530855  5.5300460 -3.3715700</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  -1.474794 -1.27245635 -2.0552960  2.5824742  0.5148651  5.2881839</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   2.080212 -0.86015147  3.0048423 -1.0596264  2.6181240  0.2880115</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   2.208453  1.57252709 -4.9671247 -7.5298657 -2.5220988  6.9515566</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -4.634813 -0.17431893  2.4274701  2.7607561 -1.7951189  0.8301212</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -4.341116 -2.59749099 -0.8035373 -4.0095102 -2.8448244  2.6042378</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   1.513624  3.96535651  0.8288114  2.3018799  4.2574683  3.1786381</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9   6.303404  1.44837856 -0.9651470 -5.9945647 -2.8092594  1.9275181</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  1.341192 -2.78236660 -0.9750934 -0.6552767  3.6986509  1.4405129</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s19        s20        s21        s22        s23         s24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   0.6103818 -3.7811674  0.5991491 -2.5831928  3.9281173 -3.85991729</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   2.5351282  0.7935274  2.7193018  1.0990530  0.3266799 -4.49157811</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  -7.0716209  0.7189840  3.9651643 -5.9283595  0.6469053  4.38253930</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -1.7179594  4.2184486 -1.2658839 -1.6025096  1.9742544  2.12518800</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   1.0838809 -0.6092665 -0.5560188 -0.8568622  2.0644734  2.85662277</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   5.0732616 -1.0783619 -3.4148256  5.6719366 -3.1638981  5.35614097</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -4.1113608  1.5690299 -0.1884187 -1.4106634  1.4331030 -0.07345667</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -7.0849366  1.1160765 -2.0146029  3.8737685 -2.3169366 -5.75233800</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9   5.2801708 -3.7048798 -7.1774849 -2.9628600  5.1713698  1.53177293</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  0.9878927  2.1559655  0.3999454  2.5084333  0.4643541  0.51413382</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s25        s26        s27        s28        s29       s30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.1131159  1.9280012 -9.9313454 -0.3126832  1.1292459 -1.106011</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   2.3794777  2.1909141  1.6097310 -1.0217414 -1.3017982  2.840879</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   1.3187365  0.9232105  0.6417437 -1.3152729  0.6750035  3.000742</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -0.4928993  1.3968582  0.6828149 -0.8872208  3.0223121 -3.888756</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -4.0986927  1.3127126  3.8014242 -1.0404923  0.9759573  4.054376</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   2.1597263 -1.8337882  7.6093445 -3.9138400 -0.2722442 -5.709019</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -0.2179133 -0.6241889 -0.7308475 -0.2148298  4.5875466  3.866098</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   3.7004387 -2.8017010  4.0332886 -2.2306563 -1.8663466  2.451388</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -0.8477174  0.7804232 -1.7597496  3.3000845 -4.7008000 -6.266828</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  3.1364063 -0.6025600  3.8247654  4.8503039  0.5913209 -4.803961</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                s31         s32        s33        s34         s35        s36</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.22824792 -0.00740869 -5.7004945 -0.9244987  -0.1713284  6.1915328</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   0.52199385  0.92432114  3.1820617 -3.6565390  -5.6210598 -6.3365485</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   0.00374066 -1.11229460  1.5955220  0.3792653  -5.0819019  2.2262657</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -0.56808302 -0.67031187  0.7403716 -0.7786436  -0.4688276 -7.1370124</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   0.03050873 -2.25549652  6.3616671 -5.8865097  -6.3707188  2.0820707</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   2.36441692 -2.22984524 -3.6722034  1.6497491 -10.2363261 -6.0176054</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7   4.73435966 -5.71211445  3.5880306  2.4743218  -2.5815665 -6.2044003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   2.13025122  6.44239321 -6.9060885 -2.7365863   0.3671513  0.7079603</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -0.35106202 -3.48655059  2.0522634  1.4512167  -4.8154668 -0.4962670</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 -1.54775955  0.34892955 -0.2497941 -0.7683735  -7.7209228 -1.7331268</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 s37        s38         s39       s40       s41         s42</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   3.779451939  1.0023561  1.22288377  1.410891  2.215968 -3.87831473</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -0.157174967 -1.2708391  2.48685992  3.838202 -3.761435  6.50062717</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  -7.829296900 -2.5717391  0.01541811 -2.240622  3.308596 -0.02876008</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -4.576521492  0.8737002  1.58924912  3.830211  1.681795  1.81070318</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -3.521326891  1.0321740  5.23241542 -2.098765 -7.150890 -3.67740065</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   1.435871930 -3.4729659 -3.01882227 -2.607534  5.043915  2.89089209</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -6.397997400 -4.4503217 -0.44089798  1.720670 -2.411915 -0.79510747</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -0.002637678 -0.8856651  1.53507206 -2.878643  4.550863  5.80361441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9   0.179241333  2.9539433  2.84653978  6.090796 -6.331945 -0.32996698</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 -0.599074163  2.5748530 -4.26662762 -0.679100 -1.856738  0.40152613</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              s43        s44         s45        s46        s47       s48</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   3.120683 -0.4355080 -2.12206513  4.5492526  0.4100132  5.456837</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -3.992274  0.1055764 -1.73922718  1.5359922  1.3371616  1.299248</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   5.703355 -6.2659463 -1.23436120  4.7833560 -4.8231094  3.592451</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -2.632667 -0.6437655  3.99389561 -2.2343316 -1.2178444  4.598658</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   6.562396 -3.3276848 -5.08829938 -1.1853860  2.1726376  2.396120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -1.164305  3.2737365 -0.87868931 -0.1613619  6.7106645 -1.421957</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7   4.231400 -7.5375345  4.51627744  1.4078602  1.4715795  4.892179</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   3.183562 -5.7009824  0.90905615 -1.6460246 -0.8471604 -3.909156</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9   3.115432 -0.6513835 -0.82193306 -5.7032006  3.4737922  7.968102</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  1.305665  3.4599205  0.08918001 -2.3980353  3.2937668 -1.284183</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                s49         s50         s51        s52        s53       s54</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.77997549 -2.90110447  0.04873287 -7.2630029  1.0326741  2.700993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -4.28869198  3.62858948  3.39700963  0.6865457 -2.3469114 -3.676458</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   4.80961482  2.64296449  1.80353555  1.4785067 -2.3681296  3.320305</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   0.01590866  1.15493357  1.29455325  0.0287209 -2.6091437  2.884308</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   1.76012258 -1.95801174  0.81091515  2.8802726 -5.2819298  1.092606</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   1.91477218  5.64001429 -1.87368538  8.9438743 -4.9875804  3.259693</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -0.82330133 -2.25333313  3.89378479  3.0744873 -0.2091989  3.690731</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -8.74938858  3.02014648 -1.78706041  3.8848295 -2.7627816 -1.849865</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -1.15322962 -0.05324949  1.94105969 -2.7091256  5.3042456 -1.534718</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  1.91754111  4.69085523 -2.44081272  3.4851912  3.8382172  1.144952</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              s55         s56        s57        s58        s59         s60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   1.798300 -2.60111693 -0.8449821 -9.0465841  0.6871404 -0.10275524</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   2.749946  2.36923809  3.1070405 -0.1206383 -0.4094060 -0.09338561</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   1.176527  0.66307521 -2.8987809  0.8236991  2.0724415 -3.01350963</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -2.636619  0.59310088 -3.4590657 -0.3268218  1.7810588  3.01051802</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   3.485822 -1.46296254 -0.1704166  4.1285505 -1.0492817 -1.91661366</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -7.520982  5.02206912  1.1081759 -1.6821918 -0.9808462 -9.49883610</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7   3.528720  7.42933758 -2.2164085  2.3358863  1.9948978  0.06917117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   3.079808  3.44060267  4.8759360 -3.7344850 -0.9277954 -2.64084005</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -7.722228 -3.66915807 -3.4939015 -2.5270844  7.7417361 -3.42867672</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 -4.026620  0.04636321  0.1434473 -0.1511424 -1.2178944 -6.83449644</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s61        s62        s63        s64        s65       s66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   3.2111815  3.2263723 -1.0643759 -0.2667417 -0.8828178  3.447390</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -6.4122574  0.9128344 -2.7506007  1.2640632  3.2744260 -2.818452</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   0.5056116 -5.4719621 -4.6475374 -0.6237623 -1.5076707  4.039123</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -6.4784487 -2.1363567 -1.0868052  2.2340620  4.1798086  1.261942</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -0.9287224 -1.7601046 -1.0141178  6.5499171 -1.8823063 -2.325184</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -2.5090150  0.6590018 -0.4584948 -1.0616618 -1.8895999  4.157974</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -3.1862391 -4.6423567 -4.1751019 -2.0140082 -1.4602655 -2.547074</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   0.9637049 -3.2232293  2.3419421 -0.9899391 -1.0443814  4.251450</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -0.6848188  4.5174856 -1.2536607 -0.3947690  5.7679818 -1.046474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 -3.7772839 -2.5788744  0.3893406 -2.6257986  0.4376852 -4.191097</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s67        s68        s69          s70        s71        s72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -6.9301334  2.8910437 -1.9802361 -3.272600650  1.8113540  0.4987448</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   6.7699120 -7.9400628  0.5779573 -2.137948131  2.9493902  0.7940137</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  -3.2349809  4.2094936 -8.1048568  0.005512317  4.7806937 -6.5988366</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   3.3691042 -4.1906834 -1.0183256  3.971475226 -1.2325083 -4.4041070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -1.5482981  2.3634052 -3.0699993 -3.307713762 -0.6393485 -3.1571700</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   2.5436413 -0.3051230  8.2236557  0.396376432 -3.2654677  8.1916530</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -0.4363008 -0.2162208 -4.9774277  4.334680576 -1.1763597 -2.2975542</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   6.5490750  4.4539121 -4.1524105  2.227340983 -2.1466309  5.5985634</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -4.1731310 -0.3425542 -0.4605432  3.701477965 -6.5490630 -1.4585534</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 -0.3596893  3.8144494  0.6867395  0.590847210 -0.5936819  2.3303443</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s73          s74        s75        s76        s77        s78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   4.4615222   0.80255883 -0.5778813  0.4950810 -9.3315205  0.3930373</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -2.7534344  -3.79031211  2.6265161  2.8920750  1.4422087  0.6505410</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  -0.5832637   7.30142843  0.9030340  2.2962753  0.8306449 -1.6992276</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   2.9066363  -0.62504407  0.3408066  1.8635026 -2.9193516 -1.1168056</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -0.3772884   3.55282767 -3.1421583  0.4975916  5.2712299 -4.1725338</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -3.9041743   1.86739164  1.0185642  0.1736824  6.9507446 -3.0356091</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7   1.7340800  -3.28964363 -0.3413438  1.1623377  0.7004292 -0.5182043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -3.1181674 -11.44919278  2.3620251 -0.1452598  4.3726380 -0.5390193</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9   3.6824758   0.02677103  1.1782430  3.0753564 -0.9322906  6.0817896</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  2.5613823   3.13956388  4.1600970  0.4858036  2.7496587  0.9915129</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s79         s80        s81        s82        s83        s84</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   2.4141517  1.56467349 -3.3842170  1.0365330 -8.4902561 -0.1658197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -1.1362852  3.09662069  3.3126391 -1.5640448  3.2341527 -3.7976927</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   3.6675879  0.31608746  0.9303423 -3.2129688  0.6803260  0.9539791</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   1.7443937 -0.30052197  1.0452486 -0.8350406 -1.1491264 -0.9163483</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   1.6148111  0.62406249  3.2245522 -3.2262737  4.1076061 -5.0807705</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   4.5766097  0.04181228  2.6035581  3.4620366 -3.4845889  2.6453623</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7   2.0212508  6.78499503  7.4188307 -3.1075597  2.5698661  2.5481574</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -2.7481381  5.10184926  1.2781094  7.7951784 -2.6353382  2.0138404</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -5.3005692 -2.05700873  3.0128797 -3.7446636 -3.3496573  3.4964332</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  0.1663172 -4.38334912 -1.9780320 -1.2217689  0.2057808 -3.8002222</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s85        s86         s87         s88        s89        s90</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   3.7937377  4.3091234  3.68144118  1.86199993  3.7278782 -0.1810527</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -2.0239026 -5.2147410 -4.07722620 -1.35847170  0.3922478  3.2886425</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  -2.4058912  0.3403064 -4.36685069 -3.73050488 -1.3347398 -2.6815276</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   0.8267731 -7.4273617 -4.93617614 -1.06686872 -0.6313525  7.4590274</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -3.6249423 -1.6968461 -2.27869168  0.05039355  6.1055336 -2.5117237</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -9.9717606  0.1813048  0.07520349 -2.67337579 -3.7184412 -1.5394513</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -0.2302721 -3.3076085 -7.28362822 -5.47183580 -0.9233394  0.7619895</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -1.0354241  1.5883695 -1.97414065 -0.41345332 -0.1363624  1.6846499</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9   0.5084496  2.9055512 -1.34296334 -2.73704360  2.1430529  8.2867939</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 -8.1228447 -5.8172824  1.98663539  2.54841143 -2.8942879  0.4916269</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s91       s92         s93        s94        s95        s96</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   2.1903073 -4.136771  2.46755340  1.2036411 -5.4895878  3.2402865</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -4.7588742  5.437044 -5.53208733  1.0963087  2.9371467  1.6724869</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   2.2014096 -1.010798  5.21723935 -7.5288189  1.6456926  4.1518539</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   0.7230083  5.451849 -4.00781558  1.2242386  1.8154196 -1.7718099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -7.8373680 -1.555530  5.59271984  0.3086099 -0.3346585 -0.8931692</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   4.5411996 -3.063357  0.26580483  3.2653507 -1.5586573 -3.5457722</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -1.4429968 -3.385868  2.60069776 -2.7463354  4.6507723  0.4709983</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   3.4010945  1.075909  2.12377533 -6.0425562  0.2622352 -4.3375520</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -6.7959973 -5.928630 -0.06680629  5.6844874 -1.8034497 -8.0179092</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 -4.5070778  4.315753  5.22360719  0.2595344  3.4170598  1.4333231</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               s97        s98         s99       s100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.9543829  5.1442220  0.34877124  0.1389570</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   3.2590251 -1.0730907 -6.54805951  3.9737762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  -3.6133392  2.0356190  4.68605898  0.2921353</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -2.1160398  3.2110815  0.44978351  3.3853513</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -1.3793668  5.9275410  2.01076921  1.5823277</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6   4.1529597 -5.1193649  3.29595474  0.7627748</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -2.0317868  5.9946390  0.13861899 -0.8986803</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   3.3379298 -3.8238096 -7.47085365 -1.7279374</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -1.1489955  8.2646879 -0.03261844  4.4347934</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  4.2430278 -0.6855211 -1.25284050  5.0800770</span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals</a></span><span class="op">(</span><span class="va">fit4</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             s1         s2         s3        s4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene1 2.196588 -7.2102826  1.3618545 0.8055865</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene2 1.270341  0.6885371 -0.8045642 2.0594469</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene3 1.939465  0.8003329 -1.7723606 3.0120196</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene4 2.766271 -2.4954702 -3.5198043 5.2286010</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -438,11 +256,13 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a>.</p>
+  <p></p><p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel
+Hoffman</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
     </footer></div>

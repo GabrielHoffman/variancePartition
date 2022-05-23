@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.25.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,8 @@
       <img src="" class="logo" alt=""><h1>dream: Differential expression testing with linear mixed models for repeated measures</h1>
                         <h4 data-toc-skip class="author"><a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a></h4>
             <address class="author_afil">
-      <p>Icahn School of Medicine at Mount Sinai, New York</p>
+      <p>Icahn School of Medicine at Mount Sinai, New
+York</p>
 <br><small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/dream.Rmd" class="external-link"><code>vignettes/dream.Rmd</code></a></small>
       <div class="d-none name"><code>dream.Rmd</code></div>
     </address>
@@ -86,8 +87,25 @@
     
         <div class="abstract">
       <p class="abstract">Abstract</p>
-      <p><strong>D</strong>ifferential expression for <strong>re</strong>pe<strong>a</strong>ted <strong>m</strong>easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual. The analysis fits seamlessly into the widely used workflow of limma/voom <span class="citation">(Law et al. 2014)</span>. <br><br> Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements. Dream achieves this by combining multiple statistical concepts into a single statistical model. The model includes: <br><br>
-      - flexible modeling of repeated measures gene expression data<br> - precision weights to model measurement error in RNA-seq counts<br> - ability to model multiple random effects<br> - random effects estimated separately for each gene<br> - hypothesis testing for fixed effects in linear mixed models<br> - small sample size hypothesis test<br><br> Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br><br> variancePartition v1.25.13<br> April 06, 2022 20:08:51<br></p>
+      <p><strong>D</strong>ifferential expression for
+      <strong>re</strong>pe<strong>a</strong>ted
+      <strong>m</strong>easures (dream) uses a linear model model to
+      increase power and decrease false positives for RNA-seq datasets
+      with multiple measurements per individual. The analysis fits
+      seamlessly into the widely used workflow of limma/voom <span class="citation">(Law et al. 2014)</span>. <br><br> Dream uses a
+      linear model model to increase power and decrease false positives
+      for RNA-seq datasets with repeated measurements. Dream achieves
+      this by combining multiple statistical concepts into a single
+      statistical model. The model includes: <br><br>
+      - flexible modeling of repeated measures gene expression data<br>
+      - precision weights to model measurement error in RNA-seq
+      counts<br> - ability to model multiple random effects<br> - random
+      effects estimated separately for each gene<br> - hypothesis
+      testing for fixed effects in linear mixed models<br> - small
+      sample size hypothesis test<br><br> Dream also includes
+      multi-threaded analysis across thousands of genes on a multi-core
+      machine.<br><br> variancePartition v1.27.2<br> May 23, 2022
+      11:03:37<br></p>
     </div>
     
 <!---
@@ -124,7 +142,8 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="section level2">
 <h2 id="standard-rna-seq-processing">Standard RNA-seq processing<a class="anchor" aria-label="anchor" href="#standard-rna-seq-processing"></a>
 </h2>
-<p>This tutorial assumes that the reader is familiar with the limma/voom workflow for RNA-seq. Process raw count data using limma/voom.</p>
+<p>This tutorial assumes that the reader is familiar with the limma/voom
+workflow for RNA-seq. Process raw count data using limma/voom.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="http://bioconductor.org/packages/variancePartition" class="external-link">'variancePartition'</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="http://bioinf.wehi.edu.au/edgeR" class="external-link">'edgeR'</a></span><span class="op">)</span>
@@ -144,7 +163,10 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="section level2">
 <h2 id="limma-analysis">Limma Analysis<a class="anchor" aria-label="anchor" href="#limma-analysis"></a>
 </h2>
-<p>Limma has a built-in approach for analyzing repeated measures data using <code><a href="https://rdrr.io/pkg/limma/man/dupcor.html" class="external-link">duplicateCorrelation()</a></code>. The model can handle a single random effect, and forces the magnitude of the random effect to be the same across all genes.</p>
+<p>Limma has a built-in approach for analyzing repeated measures data
+using <code><a href="https://rdrr.io/pkg/limma/man/dupcor.html" class="external-link">duplicateCorrelation()</a></code>. The model can handle a single
+random effect, and forces the magnitude of the random effect to be the
+same across all genes.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># apply duplicateCorrelation is two rounds</span>
 <span class="va">design</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Disease</span>, <span class="va">metadata</span><span class="op">)</span>
@@ -169,14 +191,19 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="section level2">
 <h2 id="dream-analysis">Dream Analysis<a class="anchor" aria-label="anchor" href="#dream-analysis"></a>
 </h2>
-<p>The dream method replaces two core functions of limma with a linear mixed model.</p>
+<p>The dream method replaces two core functions of limma with a linear
+mixed model.</p>
 <ol style="list-style-type: decimal">
 <li>
-<code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code> replaces <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code> to estimate precision weights</li>
+<code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code> replaces <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code> to
+estimate precision weights</li>
 <li>
-<code><a href="../reference/dream-method.html">dream()</a></code> replaces <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code> to estimate regression coefficients.</li>
+<code><a href="../reference/dream-method.html">dream()</a></code> replaces <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code> to estimate
+regression coefficients.</li>
 </ol>
-<p>Otherwise dream uses the same workflow as limma with <code><a href="../reference/toptable-method.html">topTable()</a></code>, since any statistical differences are handled behind the scenes.</p>
+<p>Otherwise dream uses the same workflow as limma with
+<code><a href="../reference/toptable-method.html">topTable()</a></code>, since any statistical differences are handled
+behind the scenes.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Specify parallel processing parameters</span>
 <span class="co"># this is used implicitly by dream() to run in parallel</span>
@@ -210,16 +237,31 @@ Dream uses a linear model model to increase power and decrease false positives f
 <span class="co">## ENST00000283033.5 gene=TXNDC11 9.459336</span>
 <span class="co">## ENST00000257181.9 gene=PRPF38A 8.513757</span>
 <span class="co">## ENST00000525790.1 gene=TDRKH   8.236879</span></code></pre>
-<p>Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here. Therefore, the t-statistics are not directly comparable since they have different degrees of freedom. In order to be able to compare test statistics, we report <code>z.std</code> which is the p-value transformed into a signed z-score. This can be used for downstream analysis.</p>
-<p>Note that if a random effect is not specified, <code><a href="../reference/dream-method.html">dream()</a></code> automatically uses <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>, but the user must run <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> afterward.</p>
+<p>Since dream uses an estimated degrees of freedom value for each
+hypothsis test, the degrees of freedom is different for each gene here.
+Therefore, the t-statistics are not directly comparable since they have
+different degrees of freedom. In order to be able to compare test
+statistics, we report <code>z.std</code> which is the p-value
+transformed into a signed z-score. This can be used for downstream
+analysis.</p>
+<p>Note that if a random effect is not specified, <code><a href="../reference/dream-method.html">dream()</a></code>
+automatically uses <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>, but the user must run
+<code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> afterward.</p>
 <div class="section level3">
 <h3 id="advanced-hypothesis-testing">Advanced hypothesis testing<a class="anchor" aria-label="anchor" href="#advanced-hypothesis-testing"></a>
 </h3>
 <div class="section level4">
 <h4 id="using-contrasts-to-compare-coefficients">Using contrasts to compare coefficients<a class="anchor" aria-label="anchor" href="#using-contrasts-to-compare-coefficients"></a>
 </h4>
-<p>You can also perform a hypothesis test of the <em>difference</em> between two or more coefficients by using a contrast matrix. The contrasts are evaluated at the time of the model fit and the results can be extracted with <code><a href="../reference/toptable-method.html">topTable()</a></code>. This behaves like <code><a href="https://rdrr.io/pkg/limma/man/makeContrasts.html" class="external-link">makeContrasts()</a></code> and <code><a href="https://rdrr.io/pkg/limma/man/contrasts.fit.html" class="external-link">contrasts.fit()</a></code> in limma.</p>
-<p>Multiple contrasts can be evaluated at the same time, in order to save computation time. Make sure to inspect your contrast matrix to confirm it is testing what you intend.</p>
+<p>You can also perform a hypothesis test of the <em>difference</em>
+between two or more coefficients by using a contrast matrix. The
+contrasts are evaluated at the time of the model fit and the results can
+be extracted with <code><a href="../reference/toptable-method.html">topTable()</a></code>. This behaves like
+<code><a href="https://rdrr.io/pkg/limma/man/makeContrasts.html" class="external-link">makeContrasts()</a></code> and <code><a href="https://rdrr.io/pkg/limma/man/contrasts.fit.html" class="external-link">contrasts.fit()</a></code> in
+limma.</p>
+<p>Multiple contrasts can be evaluated at the same time, in order to
+save computation time. Make sure to inspect your contrast matrix to
+confirm it is testing what you intend.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">DiseaseSubtype</span> <span class="op">+</span> <span class="va">Sex</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> 
 
@@ -255,7 +297,12 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="section level4">
 <h4 id="comparing-multiple-coefficients">Comparing multiple coefficients<a class="anchor" aria-label="anchor" href="#comparing-multiple-coefficients"></a>
 </h4>
-<p>So far contrasts have only involved the difference between two coefficients. But contrasts can also compare any linear combination of coefficients. Here, consider comparing <code>DiseaseSubtype0</code> to the mean of <code>DiseaseSubtype1</code> and <code>DiseaseSubtype2</code>. Note you can also customize the name of the contrast.</p>
+<p>So far contrasts have only involved the difference between two
+coefficients. But contrasts can also compare any linear combination of
+coefficients. Here, consider comparing <code>DiseaseSubtype0</code> to
+the mean of <code>DiseaseSubtype1</code> and
+<code>DiseaseSubtype2</code>. Note you can also customize the name of
+the contrast.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">L2</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, contrasts <span class="op">=</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Test1 <span class="op">=</span> <span class="st">"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"</span><span class="op">)</span><span class="op">)</span>
@@ -280,7 +327,9 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="section level4">
 <h4 id="joint-hypothesis-test-of-multiple-coefficients">Joint hypothesis test of multiple coefficients<a class="anchor" aria-label="anchor" href="#joint-hypothesis-test-of-multiple-coefficients"></a>
 </h4>
-<p>Joint hypothesis testing of multiple coefficients at the same time can be performed by using an F-test. Just like in limma, the results can be extracted using <code><a href="../reference/toptable-method.html">topTable()</a></code></p>
+<p>Joint hypothesis testing of multiple coefficients at the same time
+can be performed by using an F-test. Just like in limma, the results can
+be extracted using <code><a href="../reference/toptable-method.html">topTable()</a></code></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># extract results from first contrast</span>
 <span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2"</span>, <span class="st">"DiseaseSubtype1"</span><span class="op">)</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></code></pre></div>
@@ -292,13 +341,22 @@ Dream uses a linear model model to increase power and decrease false positives f
 <span class="co">## ENST00000418210.2 gene=TMEM64  5.216149e-22 51.30770</span>
 <span class="co">## ENST00000555834.1 gene=RPS6KL1 1.188926e-21 49.79067</span>
 <span class="co">## ENST00000589123.1 gene=NFIC    1.438055e-20 46.89238</span></code></pre>
-<p>Since dream uses an estimated degrees of freedom value for each hypothsis test, the degrees of freedom is different for each gene here. Therefore, the F-statistics are not directly comparable since they have different degrees of freedom. In order to be able to compare test statistics, we report <code>F.std</code> which is the p-value transformed into an F-statistic with <span class="math inline">\(df_1\)</span> the number of coefficients tested and <span class="math inline">\(df_2=\infty\)</span>. This can be used for downstream analysis.</p>
+<p>Since dream uses an estimated degrees of freedom value for each
+hypothsis test, the degrees of freedom is different for each gene here.
+Therefore, the F-statistics are not directly comparable since they have
+different degrees of freedom. In order to be able to compare test
+statistics, we report <code>F.std</code> which is the p-value
+transformed into an F-statistic with <span class="math inline">\(df_1\)</span> the number of coefficients tested
+and <span class="math inline">\(df_2=\infty\)</span>. This can be used
+for downstream analysis.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="small-sample-method">Small-sample method<a class="anchor" aria-label="anchor" href="#small-sample-method"></a>
 </h3>
-<p>For small datasets, the Kenward-Roger method can be more powerful. But it is <strong>substantially</strong> more computationally intensive.</p>
+<p>For small datasets, the Kenward-Roger method can be more powerful.
+But it is <strong>substantially</strong> more computationally
+intensive.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fitmmKR</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span> <span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, ddf<span class="op">=</span><span class="st">"Kenward-Roger"</span><span class="op">)</span>
 <span class="va">fitmmKR</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fitmmKR</span><span class="op">)</span></code></pre></div>
@@ -306,7 +364,10 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="section level3">
 <h3 id="variancepartition-plot">variancePartition plot<a class="anchor" aria-label="anchor" href="#variancepartition-plot"></a>
 </h3>
-<p>Dream and variancePartition share the same underlying linear mixed model framework. A variancePartition analysis can indicate important variables that should be included as fixed or random effects in the dream analysis.</p>
+<p>Dream and variancePartition share the same underlying linear mixed
+model framework. A variancePartition analysis can indicate important
+variables that should be included as fixed or random effects in the
+dream analysis.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Note: this could be run with either vobj from voom()</span>
 <span class="co"># or vobjDream from voomWithDreamWeights()</span>
@@ -320,7 +381,9 @@ Dream uses a linear model model to increase power and decrease false positives f
 <div class="section level3">
 <h3 id="compare-p-values-from-dream-and-duplicatecorrelation">Compare p-values from dream and duplicateCorrelation<a class="anchor" aria-label="anchor" href="#compare-p-values-from-dream-and-duplicatecorrelation"></a>
 </h3>
-<p>In order to understand the empircal difference between dream and duplication correlation, we can plot the <span class="math inline">\(-\log_{10}\)</span> p-values from both methods.</p>
+<p>In order to understand the empircal difference between dream and
+duplication correlation, we can plot the <span class="math inline">\(-\log_{10}\)</span> p-values from both
+methods.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Compare p-values and make plot</span>
 <span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fitDupCor</span>, coef<span class="op">=</span><span class="st">"Disease1"</span>, number<span class="op">=</span><span class="cn">Inf</span>, sort.by<span class="op">=</span><span class="st">"none"</span><span class="op">)</span><span class="op">$</span><span class="va">P.Value</span>
@@ -328,16 +391,42 @@ Dream uses a linear model model to increase power and decrease false positives f
 
 <span class="fu"><a href="../reference/plotCompareP-method.html">plotCompareP</a></span><span class="op">(</span> <span class="va">p1</span>, <span class="va">p2</span>, <span class="va">vp</span><span class="op">$</span><span class="va">Individual</span>, <span class="va">dupcor</span><span class="op">$</span><span class="va">consensus</span><span class="op">)</span></code></pre></div>
 <p><img src="dream_files/figure-html/define-1.png" width="700"></p>
-<p>The duplicateCorrelation method estimates a single variance term genome-wide even though the donor contribution of a particular gene can vary substantially from the genome-wide trend. Using a single value genome-wide for the within-donor variance can reduce power and increase the false positive rate in a particular, reproducible way. Let <span class="math inline">\(\tau^2_g\)</span> be the value of the donor component for gene <span class="math inline">\(g\)</span> and <span class="math inline">\(\bar{\tau}^2\)</span> be the genome-wide mean. For genes where <span class="math inline">\(\tau^2_g&gt;\bar{\tau}^2\)</span>, using <span class="math inline">\(\bar{\tau}^2\)</span> under-corrects for the donor component so that it increases the false positive rate compared to using <span class="math inline">\(\tau^2_g\)</span>. Conversely, for genes where <span class="math inline">\(\tau^2_g&lt;\bar{\tau}^2\)</span>, using <span class="math inline">\(\bar{\tau}^2\)</span> over-corrects for the donor component so that it decreases power. Increasing sample size does not overcome this issue. The dream method overcomes this issue by using a <span class="math inline">\(\tau^2_g\)</span>.</p>
-<p>Here, the <span class="math inline">\(-\log_{10}\)</span> p-values from both methods are plotted and colored by the donor contribution estiamted by variancePartition. The green value indicates <span class="math inline">\(\bar{\tau}^2\)</span>, while red and blue indicate higher and lower values, respectively. When only one variance component is used and the contrast matrix is simple, the effect of using dream versus duplicateCorrelation is determined by the comparison of <span class="math inline">\(\tau^2_g\)</span> to <span class="math inline">\(\bar{\tau}^2\)</span>:</p>
-<p>dream can increase the <span class="math inline">\(-\log_{10}\)</span> p-value for genes with a lower donor component (i.e. <span class="math inline">\(\tau^2_g&lt;\bar{\tau}^2\)</span>) and decrease <span class="math inline">\(-\log_{10}\)</span> p-value for genes with a higher donor component (i.e. <span class="math inline">\(\tau^2_g&gt;\bar{\tau}^2\)</span>)</p>
-<p>Note that using more variance components or a more complicated contrast matrix can make the relationship more complicated.</p>
+<p>The duplicateCorrelation method estimates a single variance term
+genome-wide even though the donor contribution of a particular gene can
+vary substantially from the genome-wide trend. Using a single value
+genome-wide for the within-donor variance can reduce power and increase
+the false positive rate in a particular, reproducible way. Let <span class="math inline">\(\tau^2_g\)</span> be the value of the donor
+component for gene <span class="math inline">\(g\)</span> and <span class="math inline">\(\bar{\tau}^2\)</span> be the genome-wide mean. For
+genes where <span class="math inline">\(\tau^2_g&gt;\bar{\tau}^2\)</span>, using <span class="math inline">\(\bar{\tau}^2\)</span> under-corrects for the donor
+component so that it increases the false positive rate compared to using
+<span class="math inline">\(\tau^2_g\)</span>. Conversely, for genes
+where <span class="math inline">\(\tau^2_g&lt;\bar{\tau}^2\)</span>,
+using <span class="math inline">\(\bar{\tau}^2\)</span> over-corrects
+for the donor component so that it decreases power. Increasing sample
+size does not overcome this issue. The dream method overcomes this issue
+by using a <span class="math inline">\(\tau^2_g\)</span>.</p>
+<p>Here, the <span class="math inline">\(-\log_{10}\)</span> p-values
+from both methods are plotted and colored by the donor contribution
+estiamted by variancePartition. The green value indicates <span class="math inline">\(\bar{\tau}^2\)</span>, while red and blue indicate
+higher and lower values, respectively. When only one variance component
+is used and the contrast matrix is simple, the effect of using dream
+versus duplicateCorrelation is determined by the comparison of <span class="math inline">\(\tau^2_g\)</span> to <span class="math inline">\(\bar{\tau}^2\)</span>:</p>
+<p>dream can increase the <span class="math inline">\(-\log_{10}\)</span> p-value for genes with a lower
+donor component (i.e. <span class="math inline">\(\tau^2_g&lt;\bar{\tau}^2\)</span>) and decrease
+<span class="math inline">\(-\log_{10}\)</span> p-value for genes with a
+higher donor component (i.e. <span class="math inline">\(\tau^2_g&gt;\bar{\tau}^2\)</span>)</p>
+<p>Note that using more variance components or a more complicated
+contrast matrix can make the relationship more complicated.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="parallel-processing">Parallel processing<a class="anchor" aria-label="anchor" href="#parallel-processing"></a>
 </h2>
-<p>variancePartition functions including <code><a href="../reference/dream-method.html">dream()</a></code>, <code><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel()</a></code> and <code><a href="../reference/fitVarPartModel-method.html">fitVarPartModel()</a></code> can take advange of multicore machines to speed up analysis. It uses the <a href="http://bioconductor.org/packages/BiocParallel/" class="external-link">BiocParallel</a> package to manage the parallelization.</p>
+<p>variancePartition functions including <code><a href="../reference/dream-method.html">dream()</a></code>,
+<code><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel()</a></code> and <code><a href="../reference/fitVarPartModel-method.html">fitVarPartModel()</a></code>
+can take advange of multicore machines to speed up analysis. It uses the
+<a href="http://bioconductor.org/packages/BiocParallel/" class="external-link">BiocParallel</a>
+package to manage the parallelization.</p>
 <ul>
 <li>Specify parameters with the BPPARAM argument.</li>
 </ul>
@@ -403,7 +492,9 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Law2014" class="csl-entry">
-Law, C. W., Y. Chen, W. Shi, and G. K. Smyth. 2014. <span>“<span class="nocase">Voom: precision weights unlock linear model analysis tools for RNA-seq read counts.</span>”</span> <em>Genome Biology</em> 15 (2): R29. <a href="https://doi.org/10.1186/gb-2014-15-2-r29" class="external-link">https://doi.org/10.1186/gb-2014-15-2-r29</a>.
+Law, C. W., Y. Chen, W. Shi, and G. K. Smyth. 2014. <span>“<span class="nocase">Voom: precision weights unlock linear model analysis
+tools for RNA-seq read counts.</span>”</span> <em>Genome Biology</em> 15
+(2): R29. <a href="https://doi.org/10.1186/gb-2014-15-2-r29" class="external-link">https://doi.org/10.1186/gb-2014-15-2-r29</a>.
 </div>
 </div>
 </div>
@@ -415,12 +506,14 @@ Law, C. W., Y. Chen, W. Shi, and G. K. Smyth. 2014. <span>“<span class="nocase
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a>.</p>
+<p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel
+Hoffman</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
     </footer>
