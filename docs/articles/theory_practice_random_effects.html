@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.25.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,8 @@
       <img src="" class="logo" alt=""><h1>Theory and practice of random effects and REML</h1>
                         <h4 data-toc-skip class="author"><a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a></h4>
             <address class="author_afil">
-      <p>Icahn School of Medicine at Mount Sinai, New York</p>
+      <p>Icahn School of Medicine at Mount Sinai, New
+York</p>
 <br><small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/theory_practice_random_effects.Rmd" class="external-link"><code>vignettes/theory_practice_random_effects.Rmd</code></a></small>
       <div class="d-none name"><code>theory_practice_random_effects.Rmd</code></div>
     </address>
@@ -86,7 +87,14 @@
     
         <div class="abstract">
       <p class="abstract">Abstract</p>
-      <p>The distinction between modeling a variable as a fixed versus a random effect depends on the goal of the statistical analysis. While some theory and software make a strong distinction, <code>variancePartition</code> and <code>dream</code> take different approaches based on the goal of each type of analysis. Here we consider the distinction between fixed and random effects, and the usage of REML in <code>variancePartition</code> and <code>dream</code>.</p>
+      <p>The distinction between modeling a variable as a fixed versus a
+      random effect depends on the goal of the statistical analysis.
+      While some theory and software make a strong distinction,
+      <code>variancePartition</code> and <code>dream</code> take
+      different approaches based on the goal of each type of analysis.
+      Here we consider the distinction between fixed and random effects,
+      and the usage of REML in <code>variancePartition</code> and
+      <code>dream</code>.</p>
     </div>
     
 <div class="section level2">
@@ -96,16 +104,35 @@
 <div class="section level3">
 <h3 id="estimating-contributions-to-expression-variation">Estimating contributions to expression variation<a class="anchor" aria-label="anchor" href="#estimating-contributions-to-expression-variation"></a>
 </h3>
-<p>In traditional statistics and biostatistics, there is a strong distinction between modeling categorical variants as fixed and random effects. Random effects correspond to a sample of units from a larger population, while fixed effects correspond to properties of specific individuals. Random effects are typically treated as nuisance variables and integrated out, and hypothesis testing is performed on the fixed effect.</p>
-<p>The <code>r2glmm</code> package fits into this traditional framework, by computing the variance fractions for a given fixed effect as: <span class="math display">\[\begin{eqnarray}
+<p>In traditional statistics and biostatistics, there is a strong
+distinction between modeling categorical variants as fixed and random
+effects. Random effects correspond to a sample of units from a larger
+population, while fixed effects correspond to properties of specific
+individuals. Random effects are typically treated as nuisance variables
+and integrated out, and hypothesis testing is performed on the fixed
+effect.</p>
+<p>The <code>r2glmm</code> package fits into this traditional framework,
+by computing the variance fractions for a given fixed effect as: <span class="math display">\[\begin{eqnarray}
 \sigma^2_{fixed}/ \left(\sigma^2_{fixed} + \sigma^2_{error}\right)
 \end{eqnarray}\]</span></p>
-<p>Importantly, the random effects are not in the denominator. The fraction is only determined by fixed effects and residuals.</p>
-<p>In my experience in bioinformatics, this was a problem. Making such distinctions between fixed and random effects seemed arbitrary. Variance in a phenotype could be due to age (fixed) or to variation across subject (random). Including all of the variables in the denominator produced more intuitive results so that 1) the variance fractions sum to one across all components and 2) fixed and random effects could be interpreted on the same scale 3) fractions could be compared across studies with different designs, 4) estimates of variance fractions were most accurate. So in variancePartition the fractions are defined as: <span class="math display">\[\begin{eqnarray}
-\sigma^2_{X}/ \left(\sigma^2_{fixed} + \sigma^2_{random} + \sigma^2_{error}\right) 
+<p>Importantly, the random effects are not in the denominator. The
+fraction is only determined by fixed effects and residuals.</p>
+<p>In my experience in bioinformatics, this was a problem. Making such
+distinctions between fixed and random effects seemed arbitrary. Variance
+in a phenotype could be due to age (fixed) or to variation across
+subject (random). Including all of the variables in the denominator
+produced more intuitive results so that 1) the variance fractions sum to
+one across all components and 2) fixed and random effects could be
+interpreted on the same scale 3) fractions could be compared across
+studies with different designs, 4) estimates of variance fractions were
+most accurate. So in variancePartition the fractions are defined as:
+<span class="math display">\[\begin{eqnarray}
+\sigma^2_{X}/ \left(\sigma^2_{fixed} + \sigma^2_{random} +
+\sigma^2_{error}\right)
 \end{eqnarray}\]</span></p>
 <p>just plugging the each variable in the numerator.</p>
-<p>Thus the faction evaluated by variancePartition is different than <code>r2glmm</code> by definition.</p>
+<p>Thus the faction evaluated by variancePartition is different than
+<code>r2glmm</code> by definition.</p>
 <p>Here is some code explicitly demonstrating this difference:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="http://bioconductor.org/packages/variancePartition" class="external-link">'variancePartition'</a></span><span class="op">)</span>
@@ -145,12 +172,43 @@
 <pre><code>  Effect   Rsq upper.CL lower.CL
 1  Model 0.896    0.904    0.886
 2      X 0.896    0.904    0.886</code></pre>
-<p>So the formulas are different. But why require categorical variables as random effects?</p>
-<p>At practical level, categorical variables with too many levels are problematic. Using a categorical variable with 200 categories as a fixed effect is statistically unstable. There are so many degrees of freedom that that variable will absorb a lot of variance even under the null. Statistically, estimating the variance fraction for a variable with many categories can be biased if that variable is a fixed effect. Therefore, <code>variancePartition</code> requires all categorical variables to be random effects. Modeling this variable as a random effect produces unbiased estimates of variance fractions in practice. See simulations in the Supplement (section 1.5) of <a href="https://doi.org/10.1186/s12859-016-1323-z" class="external-link">Hoffman and Schadt (2016)</a>.</p>
-<p>The distinction between fixed and random effects is important in the  formulation because it affects which variables are put in the denominator. So choosing to model a variable as a fixed versus random effect will definitely change the estimated fraction.</p>
-<p>Yet for the <code>variancePartition</code> formulation, all variables are in the denominator and it isn`t affected by the fixed/random decision. Moreover, using a random effect empirically reduces the bias of the estimated fraction.</p>
-<p>Finally, why use maximum likelihood to estimate the paramters instead of the default REML ()? Maximum likelihood fits all parameters jointly so that it estimates the fixed and random effects together. This is essential if we want to compare fixed and random effects later. Conversely, REML estimates the random effects by removing the fixed effects from the response before estimation. This implicitly removes the fixed effects from the denominator when evaluating the variance fraction. REML treats fixed effects as nuisance variables, while <code>variancePartition</code> considers fixed effects to be a core part of the analysis.</p>
-<p>While REML produced unbiased estimates of the variance components, the goal of <code>variancePartition</code> is to estimate the variance fractions for fixed and random effects jointly. In simulations from the Supplement (section 1.5) of <a href="https://doi.org/10.1186/s12859-016-1323-z" class="external-link">Hoffman and Schadt (2016)</a>, REML produced biased estimates of the variance fractions while maximum likelihood estimates are unbiased.</p>
+<p>So the formulas are different. But why require categorical variables
+as random effects?</p>
+<p>At practical level, categorical variables with too many levels are
+problematic. Using a categorical variable with 200 categories as a fixed
+effect is statistically unstable. There are so many degrees of freedom
+that that variable will absorb a lot of variance even under the null.
+Statistically, estimating the variance fraction for a variable with many
+categories can be biased if that variable is a fixed effect. Therefore,
+<code>variancePartition</code> requires all categorical variables to be
+random effects. Modeling this variable as a random effect produces
+unbiased estimates of variance fractions in practice. See simulations in
+the Supplement (section 1.5) of <a href="https://doi.org/10.1186/s12859-016-1323-z" class="external-link">Hoffman and Schadt
+(2016)</a>.</p>
+<p>The distinction between fixed and random effects is important in the
+formulation because it affects which variables are put in the
+denominator. So choosing to model a variable as a fixed versus random
+effect will definitely change the estimated fraction.</p>
+<p>Yet for the <code>variancePartition</code> formulation, all variables
+are in the denominator and it isn`t affected by the fixed/random
+decision. Moreover, using a random effect empirically reduces the bias
+of the estimated fraction.</p>
+<p>Finally, why use maximum likelihood to estimate the paramters instead
+of the default REML ()? Maximum likelihood fits all parameters jointly
+so that it estimates the fixed and random effects together. This is
+essential if we want to compare fixed and random effects later.
+Conversely, REML estimates the random effects by removing the fixed
+effects from the response before estimation. This implicitly removes the
+fixed effects from the denominator when evaluating the variance
+fraction. REML treats fixed effects as nuisance variables, while
+<code>variancePartition</code> considers fixed effects to be a core part
+of the analysis.</p>
+<p>While REML produced unbiased estimates of the variance components,
+the goal of <code>variancePartition</code> is to estimate the variance
+fractions for fixed and random effects jointly. In simulations from the
+Supplement (section 1.5) of <a href="https://doi.org/10.1186/s12859-016-1323-z" class="external-link">Hoffman and Schadt
+(2016)</a>, REML produced biased estimates of the variance fractions
+while maximum likelihood estimates are unbiased.</p>
 </div>
 </div>
 <div class="section level2">
@@ -160,8 +218,18 @@
 <div class="section level3">
 <h3 id="hypothesis-testing">Hypothesis testing<a class="anchor" aria-label="anchor" href="#hypothesis-testing"></a>
 </h3>
-<p>While <code>dream</code> is also based on a linear mixed model, the goal of this analysis is to perform hypothesis testing on fixed effects. Random effects are treated as nuisance variables to be integrated out, and the approximate null distribution of a t- or F-statistic is constructed from the model fit.</p>
-<p>Since the goal of the analysis is different, the consideration of using REML versus ML is different than above. While  is required by  called by  when ,  can be used with  as either  or . Since the Kenward-Roger method gave the best power with an accurate control of false positive rate in our simulations, and since the Satterthwaite method with  gives p-values that are slightly closer to the Kenward-Roger p-values,  is set as the default.</p>
+<p>While <code>dream</code> is also based on a linear mixed model, the
+goal of this analysis is to perform hypothesis testing on fixed effects.
+Random effects are treated as nuisance variables to be integrated out,
+and the approximate null distribution of a t- or F-statistic is
+constructed from the model fit.</p>
+<p>Since the goal of the analysis is different, the consideration of
+using REML versus ML is different than above. While is required by
+called by when , can be used with as either or . Since the Kenward-Roger
+method gave the best power with an accurate control of false positive
+rate in our simulations, and since the Satterthwaite method with gives
+p-values that are slightly closer to the Kenward-Roger p-values, is set
+as the default.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -172,12 +240,14 @@
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a>.</p>
+<p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel
+Hoffman</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
     </footer>
