@@ -30,9 +30,9 @@ A simulated dataset of gene expression and metadata
 
 A simulated dataset of gene counts
 
-info about study design
+A simulated dataset of gene counts
 
-Normalized expression data
+A simulated dataset of gene counts
 }
 \details{
 \itemize{    

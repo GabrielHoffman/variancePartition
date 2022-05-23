@@ -22,9 +22,9 @@ dream(
 )
 }
 \arguments{
-\item{exprObj}{matrix of expression data (g genes x n samples), or ExpressionSet, or EList returned by voom() from the limma package}
+\item{exprObj}{matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by voom() from the limma package}
 
-\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and lmFit() followed by contrasts.fit() are run.}
+\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by \code{contrasts.fit()} are run.}
 
 \item{data}{data.frame with columns corresponding to formula}
 
@@ -34,7 +34,7 @@ dream(
 
 \item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified}
 
-\item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE}
+\item{weightsMatrix}{matrix the same dimension as \code{exprObj} with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE}
 
 \item{control}{control settings for \code{lmer()}}
 
@@ -54,7 +54,7 @@ dream(
 MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)
 }
 \description{
-Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix L
+Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix \code{L}
 }
 \details{
 A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression (Hoffman and Roussos, 2021).  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
@@ -122,7 +122,7 @@ fit4 = eBayes( fit4 )
 topTable( fit4, coef="Batch3 - Batch2" )
 
 # Compute residuals using dream
-residuals(fit4)
+residuals(fit4)[1:4, 1:4]
 
 }
 \references{

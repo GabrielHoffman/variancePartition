@@ -1,3 +1,6 @@
+# variancePartition 1.27.1
+ - update `plotPercentBars` arguemtns
+
 # variancePartition 1.26.1
  - patch to update docs
 

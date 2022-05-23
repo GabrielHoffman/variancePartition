@@ -151,6 +151,7 @@ setMethod("plotVarPart", "varPartResults",
 #' @param col color of bars for each variable
 #' @param genes name of genes to plot
 #' @param width specify width of bars
+#' @param ... other arguments
 #'
 #' @return Returns ggplot2 barplot
 #' @examples
@@ -179,7 +180,7 @@ setMethod("plotVarPart", "varPartResults",
 #' @docType methods
 #' @rdname plotPercentBars-method
 setGeneric("plotPercentBars", signature="x",
-	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL)
+	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL,...)
       standardGeneric("plotPercentBars")
 )
 
@@ -188,7 +189,7 @@ setGeneric("plotPercentBars", signature="x",
 #' @rdname plotPercentBars-method
 #' @aliases plotPercentBars,matrix-method
 setMethod("plotPercentBars", "matrix",
-	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL){
+	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL,...){
 
 		gene = unique(genes)
 		idx = match(genes, rownames(x))
@@ -203,7 +204,7 @@ setMethod("plotPercentBars", "matrix",
 			warning(txt)
 		}
 
- 		.plotPercentBars( as.data.frame(x[idx,]), col, width)
+ 		.plotPercentBars( as.data.frame(x[idx,]), col, width,...)
  	}
 )
 
@@ -211,7 +212,7 @@ setMethod("plotPercentBars", "matrix",
 #' @rdname plotPercentBars-method
 #' @aliases plotPercentBars,varPartResults-method
 setMethod("plotPercentBars", "data.frame",
-	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL){
+	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL,...){
 
 		gene = unique(genes)
 		idx = match(genes, rownames(x))
@@ -226,7 +227,7 @@ setMethod("plotPercentBars", "data.frame",
 			warning(txt)
 		}
 
- 		.plotPercentBars( x[idx,], col, width)
+ 		.plotPercentBars( x[idx,], col, width,...)
  	}
 )
 
@@ -234,7 +235,7 @@ setMethod("plotPercentBars", "data.frame",
 #' @rdname plotPercentBars-method
 #' @aliases plotPercentBars,matrix-method
 setMethod("plotPercentBars", "varPartResults",
-	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL){
+	function( x, col=c(ggColorHue(ncol(x)-1), "grey85"), genes = rownames(x), width=NULL,...){
 		
 	gene = unique(genes)
 	idx = match(genes, rownames(x))
@@ -249,14 +250,14 @@ setMethod("plotPercentBars", "varPartResults",
 		warning(txt)
 	}
 			
-	.plotPercentBars( data.frame(x[idx,], check.names=FALSE), col, width)
+	.plotPercentBars( data.frame(x[idx,], check.names=FALSE), col, width,...)
  	}
 )
 
 
 
 
-.plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL ){
+.plotPercentBars = function( varPart, col = c(ggColorHue(ncol(varPart)-1), "grey85"), width=NULL,... ){
 
 	if( !is.matrix(varPart) && !is.data.frame(varPart)){
 		stop("Argument must be a matrix or data.frame")

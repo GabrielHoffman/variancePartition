@@ -12,28 +12,32 @@ plotPercentBars(
   x,
   col = c(ggColorHue(ncol(x) - 1), "grey85"),
   genes = rownames(x),
-  width = NULL
+  width = NULL,
+  ...
 )
 
 \S4method{plotPercentBars}{matrix}(
   x,
   col = c(ggColorHue(ncol(x) - 1), "grey85"),
   genes = rownames(x),
-  width = NULL
+  width = NULL,
+  ...
 )
 
 \S4method{plotPercentBars}{data.frame}(
   x,
   col = c(ggColorHue(ncol(x) - 1), "grey85"),
   genes = rownames(x),
-  width = NULL
+  width = NULL,
+  ...
 )
 
 \S4method{plotPercentBars}{varPartResults}(
   x,
   col = c(ggColorHue(ncol(x) - 1), "grey85"),
   genes = rownames(x),
-  width = NULL
+  width = NULL,
+  ...
 )
 }
 \arguments{
@@ -44,6 +48,8 @@ plotPercentBars(
 \item{genes}{name of genes to plot}
 
 \item{width}{specify width of bars}
+
+\item{...}{other arguments}
 }
 \value{
 Returns ggplot2 barplot
