@@ -5,31 +5,28 @@
 \alias{varPartDEdata}
 \alias{countMatrix}
 \alias{metadata}
-\title{Simulation dataset for dream example}
+\title{A simulated dataset of gene counts}
 \format{
 A dataset of 24 samples and 19,364 genes
 
 A dataset of 24 samples and 19,364 genes
 }
 \usage{
-data(varPartDEdata)
+data(varPartData)
 
-data(varPartDEdata)
+data(varPartData)
 }
 \description{
-Gene counts from RNA-seq
-
-metadata matrix of sample information
-}
-\details{
 \itemize{    
-\item countMatrix gene expression in the form of RNA-seq counts
- \item metadata metadata about the study design
+\item geneCounts gene expression in the form of RNA-seq counts
+\item geneExpr gene expression on a continuous scale
+ \item info metadata about the study design
 }
 
 \itemize{    
-\item countMatrix gene expression in the form of RNA-seq counts
- \item metadata metadata about the study design
+\item geneCounts gene expression in the form of RNA-seq counts
+\item geneExpr gene expression on a continuous scale
+ \item info metadata about the study design
 }
 }
 \keyword{datasets}
