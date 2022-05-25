@@ -43,7 +43,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
     <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
-    <a class="dropdown-item" href="../articles/dream.html">dream: Differential expression testing with linear mixed models for repeated measures</a>
+    <a class="dropdown-item" href="../articles/dream.html">dream</a>
     <a class="dropdown-item" href="../articles/theory_practice_random_effects.html">Theory and practice of random effects and REML</a>
   </div>
 </li>
@@ -75,30 +75,17 @@
 <div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Frequently asked questions</h1>
-                        <h4 data-toc-skip class="author"><a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a></h4>
-            <address class="author_afil">
-      <p>Icahn School of Medicine at Mount Sinai, New
-York</p>
-<br><small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/FAQ.Rmd" class="external-link"><code>vignettes/FAQ.Rmd</code></a></small>
+                        <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
+</h4>
+            
+            <h4 data-toc-skip class="date">Run on 2022-05-25
+12:55:28</h4>
+      
+      <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/FAQ.Rmd" class="external-link"><code>vignettes/FAQ.Rmd</code></a></small>
       <div class="d-none name"><code>FAQ.Rmd</code></div>
-    </address>
-</div>
+    </div>
 
     
-        <div class="abstract">
-      <p class="abstract">Abstract</p>
-      <p>Errors and warnings in <code>variancePartition</code> are
-      mostly designed to let the user know that there is an isssue with
-      the model. Note that some of these warnings and errors can be
-      overridden by specifying <code>suppressWarnings=TRUE</code> for
-      <code><a href="../reference/dream-method.html">dream()</a></code> and <code>showWarnings=FALSE</code> for
-      <code><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel()</a></code> and
-      <code><a href="../reference/fitVarPartModel-method.html">fitVarPartModel()</a></code>. Here is a guide to interperting
-      interpreting warnings and errors from
-      <code>variancePartition</code> and <code>dream</code>. Note that
-      some of the document can be found in “1) Tutorial on using
-      variancePartition”.</p>
-    </div>
     
 <!---
 cd /Users/gabrielhoffman/workspace/repos
@@ -110,6 +97,21 @@ rmarkdown::render('variancePartition/vignettes/FAQ.Rmd')
 rmarkdown::render('FAQ.Rmd')
 
 --->
+<style>
+body {
+text-align: justify}
+</style>
+<p>Errors and warnings in <code>variancePartition</code> are mostly
+designed to let the user know that there is an isssue with the model.
+Note that some of these warnings and errors can be overridden by
+specifying <code>suppressWarnings=TRUE</code> for <code><a href="../reference/dream-method.html">dream()</a></code>
+and <code>showWarnings=FALSE</code> for
+<code><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel()</a></code> and
+<code><a href="../reference/fitVarPartModel-method.html">fitVarPartModel()</a></code>.</p>
+<p>Here is a guide to interperting interpreting warnings and errors from
+<code>variancePartition</code> and <code>dream</code>. Note that some of
+the document can be found in “1) Tutorial on using
+variancePartition”.</p>
 <div class="section level2">
 <h2 id="current-github-issues">Current GitHub issues<a class="anchor" aria-label="anchor" href="#current-github-issues"></a>
 </h2>
