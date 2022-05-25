@@ -11,3 +11,4 @@ template:
 
 search:
   exclude: ['news/index.html']
+
