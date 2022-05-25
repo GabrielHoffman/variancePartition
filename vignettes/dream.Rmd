@@ -127,12 +127,16 @@ fitDupCor <- eBayes( fitDupCor )
 ```
 
 # Dream Analysis
-The dream method replaces two core functions of limma with a linear mixed model.
+The dream method replaces 4 core functions of limma with a linear mixed model.
 
 1. `voomWithDreamWeights()` replaces `voom()` to estimate precision weights 
 2. `dream()` replaces `lmFit()` to estimate regression coefficients.  
 
-Otherwise dream uses the same workflow as limma with `topTable()`, since any statistical differences are handled behind the scenes.
+3. `variancePartition::eBayes()` replaces `limma::eBayes()` to apply empircal Bayes shrinkage on linear mixed models.
+
+4. `variancePartition::topTable()` replaces `limma::topTable()` to give seamless access to results from `dream().
+
+For models with only fixed effects, `variancePartition::eBayes()`, and `variancePartition::topTable()` work seamlessly and give results equivalent to the `limma` functions with the same name.  From the user perspective, the `dream()` workflow is the same as `limma` since the statistical differences are handled behind the scenes.
   
 ```{r lmm, eval=TRUE, message=FALSE, fig.height=2, results='hide'}
 # Specify parallel processing parameters
