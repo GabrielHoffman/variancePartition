@@ -1,9 +1,7 @@
 ---
 title: "Additional visualizations of variance structure"
-author:
-- name: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
-  affiliation: | 
-    Icahn School of Medicine at Mount Sinai, New York
+author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
+date: "Run on `r Sys.time()`"
 output:
   rmarkdown::html_document:
     highlight: pygments
@@ -15,10 +13,6 @@ output:
   #   toc_float: false
   BiocStyle::pdf_document: default
 package: variancePartition
-abstract: |
-  The correlation structure between samples in complex study designs can be decomposed into the contribution of multiple dimensions of variation.  `variancePartition` provides a statistical and visualization framework to interpret sources of variation.  Here I describe a visualization of the correlation structure between samples for a single gene.<br>  
-  variancePartition v`r packageVersion("variancePartition")`<br> 
-  `r format(Sys.time(),'%B %d, %Y %H:%M:%S')`<br> 
 vignette: |
   %\VignetteIndexEntry{2) Additional visualizations}
   %\VignetteEngine{knitr::rmarkdown}
@@ -33,12 +27,13 @@ opts_chunk$set(tidy=FALSE,dev="png",fig.show="show",
                message=FALSE, warning=FALSE)
 ``` 
 
+ The correlation structure between samples in complex study designs can be decomposed into the contribution of multiple dimensions of variation.  `variancePartition` provides a statistical and visualization framework to interpret sources of variation.  Here I describe a visualization of the correlation structure between samples for a single gene.
 
 ```{r initialize, cache=FALSE, echo=FALSE}
 # load library
 library('variancePartition')
 ```
- In the example dataset described in the main vignette, samples are correlated because they can come from the same individual or the same tissue.  The function \Rfunction{plotCorrStructure} shows the correlation structure caused by each variable as well and the joint correlation structure.  Figure \ref{fig:plotCorr}a,b shows the correlation between samples from the same individual where (a) shows the samples sorted based on clustering of the correlation matrix and (b) shows the original order.  Figure \ref{fig:plotCorr}c,d shows the same type of plot except demonstrating the effect of tissue.  The total correlation structure from summing individual and tissue correlation matricies is shown in \ref{fig:plotCorrAll}a,b.  The code to generate these plots is shown below. 
+ In the example dataset described in the main vignette, samples are correlated because they can come from the same individual or the same tissue.  The function `plotCorrStructure()` shows the correlation structure caused by each variable as well and the joint correlation structure.  Figure 1 shows the correlation between samples from the same individual where (a) shows the samples sorted based on clustering of the correlation matrix and (b) shows the original order.  Figure 1 c) and d) shows the same type of plot except demonstrating the effect of tissue.  The total correlation structure from summing individual and tissue correlation matricies is shown in Figure 2.  The code to generate these plots is shown below. 
 
 # Plot variance structure
 ```{r corStruct, results='hide'}

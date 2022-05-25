@@ -1,25 +1,8 @@
 ---
-title: "dream: Differential expression testing with linear mixed models for repeated measures"
-author:
-- name: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
-  affiliation: | 
-    Icahn School of Medicine at Mount Sinai, New York
-abstract: > 
-  **D**ifferential expression for **re**pe**a**ted **m**easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual.  The analysis fits seamlessly into the widely used workflow of limma/voom [@Law2014].  
-  <br><br> 
-  Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements.  Dream achieves this by combining multiple statistical concepts into a single statistical model.  The model includes: 
-  <br>  
-    - flexible modeling of repeated measures gene expression data<br> 
-    - precision weights to model measurement error in RNA-seq counts<br> 
-    - ability to model multiple random effects<br>
-    - random effects estimated separately for each gene<br>
-    - hypothesis testing for fixed effects in linear mixed models<br>
-    - small sample size hypothesis test<br>
-  <br> 
-  Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.<br> <br> 
-  variancePartition v`r packageVersion("variancePartition")`<br> 
-  `r format(Sys.time(),'%B %d, %Y %H:%M:%S')`<br>  
-
+title: "dream"
+subtitle: "Differential expression testing with linear mixed models for repeated measures"
+author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
+date: "Run on `r Sys.time()`"
 output:
   rmarkdown::html_document:
     highlight: pygments
@@ -53,6 +36,12 @@ knitr::opts_chunk$set(tidy=FALSE, cache=TRUE,
 options(width=100)
 ```	
 
+<style>
+body {
+text-align: justify}
+</style>
+
+
 <!---
 # Description
 Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements.  Dream achieves this by combining multiple statistical concepts into a single statistical model.  The dream model includes:     
@@ -82,6 +71,19 @@ pander(tab, style = 'rmarkdown')
 * small sample size hypothesis test
 * multi-threaded analysis across thousands of genes on a multi-core machine.
 --->
+
+**D**ifferential expression for **re**pe**a**ted **m**easures (dream) uses a linear model model to increase power and decrease false positives for RNA-seq datasets with multiple measurements per individual.  The analysis fits seamlessly into the widely used workflow of limma/voom [@Law2014].  Dream uses a linear model model to increase power and decrease false positives for RNA-seq datasets with repeated measurements.  Dream achieves this by combining multiple statistical concepts into a single statistical model.  The model includes: 
+
+  - flexible modeling of repeated measures gene expression data<br> 
+  - precision weights to model measurement error in RNA-seq counts<br> 
+  - ability to model multiple random effects<br>
+  - random effects estimated separately for each gene<br>
+  - hypothesis testing for fixed effects in linear mixed models<br>
+  - small sample size hypothesis test<br>
+  
+  Dream also includes multi-threaded analysis across thousands of genes on a multi-core machine.
+
+
 
 # Standard RNA-seq processing
 This tutorial assumes that the reader is familiar with the limma/voom workflow for RNA-seq.  Process raw count data using limma/voom.  
@@ -127,12 +129,14 @@ fitDupCor <- eBayes( fitDupCor )
 ```
 
 # Dream Analysis
-The dream method replaces two core functions of limma with a linear mixed model.
+The dream method replaces 4 core functions of limma with a linear mixed model.
 
-1. `voomWithDreamWeights()` replaces `voom()` to estimate precision weights 
+1. `voomWithDreamWeights()` replaces `voom()` to estimate precision weights
 2. `dream()` replaces `lmFit()` to estimate regression coefficients.  
+3. `variancePartition::eBayes()` replaces `limma::eBayes()` to apply empircal Bayes shrinkage on linear mixed models.
+4. `variancePartition::topTable()` replaces `limma::topTable()` to give seamless access to results from `dream().
 
-Otherwise dream uses the same workflow as limma with `topTable()`, since any statistical differences are handled behind the scenes.
+For models with only fixed effects, `variancePartition::eBayes()`, and `variancePartition::topTable()` work seamlessly and give results equivalent to the `limma` functions with the same name.  From the user perspective, the `dream()` workflow is the same as `limma` since the statistical differences are handled behind the scenes.
   
 ```{r lmm, eval=TRUE, message=FALSE, fig.height=2, results='hide'}
 # Specify parallel processing parameters

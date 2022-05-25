@@ -1,13 +1,7 @@
 ---
 title: "Frequently asked questions"
-author:
-- name: "[Gabriel Hoffman](http://gabrielhoffman.github.io)"
-  affiliation: | 
-    Icahn School of Medicine at Mount Sinai, New York
-abstract: >
-  Errors and warnings in `variancePartition` are mostly designed to let the user know that there is an isssue with the model.  Note that some of these warnings and errors can be overridden by specifying `suppressWarnings=TRUE` for `dream()` and `showWarnings=FALSE` for `fitExtractVarPartModel()` and `fitVarPartModel()`.
-
-  Here is a guide to interperting interpreting warnings and errors from `variancePartition` and `dream`.  Note that some of the document can be found in "1) Tutorial on using variancePartition".
+author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
+date: "Run on `r Sys.time()`"
 output:
   rmarkdown::html_document:
     highlight: pygments
@@ -41,6 +35,16 @@ knitr::opts_chunk$set(tidy=FALSE, cache=TRUE,
 options(width=100)
 ```	
 
+
+<style>
+body {
+text-align: justify}
+</style>
+
+
+Errors and warnings in `variancePartition` are mostly designed to let the user know that there is an isssue with the model.  Note that some of these warnings and errors can be overridden by specifying `suppressWarnings=TRUE` for `dream()` and `showWarnings=FALSE` for `fitExtractVarPartModel()` and `fitVarPartModel()`.
+
+Here is a guide to interperting interpreting warnings and errors from `variancePartition` and `dream`.  Note that some of the document can be found in "1) Tutorial on using variancePartition".
 
 # Current GitHub issues
 See [GitHub page](https://github.com/GabrielHoffman/variancePartition/issues) for up-to-date responses to users' questions.
