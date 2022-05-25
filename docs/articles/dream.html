@@ -104,8 +104,8 @@ York</p>
       testing for fixed effects in linear mixed models<br> - small
       sample size hypothesis test<br><br> Dream also includes
       multi-threaded analysis across thousands of genes on a multi-core
-      machine.<br><br> variancePartition v1.27.2<br> May 23, 2022
-      11:03:37<br></p>
+      machine.<br><br> variancePartition v1.27.2<br> May 25, 2022
+      12:39:49<br></p>
     </div>
     
 <!---
@@ -151,7 +151,7 @@ workflow for RNA-seq. Process raw count data using limma/voom.</p>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartDEdata</span><span class="op">)</span>
 
 <span class="co"># filter genes by number of counts</span>
-<span class="va">isexpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span>
+<span class="va">isexpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span>
 
 <span class="co"># Standard usage of limma/voom</span>
 <span class="va">geneExpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span> <span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>,<span class="op">]</span> <span class="op">)</span>
@@ -191,19 +191,27 @@ same across all genes.</p>
 <div class="section level2">
 <h2 id="dream-analysis">Dream Analysis<a class="anchor" aria-label="anchor" href="#dream-analysis"></a>
 </h2>
-<p>The dream method replaces two core functions of limma with a linear
+<p>The dream method replaces 4 core functions of limma with a linear
 mixed model.</p>
 <ol style="list-style-type: decimal">
-<li>
-<code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code> replaces <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code> to
-estimate precision weights</li>
-<li>
-<code><a href="../reference/dream-method.html">dream()</a></code> replaces <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code> to estimate
-regression coefficients.</li>
+<li><p><code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code> replaces <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code>
+to estimate precision weights</p></li>
+<li><p><code><a href="../reference/dream-method.html">dream()</a></code> replaces <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code> to estimate
+regression coefficients.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">variancePartition::eBayes()</a></code> replaces
+<code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">limma::eBayes()</a></code> to apply empircal Bayes shrinkage on linear
+mixed models.</p></li>
+<li><p><code><a href="../reference/toptable-method.html">variancePartition::topTable()</a></code> replaces
+<code><a href="https://rdrr.io/pkg/limma/man/toptable.html" class="external-link">limma::topTable()</a></code> to give seamless access to results from
+`dream().</p></li>
 </ol>
-<p>Otherwise dream uses the same workflow as limma with
-<code><a href="../reference/toptable-method.html">topTable()</a></code>, since any statistical differences are handled
-behind the scenes.</p>
+<p>For models with only fixed effects,
+<code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">variancePartition::eBayes()</a></code>, and
+<code><a href="../reference/toptable-method.html">variancePartition::topTable()</a></code> work seamlessly and give
+results equivalent to the <code>limma</code> functions with the same
+name. From the user perspective, the <code><a href="../reference/dream-method.html">dream()</a></code> workflow is
+the same as <code>limma</code> since the statistical differences are
+handled behind the scenes.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Specify parallel processing parameters</span>
 <span class="co"># this is used implicitly by dream() to run in parallel</span>
