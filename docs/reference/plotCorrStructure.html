@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
     <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
-    <a class="dropdown-item" href="../articles/dream.html">dream: Differential expression testing with linear mixed models for repeated measures</a>
+    <a class="dropdown-item" href="../articles/dream.html">dream</a>
     <a class="dropdown-item" href="../articles/theory_practice_random_effects.html">Theory and practice of random effects and REML</a>
   </div>
 </li>
@@ -73,18 +73,29 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>fit</dt>
 <dd><p>linear mixed model fit of a gene produced by lmer() or fitVarPartModel()</p></dd>
+
+
 <dt>varNames</dt>
 <dd><p>variables in the metadata for which the correlation structure should be shown.  Variables must be random effects</p></dd>
+
+
 <dt>reorder</dt>
 <dd><p>how to reorder the rows/columns of the correlation matrix.  reorder=FALSE gives no reorder.  reorder=TRUE reorders based on hclust.  reorder can also be an array of indices to reorder the samples manually</p></dd>
+
+
 <dt>pal</dt>
 <dd><p>color palette</p></dd>
+
+
 <dt>hclust.method</dt>
 <dd><p>clustering methods for hclust</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Image of correlation structure between each pair of experiments for a single gene</p>
+    
+
+<p>Image of correlation structure between each pair of experiments for a single gene</p>
     </div>
 
     <div class="section level2">
@@ -106,7 +117,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Memory usage to store result: &gt;454.7 Kb</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.2 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.3 s</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Focus on the first gene</span></span>
 <span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="va">fitList</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
@@ -147,13 +158,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel
-Hoffman</a>.</p>
+  <p></p><p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

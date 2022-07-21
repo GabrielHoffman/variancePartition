@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
     <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
-    <a class="dropdown-item" href="../articles/dream.html">dream: Differential expression testing with linear mixed models for repeated measures</a>
+    <a class="dropdown-item" href="../articles/dream.html">dream</a>
     <a class="dropdown-item" href="../articles/theory_practice_random_effects.html">Theory and practice of random effects and REML</a>
   </div>
 </li>
@@ -154,30 +154,55 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>exprObj</dt>
 <dd><p>matrix of expression data (g genes x n samples), or <code>ExpressionSet</code>, or <code>EList</code> returned by <code>voom()</code> from the <code>limma</code> package</p></dd>
+
+
 <dt>formula</dt>
 <dd><p>specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: <code>~ a + b + (1|c)</code></p></dd>
+
+
 <dt>data</dt>
 <dd><p><code>data.frame</code> with columns corresponding to formula</p></dd>
+
+
 <dt>REML</dt>
 <dd><p>use restricted maximum likelihood to fit linear mixed model. default is FALSE.   See Details.</p></dd>
+
+
 <dt>useWeights</dt>
 <dd><p>if TRUE, analysis uses heteroskedastic error estimates from <code>voom()</code>.  Value is ignored unless exprObj is an <code>EList()</code> from <code>voom()</code> or <code>weightsMatrix</code> is specified</p></dd>
+
+
 <dt>weightsMatrix</dt>
 <dd><p>matrix the same dimension as exprObj with observation-level weights from <code>voom()</code>.  Used only if <code>useWeights</code> is TRUE</p></dd>
+
+
 <dt>showWarnings</dt>
 <dd><p>show warnings about model fit (default TRUE)</p></dd>
+
+
 <dt>control</dt>
 <dd><p>control settings for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code></p></dd>
+
+
 <dt>quiet</dt>
 <dd><p>suppress message, default FALSE</p></dd>
+
+
 <dt>BPPARAM</dt>
 <dd><p>parameters for parallel evaluation</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional arguments for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>list() of where each entry is a model fit produced by <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
+    
+
+<p>list() of where each entry is a model fit produced by <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
+
+
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -220,7 +245,7 @@
 <span class="r-in"><span class="va">varPart</span> <span class="op">&lt;-</span> <span class="fu">fitExtractVarPartModel</span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">info</span> <span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 10 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:4 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:6 s</span>
 <span class="r-in"> </span>
 <span class="r-in"><span class="co"># violin plot of contribution of each variable to total variance</span></span>
 <span class="r-in"><span class="fu"><a href="plotVarPart-method.html">plotVarPart</a></span><span class="op">(</span> <span class="fu"><a href="sortCols-method.html">sortCols</a></span><span class="op">(</span> <span class="va">varPart</span> <span class="op">)</span> <span class="op">)</span></span>
@@ -235,7 +260,7 @@
 <span class="r-in"><span class="va">varPart2</span> <span class="op">&lt;-</span> <span class="fu">fitExtractVarPartModel</span><span class="op">(</span> <span class="va">sample.ExpressionSet</span>, <span class="va">form</span>, <span class="va">info2</span> <span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 25 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:10 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:14 s</span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"></span>
@@ -246,13 +271,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel
-Hoffman</a>.</p>
+  <p></p><p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

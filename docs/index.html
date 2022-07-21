@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,19 +70,12 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><p><br></p>
-<p><code>variancePartition</code> quantifies and interprets multiple
-sources of biological and technical variation in gene expression
-experiments. The package a linear mixed model to quantify variation in
-gene expression attributable to individual, tissue, time point, or
-technical variables. The <code><a href="reference/dream-method.html">dream()</a></code> function performs
-differential expression analysis for datasets with repeated measures or
-high dimensional batch effects.</p>
+<p><code>variancePartition</code> quantifies and interprets multiple sources of biological and technical variation in gene expression experiments. The package a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables. The <code><a href="reference/dream-method.html">dream()</a></code> function performs differential expression analysis for datasets with repeated measures or high dimensional batch effects.</p>
 <p><img src="reference/figures/variancePartition.png" align="center" alt="" style="padding-left:10px;"></p>
 <p><br></p>
 <div class="section level4">
 <h4 id="tutorial-on-variance-partitioning">
-<a href="https://hoffmg01.u.hpc.mssm.edu/software/variancePartition/variancePartition.pdf" class="external-link">Tutorial
-on variance partitioning</a><a class="anchor" aria-label="anchor" href="#tutorial-on-variance-partitioning"></a>
+<a href="https://hoffmg01.u.hpc.mssm.edu/software/variancePartition/variancePartition.pdf" class="external-link">Tutorial on variance partitioning</a><a class="anchor" aria-label="anchor" href="#tutorial-on-variance-partitioning"></a>
 </h4>
 <p><br></p>
 </div>
@@ -90,40 +83,31 @@ on variance partitioning</a><a class="anchor" aria-label="anchor" href="#tutoria
 <h3 id="install-from-github">Install from GitHub<a class="anchor" aria-label="anchor" href="#install-from-github"></a>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GabrielHoffman/variancePartition"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"DiseaseNeurogenomics/variancePartition"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
 </h3>
-<p>This is a developmental version. For stable release see <a href="http://bioconductor.org/packages/variancePartition/" class="external-link">Bioconductor
-version</a>.</p>
-<p>For questions about specifying contrasts with dream, see <a href="https://gist.github.com/GabrielHoffman/aa993222bae4d6b7d1caea2334aedbf7" class="external-link">examples
-here</a>.</p>
-<p>See <a href="http://bioconductor.org/packages/devel/bioc/vignettes/variancePartition/inst/doc/FAQ.html" class="external-link">frequently
-asked questions</a>.</p>
-<p>See repo of <a href="https://github.com/GabrielHoffman/dream_analysis" class="external-link">examples from
-the paper</a>.</p>
+<p>This is a developmental version. For stable release see <a href="http://bioconductor.org/packages/variancePartition/" class="external-link">Bioconductor version</a>.</p>
+<p>For questions about specifying contrasts with dream, see <a href="https://gist.github.com/GabrielHoffman/aa993222bae4d6b7d1caea2334aedbf7" class="external-link">examples here</a>.</p>
+<p>See <a href="http://bioconductor.org/packages/devel/bioc/vignettes/variancePartition/inst/doc/FAQ.html" class="external-link">frequently asked questions</a>.</p>
+<p>See repo of <a href="https://github.com/GabrielHoffman/dream_analysis" class="external-link">examples from the paper</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="reporting-bugs">Reporting bugs<a class="anchor" aria-label="anchor" href="#reporting-bugs"></a>
 </h3>
-<p>Please help speed up bug fixes by providing a ‘minimal reproducible
-example’ that starts with a new R session. I recommend the <a href="https://reprex.tidyverse.org" class="external-link">reprex package</a> to produce a
-GitHub-ready example that is reproducable from a fresh R session.</p>
+<p>Please help speed up bug fixes by providing a ‘minimal reproducible example’ that starts with a new R session. I recommend the <a href="https://reprex.tidyverse.org" class="external-link">reprex package</a> to produce a GitHub-ready example that is reproducable from a fresh R session.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Manuscript describing <code>dream</code> for differential
-expression:</p>
+<p>Manuscript describing <code>dream</code> for differential expression:</p>
 <ul>
-<li><a href="https://doi.org/10.1093/bioinformatics/btaa687" class="external-link">Hoffman and
-Roussos, Bioinformatics (2021)</a></li>
+<li><a href="https://doi.org/10.1093/bioinformatics/btaa687" class="external-link">Hoffman and Roussos, Bioinformatics (2021)</a></li>
 </ul>
 <p>Manuscript describing the <code>variancePartition</code> package:</p>
 <ul>
-<li><a href="https://doi.org/10.1186/s12859-016-1323-z" class="external-link">Hoffman and
-Schadt, BMC Bioinformatics (2016)</a></li>
+<li><a href="https://doi.org/10.1186/s12859-016-1323-z" class="external-link">Hoffman and Schadt, BMC Bioinformatics (2016)</a></li>
 </ul>
 </div>
 
@@ -167,14 +151,12 @@ Schadt, BMC Bioinformatics (2016)</a></li>
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel
-Hoffman</a>.</p>
+<p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer>
