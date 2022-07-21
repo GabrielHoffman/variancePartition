@@ -101,7 +101,7 @@ plotStratify = function( formula, data, xlab, ylab, main, sortBy, colorBy, sort=
     }else{
 
     	# if colors are specified and all levels of xval are represented
-    	if( sum(levels(data.st[[xval]]) %in% names(colorBy)) == nlevels(data.st[[xval]]) ){
+    	if( sum(levels(data.st[[xval]]) %in% names(colorBy)) == nlevels(data.st[[xval]]) && nlevels(data.st[[xval]]) > 0 ){
 
     # 		i = match(levels(data.st[[ord]]), levels(data.st[[xval]]) )
  			# pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))

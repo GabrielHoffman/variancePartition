@@ -144,6 +144,16 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	if( any(hasNA) ){
 		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE, call.=FALSE)
+		
+		# drop samples with missing data in formula variables
+    idx = sapply(all.vars(formula), function(v) {
+        which(is.na(data[[v]]))
+    })
+    idx = unique(unlist(idx))
+    
+    data = droplevels(data[-idx,,drop=FALSE])
+    exprObj = exprObj[,-idx,drop=FALSE]
+    exprObjMat = as.matrix( exprObj )
 	}
 
 	# check if all genes have variance
@@ -490,6 +500,16 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 	if( any(hasNA) ){
 		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE, call.=FALSE)
+
+		# drop samples with missing data in formula variables
+    idx = sapply(all.vars(formula), function(v) {
+        which(is.na(data[[v]]))
+    })
+    idx = unique(unlist(idx))
+    
+    data = droplevels(data[-idx,,drop=FALSE])
+    exprObj = exprObj[,-idx,drop=FALSE]
+    exprObjMat = as.matrix( exprObj )
 	}
 
 	if( ! is(exprObj, "sparseMatrix")){
