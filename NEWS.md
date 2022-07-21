@@ -1,5 +1,8 @@
+# variancePartition 1.27.2
+ - update filtering of covariates, especially for when many samples are dropped 
+
 # variancePartition 1.27.1
- - update `plotPercentBars` arguemtns
+ - update `plotPercentBars` arguments
 
 # variancePartition 1.26.1
  - patch to update docs

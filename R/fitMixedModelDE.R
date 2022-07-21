@@ -352,7 +352,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 	hasNA = hasMissingData(formula, data)
 
 	if( any(hasNA) ){
-		warning(paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE, call.=FALSE)
+		warning(paste("\nVariables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\nSamples with missing data will be dropped.\n"), immediate.=TRUE, call.=FALSE)
 
 		# drop samples with missing data in formula variables
 	    idx = sapply(all.vars(formula), function(v) {
@@ -360,7 +360,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 	    })
 	    idx = unique(unlist(idx))
 	    
-	    data = data[-idx,,drop=FALSE]
+	    data = droplevels(data[-idx,,drop=FALSE])
 	    exprObj = exprObj[,-idx,drop=FALSE]
 	    exprObjMat = as.matrix( exprObj )
 	}
