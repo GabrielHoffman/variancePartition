@@ -1,4 +1,4 @@
-# variancePartition 1.27.2
+# variancePartition 1.27.3
  - update filtering of covariates, especially for when many samples are dropped 
 
 # variancePartition 1.27.1
