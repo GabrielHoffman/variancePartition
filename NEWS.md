@@ -1,3 +1,6 @@
+# variancePartition 1.27.4
+ - update dependencies
+
 # variancePartition 1.27.3
  - update filtering of covariates, especially for when many samples are dropped 
 
