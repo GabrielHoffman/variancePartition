@@ -49,7 +49,7 @@ Imports:
     MASS,
     pbkrtest (>= 0.4-4),
     lmerTest,
-    Matrix (>= 1.5.0),
+    Matrix (>= 1.4.0),
     iterators,
     foreach,
     doParallel,
