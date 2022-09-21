@@ -1,65 +1,64 @@
 
 
-# #' toptable for MArrayLM
-# #'
-# #' toptable for MArrayLM
-# #'
-# #' @param fit fit
-# #' @param coef coef
-# #' @param number number
-# #' @param genelist genelist
-# #' @param adjust.method adjust.method
-# #' @param sort.by sort.by
-# #' @param resort.by resort.by
-# #' @param p.value p.value
-# #' @param lfc lfc
-# #' @param confint confint
-# #'
-# #' @return results of toptable
-# #' @export
-# #' @importFrom stats qnorm
-# #' @import limma
-# #' @rdname toptable-method
-# #' @aliases toptable,MArrayLM-method
-# setGeneric("topTable", function(fit,coef=NULL,number=10,genelist=fit$genes,adjust.method="BH",sort.by="B",resort.by=NULL,p.value=1,lfc=0,confint=FALSE){
-
-# 	topTable(fit,coef=coef,number=number,genelist=genelist,adjust.method=adjust.method,sort.by=sort.by,resort.by=resort.by,p.value=p.value,lfc=lfc,confint=confint)	
-# 	})
-
-
-# #' toptable for MArrayLM
-# #'
-# #' toptable for MArrayLM
-# #'
-# #' @param fit fit
-# #' @param coef coef
-# #' @param number number
-# #' @param genelist genelist
-# #' @param adjust.method adjust.method
-# #' @param sort.by sort.by
-# #' @param resort.by resort.by
-# #' @param p.value p.value
-# #' @param lfc lfc
-# #' @param confint confint
-# #'
-# #' @return results of toptable
-# #' @export
-# #' @importFrom stats qnorm
-# #' @import limma
-# #' @rdname toptable-method
-# #' @aliases toptable,MArrayLM-method
-# setMethod("topTable", "MArrayLM",
-# function (fit, coef = NULL, number = 10, genelist = fit$genes,
-#     adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,
-#     lfc = 0, confint = FALSE){
-
-# 	topTable(fit,coef=coef,number=number,genelist=genelist,adjust.method=adjust.method,sort.by=sort.by,resort.by=resort.by,p.value=p.value,lfc=lfc,confint=confint)	
-# }
-
-
-#' toptable for MArrayLM2
+#' Table of Top Genes from Linear Model Fit
 #'
-#' toptable for MArrayLM2
+#' topTable generic
+#'
+#' @param fit fit
+#' @param coef coef
+#' @param number number
+#' @param genelist genelist
+#' @param adjust.method adjust.method
+#' @param sort.by sort.by
+#' @param resort.by resort.by
+#' @param p.value p.value
+#' @param lfc lfc
+#' @param confint confint
+#'
+#' @return results of toptable
+#' @export
+#' @importFrom stats qnorm
+#' @import limma
+#' @rdname toptable-method
+#' @aliases toptable,MArrayLM-method
+setGeneric("topTable", function(fit,coef=NULL,number=10,genelist=fit$genes,adjust.method="BH",sort.by="B",resort.by=NULL,p.value=1,lfc=0,confint=FALSE) 
+	standardGeneric("topTable"))
+
+
+
+#' Table of Top Genes from Linear Model Fit
+#'
+#' topTable generic MArrayLM
+#'
+#' @param fit fit
+#' @param coef coef
+#' @param number number
+#' @param genelist genelist
+#' @param adjust.method adjust.method
+#' @param sort.by sort.by
+#' @param resort.by resort.by
+#' @param p.value p.value
+#' @param lfc lfc
+#' @param confint confint
+#'
+#' @return results of toptable
+#' @export
+#' @importFrom stats qnorm
+#' @import limma
+#' @rdname toptable-method
+#' @aliases toptable,MArrayLM-method
+setMethod("topTable", "MArrayLM",
+function (fit, coef = NULL, number = 10, genelist = fit$genes,
+    adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,
+    lfc = 0, confint = FALSE){
+
+	limma::topTable(fit,coef=coef,number=number,genelist=genelist,adjust.method=adjust.method,sort.by=sort.by,resort.by=resort.by,p.value=p.value,lfc=lfc,confint=confint)	
+})
+
+
+#' Table of Top Genes from Linear Model Fit
+#'
+#' topTable generic MArrayLM2
 #'
 #' @param fit fit
 #' @param coef coef
@@ -125,7 +124,7 @@ function (fit, coef = NULL, number = 10, genelist = fit$genes,
             p.value = p.value, lfc = lfc)
 
         # GEH September 5, 2019
-		# convert p-values to F-statatistcs
+		# convert p-values to F-statistics
 		# this corresponds to constant degrees of freedom equals Inf
 		tab$P.Value = pmax(tab$P.Value, 1e-300)
 		tab$F.std = qf(tab$P.Value, df1=length(coef), df2=Inf, lower.tail=FALSE)
