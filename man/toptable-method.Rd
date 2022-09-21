@@ -5,6 +5,7 @@
 \alias{toptable,MArrayLM-method}
 \alias{topTable,FMT-method}
 \alias{toptable,FMT-method}
+\alias{topTable,MArrayLM-method}
 \alias{topTable,MArrayLM2-method}
 \alias{toptable,MArrayLM2-method}
 \title{toptable for definition}
@@ -23,6 +24,32 @@ topTable(
 )
 
 \S4method{topTable}{FMT}(
+  fit,
+  coef = NULL,
+  number = 10,
+  genelist = fit$genes,
+  adjust.method = "BH",
+  sort.by = "p",
+  resort.by = NULL,
+  p.value = 1,
+  lfc = 0,
+  confint = FALSE
+)
+
+topTable(
+  fit,
+  coef = NULL,
+  number = 10,
+  genelist = fit$genes,
+  adjust.method = "BH",
+  sort.by = "B",
+  resort.by = NULL,
+  p.value = 1,
+  lfc = 0,
+  confint = FALSE
+)
+
+\S4method{topTable}{MArrayLM}(
   fit,
   coef = NULL,
   number = 10,
@@ -75,12 +102,20 @@ results of toptable
 results of toptable
 
 results of toptable
+
+results of toptable
+
+results of toptable
 }
 \description{
 toptable for definition
 
 toptable for FMT
 
-toptable for MArrayLM2
+topTable generic
+
+topTable generic MArrayLM
+
+topTable generic MArrayLM2
 }
 \keyword{internal}
