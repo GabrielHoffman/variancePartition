@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.6</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,13 +60,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">getTreat</span><span class="op">(</span><span class="va">fit</span>, lfc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, coef <span class="op">=</span> <span class="fl">1</span>, number <span class="op">=</span> <span class="fl">10</span>, sort.by <span class="op">=</span> <span class="st">"p"</span><span class="op">)</span>
-
-<span class="co"># S4 method for MArrayLM</span>
-<span class="fu">getTreat</span><span class="op">(</span><span class="va">fit</span>, lfc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, coef <span class="op">=</span> <span class="fl">1</span>, number <span class="op">=</span> <span class="fl">10</span>, sort.by <span class="op">=</span> <span class="st">"p"</span><span class="op">)</span>
-
-<span class="co"># S4 method for MArrayLM2</span>
-<span class="fu">getTreat</span><span class="op">(</span><span class="va">fit</span>, lfc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, coef <span class="op">=</span> <span class="fl">1</span>, number <span class="op">=</span> <span class="fl">10</span>, sort.by <span class="op">=</span> <span class="st">"p"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getTreat</span><span class="op">(</span><span class="va">fit</span>, lfc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, coef <span class="op">=</span> <span class="fl">1</span>, number <span class="op">=</span> <span class="fl">10</span>, sort.by <span class="op">=</span> <span class="st">"p"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for MArrayLM</span></span>
+<span><span class="fu">getTreat</span><span class="op">(</span><span class="va">fit</span>, lfc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, coef <span class="op">=</span> <span class="fl">1</span>, number <span class="op">=</span> <span class="fl">10</span>, sort.by <span class="op">=</span> <span class="st">"p"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for MArrayLM2</span></span>
+<span><span class="fu">getTreat</span><span class="op">(</span><span class="va">fit</span>, lfc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, coef <span class="op">=</span> <span class="fl">1</span>, number <span class="op">=</span> <span class="fl">10</span>, sort.by <span class="op">=</span> <span class="st">"p"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -100,26 +100,26 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span>
-<span class="r-in">  </span>
-<span class="r-in"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Age</span> <span class="op">+</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  </span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Age</span> <span class="op">+</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 10 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:17 s</span>
-<span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">coef</span> <span class="op">=</span> <span class="st">'Age'</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Evaluate treat()/topTreat() in a way that works seamlessly for dream()</span></span>
-<span class="r-in"><span class="fu">getTreat</span><span class="op">(</span><span class="va">fit</span>, lfc<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.03</span><span class="op">)</span>, <span class="va">coef</span>, sort.by<span class="op">=</span><span class="st">"none"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:14 s</span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">coef</span> <span class="op">=</span> <span class="st">'Age'</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Evaluate treat()/topTreat() in a way that works seamlessly for dream()</span></span></span>
+<span class="r-in"><span><span class="fu">getTreat</span><span class="op">(</span><span class="va">fit</span>, lfc<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.03</span><span class="op">)</span>, <span class="va">coef</span>, sort.by<span class="op">=</span><span class="st">"none"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             logFC     AveExpr t   P.Value adj.P.Val         B z.std</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene1 0.005551165 -10.4664549 0 0.9883098 0.9997873 -6.323908     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene2 0.013121135  -1.1281610 0 0.9586897 0.9997873 -6.085180     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene3 0.020151483   0.1702122 0 0.9212652 0.9997873 -5.585953     0</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -131,7 +131,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
     </footer></div>
