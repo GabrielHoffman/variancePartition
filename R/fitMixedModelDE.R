@@ -17,23 +17,6 @@ setAs(from='MArrayLM', to='MArrayLM2', function(from){
 	})
 
 
-#' Class FMT 
-#'
-#' Class \code{FMT} 
-#'
-#' @name FMT-class
-#' @rdname FMT-class
-#' @exportClass FMT
-#' @keywords internal
-setClass('FMT', contains='MArrayLM2')
-
-setAs("MArrayLM2", "FMT", function(from, to ){
-
-	res = new( to, from )
-	names(res) = names(from)
-	res
-})
-
 # define S3 version of these functions
 
 #' Residuals for result of dream

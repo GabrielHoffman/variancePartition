@@ -1,3 +1,10 @@
+# variancePartition 1.27.6
+ - remove FMT functions
+
+# variancePartition 1.27.5
+ - update dependencies
+ - make `topTable()` generic to work with R 4.2.1 and Bioc 3.16
+
 # variancePartition 1.27.4
  - update dependencies
 

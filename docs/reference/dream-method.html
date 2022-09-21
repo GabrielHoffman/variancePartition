@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.6</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,22 +60,22 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">dream</span><span class="op">(</span>
-  <span class="va">exprObj</span>,
-  <span class="va">formula</span>,
-  <span class="va">data</span>,
-  <span class="va">L</span>,
-  ddf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adaptive"</span>, <span class="st">"Satterthwaite"</span>, <span class="st">"Kenward-Roger"</span><span class="op">)</span>,
-  useWeights <span class="op">=</span> <span class="cn">TRUE</span>,
-  weightsMatrix <span class="op">=</span> <span class="cn">NULL</span>,
-  control <span class="op">=</span> <span class="va">vpcontrol</span>,
-  suppressWarnings <span class="op">=</span> <span class="cn">FALSE</span>,
-  quiet <span class="op">=</span> <span class="cn">FALSE</span>,
-  BPPARAM <span class="op">=</span> <span class="fu">SerialParam</span><span class="op">(</span><span class="op">)</span>,
-  computeResiduals <span class="op">=</span> <span class="cn">TRUE</span>,
-  REML <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dream</span><span class="op">(</span></span>
+<span>  <span class="va">exprObj</span>,</span>
+<span>  <span class="va">formula</span>,</span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">L</span>,</span>
+<span>  ddf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adaptive"</span>, <span class="st">"Satterthwaite"</span>, <span class="st">"Kenward-Roger"</span><span class="op">)</span>,</span>
+<span>  useWeights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  weightsMatrix <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  control <span class="op">=</span> <span class="va">vpcontrol</span>,</span>
+<span>  suppressWarnings <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu">SerialParam</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  computeResiduals <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  REML <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -161,27 +161,27 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># library(variancePartition)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># load simulated data:</span></span>
-<span class="r-in"><span class="co"># geneExpr: matrix of gene expression values</span></span>
-<span class="r-in"><span class="co"># info: information/metadata about each sample</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Fit linear mixed model for each gene</span></span>
-<span class="r-in"><span class="co"># run on just 10 genes for time</span></span>
-<span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># library(variancePartition)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># load simulated data:</span></span></span>
+<span class="r-in"><span><span class="co"># geneExpr: matrix of gene expression values</span></span></span>
+<span class="r-in"><span><span class="co"># info: information/metadata about each sample</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fit linear mixed model for each gene</span></span></span>
+<span class="r-in"><span><span class="co"># run on just 10 genes for time</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.8 s</span>
-<span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># view top genes</span></span>
-<span class="r-in"><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span> <span class="op">)</span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># view top genes</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span> <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Removing intercept from test coefficients</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Batch2       Batch3      Batch4     AveExpr          F    P.Value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -0.67049689 -1.034776107 -1.04729128  -3.1554790 2.26933190 0.08279052</span>
@@ -205,26 +205,26 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene9  0.9716621 0.33695844</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene10 0.9716621 0.23150131</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene4  0.9859028 0.04841547</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># get contrast matrix testing if the coefficient for Batch3 is </span></span>
-<span class="r-in"><span class="co"># different from coefficient for Batch2</span></span>
-<span class="r-in"><span class="co"># The variable of interest must be a fixed effect</span></span>
-<span class="r-in"><span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Batch3 - Batch2"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># plot contrasts</span></span>
-<span class="r-in"><span class="fu"><a href="plotContrasts.html">plotContrasts</a></span><span class="op">(</span> <span class="va">L</span> <span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get contrast matrix testing if the coefficient for Batch3 is </span></span></span>
+<span class="r-in"><span><span class="co"># different from coefficient for Batch2</span></span></span>
+<span class="r-in"><span><span class="co"># The variable of interest must be a fixed effect</span></span></span>
+<span class="r-in"><span><span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Batch3 - Batch2"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># plot contrasts</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="plotContrasts.html">plotContrasts</a></span><span class="op">(</span> <span class="va">L</span> <span class="op">)</span></span></span>
 <span class="r-plt img"><img src="dream-method-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Fit linear mixed model for each gene</span></span>
-<span class="r-in"><span class="co"># run on just 10 genes for time</span></span>
-<span class="r-in"><span class="va">fit2</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fit linear mixed model for each gene</span></span></span>
+<span class="r-in"><span><span class="co"># run on just 10 genes for time</span></span></span>
+<span class="r-in"><span><span class="va">fit2</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.8 s</span>
-<span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># view top genes</span></span>
-<span class="r-in"><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit2</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span> <span class="op">)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.7 s</span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># view top genes</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit2</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span> <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               logFC     AveExpr           t   P.Value adj.P.Val       z.std</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene7   0.465517838  -4.3799381  1.39780930 0.1665203 0.8766243  1.38347152</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -0.364279218  -3.1554790 -0.93401216 0.3534470 0.8766243 -0.92792405</span>
@@ -236,28 +236,28 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene2   0.111996470  -1.1281610  0.34847719 0.7285129 0.9106411  0.34710440</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene4   0.007545528  -4.5359748  0.02528454 0.9798987 0.9813892  0.02519588</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene1   0.007299316 -10.4664549  0.02340914 0.9813892 0.9813892  0.02332734</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Parallel processing using multiple cores with reduced memory usage</span></span>
-<span class="r-in"><span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">fit3</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span>, BPPARAM <span class="op">=</span> <span class="va">param</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Parallel processing using multiple cores with reduced memory usage</span></span></span>
+<span class="r-in"><span><span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit3</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span>, BPPARAM <span class="op">=</span> <span class="va">param</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> iteration: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Total:5 s</span>
-<span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Fit fixed effect model for each gene</span></span>
-<span class="r-in"><span class="co"># Use lmFit in the backend</span></span>
-<span class="r-in"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> </span>
-<span class="r-in"><span class="va">fit4</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fit fixed effect model for each gene</span></span></span>
+<span class="r-in"><span><span class="co"># Use lmFit in the backend</span></span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> </span></span>
+<span class="r-in"><span><span class="va">fit4</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Fixed effect model, using limma directly...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> User can apply eBayes() afterwards...</span>
-<span class="r-in"><span class="va">fit4</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span> <span class="va">fit4</span> <span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># view top genes</span></span>
-<span class="r-in"><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit4</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span> <span class="op">)</span></span>
+<span class="r-in"><span><span class="va">fit4</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span> <span class="va">fit4</span> <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># view top genes</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit4</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span> <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              logFC     AveExpr           t    P.Value adj.P.Val         B</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -1.83567724   0.9171386 -1.87030676 0.06312128 0.6312128 -4.581611</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -1.01697419  -4.5359748 -1.17835890 0.24026308 0.9496566 -4.593019</span>
@@ -269,15 +269,15 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene10  0.18733363  -2.3673775  0.21296925 0.83160034 0.9496566 -4.600427</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene2   0.10045251  -1.1281610  0.10985054 0.91265454 0.9496566 -4.600612</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.05984159 -10.4664549 -0.06322915 0.94965664 0.9496566 -4.600657</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Compute residuals using dream</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals</a></span><span class="op">(</span><span class="va">fit4</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Compute residuals using dream</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals</a></span><span class="op">(</span><span class="va">fit4</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             s1         s2         s3        s4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene1 2.196588 -7.2102826  1.3618545 0.8055865</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene2 1.270341  0.6885371 -0.8045642 2.0594469</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene3 1.939465  0.8003329 -1.7723606 3.0120196</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene4 2.766271 -2.4954702 -3.5198043 5.2286010</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -289,7 +289,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
     </footer></div>

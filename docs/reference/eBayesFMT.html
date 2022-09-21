@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.5</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +60,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">eBayesFMT</span><span class="op">(</span><span class="va">fit</span>, <span class="va">data</span>, <span class="va">Individual</span>, method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"VC"</span>, <span class="st">"WS"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">eBayesFMT</span><span class="op">(</span><span class="va">fit</span>, <span class="va">data</span>, <span class="va">Individual</span>, method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"VC"</span>, <span class="st">"WS"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -89,26 +89,26 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># load library</span></span>
-<span class="r-in"><span class="co"># library(variancePartition)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># load simulated data:</span></span>
-<span class="r-in"><span class="co"># geneExpr: matrix of gene expression values</span></span>
-<span class="r-in"><span class="co"># info: information/metadata about each sample</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Fit linear mixed model for each gene</span></span>
-<span class="r-in"><span class="co"># run on just 10 genes for time</span></span>
-<span class="r-in"><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># load library</span></span></span>
+<span class="r-in"><span><span class="co"># library(variancePartition)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># load simulated data:</span></span></span>
+<span class="r-in"><span><span class="co"># geneExpr: matrix of gene expression values</span></span></span>
+<span class="r-in"><span><span class="co"># info: information/metadata about each sample</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fit linear mixed model for each gene</span></span></span>
+<span class="r-in"><span><span class="co"># run on just 10 genes for time</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.6 s</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># view top genes using standard t-statistics</span></span>
-<span class="r-in"><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span> <span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># view top genes using standard t-statistics</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span> <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Removing intercept from test coefficients</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Batch2       Batch3      Batch4     AveExpr          F   P.Value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene8   0.02567263 -0.129563777  0.67499421   0.9171386 1.96561914 0.1267816</span>
@@ -132,10 +132,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene9  0.9384914 0.27928007</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene10 0.9384914 0.27338242</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene4  0.9832565 0.05449604</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Compute moderated t-statistics from Yu, et al, 2019</span></span>
-<span class="r-in"><span class="va">fiteb</span> <span class="op">=</span> <span class="fu">variancePartition</span><span class="fu">:::</span><span class="fu">eBayesFMT</span><span class="op">(</span><span class="va">fit</span>, <span class="va">info</span>, <span class="st">'Individual'</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fiteb</span> <span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Compute moderated t-statistics from Yu, et al, 2019</span></span></span>
+<span class="r-in"><span><span class="va">fiteb</span> <span class="op">=</span> <span class="fu">variancePartition</span><span class="fu">:::</span><span class="fu">eBayesFMT</span><span class="op">(</span><span class="va">fit</span>, <span class="va">info</span>, <span class="st">'Individual'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fiteb</span> <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Removing intercept from test coefficients</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> topTableF is obsolete and will be removed in a future version of limma. Please considering using topTable instead.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Batch2       Batch3      Batch4     AveExpr          F   P.Value</span>
@@ -160,7 +160,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene9  0.9979822 0.06291398</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene10 0.9979822 0.04399733</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene4  0.9979822 0.01297045</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -172,7 +172,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
     </footer></div>
