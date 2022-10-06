@@ -1,3 +1,6 @@
+# variancePartition 1.27.8
+ - bug fix in `mvTest()`
+
 # variancePartition 1.27.7
  - add `vcov()` for results from `dream()`
  - add `mvTest()` for  multivariate tests on results from `dream()` using `vcov()`

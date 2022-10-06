@@ -71,7 +71,7 @@ mvTest = function(fit, vobj, features, coef, method = c("RE2C", "LS", "tstat", "
 	# }
 
 	# extract coefficients from features
-	tab = topTable(fit[features,], coef=coef, sort.by="none")
+	tab = topTable(fit[features,], coef=coef, sort.by="none", number=Inf)
 	beta = tab$logFC
 
 	if( length(features) == 1){
