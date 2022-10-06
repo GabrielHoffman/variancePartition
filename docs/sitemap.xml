@@ -127,6 +127,9 @@
     <loc>http://gabrielhoffman.github.io/variancePartition/reference/makeContrastsDream.html</loc>
   </url>
   <url>
+    <loc>http://gabrielhoffman.github.io/variancePartition/reference/mvTest.html</loc>
+  </url>
+  <url>
     <loc>http://gabrielhoffman.github.io/variancePartition/reference/plotCompareP-method.html</loc>
   </url>
   <url>
@@ -203,6 +206,12 @@
   </url>
   <url>
     <loc>http://gabrielhoffman.github.io/variancePartition/reference/varPartResults-class.html</loc>
+  </url>
+  <url>
+    <loc>http://gabrielhoffman.github.io/variancePartition/reference/vcov-MArrayLM-method.html</loc>
+  </url>
+  <url>
+    <loc>http://gabrielhoffman.github.io/variancePartition/reference/vcov-MArrayLM2-method.html</loc>
   </url>
   <url>
     <loc>http://gabrielhoffman.github.io/variancePartition/reference/voomWithDreamWeights.html</loc>
