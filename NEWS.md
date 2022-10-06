@@ -1,3 +1,7 @@
+# variancePartition 1.27.7
+ - add `vcov()` for results from `dream()`
+ - add `mvTest()` for  multivariate tests on results from `dream()` using `vcov()`
+
 # variancePartition 1.27.6
  - remove FMT functions
 
