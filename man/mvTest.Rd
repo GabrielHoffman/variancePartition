@@ -27,7 +27,7 @@ mvTest(
 Evaluate multivariate tests on results from \code{dream()} using \code{vcov()} to compute the covariance between estimated regression coefficients across multiple responses.  A joint test to see if the coefficients are jointly different from zero is performed using meta-analysis methods that account for the covariance.
 }
 \details{
-See package \link{\code{remaCor}} for details about \code{remaCor::RE2C()} and \code{remaCor::LS()} methods.  When only 1 feature is selected, the original t-statistic and p-value are returned.
+See package \code{remaCor} for details about \code{remaCor::RE2C()} and \code{remaCor::LS()} methods.  When only 1 feature is selected, the original t-statistic and p-value are returned.
 }
 \examples{
 # library(variancePartition)

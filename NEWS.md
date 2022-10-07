@@ -1,3 +1,8 @@
+# variancePartition 1.27.9
+ - bug fix in `mvTest()` for contrasts
+   - extensive changes to `vcov()` in order to handle contrasts
+ - fix by in subsetting `MArrayLM2` object.  `cov.coefficients.list` are now named based on gene names 
+
 # variancePartition 1.27.8
  - bug fix in `mvTest()`
 

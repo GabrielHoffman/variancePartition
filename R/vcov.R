@@ -46,7 +46,8 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 
 	# check that coef is valid
 	if( ! missing(coef) ){
-		i = match(coef, colnames(object$design))
+
+		i = match(coef, colnames(coefficients(object)))
 		if( any(is.na(i)) ){
 			txt = paste("Coefficients not valid:", paste(coef[is.na(i)], collapse=', '))
 			stop(txt)
@@ -62,7 +63,8 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 				X = object$design, 
 				W = weights, 
 				rdf = object$df.residual[1],
-				coef = coef)
+				coef = coef,
+				contrasts = object$contrasts)
 })
 
 
@@ -116,7 +118,8 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 	eval_vcov_approx( 	resids = t(residuals(object)[features,,drop=FALSE]), 
 						W = weights,
 					  	ccl = object$cov.coefficients.list, 
-					  	coef = coef)
+					  	coef = coef,
+					  	contrasts = object$contrasts)
 })
 
 
@@ -131,7 +134,7 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 # @param rdf residual degrees of freedom
 # @param coef name of coefficient to be extracted
 #
-eval_vcov = function(resids, X, W, rdf, coef){
+eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 
 	# With no weights:
 	# kronecker(crossprod(res), solve(crossprod(X)), make.dimnames=TRUE) / rdf
@@ -146,7 +149,7 @@ eval_vcov = function(resids, X, W, rdf, coef){
 	tX = t(X)
 
 	# store dimensions of data
-	k = ncol(X)
+	k = ncol(X)		
 	m = ncol(resids)
 
 	# matrix to store results
@@ -172,8 +175,9 @@ eval_vcov = function(resids, X, W, rdf, coef){
 			X_j = X*sqrtW[,j]
 			B = solve(crossprod(X_j), t(X_j))
 
+			# standard method using observed covariates
 			value = (Sigma[i,j] / rdf) * tcrossprod(A,B)
-
+			
 			Sigma_vcov[idx1,idx2] = value 
 			Sigma_vcov[idx2,idx1] = value 
 		}
@@ -183,20 +187,36 @@ eval_vcov = function(resids, X, W, rdf, coef){
 	colnames(Sigma_vcov) = c(outer(colnames(X), colnames(resids), function(a,b) paste(b,a, sep=':')))
 	rownames(Sigma_vcov) = colnames(Sigma_vcov)
 
-	# select coefficients
 	if( missing(coef) ){
-		# all coefficients
-		i = seq(1, ncol(X))
+		# return covariance matrix without subsetting
+		Sigma_return = Sigma_vcov
+	}else if( !is.null(contrasts) & coef %in% colnames(contrasts)){
+		# use contrasts
+
+		# extract single contrast
+		L = contrasts[,coef,drop=FALSE]
+		
+		# expand L to multiple responses
+		D = bdiag(lapply(seq(m), function(i) L))
+
+		# assign names
+		colnames(D) = c(outer(coef, colnames(resids), function(a,b) paste(b,a, sep=':')))
+
+		# apply linear contrasts
+		Sigma_vcov = crossprod(D, Sigma_vcov) %*% D
+		Sigma_return = as.matrix(Sigma_vcov)
 	}else{
+		# use coef
 		# subsect to selected coefs
 		i = match(coef, colnames(X))
+	
+		# names of coefficients to retain
+		keep = c(outer(colnames(X)[i], colnames(resids), function(a,b) paste(b,a, sep=':')))
+
+		# subset covariance matrix
+		Sigma_return = Sigma_vcov[keep,keep]
 	}
-
-	# names of coefficients to retain
-	keep = c(outer(colnames(X)[i], colnames(resids), function(a,b) paste(b,a, sep=':')))
-
-	# subset covariance matrix
-	Sigma_vcov[keep,keep]
+	Sigma_return
 }
 
 
@@ -209,7 +229,15 @@ eval_vcov = function(resids, X, W, rdf, coef){
 # @param ccl list of vcov matrices for each response
 # @param coef name of coefficient to be extracted
 #
-eval_vcov_approx = function(resids, W, ccl, coef){
+eval_vcov_approx = function(resids, W, ccl, coef, contrasts){
+
+	# only keep contrasts not directly specified but the design matrix
+	if( ! is.null(contrasts) ){
+		incl = setdiff(colnames(contrasts), rownames(contrasts))
+		contrasts = contrasts[,incl, drop=FALSE]
+
+		if( missing(coef) ) coef = rownames(contrasts)
+	}
 
 	# store dimensions of data
 	k = ncol(ccl[[1]])
@@ -229,14 +257,15 @@ eval_vcov_approx = function(resids, W, ccl, coef){
 		# define positions in output matrix
 		idx1 = seq((i-1)*k+1, i*k)
 
-		chol_cov_i = chol(ccl[[i]])
+		# select coefficients here
+		chol_cov_i = sqrtMatrix(ccl[[i]])
 	
 		# inner loop
 		for(j in seq(i, m)){
 
 			idx2 = seq((j-1)*k+1, j*k)
 
-			chol_cov_j = chol(ccl[[j]])
+			chol_cov_j = sqrtMatrix(ccl[[j]])
 	
 			value = Sigma[i,j] * crossprod(chol_cov_i, chol_cov_j)
 
@@ -250,19 +279,49 @@ eval_vcov_approx = function(resids, W, ccl, coef){
 	rownames(Sigma_vcov) = colnames(Sigma_vcov)
 
 	# select coefficients
-	if( missing(coef) ){
-		# all coefficients
-		i = seq(1, ncol(ccl[[1]]))
-	}else{
+	if( !is.null(contrasts) & any(coef %in% colnames(contrasts))){
+		# use contrasts
 		# subsect to selected coefs
-		i = match(coef, colnames(ccl[[1]]))
+		coef = coef[coef %in% colnames(contrasts)]
+
+		# names of coefficients to retain
+		keep = c(outer(coef, colnames(resids), function(a,b) paste(b,a, sep=':')))
+
+		# subset covariance matrix
+		Sigma_return = Sigma_vcov[keep,keep]
+		
+	}else{
+		# use coef from design matrix		
+		# names of coefficients to retain
+		keep = c(outer(coef, colnames(resids), function(a,b) paste(b,a, sep=':')))
+
+		# subset covariance matrix
+		Sigma_return = Sigma_vcov[keep,keep]
 	}
 
-	# names of coefficients to retain
-	keep = c(outer(colnames(ccl[[1]])[i], colnames(resids), function(a,b) paste(b,a, sep=':')))
-
-	# subset covariance matrix
-	Sigma_vcov[keep,keep]
+	Sigma_return
 }
+
+
+
+# Compute matrix square root so that 
+# crossprod(sqrtMatrix(A)) = A
+# could to Cholesky, buy assumes PSD matrix
+# this works even if some eigen-values are zero.
+sqrtMatrix = function(S, symmetric=TRUE){
+
+	# pass R check
+	vectors = values = NULL
+
+	# eigen decomposition
+	dcmp = eigen(S, symmetric=symmetric)
+
+	# identify positive eigen-values
+	idx = dcmp$values > sqrt(.Machine$double.eps)
+
+	# a matrix square root is U %*% diag(lambda^0.5)
+	with(dcmp, sqrt(values[idx]) * t(vectors[,idx,drop=FALSE]))
+}
+
 
 
