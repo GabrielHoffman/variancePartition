@@ -868,10 +868,19 @@ assign("[.MArrayLM2",
 	#  copy gene-specific covariance, if it exists
 	if( ! is.null(object$cov.coefficients.list) ){
 		if(!missing(i)){
-			obj$cov.coefficients.list = object$cov.coefficients.list[i]
+			if( is.numeric(i) ){
+				# extract by index
+				obj$cov.coefficients.list = object$cov.coefficients.list[i]
+			}else{				
+				# extract by matching feature name
+				idx = match(i, rownames(object))
+				obj$cov.coefficients.list = object$cov.coefficients.list[idx]
+			}
 		}else{
 			obj$cov.coefficients.list = object$cov.coefficients.list
 		}
+		# name cov.coefficients.list using names of the whole object
+		names(obj$cov.coefficients.list) = rownames(obj)
 	}	
 
 	if( is.null(obj$df.total)){

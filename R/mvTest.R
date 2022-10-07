@@ -18,7 +18,7 @@
 #' @param coef name of coefficient or contrast to be tested
 #' @param method statistical method used to perform multivariate test.  See details. \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'LS'} is a fixed effect test that models the covariance between coefficients.  \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
 #'  
-#' @details See package \link{\code{remaCor}} for details about \code{remaCor::RE2C()} and \code{remaCor::LS()} methods.  When only 1 feature is selected, the original t-statistic and p-value are returned.
+#' @details See package \code{remaCor} for details about \code{remaCor::RE2C()} and \code{remaCor::LS()} methods.  When only 1 feature is selected, the original t-statistic and p-value are returned.
 #' 
 #' @examples
 #' # library(variancePartition)
@@ -59,6 +59,14 @@ mvTest = function(fit, vobj, features, coef, method = c("RE2C", "LS", "tstat", "
 
 	if( missing(features) ){
 		features = rownames(fit)
+	}else{
+		# only test features that are characters
+		feat.test = features[is.character(features)]
+		i = match(feat.test, rownames(fit))
+		if(any(is.na(i))){
+			txt = paste("Features not found:", paste(feat.test[is.na(i)], collapse=', '))
+			stop(txt)
+		}
 	}
 
 	# check that all features are valid
@@ -99,7 +107,9 @@ mvTest = function(fit, vobj, features, coef, method = c("RE2C", "LS", "tstat", "
 						method = method)
 
 	}else if( method == "tstat"){
-		tstat = crossprod(tab$t, solve(cov2cor(Sigma))) %*% tab$t 
+		Sigma_corr = cov2cor(Sigma)
+		tstat = crossprod(tab$t, solve(Sigma_corr, tab$t))
+
 		pv = pchisq( tstat, length(tab$t), lower.tail=FALSE)
 
 		df = data.frame(stat = tstat, 
