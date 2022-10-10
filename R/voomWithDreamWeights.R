@@ -239,5 +239,12 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		out$voom.line <- l
 	}
 
+	# Check max value of precision weights
+	maxValue = max(out$weights)
+	if( maxValue > 1e8){
+		txt = paste0("The maximum precision weight is ", format(maxValue, scientific=TRUE), ", suggesting a poor smoothing fit\non the mean-variance plot for large expression values. Such large weights can\nhave unexpected effects downstream.  Consider examining the mean-variance plot\nand reducing the span parameter.")
+		warning(txt)
+	}
+
 	new("EList",out)
 }

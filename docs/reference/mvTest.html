@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.10</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@
 <span>  <span class="va">vobj</span>,</span>
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RE2C"</span>, <span class="st">"LS"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span></span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RE2C"</span>, <span class="st">"FE"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -88,12 +88,12 @@
 
 
 <dt>method</dt>
-<dd><p>statistical method used to perform multivariate test.  See details. <code>'RE2C'</code> is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. <code>'LS'</code> is a fixed effect test that models the covariance between coefficients.  <code>'tstat'</code> combines the t-statistics and models the covariance between coefficients. <code>'sidak'</code> returns the smallest p-value and accounting for the number of tests. <code>'fisher'</code> combines the p-value using Fisher's method assuming independent tests.</p></dd>
+<dd><p>statistical method used to perform multivariate test.  See details. <code>'RE2C'</code> is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. <code>'FE'</code> is a fixed effect test that models the covariance between coefficients.  <code>'tstat'</code> combines the t-statistics and models the covariance between coefficients. <code>'sidak'</code> returns the smallest p-value and accounting for the number of tests. <code>'fisher'</code> combines the p-value using Fisher's method assuming independent tests.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>See package <code>remaCor</code> for details about <code><a href="http://gabrielhoffman.github.io/remaCor/reference/RE2C.html" class="external-link">remaCor::RE2C()</a></code> and <code><a href="http://gabrielhoffman.github.io/remaCor/reference/LS.html" class="external-link">remaCor::LS()</a></code> methods.  When only 1 feature is selected, the original t-statistic and p-value are returned.</p>
+    <p>See package <code>remaCor</code> for details about the <code><a href="http://gabrielhoffman.github.io/remaCor/reference/RE2C.html" class="external-link">remaCor::RE2C()</a></code> test, and see <code><a href="http://gabrielhoffman.github.io/remaCor/reference/LS.html" class="external-link">remaCor::LS()</a></code> for details about the fixed effect test.  When only 1 feature is selected, the original t-statistic and p-value are returned.</p>
     </div>
 
     <div class="section level2">
@@ -116,7 +116,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Memory usage to store result: &gt;49.7 Kb</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.4 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.3 s</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit dream model </span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">vobj</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span></span>
