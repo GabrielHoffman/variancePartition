@@ -16,9 +16,9 @@
 #' @param vobj matrix or \code{EList} object returned by \code{voom()}
 #' @param features indeces or names of features to perform multivariate test on 
 #' @param coef name of coefficient or contrast to be tested
-#' @param method statistical method used to perform multivariate test.  See details. \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'LS'} is a fixed effect test that models the covariance between coefficients.  \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
+#' @param method statistical method used to perform multivariate test.  See details. \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
 #'  
-#' @details See package \code{remaCor} for details about \code{remaCor::RE2C()} and \code{remaCor::LS()} methods.  When only 1 feature is selected, the original t-statistic and p-value are returned.
+#' @details See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original t-statistic and p-value are returned.
 #' 
 #' @examples
 #' # library(variancePartition)
@@ -47,7 +47,7 @@
 #' @importFrom remaCor RE2C LS 
 #' @importFrom stats coefficients
 #' @export
-mvTest = function(fit, vobj, features, coef, method = c("RE2C", "LS", "tstat", "sidak", "fisher")){
+mvTest = function(fit, vobj, features, coef, method = c("RE2C", "FE", "tstat", "sidak", "fisher")){
 
 	method = match.arg(method)
 
@@ -92,7 +92,7 @@ mvTest = function(fit, vobj, features, coef, method = c("RE2C", "LS", "tstat", "
 	# extract covariance
 	Sigma = vcov(fit[features,], vobj[features,], coef)
 
-	if( method == "LS"){
+	if( method == "FE"){
 		res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
 
 		df = data.frame(stat = res$beta / res$se,

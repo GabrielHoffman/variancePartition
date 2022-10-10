@@ -1,3 +1,8 @@
+# variancePartition 1.27.10
+ - Add check for very large weights in `voomWithDreamWeights()`
+   - follows bug report: https://github.com/GabrielHoffman/variancePartition/issues/66
+ - in `mvTest()` change option "LS" to "FE"
+
 # variancePartition 1.27.9
  - bug fix in `mvTest()` for contrasts
    - extensive changes to `vcov()` in order to handle contrasts
