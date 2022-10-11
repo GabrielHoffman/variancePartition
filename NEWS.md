@@ -1,3 +1,9 @@
+# variancePartition 1.27.11
+ - in `mvTest()`:
+   - return number of features
+   - return stat.FE and stat.het for RE2C
+   - return NA for stat if 1 feature
+
 # variancePartition 1.27.10
  - Add check for very large weights in `voomWithDreamWeights()`
    - follows bug report: https://github.com/GabrielHoffman/variancePartition/issues/66

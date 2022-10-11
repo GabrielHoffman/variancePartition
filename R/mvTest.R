@@ -18,7 +18,9 @@
 #' @param coef name of coefficient or contrast to be tested
 #' @param method statistical method used to perform multivariate test.  See details. \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
 #'  
-#' @details See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original t-statistic and p-value are returned.
+#' @details See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original p-value is returned and the test statistic is set to \code{NA}.
+#' 
+#' For the \code{"RE2C"} test, the final test statistic is the sum of a test statistic for the mean effect (\code{stat.FE}) and heterogeneity across effects (\code{stat.het}).
 #' 
 #' @examples
 #' # library(variancePartition)
@@ -45,7 +47,7 @@
 #' mvTest(fit, vobj, 1:2, coef="Disease1")
 #'
 #' @importFrom remaCor RE2C LS 
-#' @importFrom stats coefficients
+#' @importFrom stats coefficients pchisq cov2cor
 #' @export
 mvTest = function(fit, vobj, features, coef, method = c("RE2C", "FE", "tstat", "sidak", "fisher")){
 
@@ -82,10 +84,21 @@ mvTest = function(fit, vobj, features, coef, method = c("RE2C", "FE", "tstat", "
 	tab = topTable(fit[features,], coef=coef, sort.by="none", number=Inf)
 	beta = tab$logFC
 
-	if( length(features) == 1){
-		df = data.frame(stat = tab$t, 
-						pvalue = tab$P.Value, 
-						method = method)
+	n_features = length(features)
+
+	if( n_features == 1){
+		if( method == "RE2C"){
+			df = data.frame(stat.FE = NA, 
+							stat.het = NA,
+							pvalue = tab$P.Value, 
+							n_features = 1,
+							method = method)
+		}else{
+			df = data.frame(stat = NA, 
+							pvalue = tab$P.Value, 
+							n_features = 1,
+							method = method)
+		}
 		return(df)
 	}
 
@@ -96,14 +109,17 @@ mvTest = function(fit, vobj, features, coef, method = c("RE2C", "FE", "tstat", "
 		res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
 
 		df = data.frame(stat = res$beta / res$se,
-						pvalue = res$p, 
+						pvalue = res$p,
+						n_features = n_features, 
 						method = method)
 
 	}else if( method == "RE2C"){
 		res = RE2C(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
 
-		df = data.frame(stat = res$stat1, 
-						pvalue = res$RE2Cp, 
+		df = data.frame(stat.FE = res$stat1, 
+						stat.het = res$stat2,
+						pvalue = res$RE2Cp,
+						n_features = n_features, 
 						method = method)
 
 	}else if( method == "tstat"){
@@ -114,12 +130,14 @@ mvTest = function(fit, vobj, features, coef, method = c("RE2C", "FE", "tstat", "
 
 		df = data.frame(stat = tstat, 
 						pvalue = pv, 
+						n_features = n_features,
 						method = method)
 	}else if( method == "sidak"){
 		pv = 1 - (1 - min(tab$P.Value))^nrow(tab)
 
 		df = data.frame(stat = NA,
 						pvalue = pv, 
+						n_features = n_features,
 						method = method)
 	}else if( method == "fisher"){
 		stat = -2 * sum(log(tab$P.Value))
@@ -128,6 +146,7 @@ mvTest = function(fit, vobj, features, coef, method = c("RE2C", "FE", "tstat", "
 
 		df = data.frame(stat = stat,
 						pvalue = pv, 
+						n_features = n_features,
 						method = method)
 	}
 
