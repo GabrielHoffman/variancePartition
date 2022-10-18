@@ -16,7 +16,7 @@
 #' @param vobj matrix or \code{EList} object returned by \code{voom()}
 #' @param features indeces or names of features to perform multivariate test on 
 #' @param coef name of coefficient or contrast to be tested
-#' @param method statistical method used to perform multivariate test.  See details. \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
+#' @param method statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
 #'  
 #' @details See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original p-value is returned and the test statistic is set to \code{NA}.
 #' 
@@ -49,7 +49,7 @@
 #' @importFrom remaCor RE2C LS 
 #' @importFrom stats coefficients pchisq cov2cor
 #' @export
-mvTest = function(fit, vobj, features, coef, method = c("RE2C", "FE", "tstat", "sidak", "fisher")){
+mvTest = function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher")){
 
 	method = match.arg(method)
 

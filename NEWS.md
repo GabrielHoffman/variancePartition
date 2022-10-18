@@ -1,3 +1,7 @@
+# variancePartition 1.27.12
+ - in `mvTest()`:
+   - default method is now `"FE"`
+
 # variancePartition 1.27.11
  - in `mvTest()`:
    - return number of features
