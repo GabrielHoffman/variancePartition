@@ -124,7 +124,13 @@ mvTest = function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "
 
 	}else if( method == "tstat"){
 		Sigma_corr = cov2cor(Sigma)
-		tstat = crossprod(tab$t, solve(Sigma_corr, tab$t))
+		# tstat = crossprod(tab$t, solve(Sigma_corr, tab$t))
+
+		# in case Sigma_corr is not invertable
+		tstat = tryCatch( crossprod(tab$t, solve(Sigma_corr, tab$t)), error = function(e){
+			warning("Covariance matrix is not invertable. Returning NA values.")
+			NA
+			})  
 
 		pv = pchisq( tstat, length(tab$t), lower.tail=FALSE)
 
