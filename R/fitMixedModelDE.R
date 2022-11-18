@@ -204,7 +204,7 @@ setMethod("residuals", "MArrayLM2",
 #' Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix \code{L}
 #'
 #' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by \code{contrasts.fit()} are run.
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by \code{contrasts.fit()} are run.
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
 #' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 10 samples.
@@ -459,7 +459,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 			ret = lmFit( exprObj, design )
 		}
 
-
 		if( computeResiduals ){
 			# Evaluate residuals here, since can't be evaluate after contrasts.fit() is run
 			# add this to the standard MArrayLM object for use by custom residuals function
@@ -470,6 +469,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		if( ! univariateContrasts ){
 			ret = contrasts.fit( ret, L)
 		}
+
+		# compute hat values
+		ret$hatvalues = hatvalues(ret, exprObj)
 
 	}else{
 
@@ -562,10 +564,14 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 				V = crossprod(chol(mod$vcov) %*% L)
 			}
 
+			# compute hatvalues
+			h = hatvalues(fit)
+
 			list( 	ret 	= new("MArrayLM", ret),
 					varComp = varComp,
 					# effective degrees of freedom as sum of diagonals of hat matrix
-					edf		= sum(hatvalues(fit)), 
+					edf		= sum(h), 
+					hatvalues = h,
 					vcov 	= V)
 		}
 
@@ -617,12 +623,16 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		if( computeResiduals ){
 			residuals = foreach( x = resList, .combine=cbind ) %do% { x$ret$residuals }
 		}
+		hat = foreach( x = resList, .combine=cbind ) %do% {x$hatvalues}
+		if( ! is.matrix(hat) ){ hat = matrix(hat,ncol=1)}
+		colnames(hat) = rownames(exprObj)
 
 		# transpose
 		coefficients = t( coefficients )
 		df.residual = t( df.residual )
 		pValue = t( pValue )
 		stdev.unscaled = t( stdev.unscaled )
+		hat = t( hat )
 		
 		if( computeResiduals ){
 			residuals = t(residuals)
@@ -663,6 +673,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		 			design 			= design, 
 		 			rdf 			= c(rdf), 
 		 			df.residual		= df.residual, 
+		 			hatvalues 		= hat,
 		 			Amean 			= Amean, 
 		 			method 			= method, 
 		 			sigma 			= sigma, 
@@ -716,6 +727,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		# eBayes can be run afterwards, if wanted
 		ret = .standard_transform( ret )
 	}
+
+	# return formula, data
+	ret$formula = formula
+	ret$data = data
+
 	ret
 }
 

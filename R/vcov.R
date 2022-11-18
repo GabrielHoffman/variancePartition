@@ -134,6 +134,7 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 # @param rdf residual degrees of freedom
 # @param coef name of coefficient to be extracted
 #
+#' @importFrom Matrix bdiag
 eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 
 	# With no weights:

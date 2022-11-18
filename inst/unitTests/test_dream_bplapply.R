@@ -78,8 +78,6 @@ test_fitExtractVarPartModel_parallel = function(){
 
 test_dream = function(){
 
-	# q()
-	# R
 	library(lmerTest)
 	library(variancePartition)
 	library(BiocParallel)
@@ -92,8 +90,6 @@ test_dream = function(){
 	set.seed(1)
 
 	geneExpr[41,] = as.numeric(info$Batch) + rnorm(nrow(info), 0, 1)
-
-
 	param1 = SerialParam()
 	fitd = dream( geneExpr[41,,drop=FALSE], form, info, BPPARAM=param1)
 
