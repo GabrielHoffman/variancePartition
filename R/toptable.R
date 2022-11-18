@@ -123,11 +123,13 @@ function (fit, coef = NULL, number = 10, genelist = fit$genes,
             adjust.method = adjust.method, sort.by = sort.by,
             p.value = p.value, lfc = lfc)
 
-        # GEH September 5, 2019
-		# convert p-values to F-statistics
-		# this corresponds to constant degrees of freedom equals Inf
-		tab$P.Value = pmax(tab$P.Value, 1e-300)
-		tab$F.std = qf(tab$P.Value, df1=length(coef), df2=Inf, lower.tail=FALSE)
+        if( nrow(tab) > 0 ){
+	        # GEH September 5, 2019
+			# convert p-values to F-statistics
+			# this corresponds to constant degrees of freedom equals Inf
+			tab$P.Value = pmax(tab$P.Value, 1e-300)
+			tab$F.std = qf(tab$P.Value, df1=length(coef), df2=Inf, lower.tail=FALSE)
+		}
 
         return( tab )
     }
@@ -143,11 +145,13 @@ function (fit, coef = NULL, number = 10, genelist = fit$genes,
         resort.by = resort.by, p.value = p.value, lfc = lfc,
         confint = confint)
 
-    # GEH September 5, 2019
-	# convert p-values to z-scores 
-	# this corresponds to constant degrees of freedom equals Inf
-	tab$P.Value = pmax(tab$P.Value, 1e-300)
-	tab$z.std = sign(tab$t) * qnorm(tab$P.Value/2, lower.tail=FALSE)
+    if( nrow(tab) > 0 ){
+	    # GEH September 5, 2019
+		# convert p-values to z-scores 
+		# this corresponds to constant degrees of freedom equals Inf
+		tab$P.Value = pmax(tab$P.Value, 1e-300)
+		tab$z.std = sign(tab$t) * qnorm(tab$P.Value/2, lower.tail=FALSE)
+	}
 
 	tab
 })
