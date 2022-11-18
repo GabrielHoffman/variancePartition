@@ -14,7 +14,7 @@ makeContrastsDream(
 )
 }
 \arguments{
-\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work}
+\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work}
 
 \item{data}{data.frame with columns corresponding to formula}
 

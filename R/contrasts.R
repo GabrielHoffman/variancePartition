@@ -4,7 +4,7 @@
 #' Extract contrast matrix, L, testing a single variable.  Contrasts involving more than one variable can be constructed by modifying L directly
 #'
 #' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by \code{voom()} from the \code{limma} package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
 #' @param coefficient the coefficient to use in the hypothesis test
 #' 
@@ -65,7 +65,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' 
 #' Construct the contrast matrix corresponding to specified contrasts of a set of parameters.
 #'
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
 #' @param ... expressions, or character strings which can be parsed to expressions, specifying contrasts
 #' @param contrasts character vector specifying contrasts
@@ -222,7 +222,7 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
 #'
 #' Get all univariate contrasts
 #'
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
 #'
 #' @return

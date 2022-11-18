@@ -1,3 +1,8 @@
+# variancePartition 1.27.13
+ - add `diffVar()` test of differential variance
+ - `dream()` now returns `formula`, `data`, and `hatvalues`
+ - define `hatvalues()` for result of `dream()`
+
 # variancePartition 1.27.12
  - in `mvTest()`:
    - default method is now `"FE"`
