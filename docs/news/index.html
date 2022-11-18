@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.14</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,11 @@
       <small>Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.27.14" id="variancepartition-12714">variancePartition 1.27.14<a class="anchor" aria-label="anchor" href="#variancepartition-12714"></a></h2>
+<ul><li>fix bug in <code><a href="../reference/toptable-method.html">topTable()</a></code>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.27.13" id="variancepartition-12713">variancePartition 1.27.13<a class="anchor" aria-label="anchor" href="#variancepartition-12713"></a></h2>
 <ul><li>add <code><a href="../reference/diffVar-method.html">diffVar()</a></code> test of differential variance</li>
@@ -165,7 +170,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.25.5" id="variancepartition-1255">variancePartition 1.25.5<a class="anchor" aria-label="anchor" href="#variancepartition-1255"></a></h2>
-<ul><li>add <code><a href="../reference/getTreat-method.html">getTreat()</a></code> to evaluate <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">treat()</a></code>/<code><a href="https://rdrr.io/pkg/limma/man/toptable.html" class="external-link">topTreat()</a></code> seamlessly on results of <code><a href="../reference/dream-method.html">dream()</a></code>
+<ul><li>add <code><a href="../reference/getTreat-method.html">getTreat()</a></code> to evaluate <code>treat()</code>/<code>topTreat()</code> seamlessly on results of <code><a href="../reference/dream-method.html">dream()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -173,7 +178,7 @@
 <ul><li>in <code><a href="../reference/dream-method.html">dream()</a></code> set default <code>ddf = "adaptive"</code>, which uses “KR” for less than 12 samples</li>
 <li>all functions default tp <code>BPPARAM=SerialParam()</code>
 </li>
-<li>add <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> to vignette for <code><a href="../reference/dream-method.html">dream()</a></code>
+<li>add <code>eBayes()</code> to vignette for <code><a href="../reference/dream-method.html">dream()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -197,7 +202,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.23.5" id="variancepartition-1235">variancePartition 1.23.5<a class="anchor" aria-label="anchor" href="#variancepartition-1235"></a></h2>
 <ul><li>use <code>RhpcBLASctl::omp_set_num_threads(1)</code> to use only 1 OpenMP thread for linear algebra within each BiocParallel process</li>
-<li>update <code><a href="../reference/dream-method.html">dream()</a></code> so <code>useWeights=FALSE</code> works with <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>
+<li>update <code><a href="../reference/dream-method.html">dream()</a></code> so <code>useWeights=FALSE</code> works with <code>lmFit()</code>
 </li>
 </ul></div>
     <div class="section level2">

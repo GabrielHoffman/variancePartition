@@ -1,3 +1,6 @@
+# variancePartition 1.27.14
+ - fix bug in `topTable()`
+
 # variancePartition 1.27.13
  - add `diffVar()` test of differential variance
  - `dream()` now returns `formula`, `data`, and `hatvalues`
