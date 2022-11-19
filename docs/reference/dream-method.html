@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.14</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +109,7 @@
 
 
 <dt>control</dt>
-<dd><p>control settings for <code>lmer()</code></p></dd>
+<dd><p>control settings for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code></p></dd>
 
 
 <dt>suppressWarnings</dt>
@@ -133,7 +133,7 @@
 
 
 <dt>...</dt>
-<dd><p>Additional arguments for <code>lmer()</code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p></dd>
+<dd><p>Additional arguments for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -162,11 +162,10 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># library(variancePartition)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># load simulated data:</span></span></span>
-<span class="r-in"><span><span class="co"># geneExpr: matrix of gene expression values</span></span></span>
+<span class="r-in"><span><span class="co"># geneExpr: matrix of *normalized* gene expression values</span></span></span>
 <span class="r-in"><span><span class="co"># info: information/metadata about each sample</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -174,6 +173,7 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit linear mixed model for each gene</span></span></span>
 <span class="r-in"><span><span class="co"># run on just 10 genes for time</span></span></span>
+<span class="r-in"><span><span class="co"># NOTE: dream() runs on *normalized* data</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -181,30 +181,11 @@
 <span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># view top genes</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span> <span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing intercept from test coefficients</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Batch2       Batch3      Batch4     AveExpr          F    P.Value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -0.67049689 -1.034776107 -1.04729128  -3.1554790 2.26933190 0.08279052</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8   0.02567263 -0.129563777  0.67499421   0.9171386 2.00798682 0.11524431</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   0.08200976 -0.172582199 -0.49673001   0.1702122 1.25744320 0.29114590</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.46092425 -0.453624935 -0.05771812 -10.4664549 0.96788135 0.40960507</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  -0.31606553  0.149452306 -0.03562447  -4.3799381 0.74684626 0.52578552</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  -0.49420745 -0.382210977 -0.40013018  -1.1281610 0.60798371 0.61080712</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   0.26795357  0.006060832  0.27368297   4.7187640 0.35414851 0.78620137</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -0.35301416 -0.096570091 -0.12646906  -2.3079042 0.33697299 0.79862047</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  0.11578714 -0.098856729  0.14565869  -2.3673775 0.23126959 0.87449591</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   0.11531023  0.122855760  0.13721184  -4.5359748 0.04827941 0.98590284</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        adj.P.Val      F.std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  0.5762215 2.22700623</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  0.5762215 1.97548090</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  0.9704863 1.24609722</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1  0.9716621 0.96185982</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  0.9716621 0.74380775</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2  0.9716621 0.60633634</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  0.9716621 0.35407317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  0.9716621 0.33695844</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 0.9716621 0.23150131</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  0.9859028 0.04841547</span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Batch2"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            logFC    AveExpr         t   P.Value adj.P.Val         B     z.std</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene6 -0.6704969  -3.155479 -1.651193 0.1007716 0.6907331 -4.539538 -1.641124</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene2 -0.4942074  -1.128161 -1.340327 0.1821532 0.6907331 -4.569990 -1.334155</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene1 -0.4609243 -10.466455 -1.266675 0.2072199 0.6907331 -4.576299 -1.261247</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># get contrast matrix testing if the coefficient for Batch3 is </span></span></span>
 <span class="r-in"><span><span class="co"># different from coefficient for Batch2</span></span></span>
@@ -224,18 +205,11 @@
 <span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># view top genes</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit2</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span> <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               logFC     AveExpr           t   P.Value adj.P.Val       z.std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7   0.465517838  -4.3799381  1.39780930 0.1665203 0.8766243  1.38347152</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -0.364279218  -3.1554790 -0.93401216 0.3534470 0.8766243 -0.92792405</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3  -0.254591961   0.1702122 -0.87057841 0.3869226 0.8766243 -0.86521177</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10 -0.214643873  -2.3673775 -0.75005983 0.4556964 0.8766243 -0.74595194</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5  -0.261892737   4.7187640 -0.73742122 0.4632915 0.8766243 -0.73343765</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9   0.256444065  -2.3079042  0.63729350 0.5259746 0.8766243  0.63416279</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -0.155236404   0.9171386 -0.45917626 0.6475090 0.9106411 -0.45722551</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   0.111996470  -1.1281610  0.34847719 0.7285129 0.9106411  0.34710440</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4   0.007545528  -4.5359748  0.02528454 0.9798987 0.9813892  0.02519588</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1   0.007299316 -10.4664549  0.02340914 0.9813892 0.9813892  0.02332734</span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit2</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            logFC    AveExpr          t   P.Value adj.P.Val      z.std</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  0.4655178 -4.3799381  1.3978093 0.1665203 0.8766243  1.3834715</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene6 -0.3642792 -3.1554790 -0.9340122 0.3534470 0.8766243 -0.9279241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene3 -0.2545920  0.1702122 -0.8705784 0.3869226 0.8766243 -0.8652118</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Parallel processing using multiple cores with reduced memory usage</span></span></span>
 <span class="r-in"><span><span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -245,7 +219,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:4 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:5 s</span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit fixed effect model for each gene</span></span></span>
@@ -257,18 +231,11 @@
 <span class="r-in"><span><span class="va">fit4</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span> <span class="va">fit4</span> <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># view top genes</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit4</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span> <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              logFC     AveExpr           t    P.Value adj.P.Val         B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -1.83567724   0.9171386 -1.87030676 0.06312128 0.6312128 -4.581611</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene4  -1.01697419  -4.5359748 -1.17835890 0.24026308 0.9496566 -4.593019</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene9  -0.71148095  -2.3079042 -0.69240222 0.48960809 0.9496566 -4.598021</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -0.66356866  -3.1554790 -0.64362644 0.52066540 0.9496566 -4.598381</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7   0.59150199  -4.3799381  0.62693912 0.53152116 0.9496566 -4.598498</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene5   0.55374399   4.7187640  0.56590215 0.57218963 0.9496566 -4.598902</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3   0.32421597   0.1702122  0.34561266 0.73005146 0.9496566 -4.600015</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene10  0.18733363  -2.3673775  0.21296925 0.83160034 0.9496566 -4.600427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2   0.10045251  -1.1281610  0.10985054 0.91265454 0.9496566 -4.600612</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.05984159 -10.4664549 -0.06322915 0.94965664 0.9496566 -4.600657</span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit4</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           logFC    AveExpr          t    P.Value adj.P.Val         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene8 -1.835677  0.9171386 -1.8703068 0.06312128 0.6312128 -4.581611</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene4 -1.016974 -4.5359748 -1.1783589 0.24026308 0.9496566 -4.593019</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene9 -0.711481 -2.3079042 -0.6924022 0.48960809 0.9496566 -4.598021</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compute residuals using dream</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals</a></span><span class="op">(</span><span class="va">fit4</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span></span>

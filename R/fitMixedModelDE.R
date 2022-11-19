@@ -241,11 +241,10 @@ setMethod("residuals", "MArrayLM2",
 #' }
 #' @examples
 #' # library(variancePartition)
-#'
 #' library(BiocParallel)
 #'
 #' # load simulated data:
-#' # geneExpr: matrix of gene expression values
+#' # geneExpr: matrix of *normalized* gene expression values
 #' # info: information/metadata about each sample
 #' data(varPartData)
 #' 
@@ -253,11 +252,12 @@ setMethod("residuals", "MArrayLM2",
 #' 
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
+#' # NOTE: dream() runs on *normalized* data
 #' fit = dream( geneExpr[1:10,], form, info)
 #' fit = eBayes(fit)
 #'
 #' # view top genes
-#' topTable( fit )
+#' topTable( fit, coef="Batch2", number=3 )
 #'
 #' # get contrast matrix testing if the coefficient for Batch3 is 
 #' # different from coefficient for Batch2
@@ -273,7 +273,7 @@ setMethod("residuals", "MArrayLM2",
 #' fit = eBayes(fit)
 #' 
 #' # view top genes
-#' topTable( fit2, coef="Batch3 - Batch2" )
+#' topTable( fit2, coef="Batch3 - Batch2", number=3)
 #' 
 #' # Parallel processing using multiple cores with reduced memory usage
 #' param = SnowParam(4, "SOCK", progressbar=TRUE)
@@ -287,7 +287,7 @@ setMethod("residuals", "MArrayLM2",
 #' fit4 = eBayes( fit4 )
 #' 
 #' # view top genes
-#' topTable( fit4, coef="Batch3 - Batch2" )
+#' topTable( fit4, coef="Batch3 - Batch2", number=3 )
 #'
 #' # Compute residuals using dream
 #' residuals(fit4)[1:4, 1:4]

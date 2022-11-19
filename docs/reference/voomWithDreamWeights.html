@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.14</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -140,7 +140,7 @@
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>limma::voom()</p></div>
+    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">limma::voom()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -173,30 +173,15 @@
 <span class="r-in"><span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># extract results</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">res</span>, coef<span class="op">=</span><span class="st">"Disease1"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                         logFC  AveExpr        t      P.Value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000456159.1 gene=MET          1.0182945 2.458926 6.167647 3.897397e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000418210.2 gene=TMEM64       1.0375652 4.715367 6.494865 6.543907e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000555834.1 gene=RPS6KL1      0.9355651 5.272063 5.736384 1.484023e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000248564.5 gene=GNG11        1.0543333 4.511181 5.454163 3.560865e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000570099.1 gene=YPEL3        0.9654350 2.063331 5.840018 4.691530e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000482796.1 gene=RP11-101E3.5 0.9257951 1.533654 4.133066 1.997587e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000420223.1 gene=ZCWPW2       0.8798063 2.758182 4.181883 3.053393e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000598661.1 gene=AL136376.1   0.8931155 1.231360 4.032305 4.716615e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000337859.6 gene=ZC3H15       0.8379527 4.169523 3.775667 5.676192e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000317802.7 gene=TSPYL6       1.0257641 4.321189 3.958155 5.771109e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                        adj.P.Val           B    z.std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000456159.1 gene=MET          6.543907e-06  6.32290553 5.073902</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000418210.2 gene=TMEM64       6.543907e-06  6.87728605 4.974432</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000555834.1 gene=RPS6KL1      9.893488e-06  4.97879592 4.813375</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000248564.5 gene=GNG11        1.780432e-05  4.13089228 4.635494</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000570099.1 gene=YPEL3        1.876612e-05  5.15392724 4.578129</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000482796.1 gene=RP11-101E3.5 6.658623e-04  0.24744877 3.719321</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000420223.1 gene=ZCWPW2       8.723981e-04  0.37004039 3.610728</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000598661.1 gene=AL136376.1   1.154222e-03 -0.03675495 3.496355</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000337859.6 gene=ZC3H15       1.154222e-03 -0.69172883 3.446633</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000317802.7 gene=TSPYL6       1.154222e-03 -0.16618843 3.442150</span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">res</span>, coef<span class="op">=</span><span class="st">"Disease1"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                    logFC  AveExpr        t      P.Value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000456159.1 gene=MET     1.0182945 2.458926 6.167647 3.897397e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000418210.2 gene=TMEM64  1.0375652 4.715367 6.494865 6.543907e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000555834.1 gene=RPS6KL1 0.9355651 5.272063 5.736384 1.484023e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                   adj.P.Val        B    z.std</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000456159.1 gene=MET     6.543907e-06 6.322906 5.073902</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000418210.2 gene=TMEM64  6.543907e-06 6.877286 4.974432</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000555834.1 gene=RPS6KL1 9.893488e-06 4.978796 4.813375</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

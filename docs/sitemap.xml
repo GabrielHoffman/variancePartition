@@ -76,6 +76,12 @@
     <loc>http://gabrielhoffman.github.io/variancePartition/reference/colinearityScore.html</loc>
   </url>
   <url>
+    <loc>http://gabrielhoffman.github.io/variancePartition/reference/diffVar-method.html</loc>
+  </url>
+  <url>
+    <loc>http://gabrielhoffman.github.io/variancePartition/reference/diffVar.html</loc>
+  </url>
+  <url>
     <loc>http://gabrielhoffman.github.io/variancePartition/reference/dot-getAllUniContrasts.html</loc>
   </url>
   <url>
@@ -116,6 +122,9 @@
   </url>
   <url>
     <loc>http://gabrielhoffman.github.io/variancePartition/reference/ggColorHue.html</loc>
+  </url>
+  <url>
+    <loc>http://gabrielhoffman.github.io/variancePartition/reference/hatvalues-method.html</loc>
   </url>
   <url>
     <loc>http://gabrielhoffman.github.io/variancePartition/reference/index.html</loc>
