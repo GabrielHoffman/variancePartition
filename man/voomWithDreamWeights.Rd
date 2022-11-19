@@ -75,10 +75,9 @@ res = dream( vobj, form, metadata)
 res = eBayes(res)
 
 # extract results
-topTable(res, coef="Disease1")
-
+topTable(res, coef="Disease1", number=3)
 
 }
 \seealso{
-limma::voom()
+\code{limma::voom()}
 }

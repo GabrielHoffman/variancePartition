@@ -97,11 +97,11 @@ data(varPartDEdata)
 isexpr = rowSums(cpm(countMatrix)>0.1) >= 5
 
 # Standard usage of limma/voom
-geneExpr = DGEList( countMatrix[isexpr,] )
-geneExpr = calcNormFactors( geneExpr )
+dge = DGEList( countMatrix[isexpr,] )
+dge = calcNormFactors( dge )
 
 # make this vignette faster by analyzing a subset of genes
-geneExpr = geneExpr[1:1000,]
+dge = dge[1:1000,]
 ```
 
 # Limma Analysis
@@ -109,13 +109,13 @@ Limma has a built-in approach for analyzing repeated measures data using `duplic
 ```{r dupCor, eval=TRUE}
 # apply duplicateCorrelation is two rounds
 design = model.matrix( ~ Disease, metadata)
-vobj_tmp = voom( geneExpr, design, plot=FALSE)
+vobj_tmp = voom( dge, design, plot=FALSE)
 dupcor <- duplicateCorrelation(vobj_tmp,design,block=metadata$Individual)
 
 # run voom considering the duplicateCorrelation results
 # in order to compute more accurate precision weights
 # Otherwise, use the results from the first voom run
-vobj = voom( geneExpr, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
+vobj = voom( dge, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
 
 # Estimate linear mixed model with a single variance component
 # Fit the model for each gene, 
@@ -147,7 +147,7 @@ param = SnowParam(4, "SOCK", progressbar=TRUE)
 form <- ~ Disease + (1|Individual) 
 
 # estimate weights using linear mixed model of dream
-vobjDream = voomWithDreamWeights( geneExpr, form, metadata, BPPARAM=param )
+vobjDream = voomWithDreamWeights( dge, form, metadata, BPPARAM=param )
 
 # Fit the dream model on each gene
 # By default, uses the Satterthwaite approximation for the hypothesis test
@@ -239,8 +239,8 @@ vp = fitExtractVarPartModel( vobj, form, metadata)
 plotVarPart( sortCols(vp))
 ```
 
-## Compare p-values from dream and duplicateCorrelation
-In order to understand the empircal difference between dream and duplication correlation, we can plot the $-\log_{10}$ p-values from both methods.
+## Comparing p-values 
+Here we compare p-values from from `dream()` and `duplicateCorrelation`. In order to understand the empircal difference between them, we can plot the $-\log_{10}$ p-values from each method.
 ```{r define}
 # Compare p-values and make plot
 p1 = topTable(fitDupCor, coef="Disease1", number=Inf, sort.by="none")$P.Value

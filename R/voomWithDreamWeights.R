@@ -22,7 +22,7 @@
 #' An \code{EList} object just like the result of \code{limma::voom()}
 #'
 #' @details Adapted from \code{vomm()} in \code{limma} v3.40.2
-#' @seealso limma::voom()
+#' @seealso \code{limma::voom()}
 #' @examples
 #' # library(variancePartition)
 #' library(edgeR)
@@ -45,11 +45,7 @@
 #' res = eBayes(res)
 #' 
 #' # extract results
-#' topTable(res, coef="Disease1")
-#' 
-# # Parallel processing using multiple cores with reduced memory usage
-# param = SnowParam(4, "SOCK", progressbar=TRUE)
-# vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
+#' topTable(res, coef="Disease1", number=3)
 #' 
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict as.formula

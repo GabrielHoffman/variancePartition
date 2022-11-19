@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.14</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,8 +80,8 @@ testing with linear mixed models for repeated measures</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2022-10-18
-09:42:35</h4>
+            <h4 data-toc-skip class="date">Run on 2022-11-19
+18:58:37</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/dream.Rmd" class="external-link"><code>vignettes/dream.Rmd</code></a></small>
       <div class="d-none name"><code>dream.Rmd</code></div>
@@ -165,11 +165,11 @@ workflow for RNA-seq. Process raw count data using limma/voom.</p>
 <span><span class="va">isexpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span>
 <span></span>
 <span><span class="co"># Standard usage of limma/voom</span></span>
-<span><span class="va">geneExpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span> <span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>,<span class="op">]</span> <span class="op">)</span></span>
-<span><span class="va">geneExpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span> <span class="va">geneExpr</span> <span class="op">)</span></span>
+<span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span> <span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>,<span class="op">]</span> <span class="op">)</span></span>
+<span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span> <span class="va">dge</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># make this vignette faster by analyzing a subset of genes</span></span>
-<span><span class="va">geneExpr</span> <span class="op">=</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,<span class="op">]</span></span></code></pre></div>
+<span><span class="va">dge</span> <span class="op">=</span> <span class="va">dge</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,<span class="op">]</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="limma-analysis">Limma Analysis<a class="anchor" aria-label="anchor" href="#limma-analysis"></a>
@@ -181,13 +181,13 @@ same across all genes.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># apply duplicateCorrelation is two rounds</span></span>
 <span><span class="va">design</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Disease</span>, <span class="va">metadata</span><span class="op">)</span></span>
-<span><span class="va">vobj_tmp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">design</span>, plot<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">vobj_tmp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom</a></span><span class="op">(</span> <span class="va">dge</span>, <span class="va">design</span>, plot<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">dupcor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/dupcor.html" class="external-link">duplicateCorrelation</a></span><span class="op">(</span><span class="va">vobj_tmp</span>,<span class="va">design</span>,block<span class="op">=</span><span class="va">metadata</span><span class="op">$</span><span class="va">Individual</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># run voom considering the duplicateCorrelation results</span></span>
 <span><span class="co"># in order to compute more accurate precision weights</span></span>
 <span><span class="co"># Otherwise, use the results from the first voom run</span></span>
-<span><span class="va">vobj</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">design</span>, plot<span class="op">=</span><span class="cn">FALSE</span>, block<span class="op">=</span><span class="va">metadata</span><span class="op">$</span><span class="va">Individual</span>, correlation<span class="op">=</span><span class="va">dupcor</span><span class="op">$</span><span class="va">consensus</span><span class="op">)</span></span>
+<span><span class="va">vobj</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom</a></span><span class="op">(</span> <span class="va">dge</span>, <span class="va">design</span>, plot<span class="op">=</span><span class="cn">FALSE</span>, block<span class="op">=</span><span class="va">metadata</span><span class="op">$</span><span class="va">Individual</span>, correlation<span class="op">=</span><span class="va">dupcor</span><span class="op">$</span><span class="va">consensus</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Estimate linear mixed model with a single variance component</span></span>
 <span><span class="co"># Fit the model for each gene, </span></span>
@@ -219,7 +219,7 @@ mixed models.</li>
 <li>
 <code><a href="../reference/toptable-method.html">variancePartition::topTable()</a></code> replaces
 <code><a href="https://rdrr.io/pkg/limma/man/toptable.html" class="external-link">limma::topTable()</a></code> to give seamless access to results from
-`dream().</li>
+<code><a href="../reference/dream-method.html">dream()</a></code>.</li>
 </ol>
 <p>For models with only fixed effects,
 <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">variancePartition::eBayes()</a></code>, and
@@ -237,7 +237,7 @@ handled behind the scenes.</p>
 <span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Disease</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># estimate weights using linear mixed model of dream</span></span>
-<span><span class="va">vobjDream</span> <span class="op">=</span> <span class="fu"><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">metadata</span>, BPPARAM<span class="op">=</span><span class="va">param</span> <span class="op">)</span></span>
+<span><span class="va">vobjDream</span> <span class="op">=</span> <span class="fu"><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span> <span class="va">dge</span>, <span class="va">form</span>, <span class="va">metadata</span>, BPPARAM<span class="op">=</span><span class="va">param</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fit the dream model on each gene</span></span>
 <span><span class="co"># By default, uses the Satterthwaite approximation for the hypothesis test</span></span>
@@ -403,11 +403,11 @@ dream analysis.</p>
 <p><img src="dream_files/figure-html/vp-1.png" width="700"></p>
 </div>
 <div class="section level3">
-<h3 id="compare-p-values-from-dream-and-duplicatecorrelation">Compare p-values from dream and duplicateCorrelation<a class="anchor" aria-label="anchor" href="#compare-p-values-from-dream-and-duplicatecorrelation"></a>
+<h3 id="comparing-p-values">Comparing p-values<a class="anchor" aria-label="anchor" href="#comparing-p-values"></a>
 </h3>
-<p>In order to understand the empircal difference between dream and
-duplication correlation, we can plot the <span class="math inline">\(-\log_{10}\)</span> p-values from both
-methods.</p>
+<p>Here we compare p-values from from <code><a href="../reference/dream-method.html">dream()</a></code> and
+<code>duplicateCorrelation</code>. In order to understand the empircal
+difference between them, we can plot the <span class="math inline">\(-\log_{10}\)</span> p-values from each method.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compare p-values and make plot</span></span>
 <span><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fitDupCor</span>, coef<span class="op">=</span><span class="st">"Disease1"</span>, number<span class="op">=</span><span class="cn">Inf</span>, sort.by<span class="op">=</span><span class="st">"none"</span><span class="op">)</span><span class="op">$</span><span class="va">P.Value</span></span>
