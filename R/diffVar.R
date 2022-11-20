@@ -8,7 +8,8 @@
 #' Test the association between a covariate of interest and the response's deviation from expectation. 
 #' 
 #' @param fit model fit from \code{dream()}
-#' @param method transform the residuals using absolute deviation ("AD") or squared deviation "SQ".
+#' @param method transform the residuals using absolute deviation ("AD") or squared deviation ("SQ").
+#' @param scale scale each observation by "leverage", or no scaling ("none")
 #' @param BPPARAM parameters for parallel evaluation
 #' @param ... other parameters passed to \code{dream()}
 #'  
@@ -32,17 +33,17 @@
 #' isexpr = rowSums(cpm(countMatrix)>0.1) >= 5
 #' 
 #' # Standard usage of limma/voom
-#' geneExpr = DGEList( countMatrix[isexpr,] )
-#' geneExpr = calcNormFactors( geneExpr )
+#' dge = DGEList( countMatrix[isexpr,] )
+#' dge = calcNormFactors( dge )
 #' 
 #' # make this vignette faster by analyzing a subset of genes
-#' geneExpr = geneExpr[1:1000,]
+#' dge = dge[1:1000,]
 #' 
 #' # regression formula
 #' form <- ~ Disease 
 #' 
 #' # estimate precision weights
-#' vobj = voomWithDreamWeights( geneExpr, form, metadata )
+#' vobj = voomWithDreamWeights( dge, form, metadata )
 #' 
 #' # fit dream model
 #' fit = dream( vobj, form, metadata )
@@ -67,34 +68,105 @@
 #' @docType methods
 #' @rdname diffVar-method
 setGeneric("diffVar", signature="fit",
-	function( fit, method = c("AD", "SQ"), BPPARAM = SerialParam(), ... )
+	function( fit, method = c("AD", "SQ"), scale = c("leverage", "none"), BPPARAM = SerialParam(), ... )
       standardGeneric("diffVar")
 )
 
 
 #' @export
 #' @rdname diffVar-method
-#' @aliases diffVar,MArrayLM2-method
+#' @aliases diffVar,MArrayLM-method
 setMethod("diffVar", "MArrayLM",
-	function( fit, method = c("AD", "SQ"),
+	function( fit, method = c("AD", "SQ"), scale = c("leverage", "none"), 
 		BPPARAM = SerialParam(), ...){
 
+	# compute deviation from expectation for each observation
+	z = deviation(fit, method, scale)
+
+	# 3) fit regression on deviations
+	fit2 = dream(z, fit$formula, fit$data, BPPARAM=BPPARAM,..., quiet=TRUE)
+	fit2 = eBayes(fit2)
+
+	fit2
+})
+
+
+
+
+#' Deviation from expectation for each observation
+#' 
+#' Given a model fit for each features, residuals are computed and transformed based on an absolute value or squaring transform.
+#' 
+#' @param fit model fit from \code{dream()}
+#' @param method transform the residuals using absolute deviation ("AD") or squared deviation ("SQ").
+#' @param scale scale each observation by "leverage", or no scaling ("none")
+#' 
+#' @examples
+#' # library(variancePartition)
+#' library(edgeR)
+#' data(varPartDEdata)
+#' 
+#' # filter genes by number of counts
+#' isexpr = rowSums(cpm(countMatrix)>0.1) >= 5
+#' 
+#' # Standard usage of limma/voom
+#' dge = DGEList( countMatrix[isexpr,] )
+#' dge = calcNormFactors( dge )
+#' 
+#' # make this vignette faster by analyzing a subset of genes
+#' dge = dge[1:1000,]
+#' 
+#' # regression formula
+#' form <- ~ Disease 
+#' 
+#' # estimate precision weights
+#' vobj = voomWithDreamWeights( dge, form, metadata )
+#' 
+#' # fit dream model
+#' fit = dream( vobj, form, metadata )
+#' fit = eBayes(fit)
+#' 
+#' # Compute deviation from expection for each observation
+#' # using model residuals
+#' z = deviation(fit)
+#' z[1:4, 1:4]
+#' 
+#' @seealso \code{diffVar()}
+#' @export
+#' 
+#' @docType methods
+#' @rdname deviation-method
+setGeneric("deviation", signature="fit",
+	function( fit, method = c("AD", "SQ"), scale = c("leverage", "none"))
+      standardGeneric("deviation")
+)
+
+#' @export
+#' @rdname deviation-method
+#' @aliases deviation,MArrayLM-method
+setMethod("deviation", "MArrayLM",
+	function( fit, method = c("AD", "SQ"), scale = c("leverage", "none")){
+
 	method = match.arg(method)
+	scale = match.arg(scale)
 
 	# 1) extract residuals
 	z = residuals(fit)
 
-	# extract leverage
-	hv = fit$hatvalues
+	# scale each observation by leverage
+	if( scale == "leverage" ){
+		# extract leverage
+		hv = fit$hatvalues
 
-	# fixed effects models have the same hatvalues for each response
-	# convert array into matrix with the same rows
-	if( ! is.matrix(hv) ){
-		hv = t(matrix(hv, ncol(z), nrow(z)))
+		# fixed effects models have the same hatvalues for each response
+		# convert array into matrix with the same rows
+		if( ! is.matrix(hv) ){
+			hv = t(matrix(hv, ncol(z), nrow(z)))
+		}
+
+		# scale residuals by sqrt(1-h)
+		z = z / sqrt(1-hv)
 	}
-
-	# scale residuals by sqrt(1-h)
-	z = z / sqrt(1-hv)
 
 	# 2) transform residuals
 	if( method == "AD"){
@@ -103,11 +175,15 @@ setMethod("diffVar", "MArrayLM",
 		z = z^2
 	}
 
-	# 3) fit regression on deviations
-	fit2 = dream(z, fit$formula, fit$data, BPPARAM=BPPARAM,..., quiet=TRUE)
-	fit2 = eBayes(fit2)
-
-	fit2
+	z
 })
+
+
+
+
+
+
+
+
 
 

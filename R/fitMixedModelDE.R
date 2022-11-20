@@ -442,10 +442,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 	#############################
 	
 	if( ! .isMixedModelFormula( formula ) ){
-		if( !quiet ){
-			message("Fixed effect model, using limma directly...")
-			message("User can apply eBayes() afterwards...")
-		}
+		# if( !quiet ){
+		# 	message("Fixed effect model, using limma directly...")
+		# 	message("User can apply eBayes() afterwards...")
+		# }
 
 		design = model.matrix( formula, data)
 
