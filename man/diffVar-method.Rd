@@ -4,17 +4,30 @@
 \name{diffVar}
 \alias{diffVar}
 \alias{diffVar,MArrayLM-method}
-\alias{diffVar,MArrayLM2-method}
 \title{Test differential variance}
 \usage{
-diffVar(fit, method = c("AD", "SQ"), BPPARAM = SerialParam(), ...)
+diffVar(
+  fit,
+  method = c("AD", "SQ"),
+  scale = c("leverage", "none"),
+  BPPARAM = SerialParam(),
+  ...
+)
 
-\S4method{diffVar}{MArrayLM}(fit, method = c("AD", "SQ"), BPPARAM = SerialParam(), ...)
+\S4method{diffVar}{MArrayLM}(
+  fit,
+  method = c("AD", "SQ"),
+  scale = c("leverage", "none"),
+  BPPARAM = SerialParam(),
+  ...
+)
 }
 \arguments{
 \item{fit}{model fit from \code{dream()}}
 
-\item{method}{transform the residuals using absolute deviation ("AD") or squared deviation "SQ".}
+\item{method}{transform the residuals using absolute deviation ("AD") or squared deviation ("SQ").}
+
+\item{scale}{scale each observation by "leverage", or no scaling ("none")}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
@@ -39,17 +52,17 @@ data(varPartDEdata)
 isexpr = rowSums(cpm(countMatrix)>0.1) >= 5
 
 # Standard usage of limma/voom
-geneExpr = DGEList( countMatrix[isexpr,] )
-geneExpr = calcNormFactors( geneExpr )
+dge = DGEList( countMatrix[isexpr,] )
+dge = calcNormFactors( dge )
 
 # make this vignette faster by analyzing a subset of genes
-geneExpr = geneExpr[1:1000,]
+dge = dge[1:1000,]
 
 # regression formula
 form <- ~ Disease 
 
 # estimate precision weights
-vobj = voomWithDreamWeights( geneExpr, form, metadata )
+vobj = voomWithDreamWeights( dge, form, metadata )
 
 # fit dream model
 fit = dream( vobj, form, metadata )

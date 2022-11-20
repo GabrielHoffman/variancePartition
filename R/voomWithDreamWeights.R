@@ -146,7 +146,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 
 	}else{
 
-		if( ! quiet) message("Fixed effect model, using limma directly...")
+		#if( ! quiet) message("Fixed effect model, using limma directly...")
 
 		design = model.matrix(formula, data)
 		fit <- lmFit(y,design,weights=weights,...)

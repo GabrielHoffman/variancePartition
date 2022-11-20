@@ -1,5 +1,6 @@
 # variancePartition 1.27.14
  - fix bug in `topTable()`
+ - add `deviance()`
  - update docs
 
 # variancePartition 1.27.13
