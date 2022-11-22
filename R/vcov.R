@@ -58,10 +58,12 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 	# so subset manually here
 	features = rownames(coefficients(object))
 
+	idx = match(features, rownames(residuals(object)))
+
 	# use exact calculation for linear model
-	eval_vcov( resids = t(residuals(object)[features,,drop=FALSE]), 
+	eval_vcov( resids = t(residuals(object)[idx,,drop=FALSE]), 
 				X = object$design, 
-				W = weights, 
+				W = weights[,idx,drop=FALSE], 
 				rdf = object$df.residual[1],
 				coef = coef,
 				contrasts = object$contrasts)
@@ -114,9 +116,11 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 	# so subset manually here
 	features = rownames(coefficients(object))
 
+	idx = match(features, rownames(residuals(object)))
+
 	# use approximate calculation for linear mixed model
-	eval_vcov_approx( 	resids = t(residuals(object)[features,,drop=FALSE]), 
-						W = weights,
+	eval_vcov_approx( 	resids = t(residuals(object)[idx,,drop=FALSE]), 
+						W = weights[,idx,drop=FALSE],
 					  	ccl = object$cov.coefficients.list, 
 					  	coef = coef,
 					  	contrasts = object$contrasts)
@@ -124,7 +128,7 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 
 
 
-# Evaluate variance-covariance matrix is multivariate regression
+# Evaluate variance-covariance matrix in multivariate regression
 # 
 # This method is exact for linear regression, even when each response has its own weight vector
 # 
@@ -139,6 +143,9 @@ eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 
 	# With no weights:
 	# kronecker(crossprod(res), solve(crossprod(X)), make.dimnames=TRUE) / rdf
+
+	# scale weights to have mean 1 for each column
+	W = sweep(W, 2, colMeans(W), "/")
 
 	# pre-compute square root of W
 	sqrtW = sqrt(W)
@@ -221,7 +228,7 @@ eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 }
 
 
-# Evaluate variance-covariance matrix is multivariate regression
+# Evaluate variance-covariance matrix in multivariate regression
 # 
 # This method is approximate since part of the calculations assume equal weights.  This is useful for the linear mixed model where the exact calculation is very challanging
 # 
@@ -240,11 +247,14 @@ eval_vcov_approx = function(resids, W, ccl, coef, contrasts){
 		if( missing(coef) ) coef = rownames(contrasts)
 	}
 
+	# scale weights to have mean 1
+	W = sweep(W, 2, colMeans(W), "/")
+
 	# store dimensions of data
 	k = ncol(ccl[[1]])
 	m = ncol(resids)
 
-	# residual covariance
+	# residual correlation
 	scale_res = scale(resids*sqrt(W)) / sqrt(nrow(resids) - 1)
 	Sigma = crossprod(scale_res)
 
@@ -258,17 +268,18 @@ eval_vcov_approx = function(resids, W, ccl, coef, contrasts){
 		# define positions in output matrix
 		idx1 = seq((i-1)*k+1, i*k)
 
-		# select coefficients here
-		chol_cov_i = sqrtMatrix(ccl[[i]])
+		# Use eigen-decomp and transforming eigen-values
+		# since using contrasts can make this matrix singular
+		sqrt_inv_i = matrExp(ccl[[i]], -0.5)
 	
 		# inner loop
 		for(j in seq(i, m)){
 
 			idx2 = seq((j-1)*k+1, j*k)
 
-			chol_cov_j = sqrtMatrix(ccl[[j]])
-	
-			value = Sigma[i,j] * crossprod(chol_cov_i, chol_cov_j)
+			sqrt_inv_j = matrExp(ccl[[j]], -0.5)
+
+			value = Sigma[i,j] * ccl[[i]] %*% crossprod(sqrt_inv_i, sqrt_inv_j) %*% ccl[[j]]
 
 			Sigma_vcov[idx1,idx2] = value 
 			Sigma_vcov[idx2,idx1] = value 
@@ -305,11 +316,8 @@ eval_vcov_approx = function(resids, W, ccl, coef, contrasts){
 
 
 
-# Compute matrix square root so that 
-# crossprod(sqrtMatrix(A)) = A
-# could to Cholesky, buy assumes PSD matrix
-# this works even if some eigen-values are zero.
-sqrtMatrix = function(S, symmetric=TRUE){
+# Raise eigen-values of a matrix to exponent alpha
+matrExp = function(S, alpha, symmetric=TRUE, tol=sqrt(.Machine$double.eps)){
 
 	# pass R check
 	vectors = values = NULL
@@ -317,11 +325,17 @@ sqrtMatrix = function(S, symmetric=TRUE){
 	# eigen decomposition
 	dcmp = eigen(S, symmetric=symmetric)
 
-	# identify positive eigen-values
-	idx = dcmp$values > sqrt(.Machine$double.eps)
+	# Modify sign of vectors, so diagonal is always positive
+	# This removes an issue of sensitivity to small numerical changes
+	values = sign(diag(dcmp$vectors))
+	dcmp$vectors = sweep(dcmp$vectors, 2, values, "*")
 
-	# a matrix square root is U %*% diag(lambda^0.5)
-	with(dcmp, sqrt(values[idx]) * t(vectors[,idx,drop=FALSE]))
+	# identify positive eigen-values
+	idx = dcmp$values > tol
+
+	# a matrix square root is U %*% diag(lambda^alpha) %*% U^T, alpha = 0.5
+	# make sure to return to original axes
+	with(dcmp, vectors[,idx,drop=FALSE] %*% (values[idx]^alpha * t(vectors[,idx,drop=FALSE])))
 }
 
 

@@ -1,7 +1,12 @@
+# variancePartition 1.27.15
+ - fix approximation for `vcov()`
+ - add checks for `vcov()` in `test_vcov2()`
+
 # variancePartition 1.27.14
  - fix bug in `topTable()`
  - add `deviance()`
  - update docs
+ - update `sqrtMatrix()` to have positive diagonal
 
 # variancePartition 1.27.13
  - add `diffVar()` test of differential variance
