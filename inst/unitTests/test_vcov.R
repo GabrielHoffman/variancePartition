@@ -78,7 +78,11 @@ test_vcov = function(){
 	fit = eBayes(fit)
 
 	A = vcov(fit, vobj[1:2,])
-	B = vcov(lm(vobj$E[1,] ~ Disease, metadata, weights=vobj$weights[1,]))
+
+	w = vobj$weights[1,]
+	w = w/mean(w)
+	fit.lm = lm(vobj$E[1,] ~ Disease, metadata, weights=w)
+	B = vcov(fit.lm)
 
 	checkEquals(c(A[1:2, 1:2]), c(B))
 
@@ -89,6 +93,58 @@ test_vcov = function(){
 	C = vcov(fit[1:2,], vobj[1:2,])
 
 	checkEquals(A, C)
+
+	checkEqualsNumeric(coef(fit.lm), coef(fit)[1,])
+
+	# check using just 1 feature
+	w = vobj$weights[1,]
+	w = w/mean(w)
+	fit.lm = lm(vobj$E[1,] ~ Disease, metadata, weights=w)
+	dit = dream(vobj[1,], ~ Disease, metadata)
+	A = vcov(dit, vobj[1,])
+	checkEqualsNumeric(vcov(fit.lm), A)
+
+
+
+	w = vobj$weights[3,]
+	w = w/mean(w)
+	fit.lm = lm(vobj$E[3,] ~ Disease, metadata, weights=w)
+	dit = dream(vobj[1:3,], ~ Disease, metadata)
+	B = vcov(dit, vobj[1:3,])[5:6,5:6]
+	checkEqualsNumeric(vcov(fit.lm), B)
+
+	# compute vcov for all features and subset
+	# dit = dream(vobj, ~ Disease, metadata)
+
+
+	# trace("vcov", browser, exit=browser, signature = "MArrayLM") 
+
+	# undebug(variancePartition:::eval_vcov)
+
+
+	# devtools::reload("/Users/gabrielhoffman/workspace/repos/variancepartition")
+
+  	# # vobj$weights[2,] = vobj$weights[1,]
+  	# # vobj$weights = vobj$weights/rowMeans(vobj$weights)
+
+	# # Ignoring weights
+	# vcov(dit, vobj$E)[1:2,1:2]
+	# vcov(dit[1,], vobj$E[1,,drop=FALSE])
+
+	# # Using weights
+	# a = vcov(dit, vobj)[1:2,1:2]
+	# b = vcov(dit[1:4,], vobj[1:4,])[1:2,1:2]
+	# d = vcov(dit[1,], vobj[1,,drop=FALSE])
+
+	# resids = t(residuals(dit))
+	# W = t(vobj$weights)
+	# W = W / colMeans(W)
+	# sqrtW = sqrt(W)
+	# Sigma = crossprod(resids * sqrtW) 
+	# Sigma[1,1]
+
+
+	# object$cov.coefficients.list
 
 	# Mixed effect
 	#-------------
@@ -124,10 +180,10 @@ test_vcov = function(){
 	# check matrix square root	
 	##########################
 	
-	C.reconstruct = crossprod(chol(C))
-	checkEqualsNumeric(c(C), c(C.reconstruct), tol=1e-2)
+	# C.reconstruct = crossprod(chol(C))
+	# checkEqualsNumeric(c(C), c(C.reconstruct), tol=1e-2)
 
-	C.reconstruct = crossprod(variancePartition:::sqrtMatrix(C))
+	C.reconstruct = crossprod(variancePartition:::matrExp(C, 0.5))
 	checkEqualsNumeric(c(C), c(C.reconstruct), tol=1e-2)
 
 	# Check contrasts versus standard coding
@@ -193,12 +249,99 @@ test_vcov = function(){
 	res2 = mvTest( fit[i,], vobj[i,], coef="Dx", method="tstat")
 
 	checkEquals(res1, res2)
-
-
 }
 
 
+test_vcov2 = function(seed1=111, seed2=3){
 
+	library(variancePartition)
+	library(Rfast)
+	library(RUnit)
+	n = 12000
+
+	# sim data
+
+	# X with intercept term
+	X = matrnorm(n,2, seed=seed1)
+	Y = matrnorm(n,3, seed=seed2)
+	rownames(X) = paste0("s_", 1:nrow(X))
+	rownames(Y) = paste0("s_", 1:nrow(X))
+	colnames(Y) = paste0("gene_", 1:ncol(Y))
+	colnames(X) = paste0("X_", 1:ncol(X))
+	X = cbind(1, X)
+
+	# Built into R
+	#-----------
+	fit = lm(Y ~ X_1 + X_2, data=data.frame(X))
+
+	# dream
+	#---------
+	dit = dream(t(Y), ~ X_1 + X_2, data.frame(X))
+
+	# Manual fit 
+	#-------------
+
+	# fit regression 
+	B = solve(crossprod(X,X)) %*% crossprod(X,Y)
+
+	checkEqualsNumeric(B, coef(fit))
+	checkEqualsNumeric(t(B), coef(dit))
+
+	# compute covariance 
+	rdf = n - ncol(X)
+	R = Y - X %*% B
+	C = crossprod(R) / rdf
+	A = kronecker(C, solve(crossprod(X,X)), make.dimnames=TRUE)
+
+	checkEqualsNumeric(A, vcov(fit))
+	checkEqualsNumeric(A, vcov(dit, t(Y)))
+
+	# Approximation
+	#--------------
+	Sig1 = solve(crossprod(X,X)) #* var(R[,1])
+	Sig2 = solve(crossprod(X,X)) #* var(R[,1])
+
+	a1 = variancePartition:::matrExp(Sig1, 0.5)
+	a2 = variancePartition:::matrExp(Sig2, 0.5)
+
+	v = crossprod(R[,1], R[,2])[1]/rdf
+	G = v * crossprod(a1, a2)
+
+	checkEqualsNumeric(A[4:6,1:3], G)
+
+	# Using only covariance
+	S1 = solve(crossprod(X,X)) * var(R[,1]) *(n-1) / rdf
+	S2 = solve(crossprod(X,X)) * var(R[,2])  *(n-1) / rdf
+
+	b1 = variancePartition:::matrExp(S1, 0.5)
+	b2 = variancePartition:::matrExp(S2, 0.5)
+
+	v = cor(R[,1], R[,2]) 
+	G = v * crossprod(b1, b2) 
+	checkEqualsNumeric(A[4:6,1:3], G)
+
+	# Compare approximations
+	resids = t(residuals(dit))
+	W = matrix(1, nrow(Y), ncol(Y))
+	ccl = list(vcov(fit)[1:3, 1:3], 
+						vcov(fit)[4:6, 4:6], 
+					vcov(fit)[7:9, 7:9])
+
+	ccl = lapply(ccl, function(C){
+		rownames(C) = gsub("^gene.*:", "", rownames(C))
+		colnames(C) = rownames(C)
+		C
+	})
+
+
+	A_approx = variancePartition:::eval_vcov_approx( resids, W, ccl, coef = "X_1", contrasts=NULL)
+
+	id = c("gene_1:X_1", "gene_2:X_1", "gene_3:X_1")
+	A_approx
+	A[id,id]
+
+	checkEqualsNumeric(A_approx, A[id,id])
+}
 
 
 
