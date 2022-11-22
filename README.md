@@ -15,7 +15,7 @@
 ### Install from GitHub
 
 ```r
-devtools::install_github("DiseaseNeurogenomics/variancePartition")
+devtools::install_github("GabrielHoffman/variancePartition")
 ```
 
 
