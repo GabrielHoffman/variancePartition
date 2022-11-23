@@ -63,7 +63,7 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 	# use exact calculation for linear model
 	eval_vcov( resids = t(residuals(object)[idx,,drop=FALSE]), 
 				X = object$design, 
-				W = weights[,idx,drop=FALSE], 
+				W = weights, 
 				rdf = object$df.residual[1],
 				coef = coef,
 				contrasts = object$contrasts)
@@ -120,7 +120,7 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 
 	# use approximate calculation for linear mixed model
 	eval_vcov_approx( 	resids = t(residuals(object)[idx,,drop=FALSE]), 
-						W = weights[,idx,drop=FALSE],
+						W = weights,
 					  	ccl = object$cov.coefficients.list, 
 					  	coef = coef,
 					  	contrasts = object$contrasts)

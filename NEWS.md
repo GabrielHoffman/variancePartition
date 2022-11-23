@@ -1,3 +1,6 @@
+# variancePartition 1.27.16
+ - bug fix
+
 # variancePartition 1.27.15
  - fix approximation for `vcov()`
  - add checks for `vcov()` in `test_vcov2()`
