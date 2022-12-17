@@ -71,73 +71,75 @@ mvTest = function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "
 		}
 	}
 
-	# check that all features are valid
-	# This didn't handle index features, so comment out
-	# idx = match(features, rownames(fit))
-	# if( any(is.na(idx)) ){	
-
-	# 	txt = paste("features not found:", paste(features[is.na(idx)], collapse=', '))
-	# 	stop(txt)
-	# }
-
 	# extract coefficients from features
 	tab = topTable(fit[features,], coef=coef, sort.by="none", number=Inf)
 	beta = tab$logFC
 
 	n_features = length(features)
 
-	if( n_features == 1){
-		if( method == "RE2C"){
-			df = data.frame(stat.FE = NA, 
-							stat.het = NA,
-							pvalue = tab$P.Value, 
-							n_features = 1,
-							method = method)
-		}else{
-			df = data.frame(stat = NA, 
-							pvalue = tab$P.Value, 
-							n_features = 1,
-							method = method)
-		}
-		return(df)
-	}
-
 	# extract covariance
 	Sigma = vcov(fit[features,], vobj[features,], coef)
 
 	if( method == "FE"){
-		res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
+		if( n_features == 1){
+			# for one test, return estimated t-stat as stat
+			df = data.frame(stat = tab$t, 
+							pvalue = tab$P.Value, 
+							n_features = 1,
+							method = method)
+		}else{
+			res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
 
-		df = data.frame(stat = res$beta / res$se,
-						pvalue = res$p,
-						n_features = n_features, 
-						method = method)
+			df = data.frame(stat = res$beta / res$se,
+							pvalue = res$p,
+							n_features = n_features, 
+							method = method)
+		}
 
 	}else if( method == "RE2C"){
-		res = RE2C(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
 
-		df = data.frame(stat.FE = res$stat1, 
-						stat.het = res$stat2,
-						pvalue = res$RE2Cp,
-						n_features = n_features, 
-						method = method)
+		if( n_features == 1){
+			# for one test, heterogeneity is zero
+			df = data.frame(stat.FE = tab$t^2, 
+							stat.het = 0,
+							pvalue = tab$P.Value, 
+							n_features = 1,
+							method = method)
+		}else{
+			res = RE2C(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
+
+			df = data.frame(stat.FE = res$stat1, 
+							stat.het = res$stat2,
+							pvalue = res$RE2Cp,
+							n_features = n_features, 
+							method = method)
+		}
 
 	}else if( method == "tstat"){
-		Sigma_corr = cov2cor(Sigma)
-		# tstat = crossprod(tab$t, solve(Sigma_corr, tab$t))
 
-		# in case Sigma_corr is not invertable
-		tstat = tryCatch( crossprod(tab$t, solve(Sigma_corr, tab$t)), error = function(e){
-			warning("Covariance matrix is not invertable. Returning NA values.")
-			NA
-			})  
+		if( n_features == 1){
+			
+			df = data.frame(stat = tab$t, 
+							pvalue = tab$P.Value, 
+							n_features = n_features,
+							method = method)
+		}else{
+			Sigma_corr = cov2cor(Sigma)
+			# tstat = crossprod(tab$t, solve(Sigma_corr, tab$t))
 
-		pv = pchisq( tstat, length(tab$t), lower.tail=FALSE)
+			# in case Sigma_corr is not invertable
+			tstat = tryCatch( crossprod(tab$t, solve(Sigma_corr, tab$t)), error = function(e){
+				warning("Covariance matrix is not invertable. Returning NA values.")
+				NA
+				})  
 
-		df = data.frame(stat = tstat, 
-						pvalue = pv, 
-						n_features = n_features,
-						method = method)
+			pv = pchisq( tstat, length(tab$t), lower.tail=FALSE)
+
+			df = data.frame(stat = tstat, 
+							pvalue = pv, 
+							n_features = n_features,
+							method = method)
+		}
 	}else if( method == "sidak"){
 		pv = 1 - (1 - min(tab$P.Value))^nrow(tab)
 
