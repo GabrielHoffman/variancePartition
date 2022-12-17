@@ -1,3 +1,6 @@
+# variancePartition 1.27.17
+ - in `mvTest()`, more consistent return values when one features is used
+
 # variancePartition 1.27.16
  - bug fix
 
