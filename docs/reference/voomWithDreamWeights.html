@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.17</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,7 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with <code><a href="dream-method.html">dream()</a></code>.   This method is the same as limma::voom(), except that it allows random effects in the formula</p>
+    <p>Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with <code><a href="dream-method.html">dream()</a></code>.   This method is the same as <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">limma::voom()</a></code>, except that it allows random effects in the formula</p>
     </div>
 
     <div class="section level2">
@@ -71,7 +71,7 @@
 <span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save.plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu">SerialParam</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -169,7 +169,7 @@
 <span class="r-in"><span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">vobj</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.9 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:1 s</span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># extract results</span></span></span>
