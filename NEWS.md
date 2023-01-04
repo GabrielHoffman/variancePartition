@@ -1,3 +1,7 @@
+# variancePartition 1.28.1
+ - Jan 04, 2023
+ - bug fixes
+
 # variancePartition 1.27.17
  - in `mvTest()`, more consistent return values when one features is used
 
