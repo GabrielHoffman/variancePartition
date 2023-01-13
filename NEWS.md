@@ -1,3 +1,8 @@
+# variancePartition 1.28.2
+ - Jan 13, 2023
+ - `canCorPairs()` now allows random effects in formula
+   - but won't change results
+
 # variancePartition 1.28.1
  - Jan 04, 2023
  - bug fixes
