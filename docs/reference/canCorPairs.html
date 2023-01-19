@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +86,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Canonical Correlation Analysis (CCA) is similar to correlation between two vectors, except that CCA can accommodate matricies as well.  For a pair of variables, canCorPairs assesses the degree to which they co-vary and contain the same information.  Variables in the formula can be a continuous variable or a discrete variable expanded to a matrix (which is done in the backend of a regression model).  For a pair of variables, canCorPairs uses CCA to compute the correlation between these variables and returns the pairwise correlation matrix.</p>
-<p>Statistically, let rho be the array of correlation values returned by the standard R function cancor to compute CCA.  canCorPairs returns sqrt(mean(rho^2)), which is the fraction of the maximum possible correlation.  When comparing a two vectors, or a vector and a matrix, this gives the save value as the absolute correlation.  When comparing two sets of categorical variables (i.e. expanded to two matricies), this is equivalent to Cramer's V statistic.</p>
+<p>Statistically, let rho be the array of correlation values returned by the standard R function cancor to compute CCA.  <code>canCorPairs()</code> returns <code>sqrt(mean(rho^2))</code>, which is the fraction of the maximum possible correlation.  When comparing a two vectors, or a vector and a matrix, this gives the save value as the absolute correlation.  When comparing two sets of categorical variables (i.e. expanded to two matricies), this is equivalent to Cramer's V statistic.</p>
 <p>Note that CCA returns correlation values between 0 and 1.</p>
     </div>
 

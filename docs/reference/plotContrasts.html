@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.27.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,11 +75,19 @@
 
 <p>ggplot2 object</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>This plot shows the contrasts weights that are applied to each coefficient.</p>
+<p>Consider a variable <code>v</code> with levels <code>c('A', 'B', 'C')</code>.  A contrast comparing <code>A</code> and <code>B</code> is <code>'vA - vB'</code> and tests whether the difference between these levels is different than zero. Coded for the 3 levels this has weights <code>c(1, -1, 0)</code>.  In order to compare <code>A</code> to the other levels, the contrast is <code>'vA - (vB + vC)/2'</code> so that <code>A</code> is compared to the average of the other two levels. This is encoded as <code>c(1, -0.5, -0.5)</code>.  This type of proper matching in testing multiple levels is enforced by ensuring that the contrast weights sum to 1. Based on standard regression theory only weighted sums of the estimated coefficients are supported.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="makeContrastsDream.html">makeContrastsDream()</a></code></p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># load library</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># load library</span></span></span>
 <span class="r-in"><span><span class="co"># library(variancePartition)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># load simulated data:</span></span></span>
@@ -87,18 +95,13 @@
 <span class="r-in"><span><span class="co"># info: information/metadata about each sample</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># 1) get contrast matrix testing if the coefficient for Batch2 is zero </span></span></span>
-<span class="r-in"><span><span class="co"># 2) get contrast matrix testing if the coefficient for Batch2 is different from Batch3 </span></span></span>
+<span class="r-in"><span><span class="co"># 1) get contrast matrix testing if the coefficient for Batch2 is different from Batch3 </span></span></span>
 <span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span></span>
-<span class="r-in"><span><span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Batch2"</span>, Batch_3_vs_2 <span class="op">=</span> <span class="st">"Batch3 - Batch2"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>All univariate contrasts are already included.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Manually specifying them here can cause issues downstream.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Terms:  Batch2</span>
+<span class="r-in"><span><span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Batch_3_vs_2 <span class="op">=</span> <span class="st">"Batch3 - Batch2"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># plot contrasts</span></span></span>
 <span class="r-in"><span><span class="fu">plotContrasts</span><span class="op">(</span> <span class="va">L</span> <span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotContrasts-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

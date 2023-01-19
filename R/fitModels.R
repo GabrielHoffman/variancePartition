@@ -133,6 +133,14 @@ setGeneric("fitVarPartModel", signature="exprObj",
 
 	# only retain columns used in the formula
 	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
+	data = droplevels(data)
+
+	# check that variables in the formula are all in the data
+	idx = unique(all.vars(formula)) %in% colnames(data)
+	if( any(!idx) ){
+		txt = paste(unique(all.vars(formula))[!idx], collapse=', ')
+		stop("Variable in formula not found in data: ", txt)
+	}
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		
@@ -489,6 +497,14 @@ setGeneric("fitExtractVarPartModel", signature="exprObj",
 
 	# only retain columns used in the formula
 	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
+	data = droplevels(data)
+
+	# check that variables in the formula are all in the data
+	idx = unique(all.vars(formula)) %in% colnames(data)
+	if( any(!idx) ){
+		txt = paste(unique(all.vars(formula))[!idx], collapse=', ')
+		stop("Variable in formula not found in data: ", txt)
+	}
 
 	# check dimensions of reponse and covariates
 	if( ncol(exprObj) != nrow(data) ){		

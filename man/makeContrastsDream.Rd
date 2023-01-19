@@ -30,10 +30,14 @@ makeContrastsDream(
 matrix of linear contrasts between regression coefficients
 }
 \description{
-Construct the contrast matrix corresponding to specified contrasts of a set of parameters.
+Construct the contrast matrix corresponding to specified contrasts of a set of parameters. Each specified set of contrast weights must sum to 1.
 }
 \details{
 This function expresses contrasts between a set of parameters as a numeric matrix. The parameters are usually the coefficients from a linear (mixed) model fit, so the matrix specifies which comparisons between the coefficients are to be extracted from the fit. The output from this function is usually used as input to \code{dream()}.
+
+This function creates a matrix storing the contrasts weights that are applied to each coefficient. 
+
+Consider a variable \code{v} with levels \code{c('A', 'B', 'C')}.  A contrast comparing \code{A} and \code{B} is \code{'vA - vB'} and tests whether the difference between these levels is different than zero. Coded for the 3 levels this has weights \code{c(1, -1, 0)}.  In order to compare \code{A} to the other levels, the contrast is \code{'vA - (vB + vC)/2'} so that \code{A} is compared to the average of the other two levels. This is encoded as \code{c(1, -0.5, -0.5)}.  This type of proper matching in testing multiple levels is enforced by ensuring that the contrast weights sum to 1. Based on standard regression theory only weighted sums of the estimated coefficients are supported.
 
 This function is inspired by \code{limma::makeContrasts()} but is designed to be compatible with linear mixed models for \code{dream()}
 
@@ -53,6 +57,7 @@ data(varPartData)
 form <- ~ 0 + Batch + (1|Individual) + (1|Tissue) 
 
 # Define contrasts
+# Note that for each contrass, the weights sum to 1
 L = makeContrastsDream( form, info, contrasts = c(Batch1_vs_2 = "Batch1 - Batch2", Batch3_vs_4 = "Batch3 - Batch4", Batch1_vs_34 = "Batch1 - (Batch3 + Batch4)/2"))
 
 # show contrasts matrix
@@ -77,4 +82,7 @@ topTable(fit, coef="Batch3_vs_4")
 # show results from third contrast
 topTable(fit, coef="Batch1_vs_34")
 
+}
+\seealso{
+\code{plotContrasts()}
 }
