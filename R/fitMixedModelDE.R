@@ -304,7 +304,7 @@ setMethod("residuals", "MArrayLM2",
 #' @importFrom RhpcBLASctl omp_set_num_threads
 #' @import doParallel
 #'
-dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = vpcontrol,suppressWarnings=FALSE, quiet=FALSE, BPPARAM=SerialParam(), computeResiduals=TRUE, REML=TRUE, ...){
+dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = vpcontrol, suppressWarnings=FALSE, quiet=FALSE, BPPARAM=SerialParam(), computeResiduals=TRUE, REML=TRUE, ...){
 
 	exprObjInit = exprObj
 
@@ -318,6 +318,13 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 	# This reduces overhead for parallel processing with large datasets
 	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
 	data = droplevels(data)
+
+	# check that variables in the formula are all in the data
+	idx = unique(all.vars(formula)) %in% colnames(data)
+	if( any(!idx) ){
+		txt = paste(unique(all.vars(formula))[!idx], collapse=', ')
+		stop("Variable in formula not found in data: ", txt)
+	}
 
 	ddf = match.arg(ddf)
 	colinearityCutoff = 0.999

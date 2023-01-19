@@ -63,7 +63,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 
 #' Construct Matrix of Custom Contrasts
 #' 
-#' Construct the contrast matrix corresponding to specified contrasts of a set of parameters.
+#' Construct the contrast matrix corresponding to specified contrasts of a set of parameters. Each specified set of contrast weights must sum to 1.   
 #'
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work
 #' @param data data.frame with columns corresponding to formula 
@@ -77,6 +77,10 @@ getContrast = function( exprObj, formula, data, coefficient){
 #'
 #' @details
 #' This function expresses contrasts between a set of parameters as a numeric matrix. The parameters are usually the coefficients from a linear (mixed) model fit, so the matrix specifies which comparisons between the coefficients are to be extracted from the fit. The output from this function is usually used as input to \code{dream()}.
+#'
+#' This function creates a matrix storing the contrasts weights that are applied to each coefficient. 
+#'
+#' Consider a variable \code{v} with levels \code{c('A', 'B', 'C')}.  A contrast comparing \code{A} and \code{B} is \code{'vA - vB'} and tests whether the difference between these levels is different than zero. Coded for the 3 levels this has weights \code{c(1, -1, 0)}.  In order to compare \code{A} to the other levels, the contrast is \code{'vA - (vB + vC)/2'} so that \code{A} is compared to the average of the other two levels. This is encoded as \code{c(1, -0.5, -0.5)}.  This type of proper matching in testing multiple levels is enforced by ensuring that the contrast weights sum to 1. Based on standard regression theory only weighted sums of the estimated coefficients are supported.
 #'
 #' This function is inspired by \code{limma::makeContrasts()} but is designed to be compatible with linear mixed models for \code{dream()}
 #'
@@ -96,6 +100,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' form <- ~ 0 + Batch + (1|Individual) + (1|Tissue) 
 #' 
 #' # Define contrasts
+#' # Note that for each contrass, the weights sum to 1
 #' L = makeContrastsDream( form, info, contrasts = c(Batch1_vs_2 = "Batch1 - Batch2", Batch3_vs_4 = "Batch3 - Batch4", Batch1_vs_34 = "Batch1 - (Batch3 + Batch4)/2"))
 #' 
 #' # show contrasts matrix
@@ -121,6 +126,7 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' topTable(fit, coef="Batch1_vs_34")
 #'
 #' @importFrom rlang new_environment eval_tidy caller_env
+#' @seealso \code{plotContrasts()}
 #' @export
 makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnings=FALSE, nullOnError=FALSE){
 
@@ -165,17 +171,26 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
   res = lapply(e, eval_tidy_safe, env = L_uni_env, nullOnError=nullOnError)
   L <- do.call(cbind, res)
 
+  # check validity of contrasts
   if( !is.null(L) ){
     rownames(L) <- rownames(L_uni)
     names(dimnames(L)) <- c("Levels", "Contrasts")
 
-    # detect univariate contrasts
-    anyUnivariate = apply(L, 2, function(x) sum(x!=0))
-
-    if( ! suppressWarnings & any(anyUnivariate == 1) ){
-      txt = paste("All univariate contrasts are already included.\n  Manually specifying them here can cause issues downstream.\n  Terms: ", paste0(names(which(anyUnivariate == 1)), collapse = ', '))
-      warning(txt)
+    # Check that contrast coefs sum to 1
+    #----
+    s = colSums(L)
+    if( any(s!=0) ){
+      txt = paste0("Each contrast must sum to 0.\n  Not satisified for contrasts: ", paste(names(s)[which(s!=0)], collapse=', '))
+      stop(txt)
     }
+
+    # # detect univariate contrasts
+    # anyUnivariate = apply(L, 2, function(x) sum(x!=0))
+
+    # if( ! suppressWarnings & any(anyUnivariate == 1) ){
+    #   txt = paste("All univariate contrasts are already included.\n  Manually specifying them here can cause issues downstream.\n  Terms: ", paste0(names(which(anyUnivariate == 1)), collapse = ', '))
+    #   stop(txt)
+    # }
   }
 
   L
