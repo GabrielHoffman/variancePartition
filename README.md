@@ -3,7 +3,7 @@
 
 `variancePartition` quantifies and interprets multiple sources of biological and technical variation in gene expression experiments.  The package a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.  The `dream()` function performs differential expression analysis for datasets with repeated measures or high dimensional batch effects.
 
-<img src="man/figures/variancePartition.png" align="center" alt="" style="padding-left:10px;" />
+<img src="man/figures/variancePartition.png"  align="center" alt="" style="padding-left:10px;" />
 
 
 <br>
