@@ -174,8 +174,8 @@ You can also perform a hypothesis test of the *difference* between two or more c
 form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual) 
 
 L = makeContrastsDream( form, metadata, 
-  contrasts = c("DiseaseSubtype2 - DiseaseSubtype1", 
-                "DiseaseSubtype1 - DiseaseSubtype0"))
+  contrasts = c(compare2_1 = "DiseaseSubtype2 - DiseaseSubtype1", 
+                compare1_0 = "DiseaseSubtype1 - DiseaseSubtype0"))
 
 # Visualize contrast matrix
 plotContrasts(L) 
@@ -190,7 +190,7 @@ fit = eBayes(fit)
 colnames(fit)
 
 # extract results from first contrast
-topTable( fit, coef="DiseaseSubtype2 - DiseaseSubtype1", number=3 )
+topTable( fit, coef="compare2_1", number=3 )
 ```
 
 ### Comparing multiple coefficients
