@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,7 @@
 
 
 <dt>formula</dt>
-<dd><p>specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: <code>~ a + b + (1|c)</code>  Formulas with only fixed effects also work, and <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code> followed by <code><a href="https://rdrr.io/pkg/limma/man/contrasts.fit.html" class="external-link">contrasts.fit()</a></code> are run.</p></dd>
+<dd><p>specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: <code>~ a + b + (1|c)</code>  Formulas with only fixed effects also work, and <code>lmFit()</code> followed by <code>contrasts.fit()</code> are run.</p></dd>
 
 
 <dt>data</dt>
@@ -101,15 +101,15 @@
 
 
 <dt>useWeights</dt>
-<dd><p>if TRUE, analysis uses heteroskedastic error estimates from <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code>.  Value is ignored unless exprObj is an <code>EList()</code> from <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code> or <code>weightsMatrix</code> is specified</p></dd>
+<dd><p>if TRUE, analysis uses heteroskedastic error estimates from <code>voom()</code>.  Value is ignored unless exprObj is an <code>EList()</code> from <code>voom()</code> or <code>weightsMatrix</code> is specified</p></dd>
 
 
 <dt>weightsMatrix</dt>
-<dd><p>matrix the same dimension as <code>exprObj</code> with observation-level weights from <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code>.  Used only if useWeights is TRUE</p></dd>
+<dd><p>matrix the same dimension as <code>exprObj</code> with observation-level weights from <code>voom()</code>.  Used only if useWeights is TRUE</p></dd>
 
 
 <dt>control</dt>
-<dd><p>control settings for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code></p></dd>
+<dd><p>control settings for <code>lmer()</code></p></dd>
 
 
 <dt>suppressWarnings</dt>
@@ -133,7 +133,7 @@
 
 
 <dt>...</dt>
-<dd><p>Additional arguments for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p></dd>
+<dd><p>Additional arguments for <code>lmer()</code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -177,8 +177,8 @@
 <span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.7 s</span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.8 s</span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># view top genes</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Batch2"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></span>
@@ -189,8 +189,9 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># get contrast matrix testing if the coefficient for Batch3 is </span></span></span>
 <span class="r-in"><span><span class="co"># different from coefficient for Batch2</span></span></span>
+<span class="r-in"><span><span class="co"># Name this comparison as 'compare_3_2'</span></span></span>
 <span class="r-in"><span><span class="co"># The variable of interest must be a fixed effect</span></span></span>
-<span class="r-in"><span><span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Batch3 - Batch2"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>compare_3_2 <span class="op">=</span> <span class="st">"Batch3 - Batch2"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># plot contrasts</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="plotContrasts.html">plotContrasts</a></span><span class="op">(</span> <span class="va">L</span> <span class="op">)</span></span></span>
@@ -201,15 +202,15 @@
 <span class="r-in"><span><span class="va">fit2</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 1 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.9 s</span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:0.8 s</span>
+<span class="r-in"><span><span class="va">fit2</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># view top genes</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit2</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            logFC    AveExpr          t   P.Value adj.P.Val      z.std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  0.4655178 -4.3799381  1.3978093 0.1665203 0.8766243  1.3834715</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6 -0.3642792 -3.1554790 -0.9340122 0.3534470 0.8766243 -0.9279241</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3 -0.2545920  0.1702122 -0.8705784 0.3869226 0.8766243 -0.8652118</span>
+<span class="r-in"><span><span class="co"># view top genes for this contrast</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit2</span>, coef<span class="op">=</span><span class="st">"compare_3_2"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            logFC    AveExpr         t   P.Value adj.P.Val         B      z.std</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  0.4655178 -4.3799381  1.401814 0.1630309  0.818457 -4.557141  1.3949502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene6 -0.3642792 -3.1554790 -1.012189 0.3130697  0.818457 -4.595941 -1.0088017</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene3 -0.2545920  0.1702122 -0.811730 0.4182304  0.818457 -4.611148 -0.8094951</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Parallel processing using multiple cores with reduced memory usage</span></span></span>
 <span class="r-in"><span><span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -220,16 +221,16 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Total:5 s</span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit3</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span><span class="va">fit3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit fixed effect model for each gene</span></span></span>
 <span class="r-in"><span><span class="co"># Use lmFit in the backend</span></span></span>
 <span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> </span></span>
 <span class="r-in"><span><span class="va">fit4</span> <span class="op">=</span> <span class="fu">dream</span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fit4</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span> <span class="va">fit4</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit4</span> <span class="op">=</span> <span class="fu">eBayes</span><span class="op">(</span> <span class="va">fit4</span> <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># view top genes</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit4</span>, coef<span class="op">=</span><span class="st">"Batch3 - Batch2"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit4</span>, coef<span class="op">=</span><span class="st">"compare_3_2"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           logFC    AveExpr          t    P.Value adj.P.Val         B</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene8 -1.835677  0.9171386 -1.8703068 0.06312128 0.6312128 -4.581611</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene4 -1.016974 -4.5359748 -1.1783589 0.24026308 0.9496566 -4.593019</span>

@@ -1,3 +1,7 @@
+# variancePartition 1.28.4
+ - Feb 2, 2023
+ - Improve documentation for contrasts
+
 # variancePartition 1.28.3
  - Jan 19, 2023
  - Improve checking and documentation for contrasts

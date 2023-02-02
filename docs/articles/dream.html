@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,8 +80,8 @@ testing with linear mixed models for repeated measures</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2023-01-19
-12:13:01</h4>
+            <h4 data-toc-skip class="date">Run on 2023-02-02
+16:27:08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/dream.Rmd" class="external-link"><code>vignettes/dream.Rmd</code></a></small>
       <div class="d-none name"><code>dream.Rmd</code></div>
@@ -162,7 +162,7 @@ workflow for RNA-seq. Process raw count data using limma/voom.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartDEdata</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># filter genes by number of counts</span></span>
-<span><span class="va">isexpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span>
+<span><span class="va">isexpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span>
 <span></span>
 <span><span class="co"># Standard usage of limma/voom</span></span>
 <span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span> <span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>,<span class="op">]</span> <span class="op">)</span></span>
@@ -290,8 +290,8 @@ confirm it is testing what you intend.</p>
 <code class="sourceCode R"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">DiseaseSubtype</span> <span class="op">+</span> <span class="va">Sex</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="../reference/makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span> <span class="va">form</span>, <span class="va">metadata</span>, </span>
-<span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2 - DiseaseSubtype1"</span>, </span>
-<span>                <span class="st">"DiseaseSubtype1 - DiseaseSubtype0"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>compare2_1 <span class="op">=</span> <span class="st">"DiseaseSubtype2 - DiseaseSubtype1"</span>, </span>
+<span>                compare1_0 <span class="op">=</span> <span class="st">"DiseaseSubtype1 - DiseaseSubtype0"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Visualize contrast matrix</span></span>
 <span><span class="fu"><a href="../reference/plotContrasts.html">plotContrasts</a></span><span class="op">(</span><span class="va">L</span><span class="op">)</span> </span></code></pre></div>
@@ -303,12 +303,11 @@ confirm it is testing what you intend.</p>
 <span></span>
 <span><span class="co"># get names of available coefficients and contrasts for testing</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "DiseaseSubtype2 - DiseaseSubtype1" "DiseaseSubtype1 - DiseaseSubtype0"</span></span>
-<span><span class="co">## [3] "DiseaseSubtype0"                   "DiseaseSubtype1"                  </span></span>
-<span><span class="co">## [5] "DiseaseSubtype2"                   "SexM"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "compare2_1"      "compare1_0"      "DiseaseSubtype0" "DiseaseSubtype1" "DiseaseSubtype2"</span></span>
+<span><span class="co">## [6] "SexM"</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># extract results from first contrast</span></span>
-<span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"DiseaseSubtype2 - DiseaseSubtype1"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"compare2_1"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                       logFC  AveExpr         t      P.Value  adj.P.Val          B</span></span>
 <span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.114589 3.698015e-05 0.03698015  0.1470282</span></span>
 <span><span class="co">## ENST00000593466.1 gene=DDA1      -1.7265709 3.901579 -3.700902 1.205688e-03 0.60284415 -1.2751588</span></span>
