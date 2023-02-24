@@ -40,8 +40,12 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 
 	if( is( vobj, "EList") ){
 		weights = t(vobj$weights)
+		colnames(weights) = rownames(vobj)
+		rownames(weights) = colnames(vobj)
 	}else{
-		weights = matrix(1, nrow(object$design), nrow(object))
+		weights = matrix(1, ncol(vobj), nrow(vobj))
+		colnames(weights) = rownames(vobj)
+		rownames(weights) = colnames(vobj)
 	}
 
 	# check that coef is valid
@@ -60,10 +64,12 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 
 	idx = match(features, rownames(residuals(object)))
 
+	resids = t(residuals(object)[idx,,drop=FALSE])
+
 	# use exact calculation for linear model
 	eval_vcov( resids = t(residuals(object)[idx,,drop=FALSE]), 
 				X = object$design, 
-				W = weights, 
+				W = weights[rownames(resids),,drop=FALSE], 
 				rdf = object$df.residual[1],
 				coef = coef,
 				contrasts = object$contrasts)
@@ -99,8 +105,12 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 
 	if( is( vobj, "EList") ){
 		weights = t(vobj$weights)
+		colnames(weights) = rownames(vobj)
+		rownames(weights) = colnames(vobj)
 	}else{
-		weights = matrix(1, nrow(object$design), nrow(object))
+		weights = matrix(1, ncol(vobj), nrow(vobj))
+		colnames(weights) = rownames(vobj)
+		rownames(weights) = colnames(vobj)
 	}
 
 	# check that coef is valid
@@ -118,9 +128,11 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 
 	idx = match(features, rownames(residuals(object)))
 
+	resids = t(residuals(object)[idx,,drop=FALSE])
+
 	# use approximate calculation for linear mixed model
-	eval_vcov_approx( 	resids = t(residuals(object)[idx,,drop=FALSE]), 
-						W = weights,
+	eval_vcov_approx( 	resids = resids,
+						W = weights[rownames(resids),,drop=FALSE],
 					  	ccl = object$cov.coefficients.list, 
 					  	coef = coef,
 					  	contrasts = object$contrasts)

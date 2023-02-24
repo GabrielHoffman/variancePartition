@@ -343,8 +343,46 @@ test_vcov2 = function(seed1=111, seed2=3){
 	checkEqualsNumeric(A_approx, A[id,id])
 }
 
+# trace("vcov", browser, exit=browser, signature = c("MArrayLM")) 
 
+# test behavior when there is missing data
+test_vcov_NA = function(){
 
+	library(variancePartition)
+	library(edgeR)
+
+	data(varPartDEdata)
+
+	dge = DGEList(counts = countMatrix)
+	dge = calcNormFactors(dge)
+
+	form <- ~ (1|Individual) 
+	
+    # compute observation weights
+    vobj = voomWithDreamWeights( dge[1:2,], form, metadata)
+     
+	# fit dream model 
+	i = 17:19
+	form2 <- ~ Disease #+ (1|Individual) 
+	metadata$Disease[i] = NA
+	fit = dream( vobj, form2, metadata)
+	fit = eBayes(fit)
+
+	dim(residuals(fit))
+	head(t(residuals(fit)))
+
+	A = vcov(fit, vobj[1:2,])
+
+	# drop sample from input
+	fit = dream( vobj[,-i], form2, metadata[-i,])
+	fit = eBayes(fit)
+
+	B = vcov(fit, vobj[1:2,])
+
+	# check that omitting sample internally and from input
+	# gives the same covariance matrix
+	checkEqualsNumeric(A, B)
+}
 
 
 
