@@ -1,3 +1,7 @@
+# variancePartition 1.28.5
+ - Feb 24, 2023
+ - Fix error in `vcov()` when samples are dropped due to covariate having `NA` value
+
 # variancePartition 1.28.4
  - Feb 2, 2023
  - Improve documentation for contrasts
