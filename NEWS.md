@@ -1,3 +1,7 @@
+# variancePartition 1.28.6
+ - March 1, 2023
+ - `diffVar()` now fits contrasts estimated in first step
+
 # variancePartition 1.28.5
  - Feb 24, 2023
  - Fix error in `vcov()` when samples are dropped due to covariate having `NA` value
