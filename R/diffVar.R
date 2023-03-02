@@ -83,12 +83,23 @@ setMethod("diffVar", "MArrayLM",
 	# compute deviation from expectation for each observation
 	z = deviation(fit, method, scale)
 
+	# get contrasts from previous fit
+	includeCols = !colnames(fit$contrasts) %in% rownames(fit$contrasts)
+	if(sum(includeCols) > 0 ){
+		L = fit$contrasts[,includeCols,drop=FALSE]
+	}else{
+		L = NULL
+	}
+
 	# 3) fit regression on deviations
-	fit2 = dream(z, fit$formula, fit$data, BPPARAM=BPPARAM,..., quiet=TRUE)
+	fit2 = dream(z, fit$formula, fit$data, BPPARAM=BPPARAM,..., quiet=TRUE, L=L)
 	fit2 = eBayes(fit2)
 
 	fit2
 })
+
+
+
 
 
 
