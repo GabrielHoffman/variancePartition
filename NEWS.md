@@ -1,3 +1,7 @@
+# variancePartition 1.28.7
+ - March 7, 2023
+ - Fix bug in `makeContrastsDream()` by adding `droplevels()`
+
 # variancePartition 1.28.6
  - March 1, 2023
  - `diffVar()` now fits contrasts estimated in first step
