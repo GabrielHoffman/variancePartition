@@ -131,8 +131,11 @@ getContrast = function( exprObj, formula, data, coefficient){
 makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnings=FALSE, nullOnError=FALSE){
 
   # address special case of matching terms with colon (:)
-  # since colon is implciitly converted to dot internally somewhere
+  # since colon is implicitly converted to dot internally somewhere
   contrasts = gsub(":", '.', contrasts)
+
+  # droplevels
+  data = droplevels(data)
 
   e <- .getContrastExpressions(..., contrasts = contrasts)
 
