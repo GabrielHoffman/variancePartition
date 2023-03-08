@@ -14,9 +14,10 @@
 #' 
 #' @param fit \code{MArrayLM} or \code{MArrayLM2} returned by \code{dream()}
 #' @param vobj matrix or \code{EList} object returned by \code{voom()}
-#' @param features indeces or names of features to perform multivariate test on 
+#' @param features a) indeces or names of features to perform multivariate test on, b) list of indeces or names.  If missing, perform joint test on all features.
 #' @param coef name of coefficient or contrast to be tested
 #' @param method statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
+#' @param progressbar if TRUE, show progress bar
 #'  
 #' @details See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original p-value is returned and the test statistic is set to \code{NA}.
 #' 
@@ -45,11 +46,26 @@
 #' 
 #' # Multivariate test of features 1 and 2
 #' mvTest(fit, vobj, 1:2, coef="Disease1")
-#'
+#' 
+#' # Test multiple sets of features
+#' lst = list(a = 1:2, b=3:4)
+#' mvTest(fit, vobj, lst, coef="Disease1")
+#' @export
+#' @docType methods
+#' @rdname mvTest-method
+setGeneric("mvTest", signature=c("fit", "vobj", 'features'),
+  function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), progressbar=TRUE)
+      standardGeneric("mvTest")
+)
+
+
+#' @rdname mvTest-method
+#' @aliases mvTest,MArrayLM,EList,integer-method
 #' @importFrom remaCor RE2C LS 
 #' @importFrom stats coefficients pchisq cov2cor
 #' @export
-mvTest = function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher")){
+setMethod("mvTest", c('MArrayLM', "EList", "vector"),
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), progressbar=TRUE){
 
 	method = match.arg(method)
 
@@ -159,5 +175,57 @@ mvTest = function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "
 	}
 
 	df
-}
+})
+
+# if no features are specified, test all features
+#' @rdname mvTest-method
+#' @aliases mvTest,MArrayLM,EList,missing-method
+#' @export
+setMethod("mvTest", c('MArrayLM', "EList", "missing"),
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), progressbar=TRUE){ 
+
+	mvTest(fit, vobj, features=seq(nrow(vobj)), coef, method )
+})
+
+
+
+#' @rdname mvTest-method
+#' @aliases mvTest,MArrayLM,EList,list-method
+#' @import progress
+#' @importFrom stats runif
+#' @export
+setMethod("mvTest", c('MArrayLM', "EList", "list"),
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), progressbar=TRUE){ 
+
+	if( is.null(names(features)) ){
+		stop("features list must have non-null names(features)")
+	}
+
+	# set up progress bar
+	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta", total = length(features), width= 60, clear=FALSE)
+
+	# features is list
+	res = lapply( names(features), function(id){
+		if( progressbar & runif(1) < .05){
+			ratio = match(id, names(features)) / length(features)
+			pb$update(ratio = ratio )
+		}
+		res = mvTest(fit, vobj, features[[id]], coef, method)
+		data.frame(ID = id, res)
+		})
+	res = do.call(rbind, res)
+
+	if( progressbar & ! pb$finished ){
+		pb$update(1.0)
+	}
+	pb$terminate()
+
+	res
+})
+
+
+
+
+
+
 

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.8</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,7 @@
     <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
     <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
     <a class="dropdown-item" href="../articles/dream.html">dream</a>
+    <a class="dropdown-item" href="../articles/multivariate_tests.html">Multivariate tests</a>
     <a class="dropdown-item" href="../articles/theory_practice_random_effects.html">Theory and practice of random effects and REML</a>
   </div>
 </li>
@@ -143,7 +144,7 @@
 <span class="r-in"><span><span class="va">varPart</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitExtractVarPartModel-method.html">fitExtractVarPartModel</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">info</span> <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dividing work into 10 chunks...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:4 s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total:5 s</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Bar plot for a subset of genes showing variance fractions</span></span></span>
 <span class="r-in"><span><span class="fu">plotPercentBars</span><span class="op">(</span> <span class="va">varPart</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span> <span class="op">)</span></span></span>

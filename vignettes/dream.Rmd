@@ -275,9 +275,11 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 --->
 
 # Session info
+<details>
 ```{r sessionInfo, echo=FALSE}
 sessionInfo()
 ```
+<\details>
 
 # References
 
