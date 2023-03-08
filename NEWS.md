@@ -1,3 +1,7 @@
+# variancePartition 1.28.8
+ - March 8, 2023
+ - add `mvTest()` with features as list
+
 # variancePartition 1.28.7
  - March 7, 2023
  - Fix bug in `makeContrastsDream()` by adding `droplevels()`
