@@ -1,3 +1,7 @@
+# variancePartition 1.28.9
+ - March 14, 2023
+ - fix rounding error in `makeContrastsDream()`
+
 # variancePartition 1.28.8
  - March 8, 2023
  - add `mvTest()` with features as list

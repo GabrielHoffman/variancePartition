@@ -179,21 +179,16 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
     rownames(L) <- rownames(L_uni)
     names(dimnames(L)) <- c("Levels", "Contrasts")
 
-    # Check that contrast coefs sum to 1
+    # Check that contrast coefs sum to 0
     #----
     s = colSums(L)
-    if( any(s!=0) ){
-      txt = paste0("Each contrast must sum to 0.\n  Not satisified for contrasts: ", paste(names(s)[which(s!=0)], collapse=', '))
+    # Check even with floating point error
+    # s!=0
+    iseq = abs(s) < sqrt(.Machine$double.eps)
+    if( any(!iseq) ){
+      txt = paste0("Each contrast must sum to 0.\n  Not satisified for contrasts: ", paste(names(s)[!iseq], collapse=', '))
       stop(txt)
     }
-
-    # # detect univariate contrasts
-    # anyUnivariate = apply(L, 2, function(x) sum(x!=0))
-
-    # if( ! suppressWarnings & any(anyUnivariate == 1) ){
-    #   txt = paste("All univariate contrasts are already included.\n  Manually specifying them here can cause issues downstream.\n  Terms: ", paste0(names(which(anyUnivariate == 1)), collapse = ', '))
-    #   stop(txt)
-    # }
   }
 
   L
