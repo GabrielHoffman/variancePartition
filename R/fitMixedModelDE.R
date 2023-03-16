@@ -24,19 +24,51 @@ setAs(from='MArrayLM', to='MArrayLM2', function(from){
 #' Residuals for result of dream
 #' 
 #' @param object See \code{?stats::residuals}
+#' @param y \code{EList} object used in \code{dream()}
 #' @param ... See \code{?stats::residuals}
+#' @param type compute either response or pearson residuals
 #'
 #' @rawNamespace S3method("residuals", MArrayLM2)
 #' @export   
-residuals.MArrayLM2 = function( object, ...){
+residuals.MArrayLM2 = function( object, y, ..., type = c("response", 'pearson')){
+
+	stopifnot(is(object, 'MArrayLM2'))
+
+	type = match.arg(type)
+
 	if( is.null(object$residuals) ){
 		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
 	}
-	if( nargs() > 1 ){#& is.null(suppressWarnings) ){
-		warning("\n Second argument is ignored here,\n but can be passed for compatability with limma.\n Results are the same either way")
+
+	if( ! missing(y) ){
+		if( ! all.equal(dim(object$residuals), dim(y)) ){
+			stop("Dimension of object and y must be the same")
+		}
+		if( ! all.equal(rownames(y), rownames(object)) ){
+			stop("rownames of object and y must be the same")
+		}
+		if( ! all.equal(colnames(y), colnames(object$residuals)) ){
+			stop("colnames of object and y must be the same")
+		}
 	}
-	object$residuals
+
+	residResponse = object$residuals
+
+	if( type == "response"){
+		result = residResponse
+	}else if(type == "pearson"){
+		# from lmer() fit
+		# residuals(fitlmer, type="response") * sqrt(w) / sqrt(1-h)
+		if( !is.null(y$weights) ){
+			w = y$weights
+		}else{
+			w = 1
+		}
+		result = residResponse * sqrt(w) / sqrt(1-object$hatvalues)
+	}
+	result
 }
+
 
 
 # #' @importFrom limma residuals.MArrayLM
@@ -61,19 +93,56 @@ residuals.MArrayLM2 = function( object, ...){
 #' residuals for MArrayLM
 #'
 #' @param object MArrayLM object from dream
+#' @param y \code{EList} object used in \code{dream()}
 #' @param ... other arguments, currently ignored
+#' @param type compute either response or pearson residuals
 #'
 #' @return results of residuals
 #' @export
 setMethod("residuals", "MArrayLM",
-	function( object, ...){
-		if( nargs() == 1 ){
-			result = object$residuals
-		}else{
-			result = residuals.MArrayLM(object,...)
+	function( object, y, ..., type = c("response", 'pearson')){
+
+	stopifnot(is(object, 'MArrayLM'))
+
+	type = match.arg(type)
+
+	if( type == "response" & ! missing(y)){
+		residResponse = residuals.MArrayLM(object,y=y,...)
+		return( residResponse )
+	}
+
+	if( is.null(object$residuals) ){
+		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
+	}
+
+	if( ! missing(y) ){
+		if( ! all.equal(dim(object$residuals), dim(y)) ){
+			stop("Dimension of object and y must be the same")
 		}
-		result
-	})
+		if( ! all.equal(rownames(y), rownames(object)) ){
+			stop("rownames of object and y must be the same")
+		}
+		if( ! all.equal(colnames(y), colnames(object$residuals)) ){
+			stop("colnames of object and y must be the same")
+		}
+	}
+
+	residResponse = object$residuals
+
+	if( type == "response"){
+		result = residResponse
+	}else if(type == "pearson"){
+		# from glm() fit
+		# residuals(fitlm, type="response") * sqrt(fitlm$weights) / sqrt(1-h)
+		if( !is.null(y$weights) ){
+			w = y$weights
+		}else{
+			w = 1
+		}
+		result = residResponse * sqrt(w) / sqrt(1-object$hatvalues)
+	}
+	result
+})
 
 
 #' residuals for MArrayLM2
@@ -81,13 +150,15 @@ setMethod("residuals", "MArrayLM",
 #' residuals for MArrayLM2
 #'
 #' @param object MArrayLM2 object from dream
+#' @param y \code{EList} object used in \code{dream()}
 #' @param ... other arguments, currently ignored
+#' @param type compute either response or pearson residuals
 #'
 #' @return results of residuals
 #' @export
 setMethod("residuals", "MArrayLM2",
-	function( object, ...){
-		residuals.MArrayLM2(object,...)
+	function( object, y, type = c("response", 'pearson'), ...){
+		residuals.MArrayLM2(object,y=y,..., type=type)
 		})
 
 
