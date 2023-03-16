@@ -1,6 +1,7 @@
 # variancePartition 1.28.9
  - March 14, 2023
  - fix rounding error in `makeContrastsDream()`
+ - add Pearson residuals to `residuals()`
 
 # variancePartition 1.28.8
  - March 8, 2023

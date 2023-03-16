@@ -4,12 +4,16 @@
 \alias{residuals.MArrayLM2}
 \title{Residuals for result of dream}
 \usage{
-residuals.MArrayLM2(object, ...)
+residuals.MArrayLM2(object, y, ..., type = c("response", "pearson"))
 }
 \arguments{
 \item{object}{See \code{?stats::residuals}}
 
+\item{y}{\code{EList} object used in \code{dream()}}
+
 \item{...}{See \code{?stats::residuals}}
+
+\item{type}{compute either response or pearson residuals}
 }
 \description{
 Residuals for result of dream

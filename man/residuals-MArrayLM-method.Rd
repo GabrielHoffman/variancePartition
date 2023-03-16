@@ -4,12 +4,16 @@
 \alias{residuals,MArrayLM-method}
 \title{residuals for MArrayLM}
 \usage{
-\S4method{residuals}{MArrayLM}(object, ...)
+\S4method{residuals}{MArrayLM}(object, y, ..., type = c("response", "pearson"))
 }
 \arguments{
 \item{object}{MArrayLM object from dream}
 
+\item{y}{\code{EList} object used in \code{dream()}}
+
 \item{...}{other arguments, currently ignored}
+
+\item{type}{compute either response or pearson residuals}
 }
 \value{
 results of residuals
