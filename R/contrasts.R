@@ -135,6 +135,7 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
   contrasts = gsub(":", '.', contrasts)
 
   # droplevels
+  data = as.data.frame(data)
   data = droplevels(data)
 
   e <- .getContrastExpressions(..., contrasts = contrasts)
