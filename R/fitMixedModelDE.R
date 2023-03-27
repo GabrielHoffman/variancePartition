@@ -57,6 +57,10 @@ residuals.MArrayLM2 = function( object, y, ..., type = c("response", 'pearson'))
 	if( type == "response"){
 		result = residResponse
 	}else if(type == "pearson"){
+
+		if(missing(y)){
+			stop("Original EList required to fit pearson residuals")
+		}
 		# from lmer() fit
 		# residuals(fitlmer, type="response") * sqrt(w) / sqrt(1-h)
 		if( !is.null(y$weights) ){
