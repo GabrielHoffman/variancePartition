@@ -22,7 +22,7 @@ voomWithDreamWeights(
 \arguments{
 \item{counts}{a numeric \code{matrix} containing raw counts, or an \code{ExpressionSet} containing raw counts, or a \code{DGEList} object. Counts must be non-negative and NAs are not permitted.}
 
-\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by contrasts.fit() are run.}
+\item{formula}{specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by contrasts.fit() are run.}
 
 \item{data}{\code{data.frame} with columns corresponding to formula}
 
@@ -48,7 +48,7 @@ voomWithDreamWeights(
 An \code{EList} object just like the result of \code{limma::voom()}
 }
 \description{
-Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with \code{dream()}.   This method is the same as limma::voom(), except that it allows random effects in the formula
+Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with \code{dream()}.   This method is the same as \code{limma::voom()}, except that it allows random effects in the formula
 }
 \details{
 Adapted from \code{vomm()} in \code{limma} v3.40.2
@@ -75,10 +75,9 @@ res = dream( vobj, form, metadata)
 res = eBayes(res)
 
 # extract results
-topTable(res, coef="Disease1")
-
+topTable(res, coef="Disease1", number=3)
 
 }
 \seealso{
-limma::voom()
+\code{limma::voom()}
 }

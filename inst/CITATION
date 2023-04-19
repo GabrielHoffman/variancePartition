@@ -24,3 +24,17 @@ citEntry(entry="article",
    textVersion = 
    paste("Hoffman GE, Roussos P (2021). dream: Powerful differential expression analysis for repeated measures designs. Bioinformatics, 37(2):192-201, doi:10.1093/bioinformatics/btaa687"))
 
+
+
+citEntry(entry="article",
+   title = "Efficient differential expression analysis of large-scale single cell transcriptomics data using dreamlet",
+   author = personList( as.person("Gabriel E. Hoffman"), as.person("et al.")),
+   year = 2023,
+   journal = "bioRxiv",
+   doi = "10.1101/2023.03.17.533005",
+   volume = "",
+   issue = "",
+   pages = "",
+   textVersion = 
+   paste("Hoffman GE, et al. (2023) Efficient differential expression analysis of large-scale single cell transcriptomics data using dreamlet. bioRxiv doi:10.1101/2023.03.17.533005"))
+
