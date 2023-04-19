@@ -71,3 +71,64 @@ test_residuals = function(){
 	check1 & check2 & check3 & check4
 }
 
+test_pearson = function(){
+
+	library(variancePartition)
+	library(edgeR)
+	library(lme4)
+
+	data(varPartDEdata)
+
+	# normalize RNA-seq counts
+	dge = DGEList(counts = countMatrix)
+	dge = calcNormFactors(dge)
+
+	# compute observation weights
+	vobj = voomWithDreamWeights( dge[1:20,], ~1, metadata)
+
+	# Fixed effect model
+	#####################
+
+	# check pearson residuals from lm() vs residuals(dream fit) 
+
+	# fit dream model 
+	fit = dream( vobj, ~ Disease, metadata)
+
+	for(type in c("response", "pearson") ){
+		# residValues = residuals.MArrayLM(fit, vobj, type=type)
+		residValues = residuals(fit, vobj, type=type)
+
+		res = sapply(seq(nrow(vobj)), function(i){
+			it = lm(vobj$E[i,]~ Disease, metadata, weights = vobj$weights[i,])
+
+			value = cor(residValues[i,], residuals(it, type=type))
+			checkEqualsNumeric(value, 1, tol=5e-3)
+		})
+	}
+
+	# Mixed model
+	#############
+
+	# check pearson residuals from lmer() vs residuals(dream fit) 
+
+	form <- ~ Disease + (1|Individual) 
+
+	# fit dream model 
+	fit = dream( vobj, form, metadata)
+
+	for(type in c("response", "pearson") ){
+		# residValues = residuals.MArrayLM2(fit, vobj, type=type)
+		residValues = residuals(fit, vobj, type=type)
+
+		res = sapply(seq(nrow(vobj)), function(i){
+			it = lmer(vobj$E[i,] ~ Disease + (1|Individual) , metadata, weights = vobj$weights[i,])
+
+			value = cor(residValues[i,], residuals(it, type=type))
+			checkEqualsNumeric(value, 1, tol=5e-3)
+		})
+	}
+
+}
+
+
+
