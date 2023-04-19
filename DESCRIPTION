@@ -1,13 +1,14 @@
 Package: variancePartition
 Type: Package
 Title: Quantify and interpret drivers of variation in multilevel gene expression experiments
-Version: 1.29.1
-Date: 2022-09-20
+Version: 1.29.2
+Date: 2023-04-17
 Authors@R: person("Gabriel", "Hoffman", role=c("aut", "cre"), email="gabriel.hoffman@mssm.edu")
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
 Description: Quantify and interpret multiple sources of biological and technical variation in gene expression experiments. Uses a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.  Includes dream differential expression analysis for repeated measures.
 VignetteBuilder: knitr
 License: GPL-2
+Encoding: UTF-8
 URL: http://bioconductor.org/packages/variancePartition, https://DiseaseNeuroGenomics.github.io/variancePartition
 BugReports: https://github.com/DiseaseNeuroGenomics/variancePartition/issues
 Suggests:
@@ -22,6 +23,7 @@ Suggests:
     ballgown,
     DESeq2,
     RUnit,
+    statmod,
     BiocGenerics,
     r2glmm,    
     statmod,
@@ -58,6 +60,7 @@ Imports:
     RhpcBLASctl,
     progress,
     reshape2,
+    remaCor (>= 0.0.11),
     aod,
     scales,
     Rdpack,
@@ -69,5 +72,5 @@ Imports:
     methods,
     utils,
     stats
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 RdMacros: Rdpack

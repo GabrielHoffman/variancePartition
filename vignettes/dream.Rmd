@@ -97,11 +97,11 @@ data(varPartDEdata)
 isexpr = rowSums(cpm(countMatrix)>0.1) >= 5
 
 # Standard usage of limma/voom
-geneExpr = DGEList( countMatrix[isexpr,] )
-geneExpr = calcNormFactors( geneExpr )
+dge = DGEList( countMatrix[isexpr,] )
+dge = calcNormFactors( dge )
 
 # make this vignette faster by analyzing a subset of genes
-geneExpr = geneExpr[1:1000,]
+dge = dge[1:1000,]
 ```
 
 # Limma Analysis
@@ -109,13 +109,13 @@ Limma has a built-in approach for analyzing repeated measures data using `duplic
 ```{r dupCor, eval=TRUE}
 # apply duplicateCorrelation is two rounds
 design = model.matrix( ~ Disease, metadata)
-vobj_tmp = voom( geneExpr, design, plot=FALSE)
+vobj_tmp = voom( dge, design, plot=FALSE)
 dupcor <- duplicateCorrelation(vobj_tmp,design,block=metadata$Individual)
 
 # run voom considering the duplicateCorrelation results
 # in order to compute more accurate precision weights
 # Otherwise, use the results from the first voom run
-vobj = voom( geneExpr, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
+vobj = voom( dge, design, plot=FALSE, block=metadata$Individual, correlation=dupcor$consensus)
 
 # Estimate linear mixed model with a single variance component
 # Fit the model for each gene, 
@@ -134,7 +134,7 @@ The dream method replaces 4 core functions of limma with a linear mixed model.
 1. `voomWithDreamWeights()` replaces `voom()` to estimate precision weights
 2. `dream()` replaces `lmFit()` to estimate regression coefficients.  
 3. `variancePartition::eBayes()` replaces `limma::eBayes()` to apply empircal Bayes shrinkage on linear mixed models.
-4. `variancePartition::topTable()` replaces `limma::topTable()` to give seamless access to results from `dream().
+4. `variancePartition::topTable()` replaces `limma::topTable()` to give seamless access to results from `dream()`.
 
 For models with only fixed effects, `variancePartition::eBayes()`, and `variancePartition::topTable()` work seamlessly and give results equivalent to the `limma` functions with the same name.  From the user perspective, the `dream()` workflow is the same as `limma` since the statistical differences are handled behind the scenes.
   
@@ -147,7 +147,7 @@ param = SnowParam(4, "SOCK", progressbar=TRUE)
 form <- ~ Disease + (1|Individual) 
 
 # estimate weights using linear mixed model of dream
-vobjDream = voomWithDreamWeights( geneExpr, form, metadata, BPPARAM=param )
+vobjDream = voomWithDreamWeights( dge, form, metadata, BPPARAM=param )
 
 # Fit the dream model on each gene
 # By default, uses the Satterthwaite approximation for the hypothesis test
@@ -174,8 +174,8 @@ You can also perform a hypothesis test of the *difference* between two or more c
 form <- ~ 0 + DiseaseSubtype + Sex + (1|Individual) 
 
 L = makeContrastsDream( form, metadata, 
-  contrasts = c("DiseaseSubtype2 - DiseaseSubtype1", 
-                "DiseaseSubtype1 - DiseaseSubtype0"))
+  contrasts = c(compare2_1 = "DiseaseSubtype2 - DiseaseSubtype1", 
+                compare1_0 = "DiseaseSubtype1 - DiseaseSubtype0"))
 
 # Visualize contrast matrix
 plotContrasts(L) 
@@ -190,7 +190,7 @@ fit = eBayes(fit)
 colnames(fit)
 
 # extract results from first contrast
-topTable( fit, coef="DiseaseSubtype2 - DiseaseSubtype1", number=3 )
+topTable( fit, coef="compare2_1", number=3 )
 ```
 
 ### Comparing multiple coefficients
@@ -239,8 +239,8 @@ vp = fitExtractVarPartModel( vobj, form, metadata)
 plotVarPart( sortCols(vp))
 ```
 
-## Compare p-values from dream and duplicateCorrelation
-In order to understand the empircal difference between dream and duplication correlation, we can plot the $-\log_{10}$ p-values from both methods.
+## Comparing p-values 
+Here we compare p-values from from `dream()` and `duplicateCorrelation`. In order to understand the empircal difference between them, we can plot the $-\log_{10}$ p-values from each method.
 ```{r define}
 # Compare p-values and make plot
 p1 = topTable(fitDupCor, coef="Disease1", number=Inf, sort.by="none")$P.Value
@@ -275,9 +275,11 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 --->
 
 # Session info
+<details>
 ```{r sessionInfo, echo=FALSE}
 sessionInfo()
 ```
+<\details>
 
 # References
 

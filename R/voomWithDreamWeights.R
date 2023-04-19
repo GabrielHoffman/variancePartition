@@ -3,10 +3,10 @@
 
 #' Transform RNA-Seq Data Ready for Linear Mixed Modelling with \code{dream()}
 #'
-#' Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with \code{dream()}.   This method is the same as limma::voom(), except that it allows random effects in the formula
+#' Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with \code{dream()}.   This method is the same as \code{limma::voom()}, except that it allows random effects in the formula
 #'
 #' @param counts a numeric \code{matrix} containing raw counts, or an \code{ExpressionSet} containing raw counts, or a \code{DGEList} object. Counts must be non-negative and NAs are not permitted.
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by contrasts.fit() are run.
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by contrasts.fit() are run.
 #' @param data \code{data.frame} with columns corresponding to formula 
 #' @param lib.size numeric vector containing total library sizes for each sample.  Defaults to the normalized (effective) library sizes in \code{counts} if \code{counts} is a \code{DGEList} or to the columnwise count totals if \code{counts} is a matrix.
 #' @param normalize.method the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the \code{method} argument of \code{normalizeBetweenArrays} when the data is single-channel.  Any normalization factors found in \code{counts} will still be used even if \code{normalize.method="none"}.
@@ -22,7 +22,7 @@
 #' An \code{EList} object just like the result of \code{limma::voom()}
 #'
 #' @details Adapted from \code{vomm()} in \code{limma} v3.40.2
-#' @seealso limma::voom()
+#' @seealso \code{limma::voom()}
 #' @examples
 #' # library(variancePartition)
 #' library(edgeR)
@@ -45,11 +45,7 @@
 #' res = eBayes(res)
 #' 
 #' # extract results
-#' topTable(res, coef="Disease1")
-#' 
-# # Parallel processing using multiple cores with reduced memory usage
-# param = SnowParam(4, "SOCK", progressbar=TRUE)
-# vobj = voomWithDreamWeights( dge[1:20,], form, metadata, BPPARAM=param)
+#' topTable(res, coef="Disease1", number=3)
 #' 
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict as.formula
@@ -150,7 +146,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 
 	}else{
 
-		if( ! quiet) message("Fixed effect model, using limma directly...")
+		#if( ! quiet) message("Fixed effect model, using limma directly...")
 
 		design = model.matrix(formula, data)
 		fit <- lmFit(y,design,weights=weights,...)
@@ -237,6 +233,13 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	if(save.plot) {
 		out$voom.xy <- list(x=sx,y=sy,xlab="log2( count size + 0.5 )",ylab="Sqrt( standard deviation )")
 		out$voom.line <- l
+	}
+
+	# Check max value of precision weights
+	maxValue = max(out$weights)
+	if( maxValue > 1e8){
+		txt = paste0("The maximum precision weight is ", format(maxValue, scientific=TRUE), ", suggesting a poor smoothing fit\non the mean-variance plot for large expression values. Such large weights can\nhave unexpected effects downstream.  Consider examining the mean-variance plot\nand reducing the span parameter.")
+		warning(txt)
 	}
 
 	new("EList",out)

@@ -24,19 +24,55 @@ setAs(from='MArrayLM', to='MArrayLM2', function(from){
 #' Residuals for result of dream
 #' 
 #' @param object See \code{?stats::residuals}
+#' @param y \code{EList} object used in \code{dream()}
 #' @param ... See \code{?stats::residuals}
+#' @param type compute either response or pearson residuals
 #'
 #' @rawNamespace S3method("residuals", MArrayLM2)
 #' @export   
-residuals.MArrayLM2 = function( object, ...){
+residuals.MArrayLM2 = function( object, y, ..., type = c("response", 'pearson')){
+
+	stopifnot(is(object, 'MArrayLM2'))
+
+	type = match.arg(type)
+
 	if( is.null(object$residuals) ){
 		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
 	}
-	if( nargs() > 1 ){#& is.null(suppressWarnings) ){
-		warning("\n Second argument is ignored here,\n but can be passed for compatability with limma.\n Results are the same either way")
+
+	if( ! missing(y) ){
+		if( ! all.equal(dim(object$residuals), dim(y)) ){
+			stop("Dimension of object and y must be the same")
+		}
+		if( ! all.equal(rownames(y), rownames(object)) ){
+			stop("rownames of object and y must be the same")
+		}
+		if( ! all.equal(colnames(y), colnames(object$residuals)) ){
+			stop("colnames of object and y must be the same")
+		}
 	}
-	object$residuals
+
+	residResponse = object$residuals
+
+	if( type == "response"){
+		result = residResponse
+	}else if(type == "pearson"){
+
+		if(missing(y)){
+			stop("Original EList required to fit pearson residuals")
+		}
+		# from lmer() fit
+		# residuals(fitlmer, type="response") * sqrt(w) / sqrt(1-h)
+		if( !is.null(y$weights) ){
+			w = y$weights
+		}else{
+			w = 1
+		}
+		result = residResponse * sqrt(w) / sqrt(1-object$hatvalues)
+	}
+	result
 }
+
 
 
 # #' @importFrom limma residuals.MArrayLM
@@ -61,19 +97,56 @@ residuals.MArrayLM2 = function( object, ...){
 #' residuals for MArrayLM
 #'
 #' @param object MArrayLM object from dream
+#' @param y \code{EList} object used in \code{dream()}
 #' @param ... other arguments, currently ignored
+#' @param type compute either response or pearson residuals
 #'
 #' @return results of residuals
 #' @export
 setMethod("residuals", "MArrayLM",
-	function( object, ...){
-		if( nargs() == 1 ){
-			result = object$residuals
-		}else{
-			result = residuals.MArrayLM(object,...)
+	function( object, y, ..., type = c("response", 'pearson')){
+
+	stopifnot(is(object, 'MArrayLM'))
+
+	type = match.arg(type)
+
+	if( type == "response" & ! missing(y)){
+		residResponse = residuals.MArrayLM(object,y=y,...)
+		return( residResponse )
+	}
+
+	if( is.null(object$residuals) ){
+		stop( "Residuals were not computed, must run:\n dream(...,computeResiduals=TRUE)")
+	}
+
+	if( ! missing(y) ){
+		if( ! all.equal(dim(object$residuals), dim(y)) ){
+			stop("Dimension of object and y must be the same")
 		}
-		result
-	})
+		if( ! all.equal(rownames(y), rownames(object)) ){
+			stop("rownames of object and y must be the same")
+		}
+		if( ! all.equal(colnames(y), colnames(object$residuals)) ){
+			stop("colnames of object and y must be the same")
+		}
+	}
+
+	residResponse = object$residuals
+
+	if( type == "response"){
+		result = residResponse
+	}else if(type == "pearson"){
+		# from glm() fit
+		# residuals(fitlm, type="response") * sqrt(fitlm$weights) / sqrt(1-h)
+		if( !is.null(y$weights) ){
+			w = y$weights
+		}else{
+			w = 1
+		}
+		result = residResponse * sqrt(w) / sqrt(1-object$hatvalues)
+	}
+	result
+})
 
 
 #' residuals for MArrayLM2
@@ -81,13 +154,15 @@ setMethod("residuals", "MArrayLM",
 #' residuals for MArrayLM2
 #'
 #' @param object MArrayLM2 object from dream
+#' @param y \code{EList} object used in \code{dream()}
 #' @param ... other arguments, currently ignored
+#' @param type compute either response or pearson residuals
 #'
 #' @return results of residuals
 #' @export
 setMethod("residuals", "MArrayLM2",
-	function( object, ...){
-		residuals.MArrayLM2(object,...)
+	function( object, y, type = c("response", 'pearson'), ...){
+		residuals.MArrayLM2(object,y=y,..., type=type)
 		})
 
 
@@ -204,7 +279,7 @@ setMethod("residuals", "MArrayLM2",
 #' Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix \code{L}
 #'
 #' @param exprObj matrix of expression data (g genes x n samples), or \code{ExpressionSet}, or \code{EList} returned by voom() from the limma package
-#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used a a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by \code{contrasts.fit()} are run.
+#' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by \code{contrasts.fit()} are run.
 #' @param data data.frame with columns corresponding to formula 
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
 #' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 10 samples.
@@ -241,11 +316,10 @@ setMethod("residuals", "MArrayLM2",
 #' }
 #' @examples
 #' # library(variancePartition)
-#'
 #' library(BiocParallel)
 #'
 #' # load simulated data:
-#' # geneExpr: matrix of gene expression values
+#' # geneExpr: matrix of *normalized* gene expression values
 #' # info: information/metadata about each sample
 #' data(varPartData)
 #' 
@@ -253,16 +327,18 @@ setMethod("residuals", "MArrayLM2",
 #' 
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
+#' # NOTE: dream() runs on *normalized* data
 #' fit = dream( geneExpr[1:10,], form, info)
 #' fit = eBayes(fit)
 #'
 #' # view top genes
-#' topTable( fit )
+#' topTable( fit, coef="Batch2", number=3 )
 #'
 #' # get contrast matrix testing if the coefficient for Batch3 is 
 #' # different from coefficient for Batch2
+#' # Name this comparison as 'compare_3_2'
 #' # The variable of interest must be a fixed effect
-#' L = makeContrastsDream(form, info, contrasts=c("Batch3 - Batch2"))
+#' L = makeContrastsDream(form, info, contrasts=c(compare_3_2 = "Batch3 - Batch2"))
 #' 
 #' # plot contrasts
 #' plotContrasts( L )
@@ -270,15 +346,15 @@ setMethod("residuals", "MArrayLM2",
 #' # Fit linear mixed model for each gene
 #' # run on just 10 genes for time
 #' fit2 = dream( geneExpr[1:10,], form, info, L)
-#' fit = eBayes(fit)
+#' fit2 = eBayes(fit2)
 #' 
-#' # view top genes
-#' topTable( fit2, coef="Batch3 - Batch2" )
+#' # view top genes for this contrast
+#' topTable( fit2, coef="compare_3_2", number=3)
 #' 
 #' # Parallel processing using multiple cores with reduced memory usage
 #' param = SnowParam(4, "SOCK", progressbar=TRUE)
 #' fit3 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
-#' fit = eBayes(fit)
+#' fit3 = eBayes(fit3)
 #'
 #' # Fit fixed effect model for each gene
 #' # Use lmFit in the backend
@@ -287,7 +363,7 @@ setMethod("residuals", "MArrayLM2",
 #' fit4 = eBayes( fit4 )
 #' 
 #' # view top genes
-#' topTable( fit4, coef="Batch3 - Batch2" )
+#' topTable( fit4, coef="compare_3_2", number=3 )
 #'
 #' # Compute residuals using dream
 #' residuals(fit4)[1:4, 1:4]
@@ -304,7 +380,7 @@ setMethod("residuals", "MArrayLM2",
 #' @importFrom RhpcBLASctl omp_set_num_threads
 #' @import doParallel
 #'
-dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = vpcontrol,suppressWarnings=FALSE, quiet=FALSE, BPPARAM=SerialParam(), computeResiduals=TRUE, REML=TRUE, ...){
+dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"), useWeights=TRUE, weightsMatrix=NULL, control = vpcontrol, suppressWarnings=FALSE, quiet=FALSE, BPPARAM=SerialParam(), computeResiduals=TRUE, REML=TRUE, ...){
 
 	exprObjInit = exprObj
 
@@ -318,6 +394,13 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 	# This reduces overhead for parallel processing with large datasets
 	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
 	data = droplevels(data)
+
+	# check that variables in the formula are all in the data
+	idx = unique(all.vars(formula)) %in% colnames(data)
+	if( any(!idx) ){
+		txt = paste(unique(all.vars(formula))[!idx], collapse=', ')
+		stop("Variable in formula not found in data: ", txt)
+	}
 
 	ddf = match.arg(ddf)
 	colinearityCutoff = 0.999
@@ -442,10 +525,10 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 	#############################
 	
 	if( ! .isMixedModelFormula( formula ) ){
-		if( !quiet ){
-			message("Fixed effect model, using limma directly...")
-			message("User can apply eBayes() afterwards...")
-		}
+		# if( !quiet ){
+		# 	message("Fixed effect model, using limma directly...")
+		# 	message("User can apply eBayes() afterwards...")
+		# }
 
 		design = model.matrix( formula, data)
 
@@ -459,7 +542,6 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 			ret = lmFit( exprObj, design )
 		}
 
-
 		if( computeResiduals ){
 			# Evaluate residuals here, since can't be evaluate after contrasts.fit() is run
 			# add this to the standard MArrayLM object for use by custom residuals function
@@ -470,6 +552,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		if( ! univariateContrasts ){
 			ret = contrasts.fit( ret, L)
 		}
+
+		# compute hat values
+		ret$hatvalues = hatvalues(ret, exprObj)
 
 	}else{
 
@@ -527,7 +612,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
  
 			# fit linear mixed model
 			suppressWarnings({
-				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=responsePlaceholder$weights, control=control,na.action=na.action)
+				w = responsePlaceholder$weights
+				w = w / mean(w)
+				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=w, control=control,na.action=na.action)
 				})
 
 			# extract statistics from model
@@ -562,10 +649,14 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 				V = crossprod(chol(mod$vcov) %*% L)
 			}
 
+			# compute hatvalues
+			h = hatvalues(fit)
+
 			list( 	ret 	= new("MArrayLM", ret),
 					varComp = varComp,
 					# effective degrees of freedom as sum of diagonals of hat matrix
-					edf		= sum(hatvalues(fit)), 
+					edf		= sum(h), 
+					hatvalues = h,
 					vcov 	= V)
 		}
 
@@ -617,12 +708,16 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		if( computeResiduals ){
 			residuals = foreach( x = resList, .combine=cbind ) %do% { x$ret$residuals }
 		}
+		hat = foreach( x = resList, .combine=cbind ) %do% {x$hatvalues}
+		if( ! is.matrix(hat) ){ hat = matrix(hat,ncol=1)}
+		colnames(hat) = rownames(exprObj)
 
 		# transpose
 		coefficients = t( coefficients )
 		df.residual = t( df.residual )
 		pValue = t( pValue )
 		stdev.unscaled = t( stdev.unscaled )
+		hat = t( hat )
 		
 		if( computeResiduals ){
 			residuals = t(residuals)
@@ -663,6 +758,7 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		 			design 			= design, 
 		 			rdf 			= c(rdf), 
 		 			df.residual		= df.residual, 
+		 			hatvalues 		= hat,
 		 			Amean 			= Amean, 
 		 			method 			= method, 
 		 			sigma 			= sigma, 
@@ -716,6 +812,11 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
 		# eBayes can be run afterwards, if wanted
 		ret = .standard_transform( ret )
 	}
+
+	# return formula, data
+	ret$formula = formula
+	ret$data = data
+
 	ret
 }
 
@@ -868,10 +969,19 @@ assign("[.MArrayLM2",
 	#  copy gene-specific covariance, if it exists
 	if( ! is.null(object$cov.coefficients.list) ){
 		if(!missing(i)){
-			obj$cov.coefficients.list = object$cov.coefficients.list[i]
+			if( is.numeric(i) ){
+				# extract by index
+				obj$cov.coefficients.list = object$cov.coefficients.list[i]
+			}else{				
+				# extract by matching feature name
+				idx = match(i, rownames(object))
+				obj$cov.coefficients.list = object$cov.coefficients.list[idx]
+			}
 		}else{
 			obj$cov.coefficients.list = object$cov.coefficients.list
 		}
+		# name cov.coefficients.list using names of the whole object
+		names(obj$cov.coefficients.list) = rownames(obj)
 	}	
 
 	if( is.null(obj$df.total)){

@@ -1,3 +1,91 @@
+Rescale weights
+
+# variancePartition 1.28.9
+ - March 14, 2023
+ - fix rounding error in `makeContrastsDream()`
+ - add Pearson residuals to `residuals()`
+
+# variancePartition 1.28.8
+ - March 8, 2023
+ - add `mvTest()` with features as list
+
+# variancePartition 1.28.7
+ - March 7, 2023
+ - Fix bug in `makeContrastsDream()` by adding `droplevels()`
+
+# variancePartition 1.28.6
+ - March 1, 2023
+ - `diffVar()` now fits contrasts estimated in first step
+
+# variancePartition 1.28.5
+ - Feb 24, 2023
+ - Fix error in `vcov()` when samples are dropped due to covariate having `NA` value
+
+# variancePartition 1.28.4
+ - Feb 2, 2023
+ - Improve documentation for contrasts
+
+# variancePartition 1.28.3
+ - Jan 19, 2023
+ - Improve checking and documentation for contrasts
+
+# variancePartition 1.28.2
+ - Jan 13, 2023
+ - `canCorPairs()` now allows random effects in formula
+   - but won't change results
+
+# variancePartition 1.28.1
+ - Jan 04, 2023
+ - bug fixes
+
+# variancePartition 1.27.17
+ - in `mvTest()`, more consistent return values when one features is used
+
+# variancePartition 1.27.16
+ - bug fix
+
+# variancePartition 1.27.15
+ - fix approximation for `vcov()`
+ - add checks for `vcov()` in `test_vcov2()`
+
+# variancePartition 1.27.14
+ - fix bug in `topTable()`
+ - add `deviance()`
+ - update docs
+ - update `sqrtMatrix()` to have positive diagonal
+
+# variancePartition 1.27.13
+ - add `diffVar()` test of differential variance
+ - `dream()` now returns `formula`, `data`, and `hatvalues`
+ - define `hatvalues()` for result of `dream()`
+
+# variancePartition 1.27.12
+ - in `mvTest()`:
+   - default method is now `"FE"`
+
+# variancePartition 1.27.11
+ - in `mvTest()`:
+   - return number of features
+   - return stat.FE and stat.het for RE2C
+   - return NA for stat if 1 feature
+
+# variancePartition 1.27.10
+ - Add check for very large weights in `voomWithDreamWeights()`
+   - follows bug report: https://github.com/GabrielHoffman/variancePartition/issues/66
+ - in `mvTest()` change option "LS" to "FE"
+
+# variancePartition 1.27.9
+ - bug fix in `mvTest()` for contrasts
+   - extensive changes to `vcov()` in order to handle contrasts
+ - fix by in subsetting `MArrayLM2` object.  `cov.coefficients.list` are now named based on gene names 
+
+# variancePartition 1.27.8
+ - bug fix in `mvTest()`
+
+# variancePartition 1.27.7
+ - add `vcov()` for results from `dream()`
+ - add `mvTest()` for  multivariate tests on results from `dream()` using `vcov()`
+
 # variancePartition 1.27.6
  - remove FMT functions
 

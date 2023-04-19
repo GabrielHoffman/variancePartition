@@ -5,11 +5,14 @@
 #'
 #' @param L contrast matrix
 #' 
-#' @return 
-#' ggplot2 object
+#' @return ggplot2 object
+#'
+#' @details
+#' This plot shows the contrasts weights that are applied to each coefficient.
+#' 
+#' Consider a variable \code{v} with levels \code{c('A', 'B', 'C')}.  A contrast comparing \code{A} and \code{B} is \code{'vA - vB'} and tests whether the difference between these levels is different than zero. Coded for the 3 levels this has weights \code{c(1, -1, 0)}.  In order to compare \code{A} to the other levels, the contrast is \code{'vA - (vB + vC)/2'} so that \code{A} is compared to the average of the other two levels. This is encoded as \code{c(1, -0.5, -0.5)}.  This type of proper matching in testing multiple levels is enforced by ensuring that the contrast weights sum to 1. Based on standard regression theory only weighted sums of the estimated coefficients are supported.
 #'
 #' @examples
-#'
 #' # load library
 #' # library(variancePartition)
 #'
@@ -18,16 +21,15 @@
 #' # info: information/metadata about each sample
 #' data(varPartData)
 #' 
-#' # 1) get contrast matrix testing if the coefficient for Batch2 is zero 
-#' # 2) get contrast matrix testing if the coefficient for Batch2 is different from Batch3 
+#' # 1) get contrast matrix testing if the coefficient for Batch2 is different from Batch3 
 #' form <- ~ Batch + (1|Individual) + (1|Tissue) 
-#' L = makeContrastsDream(form, info, contrasts=c("Batch2", Batch_3_vs_2 = "Batch3 - Batch2"))
+#' L = makeContrastsDream(form, info, contrasts=c(Batch_3_vs_2 = "Batch3 - Batch2"))
 #' 
 #' # plot contrasts
 #' plotContrasts( L )
-#' 
 #' @importFrom reshape2 melt
 #' @import ggplot2
+#' @seealso \code{makeContrastsDream()}
 #' @export
 plotContrasts = function( L ){
 
