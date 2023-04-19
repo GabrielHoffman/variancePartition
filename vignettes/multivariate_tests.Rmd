@@ -1,0 +1,137 @@
+---
+title: "Multivariate tests"
+subtitle: "Combining results of univariate tests"
+author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
+date: "Run on `r Sys.time()`"
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    toc_depth: 3
+    fig_width: 5
+bibliography: library.bib
+vignette: >
+  %\VignetteIndexEntry{5) Multivariate tests}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
+---
+
+<!---
+
+cd /Users/gabrielhoffman/workspace/repos/variancePartition/vignettes
+
+rmarkdown::render('multivariate_tests.Rmd')
+
+--->
+
+```{r setup, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(tidy=FALSE, 
+                      cache=TRUE,
+                      dev="png",
+                      package.startup.message = FALSE,
+                      message=FALSE, 
+                      error=FALSE, 
+                      warning=FALSE)
+options(width=100)
+```	
+
+<style>
+body {
+text-align: justify}
+</style>
+
+Results from the univariate regressions performed using \code{dream()} can be combined in a post-processing step to perform multivariate hypothesis testing.  In this example, we fit \code{dream()} on transcript-level counts and then perform multivariate hypothesis testing by combining transcripts at the gene-level.  This is done with the \code{mvTest()} function.
+
+# Import transcript-level counts
+Read in transcript counts from the \code{tximportData} package.
+```{r import}
+library(readr)
+library(tximport)
+library(tximportData)
+
+# specify directory
+path = system.file("extdata", package="tximportData")
+
+# read sample meta-data
+samples = read.table(file.path(path,"samples.txt"), header=TRUE)
+samples.ext = read.table(file.path(path,"samples_extended.txt"), header=TRUE, sep="\t")
+
+# read assignment of transcripts to genes
+# remove genes on the PAR, since these are present twice
+tx2gene = read_csv(file.path(path, "tx2gene.gencode.v27.csv"))
+tx2gene = tx2gene[grep("PAR_Y", tx2gene$GENEID, invert=TRUE),]
+
+# read transcript-level quatifictions
+files = file.path(path, "salmon", samples$run, "quant.sf.gz")
+txi = tximport(files, type = "salmon", txOut=TRUE)
+
+# Create metadata simulating two conditions
+sampleTable = data.frame(condition = factor(rep(c("A", "B"), each = 3)))
+rownames(sampleTable) = paste0("Sample", 1:6)
+```
+
+# Standard dream analysis
+Perform standard \code{dream()} analysis at the transcript-level
+```{r dream}
+library(variancePartition)
+library(edgeR)
+
+# Prepare transcript-level reads
+dge = DGEList(txi$counts)
+design <- model.matrix(~condition, data = sampleTable)
+isexpr = filterByExpr(dge, design)
+dge = dge[isexpr,]
+dge = calcNormFactors(dge) 
+
+# Estimate precision weights
+vobj = voomWithDreamWeights(dge, ~ condition, sampleTable)
+
+# Fit regression model one transcript at a time
+fit = dream(vobj, ~ condition, sampleTable)
+fit = eBayes(fit)
+```
+
+# Multivariate analysis
+Combine the transcript-level results at the gene-level.  The mapping between transcript and gene is stored in \code{tx2gene.lst} as a list.
+```{r mvTest}
+# Prepare transcript to gene mapping
+# keep only transcripts present in vobj
+# then convert to list with key GENEID and values TXNAMEs
+keep = tx2gene$TXNAME %in% rownames(vobj)
+tx2gene.lst = unstack(tx2gene[keep,])
+
+# Run multivariate test on entries in each feature set
+res = mvTest(fit, vobj, tx2gene.lst, coef="conditionB")
+
+# truncate gene names since they have version numbers
+# ENST00000498289.5 -> ENST00000498289
+res$ID.short = gsub("\\..+", "", res$ID)
+```
+
+# Gene set analysis
+Perform gene set analysis using \code{zenith} on the gene-level test statistics.
+```{r zenith}
+# must have zenith > v1.0.2
+library(zenith)
+library(GSEABase)
+
+gs = get_MSigDB("C1", to="ENSEMBL")
+
+df_gsa = zenithPR_gsa( res$stat, res$ID.short, gs, inter.gene.cor=.05)
+
+head(df_gsa)
+```
+
+
+
+# Session info
+<details>
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
+<\details>
+
+
+# References
+
