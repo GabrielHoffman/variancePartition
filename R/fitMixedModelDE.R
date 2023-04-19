@@ -612,7 +612,9 @@ dream <- function( exprObj, formula, data, L, ddf = c("adaptive", "Satterthwaite
  
 			# fit linear mixed model
 			suppressWarnings({
-				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=responsePlaceholder$weights, control=control,na.action=na.action)
+				w = responsePlaceholder$weights
+				w = w / mean(w)
+				fit <- lmerTest::lmer( eval(parse(text=form)), data=data2, REML=REML,..., weights=w, control=control,na.action=na.action)
 				})
 
 			# extract statistics from model
