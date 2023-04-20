@@ -10,7 +10,6 @@
 #' Compute fraction of variation attributable to each variable in regression model.  Also interpretable as the intra-class correlation after correcting for all other variables in the model.
 #'
 #' @param fit model fit from lm() or lmer()
-#' @param showWarnings show warnings about model fit (default TRUE)
 #' @param returnFractions default: TRUE.  If TRUE return fractions that sum to 1.  Else return unscaled variance components.
 #' @param ... additional arguments (not currently used)
 #' 
@@ -67,41 +66,21 @@
 #' @docType methods
 #' @rdname calcVarPart-method
 setGeneric("calcVarPart", signature="fit",
-  function(fit, showWarnings=TRUE, returnFractions=TRUE, ...)
+  function(fit, returnFractions=TRUE, ...)
       standardGeneric("calcVarPart")
 )
 
 
-# March 30, 2021
-# The results demond on order of variables in formula
-# https://github.com/GabrielHoffman/variancePartition/issues/30
-# This is a problem because anova() adds variables incrementally instead
-# 	of fitting a joint model
-#
-# #' @export
-# #' @rdname calcVarPart-method
-# #' @aliases calcVarPart,lm-method
-# setMethod("calcVarPart", "lm",
-# function(fit, showWarnings=TRUE, ...){
-
-# 	# check validity of model fit
-# 	checkModelStatus( fit, showWarnings, ...)
-
-# 	an = anova(fit)
-# 	varFrac = an[['Sum Sq']] / sum( an[['Sum Sq']] )
-# 	names(varFrac) = rownames(an)
-# 	varFrac
-# })
 
 # New version on March 30, 2021
 #' @export
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,lm-method
 setMethod("calcVarPart", "lm",
-function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
+function(fit, returnFractions=TRUE, ...){
 
 	# check validity of model fit
-	checkModelStatus( fit, showWarnings, ...)
+	checkModelStatus( fit, ...)
 
 	# create design matrix
 	dsgn = model.matrix(fit$terms, fit$model)
@@ -125,9 +104,9 @@ function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
 
 	# scale SS by the sum and the total SS
 	# Evaluate sum of squares for each component
-	ssComp = sapply(names(fixedSS), function(key){
+	ssComp = vapply(names(fixedSS), function(key){
 		as.array(fixedSS[[key]] / sum(fixedSS) * ssFixedTotal)
-	})
+	}, numeric(1))
 
 	# get residual sum of squares
 	ssComp['Residuals'] = RSS(fit) 
@@ -167,10 +146,10 @@ ss = function(x){
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,lmerMod-method
 setMethod("calcVarPart", "lmerMod",
-function(fit, showWarnings=TRUE, returnFractions=TRUE,...){
+function(fit, returnFractions=TRUE,...){
 
 	# check validity of model fit
-	checkModelStatus( fit, showWarnings, ...)
+	checkModelStatus( fit, ...)
 
 	# extract variance components
 	vc = unlist(getVarianceComponents(fit))
@@ -193,11 +172,11 @@ function(fit, showWarnings=TRUE, returnFractions=TRUE,...){
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,glm-method
 setMethod("calcVarPart", "glm",
-function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
+function(fit, returnFractions=TRUE, ...){
 
-	checkModelStatus( fit, showWarnings, ...)
+	checkModelStatus( fit, ...)
 
-	cvp_glm(fit, showWarnings, returnFractions=returnFractions,...)
+	cvp_glm(fit, returnFractions=returnFractions,...)
 })
 
 
@@ -206,11 +185,11 @@ function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
 #' @aliases calcVarPart,negbin-method
 #' @importFrom aod negbin
 setMethod("calcVarPart", "negbin",
-function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
+function(fit, returnFractions=TRUE, ...){
 
-	checkModelStatus( fit, showWarnings, ...)
+	checkModelStatus( fit, ...)
 
-	cvp_glm(fit, showWarnings, returnFractions=returnFractions, ...)
+	cvp_glm(fit, returnFractions=returnFractions, ...)
 })
 
 # Compute distribution variances for GLMs described Nakagawa, 2017
@@ -246,7 +225,7 @@ getDistrVar = function( fit ){
 }
 
 # evaluate GLM's
-cvp_glm = function(fit, showWarnings=TRUE, returnFractions=TRUE,...){
+cvp_glm = function(fit, returnFractions=TRUE,...){
 
 	# N = nrow(fit$model)
 
@@ -279,16 +258,16 @@ cvp_glm = function(fit, showWarnings=TRUE, returnFractions=TRUE,...){
 #' @rdname calcVarPart-method
 #' @aliases calcVarPart,glmer-method
 setMethod("calcVarPart", "glmerMod",
-function(fit, showWarnings=TRUE, returnFractions=TRUE, ...){
+function(fit, returnFractions=TRUE, ...){
 
-	checkModelStatus( fit, showWarnings, ...)
+	checkModelStatus( fit, ...)
 
-	cvp_glmm(fit, showWarnings, returnFractions=returnFractions, ...)
+	cvp_glmm(fit, returnFractions=returnFractions, ...)
 })
 
 
 # evaluate GLMM's
-cvp_glmm = function(fit, showWarnings=TRUE, returnFractions=TRUE,...){
+cvp_glmm = function(fit, returnFractions=TRUE,...){
 
 	# Extract variance components
 	vc = getVarianceComponents(fit)
@@ -351,7 +330,7 @@ getVarianceComponents = function( fit ){
 	}
 
 	# get residuals
-	varComp$Residuals = attr(lme4::VarCorr(fit), 'sc')^2
+	varComp$Residuals = sigma(fit)^2
 	names(varComp$Residuals) = ''
 	
 	return(varComp)

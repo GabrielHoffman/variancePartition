@@ -8,10 +8,10 @@
 <meta name="description" content="variancePartition">
 <title>dream • variancePartition</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="dream">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="dream">
 <meta property="og:description" content="variancePartition">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,8 +81,8 @@ testing with linear mixed models for repeated measures</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2023-03-08
-14:13:12</h4>
+            <h4 data-toc-skip class="date">Run on 2023-04-20
+16:32:49</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/dream.Rmd" class="external-link"><code>vignettes/dream.Rmd</code></a></small>
       <div class="d-none name"><code>dream.Rmd</code></div>
@@ -255,13 +255,13 @@ handled behind the scenes.</p>
 <code class="sourceCode R"><span><span class="co"># Get results of hypothesis test on coefficients of interest</span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fitmm</span>, coef<span class="op">=</span><span class="st">'Disease1'</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                   logFC  AveExpr        t      P.Value    adj.P.Val        B</span></span>
-<span><span class="co">## ENST00000283033.5 gene=TXNDC11 1.556233 3.567624 31.02068 3.099042e-21 3.099042e-18 38.15636</span></span>
-<span><span class="co">## ENST00000257181.9 gene=PRPF38A 1.380549 4.398270 21.59222 1.683871e-17 8.419354e-15 29.93271</span></span>
-<span><span class="co">## ENST00000525790.1 gene=TDRKH   1.508341 3.184931 19.51845 1.767605e-16 5.892017e-14 27.78202</span></span>
+<span><span class="co">## ENST00000283033.5 gene=TXNDC11 1.556233 3.567624 32.66731 1.934507e-21 1.934507e-18 38.78853</span></span>
+<span><span class="co">## ENST00000257181.9 gene=PRPF38A 1.380549 4.398270 24.57867 1.493752e-18 7.468762e-16 32.48845</span></span>
+<span><span class="co">## ENST00000525790.1 gene=TDRKH   1.508341 3.184931 19.32367 3.712011e-16 1.025502e-13 27.06758</span></span>
 <span><span class="co">##                                   z.std</span></span>
-<span><span class="co">## ENST00000283033.5 gene=TXNDC11 9.459336</span></span>
-<span><span class="co">## ENST00000257181.9 gene=PRPF38A 8.513757</span></span>
-<span><span class="co">## ENST00000525790.1 gene=TDRKH   8.236879</span></span></code></pre>
+<span><span class="co">## ENST00000283033.5 gene=TXNDC11 9.508490</span></span>
+<span><span class="co">## ENST00000257181.9 gene=PRPF38A 8.790139</span></span>
+<span><span class="co">## ENST00000525790.1 gene=TDRKH   8.147605</span></span></code></pre>
 <p>Since dream uses an estimated degrees of freedom value for each
 hypothsis test, the degrees of freedom is different for each gene here.
 Therefore, the t-statistics are not directly comparable since they have
@@ -310,13 +310,13 @@ confirm it is testing what you intend.</p>
 <code class="sourceCode R"><span><span class="co"># extract results from first contrast</span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"compare2_1"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                       logFC  AveExpr         t      P.Value  adj.P.Val          B</span></span>
-<span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.114589 3.698015e-05 0.03698015  0.1470282</span></span>
-<span><span class="co">## ENST00000593466.1 gene=DDA1      -1.7265709 3.901579 -3.700902 1.205688e-03 0.60284415 -1.2751588</span></span>
-<span><span class="co">## ENST00000200676.3 gene=CETP       1.4777422 3.723438  3.910146 3.397163e-03 0.99951347 -1.4383266</span></span>
+<span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.350356 2.247279e-05 0.02247279  0.8858864</span></span>
+<span><span class="co">## ENST00000593466.1 gene=DDA1      -1.7265710 3.901579 -3.664795 1.356933e-03 0.67846627 -1.5402271</span></span>
+<span><span class="co">## ENST00000200676.3 gene=CETP       1.4777422 3.723438  3.873141 4.030891e-03 0.99948566 -1.8241792</span></span>
 <span><span class="co">##                                      z.std</span></span>
-<span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -4.125580</span></span>
-<span><span class="co">## ENST00000593466.1 gene=DDA1      -3.237531</span></span>
-<span><span class="co">## ENST00000200676.3 gene=CETP       2.929309</span></span></code></pre>
+<span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -4.238790</span></span>
+<span><span class="co">## ENST00000593466.1 gene=DDA1      -3.203659</span></span>
+<span><span class="co">## ENST00000200676.3 gene=CETP       2.875734</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="comparing-multiple-coefficients">Comparing multiple coefficients<a class="anchor" aria-label="anchor" href="#comparing-multiple-coefficients"></a>
@@ -339,14 +339,14 @@ the contrast.</p>
 <span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Test1"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                    logFC  AveExpr         t      P.Value    adj.P.Val        B</span></span>
-<span><span class="co">## ENST00000456159.1 gene=MET    -0.9830788 2.458926 -6.975124 3.529901e-08 3.529901e-07 8.662257</span></span>
-<span><span class="co">## ENST00000570099.1 gene=YPEL3  -0.9512918 2.063331 -6.648837 6.060469e-07 2.172997e-06 7.230067</span></span>
-<span><span class="co">## ENST00000418210.2 gene=TMEM64 -1.0343236 4.715367 -6.655755 6.518991e-07 2.172997e-06 7.694536</span></span>
-<span><span class="co">##                                   z.std</span></span>
-<span><span class="co">## ENST00000456159.1 gene=MET    -5.512889</span></span>
-<span><span class="co">## ENST00000570099.1 gene=YPEL3  -4.989280</span></span>
-<span><span class="co">## ENST00000418210.2 gene=TMEM64 -4.975171</span></span></code></pre>
+<pre><code><span><span class="co">##                                     logFC  AveExpr         t      P.Value    adj.P.Val        B</span></span>
+<span><span class="co">## ENST00000418210.2 gene=TMEM64  -1.0343236 4.715367 -7.000080 3.300022e-07 3.054319e-06 8.484489</span></span>
+<span><span class="co">## ENST00000456159.1 gene=MET     -0.9830788 2.458926 -6.062227 6.108639e-07 3.054319e-06 5.836340</span></span>
+<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 -0.8954795 5.272063 -5.450341 3.957534e-06 1.319178e-05 3.997352</span></span>
+<span><span class="co">##                                    z.std</span></span>
+<span><span class="co">## ENST00000418210.2 gene=TMEM64  -5.105453</span></span>
+<span><span class="co">## ENST00000456159.1 gene=MET     -4.987750</span></span>
+<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 -4.613600</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="joint-hypothesis-test-of-multiple-coefficients">Joint hypothesis test of multiple coefficients<a class="anchor" aria-label="anchor" href="#joint-hypothesis-test-of-multiple-coefficients"></a>
@@ -358,13 +358,13 @@ be extracted using <code><a href="../reference/toptable-method.html">topTable()<
 <code class="sourceCode R"><span><span class="co"># extract results from first contrast</span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2"</span>, <span class="st">"DiseaseSubtype1"</span><span class="op">)</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                DiseaseSubtype2 DiseaseSubtype1  AveExpr        F      P.Value</span></span>
-<span><span class="co">## ENST00000418210.2 gene=TMEM64         5.301001        5.211674 4.715367 744.4317 5.216149e-23</span></span>
-<span><span class="co">## ENST00000555834.1 gene=RPS6KL1        5.662699        5.719196 5.272063 657.9520 2.377852e-22</span></span>
-<span><span class="co">## ENST00000589123.1 gene=NFIC           6.545195        6.181023 5.855335 519.2464 4.314166e-21</span></span>
+<span><span class="co">## ENST00000418210.2 gene=TMEM64         5.301001        5.211674 4.715367 823.4480 3.966562e-23</span></span>
+<span><span class="co">## ENST00000555834.1 gene=RPS6KL1        5.662699        5.719196 5.272063 791.4321 6.389664e-23</span></span>
+<span><span class="co">## ENST00000589123.1 gene=NFIC           6.545195        6.181023 5.855335 651.9138 6.549284e-22</span></span>
 <span><span class="co">##                                   adj.P.Val    F.std</span></span>
-<span><span class="co">## ENST00000418210.2 gene=TMEM64  5.216149e-22 51.30770</span></span>
-<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 1.188926e-21 49.79067</span></span>
-<span><span class="co">## ENST00000589123.1 gene=NFIC    1.438055e-20 46.89238</span></span></code></pre>
+<span><span class="co">## ENST00000418210.2 gene=TMEM64  3.194832e-22 51.58156</span></span>
+<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 3.194832e-22 51.10478</span></span>
+<span><span class="co">## ENST00000589123.1 gene=NFIC    2.183095e-21 48.77752</span></span></code></pre>
 <p>Since dream uses an estimated degrees of freedom value for each
 hypothsis test, the degrees of freedom is different for each gene here.
 Therefore, the F-statistics are not directly comparable since they have
@@ -469,11 +469,9 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 </h2>
 <details><pre><code><span><span class="co">## R version 4.2.0 (2022-04-22)</span></span>
 <span><span class="co">## Platform: x86_64-apple-darwin19.6.0 (64-bit)</span></span>
-<span><span class="co">## Running under: macOS Catalina 10.15.7</span></span>
+<span><span class="co">## Running under: macOS Big Sur/Monterey 10.16</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
-<span><span class="co">## BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib</span></span>
-<span><span class="co">## LAPACK: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libLAPACK.dylib</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## locale:</span></span>
 <span><span class="co">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
@@ -482,35 +480,34 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] edgeR_3.38.4             variancePartition_1.28.3 BiocParallel_1.32.0     </span></span>
-<span><span class="co">## [4] limma_3.54.0             ggplot2_3.4.0            pander_0.6.5            </span></span>
+<span><span class="co">## [1] edgeR_3.38.4            variancePartition_2.0.0 BiocParallel_1.32.0     limma_3.54.0           </span></span>
+<span><span class="co">## [5] ggplot2_3.4.1           pander_0.6.5            knitr_1.42             </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] nlme_3.1-160            bitops_1.0-7            fs_1.5.2                pbkrtest_0.5.1         </span></span>
-<span><span class="co">##  [5] doParallel_1.0.17       progress_1.2.2          rprojroot_2.0.3         numDeriv_2016.8-1.1    </span></span>
-<span><span class="co">##  [9] tools_4.2.0             backports_1.4.1         bslib_0.4.1             utf8_1.2.2             </span></span>
-<span><span class="co">## [13] R6_2.5.1                KernSmooth_2.23-20      DBI_1.1.3               BiocGenerics_0.44.0    </span></span>
-<span><span class="co">## [17] colorspace_2.0-3        withr_2.5.0             tidyselect_1.2.0        prettyunits_1.1.1      </span></span>
-<span><span class="co">## [21] compiler_4.2.0          textshaping_0.3.6       cli_3.4.1               Biobase_2.58.0         </span></span>
-<span><span class="co">## [25] desc_1.4.2              labeling_0.4.2          sass_0.4.4              caTools_1.18.2         </span></span>
-<span><span class="co">## [29] scales_1.2.1            remaCor_0.0.11          mvtnorm_1.1-3           pkgdown_2.0.6          </span></span>
-<span><span class="co">## [33] systemfonts_1.0.4       stringr_1.5.0           digest_0.6.30           minqa_1.2.5            </span></span>
-<span><span class="co">## [37] rmarkdown_2.18          aod_1.3.2               RhpcBLASctl_0.21-247.1  pkgconfig_2.0.3        </span></span>
-<span><span class="co">## [41] htmltools_0.5.3         lme4_1.1-31             highr_0.9               fastmap_1.1.0          </span></span>
-<span><span class="co">## [45] rlang_1.0.6             farver_2.1.1            jquerylib_0.1.4         generics_0.1.3         </span></span>
-<span><span class="co">## [49] jsonlite_1.8.4          gtools_3.9.4            dplyr_1.0.10            magrittr_2.0.3         </span></span>
-<span><span class="co">## [53] Matrix_1.5-3            Rcpp_1.0.9              munsell_0.5.0           fansi_1.0.3            </span></span>
-<span><span class="co">## [57] lifecycle_1.0.3         stringi_1.7.8           yaml_2.3.6              clusterGeneration_1.3.7</span></span>
-<span><span class="co">## [61] MASS_7.3-58.1           plyr_1.8.8              gplots_3.1.3            grid_4.2.0             </span></span>
-<span><span class="co">## [65] parallel_4.2.0          crayon_1.5.2            lattice_0.20-45         splines_4.2.0          </span></span>
-<span><span class="co">## [69] hms_1.1.2               locfit_1.5-9.6          knitr_1.41              pillar_1.8.1           </span></span>
-<span><span class="co">## [73] RUnit_0.4.32            boot_1.3-28.1           reshape2_1.4.4          codetools_0.2-18       </span></span>
-<span><span class="co">## [77] glue_1.6.2              evaluate_0.18           vctrs_0.5.1             nloptr_2.0.3           </span></span>
-<span><span class="co">## [81] Rdpack_2.4              foreach_1.5.2           gtable_0.3.1            purrr_0.3.5            </span></span>
-<span><span class="co">## [85] tidyr_1.2.1             assertthat_0.2.1        cachem_1.0.6            xfun_0.35              </span></span>
-<span><span class="co">## [89] rbibutils_2.2.10        broom_1.0.1             ragg_1.2.4              snow_0.4-4             </span></span>
-<span><span class="co">## [93] tibble_3.1.8            lmerTest_3.1-3          iterators_1.0.14        memoise_2.0.1          </span></span>
-<span><span class="co">## [97] statmod_1.4.37          ellipsis_0.3.2</span></span></code></pre>
+<span><span class="co">##  [1] nlme_3.1-160            bitops_1.0-7            fs_1.6.1                pbkrtest_0.5.2         </span></span>
+<span><span class="co">##  [5] progress_1.2.2          rprojroot_2.0.3         numDeriv_2016.8-1.1     tools_4.2.0            </span></span>
+<span><span class="co">##  [9] backports_1.4.1         bslib_0.4.2             utf8_1.2.3              R6_2.5.1               </span></span>
+<span><span class="co">## [13] KernSmooth_2.23-20      BiocGenerics_0.44.0     colorspace_2.1-0        withr_2.5.0            </span></span>
+<span><span class="co">## [17] tidyselect_1.2.0        prettyunits_1.1.1       compiler_4.2.0          textshaping_0.3.6      </span></span>
+<span><span class="co">## [21] cli_3.6.1               Biobase_2.58.0          desc_1.4.2              labeling_0.4.2         </span></span>
+<span><span class="co">## [25] sass_0.4.5              caTools_1.18.2          scales_1.2.1            remaCor_0.0.11         </span></span>
+<span><span class="co">## [29] mvtnorm_1.1-3           pkgdown_2.0.7           systemfonts_1.0.4       stringr_1.5.0          </span></span>
+<span><span class="co">## [33] digest_0.6.31           minqa_1.2.5             rmarkdown_2.20          aod_1.3.2              </span></span>
+<span><span class="co">## [37] RhpcBLASctl_0.23-42     pkgconfig_2.0.3         htmltools_0.5.4         lme4_1.1-33            </span></span>
+<span><span class="co">## [41] highr_0.10              fastmap_1.1.1           rlang_1.1.0             farver_2.1.1           </span></span>
+<span><span class="co">## [45] jquerylib_0.1.4         generics_0.1.3          jsonlite_1.8.4          gtools_3.9.4           </span></span>
+<span><span class="co">## [49] dplyr_1.1.0             magrittr_2.0.3          Matrix_1.5-3            Rcpp_1.0.10            </span></span>
+<span><span class="co">## [53] munsell_0.5.0           fansi_1.0.4             lifecycle_1.0.3         stringi_1.7.12         </span></span>
+<span><span class="co">## [57] yaml_2.3.7              clusterGeneration_1.3.7 MASS_7.3-58.3           gplots_3.1.3           </span></span>
+<span><span class="co">## [61] plyr_1.8.8              grid_4.2.0              parallel_4.2.0          crayon_1.5.2           </span></span>
+<span><span class="co">## [65] lattice_0.20-45         splines_4.2.0           hms_1.1.2               locfit_1.5-9.7         </span></span>
+<span><span class="co">## [69] pillar_1.9.0            RUnit_0.4.32            boot_1.3-28.1           reshape2_1.4.4         </span></span>
+<span><span class="co">## [73] codetools_0.2-19        glue_1.6.2              evaluate_0.20           vctrs_0.6.1            </span></span>
+<span><span class="co">## [77] nloptr_2.0.3            Rdpack_2.4              gtable_0.3.1            purrr_1.0.1            </span></span>
+<span><span class="co">## [81] tidyr_1.3.0             cachem_1.0.7            xfun_0.37               rbibutils_2.2.13       </span></span>
+<span><span class="co">## [85] broom_1.0.4             ragg_1.2.5              snow_0.4-4              tibble_3.2.1           </span></span>
+<span><span class="co">## [89] lmerTest_3.1-3          iterators_1.0.14        memoise_2.0.1           statmod_1.4.37         </span></span>
+<span><span class="co">## [93] ellipsis_0.3.2</span></span></code></pre>
 <p>&lt;&gt;</p>
 </details>
 </div>
@@ -538,7 +535,7 @@ tools for RNA-seq read counts.</span>”</span> <em>Genome Biology</em> 15
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
     </footer>

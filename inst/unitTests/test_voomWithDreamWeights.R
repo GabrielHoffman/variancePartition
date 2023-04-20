@@ -34,13 +34,13 @@ test_usingWeights_fitExtractVarPartModel= function(){
 	vobj = voomWithDreamWeights( dge[1:100,], form, data=metadata)
 
 	vp1 = fitExtractVarPartModel( vobj, form, metadata )
-	vp2 = fitExtractVarPartModel( vobj$E, form, metadata, weightsMatrix=vobj$weights )
-	vp3 = fitExtractVarPartModel( vobj$E, form, metadata, weightsMatrix=vobj$weights, useWeights=FALSE )
+	vp2 = fitExtractVarPartModel( vobj$E, form, metadata )
+	vp3 = fitExtractVarPartModel( vobj, form, metadata, useWeights=FALSE )
 
-	checkEquals(vp1, vp2)
+	checkEquals(vp2, vp3)
 
 	# should NOT be equal
-	checkTrue(max(as.data.frame(vp2) - as.data.frame(vp3)) > 0)
+	checkTrue(max(as.data.frame(vp1) - as.data.frame(vp3)) > 0)
 }
 
 
@@ -60,13 +60,13 @@ test_usingWeights_dream_fixed = function(){
 	vobj = voom( dge[1:100,], design)
 
 	fit1 = dream( vobj, form, metadata )
-	fit2 = dream( vobj$E, form, metadata, weightsMatrix=vobj$weights )
-	fit3 = dream( vobj$E, form, metadata, weightsMatrix=vobj$weights, useWeights=FALSE )
+	fit2 = dream( vobj$E, form, metadata)
+	fit3 = dream( vobj, form, metadata, useWeights=FALSE )
 
-	checkEquals(coef(fit1), coef(fit2))
+	checkEquals(coef(fit2), coef(fit3))
 
 	# should NOT be equal
-	checkTrue(max(coef(fit2)-coef(fit3)) > 0)
+	checkTrue(max(coef(fit1)-coef(fit3)) > 0)
 }
 
 
@@ -84,13 +84,13 @@ test_usingWeights_dream = function(){
 	vobj = voomWithDreamWeights( dge[1:100,], form, data=metadata)
 
 	fit1 = dream( vobj, form, metadata )
-	fit2 = dream( vobj$E, form, metadata, weightsMatrix=vobj$weights )
-	fit3 = dream( vobj$E, form, metadata, weightsMatrix=vobj$weights, useWeights=FALSE )
+	fit2 = dream( vobj$E, form, metadata)
+	fit3 = dream( vobj, form, metadata, useWeights=FALSE )
 
-	checkEquals(coef(fit1), coef(fit2))
-	
+	checkEquals(coef(fit2), coef(fit3))
+
 	# should NOT be equal
-	checkTrue(max(coef(fit2)-coef(fit3)) > 0)
+	checkTrue(max(coef(fit1)-coef(fit3)) > 0)
 }
 
 

@@ -10,9 +10,6 @@ varPartConfInf(
   data,
   REML = FALSE,
   useWeights = TRUE,
-  weightsMatrix = NULL,
-  showWarnings = TRUE,
-  colinearityCutoff = 0.999,
   control = vpcontrol,
   nsim = 1000,
   ...
@@ -28,12 +25,6 @@ varPartConfInf(
 \item{REML}{use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option, but here for compatibility.}
 
 \item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList} from \code{voom()} or \code{weightsMatrix} is specified}
-
-\item{weightsMatrix}{matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE}
-
-\item{showWarnings}{show warnings about model fit (default TRUE)}
-
-\item{colinearityCutoff}{cutoff used to determine if model is computationally singular}
 
 \item{control}{control settings for \code{lmer()}}
 
@@ -69,6 +60,5 @@ form <- ~ Age + (1|Individual) + (1|Tissue)
 
 # Compute bootstrap confidence intervals for each variable for each gene
 resCI <- varPartConfInf( geneExpr[1:5,], form, info, nsim=100 )
-
 
 }

@@ -14,7 +14,6 @@ voomWithDreamWeights(
   weights = NULL,
   plot = FALSE,
   save.plot = FALSE,
-  quiet = FALSE,
   BPPARAM = SerialParam(),
   ...
 )
@@ -37,8 +36,6 @@ voomWithDreamWeights(
 \item{plot}{logical, should a plot of the mean-variance trend be displayed?}
 
 \item{save.plot}{logical, should the coordinates and line of the plot be saved in the output?}
-
-\item{quiet}{suppress message, default FALSE}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 

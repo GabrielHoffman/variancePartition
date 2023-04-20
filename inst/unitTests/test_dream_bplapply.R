@@ -164,7 +164,7 @@ test_dream_sigma = function(){
 
 	# fit dream with EList object
 	geneExpr[41,] = as.numeric(info$Batch) + rnorm(nrow(info), 0, 1)
-	w = matrix(5, ncol=ncol(geneExpr))
+	w = matrix(1, ncol=ncol(geneExpr))
 	vobj = list(E = geneExpr[41,,drop=FALSE], weights = w)
 	vobj = as(vobj, "EList")
 
