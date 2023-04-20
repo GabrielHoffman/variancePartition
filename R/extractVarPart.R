@@ -4,7 +4,6 @@
 #' Extract variance statistics from list of models fit with \code{lm()} or \code{lmer()}
 #'
 #' @param modelList list of \code{lmer()} model fits
-#' @param showWarnings show warnings about model fit (default TRUE)
 #' @param ... other arguments
 #'  
 #' @return 
@@ -45,27 +44,24 @@
 #' 
 #' # Step 2: extract variance fractions
 #' varPart <- extractVarPart( results )
-#' 
-# # stop cluster
-# stopCluster(cl)
 #'
 #' @export
-extractVarPart <- function( modelList, showWarnings=TRUE,... ){
+extractVarPart <- function( modelList,... ){
 
 	# get results from first model to enumerate all variables present
-	singleResult = calcVarPart( modelList[[1]], showWarnings=showWarnings,... )
+	singleResult = calcVarPart( modelList[[1]], ... )
 
 	# for each model fit, get R^2 values
 	entry <- 1
 	varPart <- lapply( modelList, function( entry ) 
-		calcVarPart( entry, showWarnings=showWarnings,... )
+		calcVarPart( entry, ... )
 	)
 
 	varPartMat <- data.frame(matrix(unlist(varPart), nrow=length(varPart), byrow=TRUE))
 	colnames(varPartMat) <- names(varPart[[1]])
 	rownames(varPartMat) <- names(modelList)
 
-	modelType = ifelse(class(modelList[[1]])[1] == "lm", "anova", "linear mixed model")
+	modelType = ifelse(is(modelList[[1]], "lm"), "anova", "linear mixed model")
 
 	new("varPartResults", varPartMat, type=modelType, method="Variance explained (%)")
 }

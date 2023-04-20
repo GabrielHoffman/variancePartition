@@ -24,6 +24,7 @@
 #'   \insertRef{phipson2014diffvar}{variancePartition}
 #' }
 #' 
+#' @return \code{MArrayLM} object storing differential results to be passed to \code{topTable()}
 #' @examples
 #' # library(variancePartition)
 #' library(edgeR)
@@ -112,6 +113,7 @@ setMethod("diffVar", "MArrayLM",
 #' @param method transform the residuals using absolute deviation ("AD") or squared deviation ("SQ").
 #' @param scale scale each observation by "leverage", or no scaling ("none")
 #' 
+#' @return matrix of deviations from expection for each observation
 #' @examples
 #' # library(variancePartition)
 #' library(edgeR)

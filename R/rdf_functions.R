@@ -116,6 +116,7 @@ rdf_from_matrices = function(A,B){
 #'
 #' \eqn{H} is computed as \eqn{A^TA + B^TB} for \code{A=CL} and \code{B=CR} defined in the code.  Since \eqn{A} and \eqn{B} are low rank, there is no need to compute \eqn{H} directly.  Instead, the terms \eqn{tr(H)} and \eqn{tr(HH)} can be computed using the eigen decompositions of \eqn{AA^T} and \eqn{BB^T} which is linear time in the number of samples.
 #'
+#' @return residual degrees of freedom
 #' @examples
 #' library(lme4)
 #'

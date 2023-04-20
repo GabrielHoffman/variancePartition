@@ -19,9 +19,6 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 #' @param data \code{data.frame} with columns corresponding to formula 
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is FALSE.  Strongly discourage against changing this option, but here for compatibility.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList} from \code{voom()} or \code{weightsMatrix} is specified
-#' @param weightsMatrix matrix the same dimension as exprObj with observation-level weights from \code{voom()}.  Used only if useWeights is TRUE 
-#' @param showWarnings show warnings about model fit (default TRUE)
-#' @param colinearityCutoff cutoff used to determine if model is computationally singular
 #' @param control control settings for \code{lmer()}
 #' @param nsim number of bootstrap datasets
 #' @param ... Additional arguments for \code{lmer()} or l\code{m()}
@@ -51,12 +48,11 @@ setClass("VarParCIList", representation(method="character"), contains="list")
 #' 
 #' # Compute bootstrap confidence intervals for each variable for each gene
 #' resCI <- varPartConfInf( geneExpr[1:5,], form, info, nsim=100 )
-#' 
-# # stop cluster
-# stopCluster(cl)
 #'
+#' @importFrom stats as.formula
+#' @importFrom lme4 bootMer
 #' @export
-varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, weightsMatrix=NULL, showWarnings=TRUE, colinearityCutoff=.999, control = vpcontrol, nsim=1000,...){
+varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE, control = vpcontrol, nsim=1000,...){
 
 	if( !is.numeric(nsim) || nsim <= 0 ){
 		stop("Must specify nsim as positive number")
@@ -65,25 +61,25 @@ varPartConfInf <- function( exprObj, formula, data, REML=FALSE, useWeights=TRUE,
 	# need derivs in boostrapping
 	control$calc.derivs = TRUE
 
-	formula = stats::as.formula( formula )
+	formula = as.formula( formula )
 
 	# define bootstrap function
 	bootStrapFxn = local(function( fit ){
 
-		if( "lmerMod" %in% class(fit)){
+		if( is(fit, "lmerMod") ){
 			# use bootMer from lme4 to sample to bootstraps and refit the model
 			# use.u=TRUE says that the \hat{u} values from the random effects are used
-			bootRes = lme4::bootMer( fit, calcVarPart, use.u=TRUE, nsim=nsim, parallel="no", ncpus=1)
+			bootRes = bootMer( fit, calcVarPart, use.u=TRUE, nsim=nsim, parallel="no", ncpus=1)
 			apply( bootRes$t, 2, function(x) quantile(x, c(0.025, 0.975), na.rm=TRUE))
-		}else if( "lm" %in% class(fit)){
+		}else if( is(fit, "lm") ){
 			stop("Bootstrap of fixed effect ANOVA model not currently supported")
 		}
 	})
 
 	# fit the model and run the bootstrap function for each gene
-	res = fitVarPartModel( exprObj=exprObj, formula=formula, data=data, REML=REML, useWeights=useWeights, weightsMatrix=weightsMatrix, showWarnings=showWarnings,fxn=bootStrapFxn, colinearityCutoff=colinearityCutoff, control = control,...) 
+	res = fitVarPartModel( exprObj=exprObj, formula=formula, data=data, REML=REML, useWeights=useWeights, fxn=bootStrapFxn,  control = control,...) 
 
-	res@method="bootstrap"
+	# res@method = "bootstrap"
 
 	return(res)
 }

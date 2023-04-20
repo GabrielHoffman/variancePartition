@@ -15,7 +15,8 @@
 #' @param object \code{MArrayLM} object return by \code{lmFit()} or \code{dream()}
 #' @param vobj \code{EList} object returned by \code{voom()}
 #' @param coef name of coefficient to be extracted
-#
+#'
+#' @return variance-covariance matrix
 #' @importFrom stats coefficients
 #' @export
 setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
@@ -85,6 +86,7 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 #' @param vobj \code{EList} object returned by \code{voom()}
 #' @param coef name of coefficient to be extracted
 #'
+#' @return variance-covariance matrix
 #' @importFrom stats coefficients
 #' @export
 setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){

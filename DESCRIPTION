@@ -1,8 +1,8 @@
 Package: variancePartition
 Type: Package
 Title: Quantify and interpret drivers of variation in multilevel gene expression experiments
-Version: 1.29.2
-Date: 2023-04-17
+Version: 2.0.0
+Date: 2023-04-19
 Authors@R: person("Gabriel", "Hoffman", role=c("aut", "cre"), email="gabriel.hoffman@mssm.edu")
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
 Description: Quantify and interpret multiple sources of biological and technical variation in gene expression experiments. Uses a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.  Includes dream differential expression analysis for repeated measures.
@@ -26,7 +26,6 @@ Suggests:
     statmod,
     BiocGenerics,
     r2glmm,    
-    statmod,
     readr
 biocViews: RNASeq,
     GeneExpression,
@@ -44,9 +43,9 @@ biocViews: RNASeq,
     ImmunoOncology,
     Software
 Depends:
-    R (>= 4.0.0),
+    R (>= 4.2.0),
     ggplot2,
-    limma,    
+    limma,
     BiocParallel
 Imports:
     MASS,
@@ -54,8 +53,6 @@ Imports:
     lmerTest,
     Matrix (>= 1.4.0),
     iterators,
-    foreach,
-    doParallel,
     gplots,
     RhpcBLASctl,
     progress,
@@ -65,12 +62,12 @@ Imports:
     scales,
     Rdpack,
     rlang,
-    lme4 (>= 1.1-10),
+    lme4 (>= 1.1.33),
     grDevices,
     graphics,
     Biobase,
     methods,
     utils,
     stats
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 RdMacros: Rdpack

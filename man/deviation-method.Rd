@@ -17,6 +17,9 @@ deviation(fit, method = c("AD", "SQ"), scale = c("leverage", "none"))
 
 \item{scale}{scale each observation by "leverage", or no scaling ("none")}
 }
+\value{
+matrix of deviations from expection for each observation
+}
 \description{
 Given a model fit for each features, residuals are computed and transformed based on an absolute value or squaring transform.
 }

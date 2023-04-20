@@ -4,12 +4,10 @@
 \alias{extractVarPart}
 \title{Extract variance statistics}
 \usage{
-extractVarPart(modelList, showWarnings = TRUE, ...)
+extractVarPart(modelList, ...)
 }
 \arguments{
 \item{modelList}{list of \code{lmer()} model fits}
-
-\item{showWarnings}{show warnings about model fit (default TRUE)}
 
 \item{...}{other arguments}
 }
@@ -54,6 +52,5 @@ results <- fitVarPartModel( geneExpr, form, info )
 
 # Step 2: extract variance fractions
 varPart <- extractVarPart( results )
-
 
 }
