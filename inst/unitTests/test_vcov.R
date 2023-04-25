@@ -155,7 +155,9 @@ test_vcov = function(){
 	fit = eBayes(fit)
 
 	A = vcov(fit, vobj[1:2,])
-	B = vcov(lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights=vobj$weights[1,]))
+	w = vobj$weights[1,]
+
+	B = vcov(lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights=w / mean(w)))
 
 	checkEquals(c(A[1:2, 1:2]), c(as.matrix(B)))
 
