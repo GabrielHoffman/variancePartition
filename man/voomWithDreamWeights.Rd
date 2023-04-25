@@ -48,7 +48,7 @@ An \code{EList} object just like the result of \code{limma::voom()}
 Transform count data to log2-counts per million (logCPM), estimate the mean-variance relationship and use this to compute appropriate observation-level weights. The data are then ready for linear mixed modelling with \code{dream()}.   This method is the same as \code{limma::voom()}, except that it allows random effects in the formula
 }
 \details{
-Adapted from \code{vomm()} in \code{limma} v3.40.2
+Adapted from \code{voom()} in \code{limma} v3.40.2
 }
 \examples{
 # library(variancePartition)

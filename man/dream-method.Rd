@@ -12,7 +12,7 @@ dream(
   ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"),
   useWeights = TRUE,
   control = variancePartition:::vpcontrol,
-  showWarnings = TRUE,
+  hideErrorsInBackend = FALSE,
   REML = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -33,7 +33,7 @@ dream(
 
 \item{control}{control settings for \code{lmer()}}
 
-\item{showWarnings}{default TRUE. Indicate model failures}
+\item{hideErrorsInBackend}{default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")}}
 
 \item{REML}{use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.}
 

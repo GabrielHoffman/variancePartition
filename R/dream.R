@@ -10,7 +10,7 @@
 #' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 10 samples.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param control control settings for \code{lmer()}
-#' @param showWarnings default TRUE. Indicate model failures
+#' @param hideErrorsInBackend default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")} 
 #' @param BPPARAM parameters for parallel evaluation
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.
 #' @param ... Additional arguments for \code{lmer()} or \code{lm()}
@@ -106,7 +106,7 @@ dream = function(
 	ddf = c("adaptive", "Satterthwaite", "Kenward-Roger"),
 	useWeights = TRUE,
 	control = variancePartition:::vpcontrol,
-	showWarnings = TRUE,
+	hideErrorsInBackend = FALSE,
 	REML = TRUE,
 	BPPARAM = SerialParam(),
 	...){
@@ -131,15 +131,21 @@ dream = function(
 			useInitialFit = FALSE,
 			...)
 
+		if(! is.null(res$error.initial) & ! hideErrorsInBackend){
+			stop( paste0("Initial model failed:\n", res$error.initial))
+		}
+
 		res.unlist = unlist(res$succeeded, recursive=FALSE)
 
-		if( length(res.unlist) == 0){
+		if( length(res.unlist) == 0 & ! hideErrorsInBackend){
+			if(! showWarnings) return( res )
 			txt = paste("All models failed.  The first model fails with:\n", res$errors[1])
 			stop(txt)
 		}
 
 		res2 = combineResults( objFlt$exprObj, ctst$L, res.unlist, ctst$univariateContrasts )
 
+		attr(res2, "error.initial") = res$error.initial
 		attr(res2, "errors") = res$errors
 	}else{
 
@@ -160,7 +166,7 @@ dream = function(
 	res2$formula = objFlt$formula
 	res2$data = objFlt$data
 
-	if( !is.null(attr(res2, "errors")) & showWarnings ){
+	if( !is.null(attr(res2, "errors")) & ! hideErrorsInBackend ){
 		txt = paste("Model failed for", length(attr(res2, "errors")), "responses.\n  See errors with attr(., 'errors')")
 		warning(txt)
 	}
@@ -169,11 +175,12 @@ dream = function(
 }
 
 
+#' @importFrom lme4 VarCorr
+#' @importFrom stats sigma
 create_eval_dream = function(L, ddf, univariateContrasts){
 
 	function(x){
-
-		# convert to result of lmerTest::lmer()u
+		# convert to result of lmerTest::lmer()
 		fit = as_lmerModLmerTest2(x)
 
 		# check L
@@ -189,7 +196,7 @@ create_eval_dream = function(L, ddf, univariateContrasts){
 			stop("Terms in contrast matrix L do not match model:\n  Model: ", paste(a, collapse=',' ), "\n  L: ", paste(b, collapse=',' ), "\nNote thhat order must be the same")
 		}
 
-		mod = .eval_lmm( fit, L, ddf)
+		mod = eval_contrasts( fit, L, ddf)
 
 		ret = list(	coefficients 	= mod$beta, 
 					design 			= fit@pp$X,
@@ -200,12 +207,13 @@ create_eval_dream = function(L, ddf, univariateContrasts){
 					Amean 			= mean(fit@frame[,1], na.rm=TRUE), 
 					method 			= 'lmer',
 					sigma 			= mod$sigma,
-					stdev.unscaled 	= mod$SE/mod$sigma,
+					stdev.unscaled 	= mod$SE / mod$sigma,
 					pValue 			= mod$pValue,
 					residuals 		= residuals(fit) ) 
 
 		# get variance terms for random effects
-		varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
+		varComp <- lapply(VarCorr(fit), function(x) 
+							attr(x, "stddev")^2)
 		varComp[['resid']] = sigma(fit)^2
 
 		if( univariateContrasts ){
@@ -226,6 +234,56 @@ create_eval_dream = function(L, ddf, univariateContrasts){
 				vcov 	= V)
 	}
 }
+
+#' @importFrom lmerTest as_lmerModLmerTest contest 
+#' @importFrom pbkrtest vcovAdj.lmerMod
+eval_contrasts = function(fit, L, ddf, kappa.tol=1e6){
+
+	# convert to lmerModLmerTest object
+	if( ! is(fit, 'lmerModLmerTest') ){
+		fit = as_lmerModLmerTest2(fit)
+	}
+
+	# Evaluate contrasts
+	cons = contest(fit, t(L), ddf=ddf, joint=FALSE, confint=FALSE)
+
+	# extract results
+	df = cons$df
+	pValue = as.numeric(cons[,'Pr(>|t|)'])
+
+	beta = matrix(cons$Estimate, ncol=1)
+	colnames(beta) = 'logFC'
+	rownames(beta) = colnames(L)
+
+	SE = matrix(cons[['Std. Error']], ncol=1)
+	colnames(SE) = 'logFC'
+	rownames(SE) = colnames(L)
+
+	# compute variance-covariance matrix
+	if(ddf == "Kenward-Roger"){
+		# get vcov using KR adjusted method
+		V = as.matrix(vcovAdj.lmerMod(fit, 0))
+
+		# if poor condition number, use standard vcov 
+		if(kappa(V) > kappa.tol){
+			V = vcov(fit)
+		}
+
+	}else{
+		# standard
+		V = as.matrix(vcov(fit))
+	}
+
+	list( cons = cons,
+			df		= df,
+			sigma	= sigma(fit),
+			beta	= beta,
+			SE		= SE,
+			pValue	= pValue,
+			vcov 	= V )
+}
+
+
 
 #' @importFrom stats getCall formula
 as_lmerModLmerTest2 = function (model, tol = 1e-08) {
@@ -303,6 +361,25 @@ createContrastL = function(formula, data, L){
 
 #' @importFrom methods as
 combineResults = function( exprObj, L, resList, univariateContrasts){
+
+	# only keep expression data from genes in resList
+	exprObj = exprObj[names(resList),,drop=FALSE]
+
+	if( is.null(resList) | length(resList) == 0){
+		ret = list( coefficients 	= NULL,
+ 			design 			= NULL, 
+ 			rdf 			= NULL, 
+ 			df.residual		= NULL, 
+ 			hatvalues 		= NULL,
+ 			Amean 			= NULL, 
+ 			method 			= "lmer", 
+ 			sigma 			= NULL, 
+ 			contrasts 		= L,
+ 			stdev.unscaled 	= NULL,
+ 			residuals 		= NULL)
+		ret = new("MArrayLM", ret)
+		return( ret )
+	}
 
 	coefficients = t(do.call(cbind, lapply(resList, function(x) x$ret$coefficients)))
 	rownames(coefficients) = names(resList)
