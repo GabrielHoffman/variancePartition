@@ -6,6 +6,7 @@ library(RUnit)
 test_vp_sparseMatrix = function(){
 		
 	library(Matrix)
+	library(variancePartition)
 
 	data(varPartData)
 	set.seed(1)

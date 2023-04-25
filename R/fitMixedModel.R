@@ -60,7 +60,7 @@ run_lmm_on_gene = function(obj, formula, data, control, na.action, REML, fxn, fi
 
 # run analysis on each batch
 #' @importFrom BiocParallel bpstopOnError<- bptry
-run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.init=NULL, dreamCheck = FALSE, varTol= 1e-5, BPPARAM = SerialParam()){
+run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.init=NULL, dreamCheck = FALSE, varTol= 1e-5){
 
 	# create list with one gene per entry
 	exprList = lapply(seq(nrow(obj)), function(j){
@@ -72,7 +72,7 @@ run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.
 	# run iterator	
 	# bplapply is much faster for small chunks than 
 	# bpiterate using an iterator
-	bpstopOnError(BPPARAM) <- FALSE
+	BPPARAM = SerialParam(stop.on.error=FALSE)
 	res = bptry(bplapply(exprList, run_lmm_on_gene, 
 		form = form, 
 		data = data, 
@@ -83,23 +83,28 @@ run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.
 		fit.init = fit.init, 
 		dreamCheck = dreamCheck,
 		varTol = varTol,
-		BPPARAM = SerialParam()))
+		BPPARAM = BPPARAM))
 
 	# get failed jobs
-	failedJobs = (!bpok(res)) | sapply(res, is.null)
+	failedJobs = (!bpok(res)) | vapply(res, is.null, logical(1))
 
 	names(res) = rownames(obj)
 
 	# get error messages as text
-	errorText = attr(res, "errors")
-	errorText = sapply(errorText, function(x) x$message)
+	# errorText = attr(res, "errors")
+	# errorText = sapply(errorText, function(x) x$message)	
+	errorText = vapply(res[failedJobs], function(x) as.character(x), character(1))
 
 	# assign gene names to the error text
-	if( !is.null(errorText) ){
-		idx = as.numeric(names(errorText))
-		names(errorText) = names(res)[idx]
-	}
+	# if( !is.null(errorText) ){
+	# 	idx = as.numeric(names(errorText))
+	# 	names(errorText) = names(res)[idx]
+	# }
 
+	succeeded = NULL
+	if( any(!failedJobs) ){
+			succeeded = res[!failedJobs]
+	}
 	list(succeeded = res[!failedJobs],
 		 errors = errorText)
 }
@@ -111,26 +116,36 @@ run_lmm = function( obj, form, data, control = variancePartition:::vpcontrol, fx
 	# only use 1 thread internally
 	omp_set_num_threads(1)
 
-	# catch warnings like errors
-	options(warn = 2)
-
 	if(any(obj$weights < 0)) stop("All weights must be positive")
 
 	# run single fit to recycle the internal data structure
 	# also to run checks on data
 	# it.init = iterRows(obj$E, obj$weights, sizeOfChunk=1)
-	it.init = iterRows( matrix(seq(ncol(obj)), nrow=1),  sizeOfChunk=1)
+	it.init = iterRows( matrix(seq(ncol(obj)), nrow=1), sizeOfChunk=1)
 
-	fit.init = run_lmm_on_gene(it.init(), form, data, 
-				control = control,
-			    na.action = stats::na.exclude,
-			    REML = REML,
-			    fxn = identity,
-			    dreamCheck = dreamCheck)
+	errMsg = NULL
+	fit.init = tryCatch({
+		run_lmm_on_gene(it.init(), form, data, 
+						control = control,
+				    na.action = stats::na.exclude,
+				    REML = REML,
+				    fxn = identity,
+				    dreamCheck = dreamCheck)
+		}, 
+		warning = function(w) errMsg <<- w$message,
+		error = function(e) errMsg <<- e$message)
 
-	# checkModelStatus( fit.init, dreamCheck )
+	if( ! is.null(errMsg) ){
+		res = list(succeeded = list(), 
+							errors = list(), 
+							error.initial = errMsg)
+		return( res )
+	}
 
 	if( ! useInitialFit ) fit.init = NULL
+
+	# catch warnings like errors
+	options(warn = 2)
 
 	# initialize iterator
 	it = iterRows(obj$E, obj$weights, 
@@ -155,7 +170,8 @@ run_lmm = function( obj, form, data, control = variancePartition:::vpcontrol, fx
 	options(warn = 0)
 
 	list( succeeded = lapply(resList, function(x) x$succeeded),
-		  errors = unlist(sapply(resList, function(x) x$errors)))
+		  errors = unlist(lapply(resList, function(x) x$errors)),
+		  error.initial = NULL)
 }
 
 

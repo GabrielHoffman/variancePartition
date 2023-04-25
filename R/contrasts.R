@@ -187,8 +187,8 @@ makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnin
     # s!=0
     iseq = abs(s) < sqrt(.Machine$double.eps)
     if( any(!iseq) ){
-      txt = paste0("Each contrast must sum to 0.\n  Not satisified for contrasts: ", paste(names(s)[!iseq], collapse=', '))
-      stop(txt)
+      txt = paste0("Each contrast should sum to 0.\n  Not satisified for contrasts: ", paste(names(s)[!iseq], collapse=', '))
+      warning(txt, immediate.=TRUE)
     }
   }
 

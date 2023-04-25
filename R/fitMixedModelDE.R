@@ -184,84 +184,84 @@ setMethod("residuals", "MArrayLM2",
 # @export
 # @docType methods
 # @rdname eval_lmm-method
-#' @importFrom lmerTest contest
-#' @importFrom lme4 fixef 
-#' @importFrom stats sigma
-.eval_lmm = function( fit, L, ddf ){
+# @importFrom lmerTest contest
+# @importFrom lme4 fixef 
+# @importFrom stats sigma
+# .eval_lmm = function( fit, L, ddf ){
 
-	j = 1
-	# evaluate each contrast
-	# cons = lmerTest::contest(fit, L, ddf=ddf)
-	# cons = foreach( j = 1:ncol(L), .combine=rbind) %do% {
-	# 	lmerTest::contest(fit, L[,j], ddf=ddf)
-	# }
+# 	j = 1
+# 	# evaluate each contrast
+# 	# cons = lmerTest::contest(fit, L, ddf=ddf)
+# 	# cons = foreach( j = 1:ncol(L), .combine=rbind) %do% {
+# 	# 	lmerTest::contest(fit, L[,j], ddf=ddf)
+# 	# }
 
-	cons = lapply( seq(ncol(L)), function(j){
-		contest(fit, L[,j], ddf=ddf)		
-		})
-	cons = do.call(rbind, cons)
+# 	cons = lapply( seq(ncol(L)), function(j){
+# 		contest(fit, L[,j], ddf=ddf)		
+# 		})
+# 	cons = do.call(rbind, cons)
 
-	df = as.numeric(cons[,'DenDF'])
+# 	df = as.numeric(cons[,'DenDF'])
 
-	if(ddf == "Kenward-Roger"){
-		# KR
-		V = pbkrtest::vcovAdj.lmerMod(fit, 0)
+# 	if(ddf == "Kenward-Roger"){
+# 		# KR
+# 		V = pbkrtest::vcovAdj.lmerMod(fit, 0)
 
-		# if matrix is not PSD
-		if( min(diag(as.matrix(V))) < 0){			
-			warning("The adjusted Kenward-Roger covariance matrix is not positive definite.\nUsing Satterthwaite approximation instead")
+# 		# if matrix is not PSD
+# 		if( min(diag(as.matrix(V))) < 0){			
+# 			warning("The adjusted Kenward-Roger covariance matrix is not positive definite.\nUsing Satterthwaite approximation instead")
 
-			# Satterthwaite
-			V = vcov(fit)
-		}
-		# df = pbkrtest::get_Lb_ddf(fit, L)
-	}else{
-		# Satterthwaite
-		V = vcov(fit)
-		# df = as.numeric(contest(fit, L, ddf="Sat")['DenDF'])
-	}
+# 			# Satterthwaite
+# 			V = vcov(fit)
+# 		}
+# 		# df = pbkrtest::get_Lb_ddf(fit, L)
+# 	}else{
+# 		# Satterthwaite
+# 		V = vcov(fit)
+# 		# df = as.numeric(contest(fit, L, ddf="Sat")['DenDF'])
+# 	}
 
-	# sigma = attr(lme4::VarCorr(fit), "sc")
+# 	# sigma = attr(lme4::VarCorr(fit), "sc")
 
-	# get contrasts
-	# beta = as.matrix(sum(L * fixef(fit)), ncol=1)
-	# colnames(beta) = "logFC"
+# 	# get contrasts
+# 	# beta = as.matrix(sum(L * fixef(fit)), ncol=1)
+# 	# colnames(beta) = "logFC"
 
-	# beta = foreach( j = 1:ncol(L), .combine=rbind) %do% {
-	# 	as.matrix(sum(L[,j] * fixef(fit)), ncol=1)
-	# }
-	beta = lapply( seq(ncol(L)), function(j){		
-		as.matrix(sum(L[,j] * fixef(fit)), ncol=1)		
-		})
-	beta = do.call(rbind, beta)
+# 	# beta = foreach( j = 1:ncol(L), .combine=rbind) %do% {
+# 	# 	as.matrix(sum(L[,j] * fixef(fit)), ncol=1)
+# 	# }
+# 	beta = lapply( seq(ncol(L)), function(j){		
+# 		as.matrix(sum(L[,j] * fixef(fit)), ncol=1)		
+# 		})
+# 	beta = do.call(rbind, beta)
 
-	colnames(beta) = "logFC"
-	rownames(beta) = colnames(L)
+# 	colnames(beta) = "logFC"
+# 	rownames(beta) = colnames(L)
 
-	# SE = as.matrix(sqrt(sum(L * (V %*% L))), ncol=1)		
-	# colnames(SE) = "logFC"
-	# SE = foreach( j = 1:ncol(L), .combine=rbind) %do% {
-	# 	as.matrix(sqrt(sum(L[,j] * (V %*% L[,j]))), ncol=1)
-	# }
-	SE = lapply( seq(ncol(L)), function(j){		
-		as.matrix(sqrt(sum(L[,j] * (V %*% L[,j]))), ncol=1)	
-		})
-	SE = do.call(rbind, SE)
+# 	# SE = as.matrix(sqrt(sum(L * (V %*% L))), ncol=1)		
+# 	# colnames(SE) = "logFC"
+# 	# SE = foreach( j = 1:ncol(L), .combine=rbind) %do% {
+# 	# 	as.matrix(sqrt(sum(L[,j] * (V %*% L[,j]))), ncol=1)
+# 	# }
+# 	SE = lapply( seq(ncol(L)), function(j){		
+# 		as.matrix(sqrt(sum(L[,j] * (V %*% L[,j]))), ncol=1)	
+# 		})
+# 	SE = do.call(rbind, SE)
 	
-	colnames(SE) = "logFC"
-	rownames(SE) = colnames(L)
+# 	colnames(SE) = "logFC"
+# 	rownames(SE) = colnames(L)
 
-	# pValue = 2*pt(as.numeric(abs(beta / SE)), df, lower.tail=FALSE)
-	pValue = as.numeric(cons[,'Pr(>F)'])
+# 	# pValue = 2*pt(as.numeric(abs(beta / SE)), df, lower.tail=FALSE)
+# 	pValue = as.numeric(cons[,'Pr(>F)'])
 
-	list(	cons 	= cons,
-			df		= df,
-			sigma	= sigma(fit),
-			beta	= beta,
-			SE		= SE,
-			pValue	= pValue,
-			vcov 	= V )
-}
+# 	list(	cons 	= cons,
+# 			df		= df,
+# 			sigma	= sigma(fit),
+# 			beta	= beta,
+# 			SE		= SE,
+# 			pValue	= pValue,
+# 			vcov 	= V )
+# }
 
 
 #' @importFrom methods is

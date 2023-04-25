@@ -20,7 +20,7 @@
 #' @return
 #' An \code{EList} object just like the result of \code{limma::voom()}
 #'
-#' @details Adapted from \code{vomm()} in \code{limma} v3.40.2
+#' @details Adapted from \code{voom()} in \code{limma} v3.40.2
 #' @seealso \code{limma::voom()}
 #' @examples
 #' # library(variancePartition)
@@ -49,6 +49,7 @@
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict as.formula
 #' @importFrom limma asMatrixWeights
+#' @importFrom stats sigma
 #' @export
 voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, weights = NULL, plot=FALSE, save.plot=FALSE, BPPARAM=SerialParam(),...){
 
