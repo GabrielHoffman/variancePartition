@@ -151,11 +151,14 @@ test_vcov = function(){
 
 	# Fit from matrix, running dream() on subset of features
 	form <- ~ Disease + (1|Individual) 
-	fit = dream( vobj[1:2,], form, metadata)
+	fit = dream( vobj[1:2,], form, metadata, ddf="Sat")
 	fit = eBayes(fit)
 
 	A = vcov(fit, vobj[1:2,])
-	B = vcov(lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights=vobj$weights[1,] / mean(vobj$weights[1,])))
+
+	w = vobj$weights[1,]
+	f2 = lme4::lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights= w / mean(w) , REML=TRUE, variancePartition:::vpcontrol)
+	B = vcov(f2)
 
 	checkEquals(c(A[1:2, 1:2]), c(as.matrix(B)))
 

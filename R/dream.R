@@ -138,7 +138,6 @@ dream = function(
 		res.unlist = unlist(res$succeeded, recursive=FALSE)
 
 		if( length(res.unlist) == 0 & ! hideErrorsInBackend){
-			if(! showWarnings) return( res )
 			txt = paste("All models failed.  The first model fails with:\n", res$errors[1])
 			stop(txt)
 		}
@@ -363,7 +362,7 @@ createContrastL = function(formula, data, L){
 combineResults = function( exprObj, L, resList, univariateContrasts){
 
 	# only keep expression data from genes in resList
-	exprObj = exprObj[names(resList),,drop=FALSE]
+	exprObj = exprObj[names(resList),seq(ncol(exprObj)),drop=FALSE]
 
 	if( is.null(resList) | length(resList) == 0){
 		ret = list( coefficients 	= NULL,
