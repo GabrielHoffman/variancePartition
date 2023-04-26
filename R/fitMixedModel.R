@@ -35,6 +35,7 @@ run_lmm_on_gene = function(obj, formula, data, control, na.action, REML, fxn, fi
 				newresp = data$y.local, 
 				newweights = data$w.local,
 				control = control)
+			# assign("w.local", w.local, environment(formula(fit)))
 		}else{
 			# fit linear mixed model from scratch
 			fit = lmer(form.local, data, 
@@ -94,6 +95,7 @@ run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.
 	# errorText = attr(res, "errors")
 	# errorText = sapply(errorText, function(x) x$message)	
 	errorText = vapply(res[failedJobs], function(x) as.character(x), character(1))
+	if( length(errorText) == 0) errorText = NULL
 
 	# assign gene names to the error text
 	# if( !is.null(errorText) ){

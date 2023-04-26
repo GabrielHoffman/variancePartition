@@ -92,26 +92,28 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	#	Fit linear model to log2-counts-per-million
 	y <- t(log2(t(counts+0.5)/(lib.size+1)*1e6))
 	y <- normalizeBetweenArrays(y,method=normalize.method)
-	
+
+	if( is.null(weights) ){
+		# set sample-level weights to be equal
+		weights = rep(1, ncol(y))
+	}
+
+	if( length(weights) != ncol(y) ){
+		stop("length of weights must equal ncol(counts)")
+	}
+
+	# convert sample-level weights array to matrix
+	weightsMatrix = asMatrixWeights(weights, dim(y))
+
+	# put weights into EList
+	obj = new("EList", list(E = y, weights = weightsMatrix))
+
 	# Fit regression model
 	#---------------------
 
 	# use pre-specified weights, if available
 
 	if( .isMixedModelFormula( formula ) ){
-
-		if( !is.null(weights) ){
-
-			# if weights is a per-sample vector
-			if( length(weights) == ncol(y) ){
-				# convert weights vector to matrix
-				weights = asMatrixWeights(weights, dim(y))
-			}
-		}else{
-			weights = matrix(1, nrow(y), ncol(y))
-		}
-
-		obj = new("EList", list(E = y, weights = weights))
 
 		# fit linear mixed model
 		vpList = fitVarPartModel( obj, formula, data,...,fxn = function(fit){
@@ -133,7 +135,10 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	}else{
 
 		design = model.matrix(formula, data)
-		fit <- lmFit(y,design,weights=weights,...)
+
+		# fit <- lmFit(y,design,weights=weights,...)
+		# Use weights included in EList
+		fit <- lmFit(obj,design,...)
 
 		if(fit$rank < ncol(design)) {
 			j <- fit$pivot[1:fit$rank]
@@ -213,6 +218,10 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		out$targets <- data.frame(lib.size=lib.size)
 	else
 		out$targets$lib.size <- lib.size
+
+	# rescale by input weights
+	out$weights <- t(weights * t(out$weights))
+	out$targets$sample.weights <- weights	
 
 	if(save.plot) {
 		out$voom.xy <- list(x=sx,y=sy,xlab="log2( count size + 0.5 )",ylab="Sqrt( standard deviation )")
