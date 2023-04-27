@@ -1,4 +1,3 @@
-
 # variancePartition 2.0.0
  - April 20, 2023
  - Major code refactoring to: 
