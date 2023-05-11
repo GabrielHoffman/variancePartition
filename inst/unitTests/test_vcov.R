@@ -151,13 +151,14 @@ test_vcov = function(){
 
 	# Fit from matrix, running dream() on subset of features
 	form <- ~ Disease + (1|Individual) 
-	fit = dream( vobj[1:2,], form, metadata)
+	fit = dream( vobj[1:2,], form, metadata, ddf="Sat")
 	fit = eBayes(fit)
 
 	A = vcov(fit, vobj[1:2,])
-	w = vobj$weights[1,]
 
-	B = vcov(lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights=w / mean(w)))
+	w = vobj$weights[1,]
+	f2 = lme4::lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights= w / mean(w) , REML=TRUE, variancePartition:::vpcontrol)
+	B = vcov(f2)
 
 	checkEquals(c(A[1:2, 1:2]), c(as.matrix(B)))
 
@@ -387,6 +388,33 @@ test_vcov_NA = function(){
 }
 
 
+# test extracting faetures by name
+test_order = function(){
 
+	library(edgeR)
+	library(BiocParallel)
+
+	data(varPartDEdata)
+
+	dge = DGEList(counts = countMatrix)
+	dge = calcNormFactors(dge)
+
+	form <- ~ Disease + (1|Individual) 
+
+	vobj = voomWithDreamWeights( dge[1:20,], form, metadata)
+
+	fit = dream( vobj, form, metadata)
+	fit = eBayes(fit)
+
+	i = rownames(fit)[15:17]
+
+	# original ordering
+	A = vcov(fit[i,], vobj[i,], coef="Disease1")
+
+	# subset fit and vobj differently
+	B = vcov(fit[10:20,][i,], vobj[1:20,][i,], coef="Disease1")
+
+	checkEqualsNumeric(A, B)
+}
 
 

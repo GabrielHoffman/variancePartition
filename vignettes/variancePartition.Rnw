@@ -113,7 +113,6 @@ data(varPartData)
 
 form <- ~ Age + (1|Individual) + (1|Tissue) + (1|Batch) 
 
-browser()
 varPart <- fitExtractVarPartModel( geneExpr, form, info )
 
 # vp <- sortCols( varPart )

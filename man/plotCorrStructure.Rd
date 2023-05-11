@@ -70,5 +70,4 @@ plotCorrStructure( fit, reorder=idx )
 idx = order(info$Individual, info$Tissue)
 plotCorrStructure( fit, reorder=idx )
 
-
 }

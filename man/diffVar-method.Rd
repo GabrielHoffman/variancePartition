@@ -33,6 +33,9 @@ diffVar(
 
 \item{...}{other parameters passed to \code{dream()}}
 }
+\value{
+\code{MArrayLM} object storing differential results to be passed to \code{topTable()}
+}
 \description{
 Test the association between a covariate of interest and the response's deviation from expectation.
 }

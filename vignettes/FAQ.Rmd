@@ -134,3 +134,12 @@ This situtation is indicated by the following errors:
 
     voomWithDreamWeights(...,BPPARAM=SnowParam(8))
     ```
+
+
+# Session Info
+<details>
+```{r session, echo=FALSE}
+sessionInfo()
+```
+</details>
+
