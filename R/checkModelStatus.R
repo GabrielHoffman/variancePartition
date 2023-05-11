@@ -8,71 +8,63 @@
 #	2) Any coefficient is NA
 #	3) a categorical variable is modeled as a fixed effect
 setGeneric("checkModelStatus", signature="fit",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE )
+  function( fit, dreamCheck=FALSE,...)
       standardGeneric("checkModelStatus")
 )
 
 setMethod("checkModelStatus", "lm",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  )
+  function( fit, dreamCheck=FALSE,... )
 	{
-		# if no intercept is specified, give warning
-		if( showWarnings && length(which(names(coef(fit)) == "(Intercept)")) == 0 ){
+		# if no intercept is specified
+		if( length(which(names(coef(fit)) == "(Intercept)")) == 0 ){
 			txt = "No Intercept term was specified in the formula"
 			stop(txt)
-			# warning(txt, immediate.=immediate)
 		}
 
 		# if any coefficient is NA
-		if( showWarnings && any(is.na(coef(fit))) ){
+		if( any(is.na(coef(fit))) ){
 			stop("The variables specified in this model are redundant,\nso the design matrix is not full rank")
 		}
 
-		# check colinearity
-		score = colinearityScore(fit)
-		if( score > colinearityCutoff ){
-			stop(paste("Colinear score =", format(score, digits=4), ">", colinearityCutoff,"\nCovariates in the formula are so strongly correlated that the\nparameter estimates from this model are not meaningful.\nDropping one or more of the covariates will fix this problem"))
+		# Check condition number of covariance matrix
+		condNum = kappa(cov2cor(as.matrix(vcov(fit)))) # exact=TRUE
+
+		if( condNum > 1e8 ){
+			stop(paste0("Condition number (", format(condNum, digits=1), ") is very high.\nCovariates in the formula are so strongly correlated that the\nparameter estimates from this model are not meaningful.\nDropping one or more of the covariates will fix this problem"))
 		}
 	}
 )
 
 setMethod("checkModelStatus", "lmerMod",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
-	run_model_check_mixed( fit, showWarnings, dream, colinearityCutoff, immediate )
+  function( fit, dreamCheck=FALSE,... ){
+	run_model_check_mixed( fit, dreamCheck )
 })
 
 
-setMethod("checkModelStatus", "glmerMod",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
-	run_model_check_mixed( fit, showWarnings, dream, colinearityCutoff, immediate )
+setMethod("checkModelStatus", "glmerMod",  
+  function( fit, dreamCheck=FALSE,... ){
+	run_model_check_mixed( fit, dreamCheck )
 })
 
 #' @importFrom aod negbin
 setMethod("checkModelStatus", "negbin",
-  function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
+  function( fit, dreamCheck=FALSE,... ){
 	# run_model_check( fit, showWarnings, dream, colinearityCutoff, immediate )
 })
 
 #' @importFrom lme4 isSingular
-run_model_check_mixed = function( fit, showWarnings=TRUE, dream=FALSE, colinearityCutoff=.999, immediate=FALSE  ){
+run_model_check_mixed = function( fit, dreamCheck=FALSE ){
+
 		# if no intercept is specified, give warning
-		if( !dream && showWarnings && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
+		if( !dreamCheck && length(which(colnames(fit@pp$X) == "(Intercept)")) == 0 ){
 			txt = "No Intercept term was specified in the formula."
 			stop(txt)
-			# warning(txt, immediate.=immediate)
 		}
 
 		# if any coefficient is NA
-		if( ( showWarnings | dream) && any(is.na(coef(fit))) ){
-			stop("The variables specified in this model are redundant,\nso the design matrix is not full rank")
+		if( dreamCheck && any(is.na(coef(fit))) ){
+			stop("The variables specified in this model are redundant,\nthe design matrix is not full rank")
 		}
-
-		# # check colinearity
-		# ###################
-		# score = colinearityScore(fit)
-
-		# if( score > colinearityCutoff ){
-		# 	stop(paste("Colinear score =", format(score, digits=4), ">", colinearityCutoff,"\nCovariates in the formula are so strongly correlated that the\nparameter estimates from this model are not meaningful.\nDropping one or more of the covariates will fix this problem"))
-		# }
 
 		# Check condition number of covariance matrix
 		condNum = kappa(cov2cor(as.matrix(vcov(fit)))) # exact=TRUE
@@ -109,19 +101,19 @@ run_model_check_mixed = function( fit, showWarnings=TRUE, dream=FALSE, colineari
 		for( i in 1:length(varType) ){
 
 			# if factor is not random
-			if( (showWarnings && ! dream) && varType[i] %in% c("factor", "character") && (! names(varType)[i] %in% randVar) ){
-				txt = paste("Categorical variables modeled as fixed effect:", paste(names(varType)[i], collapse=', '), "\nMust model either _all_ or _no_ categorical variables as random effects here")
+			if( ! dreamCheck && varType[i] %in% c("factor", "character") && (! names(varType)[i] %in% randVar) ){
+				txt = paste("Categorical variables modeled as fixed effect:", paste(names(varType)[i], collapse=', '), "\n  Must model either _all_ or _no_ categorical variables\n    as random effects here")
 				stop(txt)
 			}
 
 			# If numeric/double is not fixed
-			if( (showWarnings && ! dream) && varType[i] %in% c("numeric", "double") && (!names(varType)[i] %in% fixedVar) ){
+			if( ! dreamCheck && varType[i] %in% c("numeric", "double") && (!names(varType)[i] %in% fixedVar) ){
 				stop(paste("Continuous variable cannot be modeled as a random effect:", names(varType)[i]))		
 			}
 		}
 
 		# show convergance message, if model is not singular
-		if( showWarnings && !is.null(fit@optinfo$conv$lme4$messages) && ! isSingular(fit)){
+		if( !is.null(fit@optinfo$conv$lme4$messages) && ! isSingular(fit)){
 			stop(fit@optinfo$conv$lme4$messages)
 		}
 	}

@@ -13,6 +13,9 @@
 
 \item{coef}{name of coefficient to be extracted}
 }
+\value{
+variance-covariance matrix
+}
 \description{
 Define generic \code{vcov()} for result of \code{lmFit()} and \code{dream()}
 }

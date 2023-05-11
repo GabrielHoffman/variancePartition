@@ -14,14 +14,13 @@
 #' @param weights Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
-#' @param quiet suppress message, default FALSE
 #' @param BPPARAM parameters for parallel evaluation
 #' @param      ... other arguments are passed to \code{lmer}.
 #'
 #' @return
 #' An \code{EList} object just like the result of \code{limma::voom()}
 #'
-#' @details Adapted from \code{vomm()} in \code{limma} v3.40.2
+#' @details Adapted from \code{voom()} in \code{limma} v3.40.2
 #' @seealso \code{limma::voom()}
 #' @examples
 #' # library(variancePartition)
@@ -50,21 +49,15 @@
 #' @importFrom lme4 VarCorr 
 #' @importFrom stats approxfun predict as.formula
 #' @importFrom limma asMatrixWeights
+#' @importFrom stats sigma
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, weights = NULL, plot=FALSE, save.plot=FALSE, quiet=FALSE, BPPARAM=SerialParam(),...){
+voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, weights = NULL, plot=FALSE, save.plot=FALSE, BPPARAM=SerialParam(),...){
 
-	formula = as.formula( formula )
+	objFlt = filterInputData( counts, formula, data, useWeights = FALSE, isCounts = TRUE)
 
-	# only retain columns used in the formula
-	data = data[, colnames(data) %in% unique(all.vars(formula)), drop=FALSE]
-
-	# check if variables in formula has NA's
-	hasNA = hasMissingData(formula, data)
-
-	if( any(hasNA) ){
-		txt = paste("Variables contain NA's:", paste(names(hasNA[hasNA]), collapse=', '), "\n  Missing data is not supported")
-		stop( txt )
-	}
+	counts = objFlt$exprObj
+	formula = objFlt$formula
+	data = objFlt$data
 
 	out <- list()
 
@@ -93,20 +86,28 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 	n <- nrow(counts)
 	if(n < 2L) stop("Need at least two genes to fit a mean-variance trend")
 
-	# #	Check design
-	# if(is.null(design)) {
-	# 	design <- matrix(1,ncol(counts),1)
-	# 	rownames(design) <- colnames(counts)
-	# 	colnames(design) <- "GrandMean"
-	# }
-
 	# Check lib.size
 	if(is.null(lib.size)) lib.size <- colSums(counts)
 
 	#	Fit linear model to log2-counts-per-million
 	y <- t(log2(t(counts+0.5)/(lib.size+1)*1e6))
 	y <- normalizeBetweenArrays(y,method=normalize.method)
-	
+
+	if( is.null(weights) ){
+		# set sample-level weights to be equal
+		weights = rep(1, ncol(y))
+	}
+
+	if( length(weights) != ncol(y) ){
+		stop("length of weights must equal ncol(counts)")
+	}
+
+	# convert sample-level weights array to matrix
+	weightsMatrix = asMatrixWeights(weights, dim(y))
+
+	# put weights into EList
+	obj = new("EList", list(E = y, weights = weightsMatrix))
+
 	# Fit regression model
 	#---------------------
 
@@ -114,27 +115,14 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 
 	if( .isMixedModelFormula( formula ) ){
 
-		if( missing(data) ){
-			stop("Must specify argument 'data'\n")
-		}
-
-		if( !is.null(weights) ){
-
-			# if weights is a per-sample vector
-			if( length(weights) == ncol(y) ){
-				# convert weights vector to matrix
-				weights = asMatrixWeights(weights, dim(y))
-			}
-		}
-
 		# fit linear mixed model
-		vpList = fitVarPartModel( y, formula, data, weightsMatrix=weights, showWarnings=FALSE, ...,fxn = function(fit){
+		vpList = fitVarPartModel( obj, formula, data,...,fxn = function(fit){
 			# extract 
 			# 1) sqrt residual variance (i.e. residual standard deviation)
 			# 2) fitted values
-			list( sd = attr(VarCorr(fit), 'sc'),
+			list( sd = sigma(fit),
 				fitted.values = predict(fit) )
-			}, BPPARAM=BPPARAM, quiet=quiet )
+			}, BPPARAM=BPPARAM )
 
 		fit = list()
 		fit$sigma <- sapply( vpList, function(x) x$sd)	
@@ -146,10 +134,11 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 
 	}else{
 
-		#if( ! quiet) message("Fixed effect model, using limma directly...")
-
 		design = model.matrix(formula, data)
-		fit <- lmFit(y,design,weights=weights,...)
+
+		# fit <- lmFit(y,design,weights=weights,...)
+		# Use weights included in EList
+		fit <- lmFit(obj,design,...)
 
 		if(fit$rank < ncol(design)) {
 			j <- fit$pivot[1:fit$rank]
@@ -229,6 +218,10 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		out$targets <- data.frame(lib.size=lib.size)
 	else
 		out$targets$lib.size <- lib.size
+
+	# rescale by input weights
+	out$weights <- t(weights * t(out$weights))
+	out$targets$sample.weights <- weights	
 
 	if(save.plot) {
 		out$voom.xy <- list(x=sx,y=sy,xlab="log2( count size + 0.5 )",ylab="Sqrt( standard deviation )")

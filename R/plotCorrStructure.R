@@ -55,9 +55,6 @@
 #' idx = order(info$Individual, info$Tissue)
 #' plotCorrStructure( fit, reorder=idx )
 #' 
-# # stop cluster
-# stopCluster(cl)
-#' 
 #' @export
 plotCorrStructure = function( fit, varNames = names(coef(fit)), reorder=TRUE, 
 	pal = colorRampPalette(c("white", "red", "darkred")), hclust.method = "complete" ){

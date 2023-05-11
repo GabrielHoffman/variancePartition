@@ -45,16 +45,6 @@ plotContrasts = function( L ){
 		stop(paste("Contrast names must be unique: ", paste(colnames(L), collapse=', ')))
 	}
 
-	# check that each contrast sum to zero
-	tol = sqrt(.Machine$double.eps)
-	sumZero = apply(L, 2, function(x){
-		abs(sum(x)) < tol
-		})
-
-	# if( any(!sumZero) ){
-	# 	stop('Each contrast must sum to 0. ', paste(names(sumZero[!sumZero]), collapse=', '), ' fails')
-	# }
-
 	df = melt(t(L))
 	colnames(df)[1:2] = c("Var1", "Var2")
 	df$Var1 = factor(df$Var1)
