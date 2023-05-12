@@ -11,6 +11,9 @@ rdf.merMod(model, method = c("linear", "quadratic"))
 
 \item{method}{Use algorithm that is "linear" (default) or quadratic time in the number of samples}
 }
+\value{
+residual degrees of freedom
+}
 \description{
 For a linear model with \eqn{n} samples and \eqn{p} covariates, \eqn{RSS/\sigma^2 \sim \chi^2_{\nu}} where \eqn{\nu = n-p} is the residual degrees of freedom.  In the case of a linear mixed model, the distribution is no longer exactly a chi-square distribution, but can be approximated with a chi-square distribution. 
 

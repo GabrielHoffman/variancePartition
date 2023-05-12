@@ -11,22 +11,20 @@
 \alias{calcVarPart,glmer-method}
 \title{Compute variance statistics}
 \usage{
-calcVarPart(fit, showWarnings = TRUE, returnFractions = TRUE, ...)
+calcVarPart(fit, returnFractions = TRUE, ...)
 
-\S4method{calcVarPart}{lm}(fit, showWarnings = TRUE, returnFractions = TRUE, ...)
+\S4method{calcVarPart}{lm}(fit, returnFractions = TRUE, ...)
 
-\S4method{calcVarPart}{lmerMod}(fit, showWarnings = TRUE, returnFractions = TRUE, ...)
+\S4method{calcVarPart}{lmerMod}(fit, returnFractions = TRUE, ...)
 
-\S4method{calcVarPart}{glm}(fit, showWarnings = TRUE, returnFractions = TRUE, ...)
+\S4method{calcVarPart}{glm}(fit, returnFractions = TRUE, ...)
 
-\S4method{calcVarPart}{negbin}(fit, showWarnings = TRUE, returnFractions = TRUE, ...)
+\S4method{calcVarPart}{negbin}(fit, returnFractions = TRUE, ...)
 
-\S4method{calcVarPart}{glmerMod}(fit, showWarnings = TRUE, returnFractions = TRUE, ...)
+\S4method{calcVarPart}{glmerMod}(fit, returnFractions = TRUE, ...)
 }
 \arguments{
 \item{fit}{model fit from lm() or lmer()}
-
-\item{showWarnings}{show warnings about model fit (default TRUE)}
 
 \item{returnFractions}{default: TRUE.  If TRUE return fractions that sum to 1.  Else return unscaled variance components.}
 

@@ -5,9 +5,8 @@ library(RUnit)
 
 test_vp_sparseMatrix = function(){
 		
-	library(BiocParallel)
 	library(Matrix)
-	register(SerialParam(), default=TRUE)
+	library(variancePartition)
 
 	data(varPartData)
 	set.seed(1)
@@ -38,7 +37,7 @@ test_vp_sparseMatrix = function(){
 	res2 = checkEquals(coef(varPart[[1]]), coef(varPart_sparse[[1]]))
 
 	# dream
-	data(varPartData)
+	# data(varPartData)
 
 	form <- ~ Batch + (1|Individual) + (1|Tissue)
 
