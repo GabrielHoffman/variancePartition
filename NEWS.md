@@ -1,3 +1,8 @@
+# variancePartition 2.0.1
+ - May 12, 2023
+ - `mvTest()` now shrinks covariance using the Schafer-Strimmer method
+ - `vcovSqrt()` returns the matrix whose cross product gives the `vcov()` result from fits with `dream()`
+
 # variancePartition 2.0.0
  - April 20, 2023
  - Major code refactoring to: 

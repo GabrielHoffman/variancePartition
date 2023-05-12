@@ -232,6 +232,9 @@
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/vcov-MArrayLM2-method.html</loc>
   </url>
   <url>
+    <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/vcovSqrt-method.html</loc>
+  </url>
+  <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/voomWithDreamWeights.html</loc>
   </url>
 </urlset>

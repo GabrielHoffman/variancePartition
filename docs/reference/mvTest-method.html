@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,6 +67,7 @@
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -77,6 +78,7 @@
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -87,6 +89,7 @@
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -97,6 +100,7 @@
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -123,10 +127,20 @@
 <dd><p>statistical method used to perform multivariate test.  See details.  <code>'FE'</code> is a fixed effect test that models the covariance between coefficients.  <code>'RE2C'</code> is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. <code>'tstat'</code> combines the t-statistics and models the covariance between coefficients. <code>'sidak'</code> returns the smallest p-value and accounting for the number of tests. <code>'fisher'</code> combines the p-value using Fisher's method assuming independent tests.</p></dd>
 
 
+<dt>shrink.cov</dt>
+<dd><p>shrink the covariance matrix between coefficients using the Schafer-Strimmer method</p></dd>
+
+
 <dt>progressbar</dt>
 <dd><p>if TRUE, show progress bar</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>Returns a <code>data.frame</code> with the statistics from each test, the <code>pvalue</code> from the test, <code>n_features</code>,  <code>method</code>, and <code>lambda</code> from the Schafer-Strimmer method to shrink the estimated covariance.  When <code>shrink.cov=FALSE</code>, <code>lambda = 0</code>.</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>See package <code>remaCor</code> for details about the <code><a href="http://gabrielhoffman.github.io/remaCor/reference/RE2C.html" class="external-link">remaCor::RE2C()</a></code> test, and see <code><a href="http://gabrielhoffman.github.io/remaCor/reference/LS.html" class="external-link">remaCor::LS()</a></code> for details about the fixed effect test.  When only 1 feature is selected, the original p-value is returned and the test statistic is set to <code>NA</code>.</p>
@@ -157,15 +171,15 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Multivariate test of features 1 and 2</span></span></span>
 <span class="r-in"><span><span class="fu">mvTest</span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, coef<span class="op">=</span><span class="st">"Disease1"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       stat       pvalue n_features method</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 7.011638 2.355439e-12          2     FE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       stat      pvalue n_features   lambda method</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 7.684812 1.53222e-14          2 0.964533     FE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Test multiple sets of features</span></span></span>
 <span class="r-in"><span><span class="va">lst</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, b<span class="op">=</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">mvTest</span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="va">lst</span>, coef<span class="op">=</span><span class="st">"Disease1"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ID     stat       pvalue n_features method</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  a 7.011638 2.355439e-12          2     FE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  b 7.007563 2.425047e-12          2     FE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ID     stat       pvalue n_features   lambda method</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  a 7.684812 1.532220e-14          2 0.964533     FE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  b 7.075316 1.491091e-12          2 1.000000     FE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
