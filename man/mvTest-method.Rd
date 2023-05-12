@@ -15,6 +15,7 @@ mvTest(
   features,
   coef,
   method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
+  shrink.cov = TRUE,
   progressbar = TRUE
 )
 
@@ -24,6 +25,7 @@ mvTest(
   features,
   coef,
   method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
+  shrink.cov = TRUE,
   progressbar = TRUE
 )
 
@@ -33,6 +35,7 @@ mvTest(
   features,
   coef,
   method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
+  shrink.cov = TRUE,
   progressbar = TRUE
 )
 
@@ -42,6 +45,7 @@ mvTest(
   features,
   coef,
   method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
+  shrink.cov = TRUE,
   progressbar = TRUE
 )
 }
@@ -56,7 +60,12 @@ mvTest(
 
 \item{method}{statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.}
 
+\item{shrink.cov}{shrink the covariance matrix between coefficients using the Schafer-Strimmer method}
+
 \item{progressbar}{if TRUE, show progress bar}
+}
+\value{
+Returns a \code{data.frame} with the statistics from each test, the \code{pvalue} from the test, \code{n_features},  \code{method}, and \code{lambda} from the Schafer-Strimmer method to shrink the estimated covariance.  When \code{shrink.cov=FALSE}, \code{lambda = 0}.
 }
 \description{
 Evaluate multivariate tests on results from \code{dream()} using \code{vcov()} to compute the covariance between estimated regression coefficients across multiple responses.  A joint test to see if the coefficients are jointly different from zero is performed using meta-analysis methods that account for the covariance.

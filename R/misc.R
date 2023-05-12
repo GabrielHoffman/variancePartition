@@ -20,159 +20,6 @@ setClass("varParFrac")
 #' @exportClass VarParFitList
 setClass("VarParFitList", representation(method="character"), contains="list")
 
-# requared to that iterator return NULL after the last element
-icount2 = function (count){
-    if (missing(count))
-        count <- NULL
-    else if (!is.numeric(count) || length(count) != 1)
-        stop("count must be a numeric value")
-    i <- 0L
-    nextEl <- function(){
-    	if( is.null(i) )    		
-        	(i <<- NULL)
-        else if (is.null(count) || i < count)
-            (i <<- i + 1L)
-        else 
-        	(i <<- NULL)
-    }
-    it <- list(nextElem = nextEl)
-    class(it) <- c("abstractiter", "iter")
-    it
-}
-
-
-# Iterator over genes
-#' @importFrom iterators icount
-exprIter = function( exprObj, weights, useWeights = TRUE, scale=TRUE, iterCount = "icount"){
-
-	n_features = nrow(exprObj)
-
-	if( iterCount == 'icount2'){
-		xit <- icount2( n_features )
-	}else{
-		xit <- icount( n_features )
-	}
-
-    nextEl <- function() {
-    	j <- nextElem(xit)
-
-    	if( is.null(j) || j > n_features){
-    		res = NULL
-    	}else{
-	    	if( useWeights && !is.null(weights) ){ 
-
-	    		w = weights[j,]
-
-				# scale weights to have mean of 1, otherwise it affects the residual variance too much
-				# scale should be false when signa(fit) needs to be evaluted
-	    		if(scale){
-	    			w = w / mean(w)
-	    		}
-	    	}else{
-	    		w = NULL		
-			}
-
-	       	res = list(E = exprObj[j,], weights = w, n_iter = j, max_iter = n_features)
-	     }
-	     res
-    }
-    it <- list(nextElem = nextEl)
-    class(it) <- c("abstractiter", "iter")
-    it
-}
-
-
-# exprIterOrig = function( exprObj, weights, useWeights = TRUE, scale=TRUE){
-
-# 	n_features = nrow(exprObj)
-# 	xit <- icountn( n_features )
-
-#     nextEl <- function() {
-#     	j <- nextElem(xit)
-
-#     	if( useWeights && !is.null(weights) ){    		
-# 			# scale weights to have mean of 1, otherwise it affects the residual variance too much
-#     		if(scale){
-#     			w = weights[j,] /  mean(weights[j,])
-#     		}else{
-#     			w = weights[j,]
-#     		}
-#     	}else{
-#     		w = NULL		
-# 		}
-
-#        	list(E = exprObj[j,], weights = w, n_iter = j, max_iter = n_features)
-#     }
-#     it <- list(nextElem = nextEl)
-#     class(it) <- c("abstractiter", "iter")
-#     it
-# }
-
-#' @importFrom BiocParallel bpworkers
-iterBatch <- function(exprObj, weights, useWeights = TRUE, scale=TRUE, n_chunks = nrow(exprObj) / 500, min_chunk_size = 20, BPPARAM = NULL ) {
-    # Adjust number of chunks upward to the next multiple of number of
-    # workers in BPPARAM, if this can be determined. If any errors are
-    # encountered, just continue without adjusting.
-    tryCatch(
-        if (is(BPPARAM, "BiocParallelParam")) {
-            n_workers <- bpworkers(BPPARAM)
-            if (!is.null(n_workers) && is.numeric(n_workers) && n_workers >= 1) {
-                chunks_per_worker <- ceiling(n_chunks / n_workers)
-                n_chunks <- chunks_per_worker * n_workers
-            }
-        },
-        error = function(...) NULL
-    )
-
-    # Don't split into chunks smaller than min_chunk_size
-    max_allowed_chunks <- floor(nrow(exprObj) / min_chunk_size)
-	n_chunks = min(n_chunks, max_allowed_chunks)
-    # Make sure we have at least 1 chunk (since we can get 0 if
-    # min_chunk_size > nrow)
-    n_chunks <- max(n_chunks, 1)
-
-	# specify chunks
-    idx <- parallel::splitIndices(nrow(exprObj), min(nrow(exprObj), n_chunks))
-    i <- 0L
-
-    f = function() {
-    	if (i == length(idx)){
-            return(NULL)
-        }
-        i <<- i + 1L
-        E = exprObj[ idx[[i]],, drop = FALSE ]
-
-        if( useWeights && !is.null(weights) ){    		
-			# scale weights to have mean of 1, otherwise it affects the residual variance too much
-    		if(scale){
-    			# w = weights[j,] /  mean(weights[j,])
-    			w = weights[idx[[i]],,drop=FALSE]
-    			# for each row, devide by row mean
-    			w = w / rowMeans(w)
-    		}else{
-    			# w = weights[j,]
-    			w = weights[idx[[i]],,drop=FALSE]
-    		}
-    	}else{
-    		w = matrix(1, nrow(E), ncol(E))		
-		}
-        
-       	list(E = E, weights = w )
-    }
-
-    # get number of chunks
-    attr( f, "n_chunks") = length(idx)
-    f
-}
-
-
-
-
-# results: the variancePartition statistics
-# type: indicate variance fractions or adjusted ICC
-# adjustedFor: variables whose variance were removed from the denominator 
-# type: lmm or anova
-# setClass("varPartResults", representation(results = "data.frame", type = "character", adjustedFor="array", method="character"))
 
 #' Class varPartResults
 #'
@@ -343,9 +190,6 @@ ggColorHue <- function(n) {
 #' 
 #' # Extract residuals of model fit
 #' res <- residuals( modelFit )
-#' 
-# # stop cluster
-# stopCluster(cl)
 #'
 #' @export 
 # @docType methods
@@ -506,39 +350,11 @@ colinearityScore = function(fit){
 #' @importFrom lme4 findbars 
 #' @keywords internal
 .isMixedModelFormula = function(formula ){
-
 	! is.null( findbars( as.formula( formula ) ) )
 }
 
 
 
-# Get process IDs
-# 
-# Get process IDs for parallel processing
-#
-# @param vmax minumum number of processes
-#' @keywords internal
-.get_pids = function( vmax = 2){
-
-	# use do instead of dopar, since only need single pid
-	foreach(i = 1:vmax, .combine=c) %do% { 
-		Sys.getpid()
-	}
-}
-
-
-
-# Try evaluating foreach dopar loop
-#
-# if it fails, connection is disconnected, so return TRUE, else FALSE
-#
-# This detects the error thrown by foreach dopar, after stopCluster() is run 
-# By no new clusters is registered
-.isDisconnected = function(){
-	i = NULL
-	possibleError <- tryCatch( suppressWarnings(foreach(i = seq_len(2)) %dopar% {i}), error = function(e) e)
-	return( isTRUE(inherits(possibleError, "error") && identical(possibleError$message, "invalid connection")) )
-}
 
 
 

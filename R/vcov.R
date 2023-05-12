@@ -15,7 +15,8 @@
 #' @param object \code{MArrayLM} object return by \code{lmFit()} or \code{dream()}
 #' @param vobj \code{EList} object returned by \code{voom()}
 #' @param coef name of coefficient to be extracted
-#
+#'
+#' @return variance-covariance matrix
 #' @importFrom stats coefficients
 #' @export
 setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
@@ -56,6 +57,8 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 			txt = paste("Coefficients not valid:", paste(coef[is.na(i)], collapse=', '))
 			stop(txt)
 		}
+	}else{
+		coef = NULL
 	}
 
 	# subsetting MArrayLM objects keep all residuals
@@ -67,7 +70,7 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 	resids = t(residuals(object)[idx,,drop=FALSE])
 
 	# use exact calculation for linear model
-	eval_vcov( resids = t(residuals(object)[idx,,drop=FALSE]), 
+	eval_vcov( resids = resids, 
 				X = object$design, 
 				W = weights[rownames(resids),,drop=FALSE], 
 				rdf = object$df.residual[1],
@@ -85,6 +88,7 @@ setMethod('vcov', c("MArrayLM"), function(object, vobj, coef){
 #' @param vobj \code{EList} object returned by \code{voom()}
 #' @param coef name of coefficient to be extracted
 #'
+#' @return variance-covariance matrix
 #' @importFrom stats coefficients
 #' @export
 setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
@@ -120,6 +124,8 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 			txt = paste("Coefficients not valid:", paste(coef[is.na(i)], collapse=', '))
 			stop(txt)
 		}
+	}else{
+		coef = NULL
 	}
 
 	# subsetting MArrayLM objects keep all residuals
@@ -133,7 +139,8 @@ setMethod('vcov', c("MArrayLM2"), function(object, vobj, coef){
 	# use approximate calculation for linear mixed model
 	eval_vcov_approx( 	resids = resids,
 						W = weights[rownames(resids),,drop=FALSE],
-					  	ccl = object$cov.coefficients.list, 
+					  	ccl = object$cov.coefficients.list,
+					  	X = object$design,
 					  	coef = coef,
 					  	contrasts = object$contrasts)
 })
@@ -156,6 +163,14 @@ eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 	# With no weights:
 	# kronecker(crossprod(res), solve(crossprod(X)), make.dimnames=TRUE) / rdf
 
+	# which coefficients to include
+	if( !is.null(contrasts) ){
+		if( is.null(coef) ) coef = colnames(contrasts)
+		coef = unique(coef)
+	}else{
+		if( is.null(coef) ) coef = colnames(X)
+	}
+
 	# scale weights to have mean 1 for each column
 	W = sweep(W, 2, colMeans(W), "/")
 
@@ -164,9 +179,6 @@ eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 
 	# all pairs of responses
 	Sigma = crossprod(resids * sqrtW) 
-
-	# transpose X just once
-	tX = t(X)
 
 	# store dimensions of data
 	k = ncol(X)		
@@ -207,10 +219,7 @@ eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 	colnames(Sigma_vcov) = c(outer(colnames(X), colnames(resids), function(a,b) paste(b,a, sep=':')))
 	rownames(Sigma_vcov) = colnames(Sigma_vcov)
 
-	if( missing(coef) ){
-		# return covariance matrix without subsetting
-		Sigma_return = Sigma_vcov
-	}else if( !is.null(contrasts) & coef %in% colnames(contrasts)){
+	if( !is.null(contrasts)){
 		# use contrasts
 
 		# extract single contrast
@@ -224,7 +233,7 @@ eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 
 		# apply linear contrasts
 		Sigma_vcov = crossprod(D, Sigma_vcov) %*% D
-		Sigma_return = as.matrix(Sigma_vcov)
+		Sigma_vcov = as.matrix(Sigma_vcov)
 	}else{
 		# use coef
 		# subsect to selected coefs
@@ -234,9 +243,9 @@ eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 		keep = c(outer(colnames(X)[i], colnames(resids), function(a,b) paste(b,a, sep=':')))
 
 		# subset covariance matrix
-		Sigma_return = Sigma_vcov[keep,keep]
+		Sigma_vcov = Sigma_vcov[keep,keep]
 	}
-	Sigma_return
+	Sigma_vcov
 }
 
 
@@ -249,14 +258,18 @@ eval_vcov = function(resids, X, W, rdf, coef, contrasts){
 # @param ccl list of vcov matrices for each response
 # @param coef name of coefficient to be extracted
 #
-eval_vcov_approx = function(resids, W, ccl, coef, contrasts){
+eval_vcov_approx = function(resids, W, ccl, X, coef, contrasts){
 
-	# only keep contrasts not directly specified but the design matrix
-	if( ! is.null(contrasts) ){
-		incl = setdiff(colnames(contrasts), rownames(contrasts))
-		contrasts = contrasts[,incl, drop=FALSE]
+	if( identical(colnames(contrasts), rownames(contrasts))){
+		contrasts = NULL
+	}
 
-		if( missing(coef) ) coef = rownames(contrasts)
+	# which coefficients to include
+	if( !is.null(contrasts) ){
+		if( is.null(coef) ) coef = colnames(contrasts)
+
+	}else{
+		if( is.null(coef) ) coef = colnames(X)
 	}
 
 	# scale weights to have mean 1
@@ -303,30 +316,68 @@ eval_vcov_approx = function(resids, W, ccl, coef, contrasts){
 	rownames(Sigma_vcov) = colnames(Sigma_vcov)
 
 	# select coefficients
-	if( !is.null(contrasts) & any(coef %in% colnames(contrasts))){
-		# use contrasts
-		# subsect to selected coefs
+	if( !is.null(contrasts) ){
 		coef = coef[coef %in% colnames(contrasts)]
 
 		# names of coefficients to retain
 		keep = c(outer(coef, colnames(resids), function(a,b) paste(b,a, sep=':')))
 
-		# subset covariance matrix
-		Sigma_return = Sigma_vcov[keep,keep]
-		
+		Sigma_vcov = Sigma_vcov[keep,keep,drop=FALSE]
 	}else{
-		# use coef from design matrix		
+		# use coef
+		# subsect to selected coefs
+		i = match(coef, colnames(X))
+	
 		# names of coefficients to retain
-		keep = c(outer(coef, colnames(resids), function(a,b) paste(b,a, sep=':')))
+		keep = c(outer(colnames(X)[i], colnames(resids), function(a,b) paste(b,a, sep=':')))
 
 		# subset covariance matrix
-		Sigma_return = Sigma_vcov[keep,keep]
+		Sigma_vcov = Sigma_vcov[keep,keep,drop=FALSE]
 	}
 
-	Sigma_return
+	Sigma_vcov
 }
 
 
+
+	# if( !is.null(contrasts)){
+	# 	# use contrasts
+	# 	# subsect to selected coefs
+	# 	coef = coef[coef %in% colnames(contrasts)]
+
+	# 	# names of coefficients to retain
+	# 	keep = c(outer(coef, colnames(resids), function(a,b) paste(b,a, sep=':')))
+
+	# 	# subset covariance matrix
+	# 	Sigma_vcov = Sigma_vcov[keep,keep]
+		
+	# }else{
+	# 	# use coef from design matrix		
+	# 	# names of coefficients to retain
+	# 	keep = c(outer(coef, colnames(resids), function(a,b) paste(b,a, sep=':')))
+
+	# 	# subset covariance matrix
+	# 	Sigma_vcov = Sigma_vcov[keep,keep]
+	# }
+
+
+
+# Like standard sign function, 
+# except sign(x) giving 0 is reset to give 1
+sign0 = function(x){
+
+	# use standard sign function
+	res = sign(x)
+
+	# get entries that equal 0
+	# and set them to 1
+	i = which(res == 0)
+	if( length(i) > 0 ){
+		res[i] = 1
+	}
+
+	res
+}
 
 # Raise eigen-values of a matrix to exponent alpha
 matrExp = function(S, alpha, symmetric=TRUE, tol=sqrt(.Machine$double.eps)){
@@ -339,7 +390,7 @@ matrExp = function(S, alpha, symmetric=TRUE, tol=sqrt(.Machine$double.eps)){
 
 	# Modify sign of vectors, so diagonal is always positive
 	# This removes an issue of sensitivity to small numerical changes
-	values = sign(diag(dcmp$vectors))
+	values = sign0(diag(dcmp$vectors))
 	dcmp$vectors = sweep(dcmp$vectors, 2, values, "*")
 
 	# identify positive eigen-values
@@ -347,7 +398,12 @@ matrExp = function(S, alpha, symmetric=TRUE, tol=sqrt(.Machine$double.eps)){
 
 	# a matrix square root is U %*% diag(lambda^alpha) %*% U^T, alpha = 0.5
 	# make sure to return to original axes
-	with(dcmp, vectors[,idx,drop=FALSE] %*% (values[idx]^alpha * t(vectors[,idx,drop=FALSE])))
+	res = with(dcmp, vectors[,idx,drop=FALSE] %*% (values[idx]^alpha * t(vectors[,idx,drop=FALSE])))
+
+	rownames(res) = rownames(S)
+	colnames(res) = colnames(S)
+
+	res
 }
 
 

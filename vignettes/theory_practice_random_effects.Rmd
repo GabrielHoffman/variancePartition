@@ -128,4 +128,12 @@ options(prompt="> ", continue="+ ")
 
 
 
+# Session Info
+<details>
+```{r session, echo=FALSE}
+sessionInfo()
+```
+</details>
+
+
 

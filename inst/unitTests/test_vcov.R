@@ -151,11 +151,14 @@ test_vcov = function(){
 
 	# Fit from matrix, running dream() on subset of features
 	form <- ~ Disease + (1|Individual) 
-	fit = dream( vobj[1:2,], form, metadata)
+	fit = dream( vobj[1:2,], form, metadata, ddf="Sat")
 	fit = eBayes(fit)
 
 	A = vcov(fit, vobj[1:2,])
-	B = vcov(lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights=vobj$weights[1,]))
+
+	w = vobj$weights[1,]
+	f2 = lme4::lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights= w / mean(w) , REML=TRUE, variancePartition:::vpcontrol)
+	B = vcov(f2)
 
 	checkEquals(c(A[1:2, 1:2]), c(as.matrix(B)))
 
@@ -199,14 +202,14 @@ test_vcov = function(){
 	i = 1:2
 	A = vcov(fit[i,], vobj[i,])
 	B = vcov(fit[i,], vobj[i,], "Disease1")
-	checkEquals(A[c(2,4), c(2,4)], B)
+	checkEquals(A[rownames(B), rownames(B)], B)
 
 	form <- ~ Disease + (1|Individual)
 	fit.std = dream( vobj, form, metadata)
 	fit.std = eBayes(fit.std)
 
 	A = vcov(fit.std[i,], vobj[i,])
-	B = t(bdiag(L,L)) %*% vcov(fit[i,], vobj[i,]) %*% bdiag(L,L)
+	B = t(bdiag(L,L)) %*% vcov(fit[i,], vobj[i,], coef=c("Disease0", "Disease1")) %*% bdiag(L,L)
 	C = vcov(fit[i,], vobj[i,], coef="Dx") 
 
 	checkEqualsNumeric(array(A[c(2,4),c(2,4)]), array(B), tol=1e-3)
@@ -214,8 +217,8 @@ test_vcov = function(){
 	checkEqualsNumeric(array(B), array(C))
 
 	# check multivariate test
-	res1 = mvTest( fit.std[i,], vobj[i,], coef="Disease1", method="tstat")
-	res2 = mvTest( fit[i,], vobj[i,], coef="Dx", method="tstat")
+	res1 = mvTest( fit.std[i,], vobj[i,], coef="Disease1", method="tstat", shrink.cov=FALSE)
+	res2 = mvTest( fit[i,], vobj[i,], coef="Dx", method="tstat", shrink.cov=FALSE)
 
 	# there is a VERY small difference in the covariance
 	checkEquals(res1, res2, tol=1e-4)
@@ -238,17 +241,17 @@ test_vcov = function(){
 
 	i = 1:2
 	A = vcov(fit.std[i,], vobj[i,])
-	B = t(bdiag(L,L)) %*% vcov(fit[i,], vobj[i,]) %*% bdiag(L,L)
+	B = t(bdiag(L,L)) %*% vcov(fit[i,], vobj[i,], coef=c("Disease0", "Disease1")) %*% bdiag(L,L)
 	C = vcov(fit[i,], vobj[i,], coef="Dx") 
 
 	checkEquals(array(A[c(2,4),c(2,4)]), array(B))
 	checkEquals(array(A[c(2,4),c(2,4)]), array(C))
 
 	# check multivariate test
-	res1 = mvTest( fit.std[i,], vobj[i,], coef="Disease1", method="tstat")
-	res2 = mvTest( fit[i,], vobj[i,], coef="Dx", method="tstat")
+	res1 = mvTest( fit.std[i,], vobj[i,], coef="Disease1", method="tstat", shrink.cov=FALSE)
+	res2 = mvTest( fit[i,], vobj[i,], coef="Dx", method="tstat", shrink.cov=FALSE)
 
-	checkEquals(res1, res2)
+	checkEquals(res1, res2, tol=1e-4)
 }
 
 
@@ -334,7 +337,7 @@ test_vcov2 = function(seed1=111, seed2=3){
 	})
 
 
-	A_approx = variancePartition:::eval_vcov_approx( resids, W, ccl, coef = "X_1", contrasts=NULL)
+	A_approx = variancePartition:::eval_vcov_approx( resids, W, ccl, X, coef = "X_1", contrasts=NULL)
 
 	id = c("gene_1:X_1", "gene_2:X_1", "gene_3:X_1")
 	A_approx
@@ -382,6 +385,126 @@ test_vcov_NA = function(){
 	# check that omitting sample internally and from input
 	# gives the same covariance matrix
 	checkEqualsNumeric(A, B)
+}
+
+
+# test extracting faetures by name
+test_order = function(){
+
+	library(edgeR)
+	library(BiocParallel)
+
+	data(varPartDEdata)
+
+	dge = DGEList(counts = countMatrix)
+	dge = calcNormFactors(dge)
+
+	form <- ~ Disease + (1|Individual) 
+
+	vobj = voomWithDreamWeights( dge[1:20,], form, metadata)
+
+	fit = dream( vobj, form, metadata)
+	fit = eBayes(fit)
+
+	i = rownames(fit)[15:17]
+
+	# original ordering
+	A = vcov(fit[i,], vobj[i,], coef="Disease1")
+
+	# subset fit and vobj differently
+	B = vcov(fit[10:20,][i,], vobj[1:20,][i,], coef="Disease1")
+
+	checkEqualsNumeric(A, B)
+}
+
+test_vcovSqrt = function(){
+
+	library(variancePartition)
+	library(edgeR)
+	library(RUnit)
+
+	data(varPartDEdata)
+
+	dge = DGEList(counts = countMatrix)
+	dge = calcNormFactors(dge)
+
+	# Fixed effects
+	################
+	form <- ~ Disease 
+	vobj = voomWithDreamWeights( dge[1:100,], form, metadata)
+
+	# Standard analysis
+	fit = dream( vobj, form, metadata)
+	fit = eBayes(fit)
+
+	idx = 1:2
+	V.orig = vcov(fit[idx,], vobj[idx,])
+	P = vcovSqrt(fit[idx,], vobj[idx,], approx = FALSE)
+	checkEqualsNumeric(crossprod(P), V.orig)
+
+	P = vcovSqrt(fit[idx,], vobj[idx,], approx = TRUE)
+	checkEqualsNumeric(crossprod(P), V.orig, tol = 1e-2)
+
+	V.orig = vcov(fit[idx,], vobj[idx,], coef="Disease1")
+	P = vcovSqrt(fit[idx,], vobj[idx,], coef="Disease1", approx = FALSE)
+	checkEqualsNumeric(crossprod(P), V.orig)
+
+	P = vcovSqrt(fit[idx,], vobj[idx,], coef="Disease1", approx = TRUE)
+	checkEqualsNumeric(crossprod(P), V.orig, tol = 1e-2)
+
+	# contrasts
+	form <- ~ 0 + Disease 
+	L = makeContrastsDream(form, metadata, contrasts = c(Dx = "Disease1 - Disease0"))
+	fit = dream( vobj, form, metadata, L = L)
+	fit = eBayes(fit)
+
+	idx = 1:2
+	V.orig = vcov(fit[idx,], vobj[idx,])
+	P = vcovSqrt(fit[idx,], vobj[idx,], approx = FALSE)
+	checkEqualsNumeric(crossprod(P), V.orig, tol=1e-2)
+
+	P = vcovSqrt(fit[idx,], vobj[idx,], approx = TRUE)
+	checkEqualsNumeric(crossprod(P), V.orig, tol = 1e-2)
+
+	V.orig = vcov(fit[idx,], vobj[idx,], coef="Dx")
+	P = vcovSqrt(fit[idx,], vobj[idx,], coef="Dx", approx = FALSE)
+	checkEqualsNumeric(crossprod(P), V.orig, tol=1e-2)
+
+	P = vcovSqrt(fit[idx,], vobj[idx,], coef="Dx", approx = TRUE)
+	checkEqualsNumeric(crossprod(P), V.orig, tol = 1e-2)
+
+	# Random effects
+	################
+	form <- ~ Disease + (1|Sex)
+	vobj = voomWithDreamWeights( dge[1:10,], form, metadata)
+
+	# Standard analysis
+	fit = dream( vobj, form, metadata)
+	fit = eBayes(fit)
+
+	idx = 1:2
+	V.orig = vcov(fit[idx,], vobj[idx,])
+	P = vcovSqrt(fit[idx,], vobj[idx,])
+	checkEqualsNumeric(crossprod(P), V.orig, tol = 1e-2)
+
+	V.orig = vcov(fit[idx,], vobj[idx,], coef="Disease1")
+	P = vcovSqrt(fit[idx,], vobj[idx,], coef="Disease1")
+	checkEqualsNumeric(crossprod(P), V.orig, tol=1e-2)
+
+	# contrasts
+	form <- ~ 0 + Disease + (1|Sex)
+	L = makeContrastsDream(form, metadata, contrasts = c(Dx = "Disease1 - Disease0"))
+	fit = dream( vobj, form, metadata, L = L)
+	fit = eBayes(fit)
+
+	idx = 1:2
+	V.orig = vcov(fit[idx,], vobj[idx,])
+	P = vcovSqrt(fit[idx,], vobj[idx,])
+	checkEqualsNumeric(crossprod(P), V.orig, tol=1e-2)
+
+	V.orig = vcov(fit[idx,], vobj[idx,], coef="Dx")
+	P = vcovSqrt(fit[idx,], vobj[idx,], coef="Dx")
+	checkEqualsNumeric(crossprod(P), V.orig, tol=1e-2)
 }
 
 
