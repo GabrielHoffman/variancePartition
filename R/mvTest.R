@@ -22,7 +22,7 @@
 #'  
 #' @details See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original p-value is returned and the test statistic is set to \code{NA}.
 #' 
-#' For the \code{"RE2C"} test, the final test statistic is the sum of a test statistic for the mean effect (\code{stat.FE}) and heterogeneity across effects (\code{stat.het}).
+#' For the \code{"RE2C"} test, the final test statistic is the sum of a test statistic for the mean effect (\code{stat.FE}) and heterogeneity across effects (\code{stat.het}).  \code{mvTest()} returns 0 if \code{stat.het} is negative in extremely rare cases.
 #' 
 #' @return 
 #' Returns a \code{data.frame} with the statistics from each test, the \code{pvalue} from the test, \code{n_features},  \code{method}, and \code{lambda} from the Schafer-Strimmer method to shrink the estimated covariance.  When \code{shrink.cov=FALSE}, \code{lambda = 0}.
@@ -149,7 +149,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 			res = RE2C(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
 
 			df = data.frame(stat.FE = res$stat1, 
-							stat.het = res$stat2,
+							stat.het = max(0, res$stat2),
 							pvalue = res$RE2Cp,
 							n_features = n_features,
 							lambda = lambda, 
@@ -163,7 +163,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 			df = data.frame(stat = tab$t, 
 							pvalue = tab$P.Value, 
 							n_features = n_features,
-						lambda = lambda,
+							lambda = lambda,
 							method = method)
 		}else{
 			Sigma_corr = cov2cor(Sigma)
