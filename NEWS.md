@@ -1,3 +1,11 @@
+# variancePartition 2.0.3
+ - May 13, 2023
+ - fix `vcov()`
+
+# variancePartition 2.0.2
+ - May 17, 2023
+ - add matrix argument to `mvTest()`
+
 # variancePartition 2.0.1
  - May 12, 2023
  - `mvTest()` now shrinks covariance using the Schafer-Strimmer method

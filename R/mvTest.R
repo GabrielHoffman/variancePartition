@@ -19,6 +19,7 @@
 #' @param method statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
 #' @param shrink.cov shrink the covariance matrix between coefficients using the Schafer-Strimmer method 
 #' @param progressbar if TRUE, show progress bar
+#' @param ... other arugments
 #'  
 #' @details See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original p-value is returned and the test statistic is set to \code{NA}.
 #' 
@@ -58,7 +59,7 @@
 #' @docType methods
 #' @rdname mvTest-method
 setGeneric("mvTest", signature=c("fit", "vobj", 'features'),
-  function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE)
+  function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...)
       standardGeneric("mvTest")
 )
 
@@ -70,7 +71,7 @@ setGeneric("mvTest", signature=c("fit", "vobj", 'features'),
 #' @importFrom corpcor estimate.lambda
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "vector"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE){
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){
 
 	method = match.arg(method)
 
@@ -110,12 +111,16 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 	# Note that the test below does not model uncertainly in lambda
 	P = vcovSqrt(fit[features,], vobj[features,], coef, approx=TRUE)
 	Sigma = crossprod(P)
-	lambda = 0
 
-	if( shrink.cov ){
-		lambda = estimate.lambda(P, verbose=FALSE)
-		Sigma = (1-lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
-	}
+	if( shrink.cov == FALSE) shrink.cov = "FALSE"
+	lambda = switch( shrink.cov, 
+						Schafer = corpcor::estimate.lambda(P, verbose=FALSE),
+						OAS = CovTools::CovEst.2010OAS(P)$rho,
+						RBLW = CovTools::CovEst.2010RBLW(P)$rho,
+						EB = decorrelate::eclairs(P, n.samples = ncol(vobj))$lambda,
+						'FALSE' = 0)
+
+	Sigma = (1-lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
 
 	if( method == "FE"){
 		if( n_features == 1){
@@ -211,9 +216,9 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 #' @aliases mvTest,MArrayLM,EList,missing-method
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "missing"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE){ 
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){ 
 
-	mvTest(fit, vobj, features=seq(nrow(vobj)), coef, method, shrink.cov=shrink.cov, progressbar=progressbar )
+	mvTest(fit, vobj, features=seq(nrow(vobj)), coef, method, shrink.cov=shrink.cov, progressbar=progressbar,... )
 })
 
 
@@ -224,7 +229,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 #' @importFrom stats runif
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "list"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE){ 
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){ 
 
 	if( is.null(names(features)) ){
 		stop("features list must have non-null names(features)")
@@ -252,9 +257,20 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 	res
 })
 
+#' @rdname mvTest-method
+#' @aliases mvTest,MArrayLM,matrix-method
+#' @export
+setMethod("mvTest", c('MArrayLM', "matrix"),
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){
+		
+	method = match.arg(method)	
 
+	# create weights
+	W = matrix(1, nrow(vobj), ncol(vobj))
 
+	vobj = new("EList", list(E = vobj, weights = W)) 
 
-
+	mvTest(fit, vobj, features, coef, method, shrink.cov=shrink.cov, progressbar=progressbar,...  )
+})
 
 
