@@ -7,6 +7,8 @@
 \alias{mvTest,MArrayLM,EList,integer-method}
 \alias{mvTest,MArrayLM,EList,missing-method}
 \alias{mvTest,MArrayLM,EList,list-method}
+\alias{mvTest,MArrayLM,matrix,ANY-method}
+\alias{mvTest,MArrayLM,matrix-method}
 \title{Multivariate tests on results from \code{dream()}}
 \usage{
 mvTest(
@@ -16,7 +18,8 @@ mvTest(
   coef,
   method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE
+  progressbar = TRUE,
+  ...
 )
 
 \S4method{mvTest}{MArrayLM,EList,vector}(
@@ -26,7 +29,8 @@ mvTest(
   coef,
   method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE
+  progressbar = TRUE,
+  ...
 )
 
 \S4method{mvTest}{MArrayLM,EList,missing}(
@@ -36,7 +40,8 @@ mvTest(
   coef,
   method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE
+  progressbar = TRUE,
+  ...
 )
 
 \S4method{mvTest}{MArrayLM,EList,list}(
@@ -46,7 +51,19 @@ mvTest(
   coef,
   method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE
+  progressbar = TRUE,
+  ...
+)
+
+\S4method{mvTest}{MArrayLM,matrix,ANY}(
+  fit,
+  vobj,
+  features,
+  coef,
+  method = c("FE", "RE2C", "tstat", "sidak", "fisher"),
+  shrink.cov = TRUE,
+  progressbar = TRUE,
+  ...
 )
 }
 \arguments{
@@ -63,6 +80,8 @@ mvTest(
 \item{shrink.cov}{shrink the covariance matrix between coefficients using the Schafer-Strimmer method}
 
 \item{progressbar}{if TRUE, show progress bar}
+
+\item{...}{other arugments}
 }
 \value{
 Returns a \code{data.frame} with the statistics from each test, the \code{pvalue} from the test, \code{n_features},  \code{method}, and \code{lambda} from the Schafer-Strimmer method to shrink the estimated covariance.  When \code{shrink.cov=FALSE}, \code{lambda = 0}.
@@ -73,7 +92,7 @@ Evaluate multivariate tests on results from \code{dream()} using \code{vcov()} t
 \details{
 See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original p-value is returned and the test statistic is set to \code{NA}.
 
-For the \code{"RE2C"} test, the final test statistic is the sum of a test statistic for the mean effect (\code{stat.FE}) and heterogeneity across effects (\code{stat.het}).
+For the \code{"RE2C"} test, the final test statistic is the sum of a test statistic for the mean effect (\code{stat.FE}) and heterogeneity across effects (\code{stat.het}).  \code{mvTest()} returns 0 if \code{stat.het} is negative in extremely rare cases.
 }
 \examples{
 # library(variancePartition)
