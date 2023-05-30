@@ -174,11 +174,25 @@ dream = function(
 }
 
 
-#' @importFrom lme4 VarCorr
-#' @importFrom stats sigma
+#' @importFrom lme4 VarCorr refit 
+#' @importFrom stats sigma 
 create_eval_dream = function(L, ddf, univariateContrasts){
 
 	function(x){
+
+		# lmerTest::as_lmerModLmerTest() and 
+		# our as_lmerModLmerTest2() uses a strict convergence test
+		# based on the approximate Hessian.
+		# https://github.com/runehaubo/lmerTestR/blob/35dc5885205d709cdc395b369b08ca2b7273cb78/R/lmer.R#LL174C8-L174C25
+		# lme4::lmer() is more permissive.
+		# So run a second optimizer to avoid edge cases where the
+		# first optimizer produces a negative approximate Hessian.
+		# Initialize to previous parameter values to accelerate
+		# convergence
+		vpcontrol.local = vpcontrol
+		vpcontrol.local$optimizer = "Nelder_Mead"
+		x = refit(x, control = vpcontrol)
+
 		# convert to result of lmerTest::lmer()
 		fit = as_lmerModLmerTest2(x)
 
