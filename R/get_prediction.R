@@ -73,8 +73,10 @@ setMethod('get_prediction', "lmerMod", function( fit, formula){
 	fixed_form = nobars(formula)
 
 	# create design matrix from formula
-	# dsgn = lme4::getME(fit, "X")
-	dsgn = model.matrix( fixed_form, fit@frame)
+	dsgn = tryCatch( model.matrix( fixed_form, fit@frame),
+		error = function(e){
+			lme4::getME(fit, "X")[,all.vars(fixed_form),drop=FALSE]
+		})
 
 	# only extract coefficients matching design 
 	beta = fixef(fit)[colnames(dsgn)]
