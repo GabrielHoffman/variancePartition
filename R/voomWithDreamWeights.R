@@ -240,7 +240,10 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 
 	out = new("EList",out)
 
-	# attach errors if they exist
-	attr(out, "errors") = attr(vpList, "errors")
+	if( .isMixedModelFormula( formula ) ){
+		# attach errors if they exist
+		attr(out, "errors") = attr(vpList, "errors")
+	}
+	
 	out
 }
