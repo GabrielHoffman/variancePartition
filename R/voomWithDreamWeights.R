@@ -148,6 +148,9 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		}
 	}
 
+	# only keep y where model has converged
+	y <- y[rownames(fitted.values),,drop=FALSE]
+
 	if(is.null(fit$Amean)) fit$Amean <- rowMeans(y,na.rm=TRUE)
 
 	#		If no replication found, set all weight to 1
