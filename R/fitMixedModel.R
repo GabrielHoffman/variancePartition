@@ -37,21 +37,21 @@ run_lmm_on_gene = function(obj, formula, data, control, na.action, REML, fxn, fi
 	} 
 
 	if( .isMixedModelFormula( formula ) ){
-		# if( ! is.null(fit.init) ){
+		if( ! is.null(fit.init) ){
 			# if fit.init is passed, use refit
 			# issue with stopping criteria.  fixed with new lmer() call
-		# 	fit = refit(fit.init, 
-		# 		newresp = data$y.local, 
-		# 		newweights = data$w.local,
-		# 		control = control)
-		# }else{
+			fit = refit(fit.init, 
+				newresp = data$y.local, 
+				newweights = data$w.local,
+				control = control)
+		}else{
 			# fit linear mixed model from scratch
 			fit = lmer(form.local, data, 
 				weights = w.local, 
 				control = control, 
 				na.action = na.action,
 				REML = REML)
-		# }
+		}
 		# lmerTest::as_lmerModLmerTest() and 
 		# our as_lmerModLmerTest2() uses a strict convergence test
 		# based on the approximate Hessian.
@@ -142,7 +142,10 @@ run_lmm = function( obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
 	# run single fit to recycle the internal data structure
 	# also to run checks on data
 	# it.init = iterRows(obj$E, obj$weights, sizeOfChunk=1)
-	it.init = iterRows( matrix(seq(ncol(obj)), nrow=1), sizeOfChunk=1)
+	# Gaussian response
+	values = qnorm(seq(ncol(obj)) / (ncol(obj)+1))
+
+	it.init = iterRows( matrix(values, nrow=1), sizeOfChunk=1)
 
 	errMsg = NULL
 	fit.init = tryCatch({
@@ -188,7 +191,7 @@ run_lmm = function( obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
 			                      reduce.in.order = TRUE)
 
 	# reset to enable warnings
-	# options(warn = 0)
+	options(warn = 0)
 
 	list( succeeded = lapply(resList, function(x) x$succeeded),
 		  errors = unlist(lapply(resList, function(x) x$errors)),
