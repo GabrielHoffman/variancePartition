@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.5</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -166,9 +166,9 @@
 <span class="r-in"><span><span class="co"># view top genes</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Batch2"</span>, number<span class="op">=</span><span class="fl">3</span> <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            logFC    AveExpr         t   P.Value adj.P.Val         B     z.std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6 -0.6704969  -3.155479 -1.651193 0.1007716 0.6907331 -4.539538 -1.641124</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene2 -0.4942074  -1.128161 -1.340327 0.1821532 0.6907331 -4.569990 -1.334155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene1 -0.4609243 -10.466455 -1.266675 0.2072199 0.6907331 -4.576299 -1.261247</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene6 -0.6704969  -3.155479 -1.651191 0.1007721 0.6907337 -4.539539 -1.641122</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene2 -0.4942066  -1.128161 -1.340325 0.1821539 0.6907337 -4.569990 -1.334152</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene1 -0.4609243 -10.466455 -1.266674 0.2072201 0.6907337 -4.576299 -1.261246</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># get contrast matrix testing if the coefficient for Batch3 is </span></span></span>
 <span class="r-in"><span><span class="co"># different from coefficient for Batch2</span></span></span>
@@ -187,10 +187,10 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># view top genes for this contrast</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span> <span class="va">fit2</span>, coef<span class="op">=</span><span class="st">"compare_3_2"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            logFC    AveExpr         t   P.Value adj.P.Val         B      z.std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  0.4655178 -4.3799381  1.401814 0.1630309  0.818457 -4.557141  1.3949502</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene6 -0.3642792 -3.1554790 -1.012189 0.3130697  0.818457 -4.595941 -1.0088017</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene3 -0.2545920  0.1702122 -0.811730 0.4182304  0.818457 -4.611148 -0.8094951</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            logFC    AveExpr          t   P.Value adj.P.Val         B     z.std</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene7  0.4655178 -4.3799381  1.4018135 0.1630312 0.8184625 -4.557141  1.394949</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene6 -0.3642792 -3.1554790 -1.0121871 0.3130704 0.8184625 -4.595941 -1.008800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene3 -0.2545920  0.1702122 -0.8117299 0.4182305 0.8184625 -4.611148 -0.809495</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Parallel processing using multiple cores with reduced memory usage</span></span></span>
 <span class="r-in"><span><span class="va">param</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"SOCK"</span>, progressbar<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>

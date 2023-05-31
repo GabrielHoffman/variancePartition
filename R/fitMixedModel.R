@@ -80,11 +80,12 @@ run_lmm_on_gene = function(obj, formula, data, control, na.action, REML, fxn, fi
 
 # run analysis on each batch
 #' @importFrom BiocParallel bpstopOnError<- bptry
+#' @importFrom RhpcBLASctl omp_set_num_threads
 run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.init=NULL, dreamCheck = FALSE, varTol= 1e-5){
 
 	# only use 1 thread internally
 	omp_set_num_threads(1)
-	
+
 	# create list with one gene per entry
 	exprList = lapply(seq(nrow(obj)), function(j){
 			new("EList", list(
