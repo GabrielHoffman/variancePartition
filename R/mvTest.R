@@ -114,10 +114,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 
 	if( shrink.cov == FALSE) shrink.cov = "FALSE"
 	lambda = switch( shrink.cov, 
-						Schafer = corpcor::estimate.lambda(P, verbose=FALSE),
-						OAS = CovTools::CovEst.2010OAS(P)$rho,
-						RBLW = CovTools::CovEst.2010RBLW(P)$rho,
-						EB = decorrelate::eclairs(P, n.samples = ncol(vobj))$lambda,
+						Schafer = estimate.lambda(P, verbose=FALSE),
 						'FALSE' = 0)
 
 	Sigma = (1-lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))

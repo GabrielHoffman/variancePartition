@@ -1,10 +1,16 @@
-# variancePartition 2.0.4
+# variancePartition 2.0.5
+ - May 31, 2023
+ - fix convergence issues
+ - fix initialization of `lmer()` fit
+
+
+
+ # variancePartition 2.0.4
  - May 30, 2023
  - When running `dream()`, ensure model convergence using second fitting with `Nelder_Mead` to avoid edge cases where the approximate hessian from `lmerTest::as_lmerModLT()` has a negative eigenvalue
  - fix issue in `get_prediction()` returning NA values when variables modeled as categorical and levels are omitted
  - fix issue in `voomWithDreamWeights()` when some genes don't converge
-
- retry `lmer()` model fit with another optimizer after it fails convergence test.
+- retry `lmer()` model fit with another optimizer after it fails convergence test.
 
 # variancePartition 2.0.3
  - May 13, 2023
