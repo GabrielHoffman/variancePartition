@@ -238,5 +238,9 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		warning(txt)
 	}
 
-	new("EList",out)
+	out = new("EList",out)
+
+	# attach errors if they exist
+	attr(out, "errors") = attr(vpList, "errors")
+	out
 }
