@@ -5,6 +5,14 @@ vpcontrol <- lme4::lmerControl(calc.derivs = FALSE,
                                check.conv.singular =
                                  lme4::.makeCC("ignore", tol = 1e-4))
 
+vpcontrol.NM <- lme4::lmerControl(optimizer = "Nelder_Mead",
+																calc.derivs = FALSE,
+                               check.rankX = "stop.deficient",
+                               check.conv.singular =
+                                 lme4::.makeCC("ignore", tol = 1e-4))
+
+
+
 #' @importFrom lme4 lmer refit
 #' @importFrom stats update
 run_lmm_on_gene = function(obj, formula, data, control, na.action, REML, fxn, fit.init=NULL, dreamCheck = FALSE, varTol= 1e-5){
@@ -29,21 +37,32 @@ run_lmm_on_gene = function(obj, formula, data, control, na.action, REML, fxn, fi
 	} 
 
 	if( .isMixedModelFormula( formula ) ){
-		if( ! is.null(fit.init) ){
+		# if( ! is.null(fit.init) ){
 			# if fit.init is passed, use refit
-			fit = refit(fit.init, 
-				newresp = data$y.local, 
-				newweights = data$w.local,
-				control = control)
-			# assign("w.local", w.local, environment(formula(fit)))
-		}else{
+			# issue with stopping criteria.  fixed with new lmer() call
+		# 	fit = refit(fit.init, 
+		# 		newresp = data$y.local, 
+		# 		newweights = data$w.local,
+		# 		control = control)
+		# }else{
 			# fit linear mixed model from scratch
 			fit = lmer(form.local, data, 
 				weights = w.local, 
 				control = control, 
 				na.action = na.action,
 				REML = REML)
-		}
+		# }
+		# lmerTest::as_lmerModLmerTest() and 
+		# our as_lmerModLmerTest2() uses a strict convergence test
+		# based on the approximate Hessian.
+		# https://github.com/runehaubo/lmerTestR/blob/35dc5885205d709cdc395b369b08ca2b7273cb78/R/lmer.R#LL174C8-L174C25
+		# lme4::lmer() is more permissive.
+		# So run a second optimizer to avoid edge cases where the
+		# first optimizer produces a negative approximate Hessian.
+		# Initialize to previous parameter values to accelerate
+		# convergence
+		fit = refit(fit, control=control)
+
 	}else{
 		fit = lm(form.local, data, weights = w.local, 
 				na.action = na.action)
@@ -169,7 +188,7 @@ run_lmm = function( obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
 			                      reduce.in.order = TRUE)
 
 	# reset to enable warnings
-	options(warn = 0)
+	# options(warn = 0)
 
 	list( succeeded = lapply(resList, function(x) x$succeeded),
 		  errors = unlist(lapply(resList, function(x) x$errors)),
