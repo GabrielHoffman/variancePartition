@@ -66,7 +66,7 @@ setGeneric("mvTest", signature=c("fit", "vobj", 'features'),
 
 #' @rdname mvTest-method
 #' @aliases mvTest,MArrayLM,EList,integer-method
-#' @importFrom remaCor RE2C LS 
+#' @importFrom remaCor RE2C LS LS.empirical
 #' @importFrom stats coefficients pchisq cov2cor
 #' @importFrom corpcor estimate.lambda
 #' @export
@@ -108,7 +108,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 	# Then estimate shrinkage intensity
 	# and shrink covariance
 	# this is important when p approaches n
-	# Note that the test below does not model uncertainly in lambda
+	# Note that the test below does not model uncertainy in lambda
 	P = vcovSqrt(fit[features,], vobj[features,], coef, approx=TRUE)
 	Sigma = crossprod(P)
 
@@ -119,6 +119,8 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 
 	Sigma = (1-lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
 
+	# Meta-analyis method
+	#####################
 	if( method == "FE"){
 		if( n_features == 1){
 			# for one test, return estimated t-stat as stat
@@ -128,7 +130,23 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 							lambda = lambda,
 							method = method)
 		}else{
-			res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
+
+			if( is(fit, "MArrayLM") ){
+				# fixed effect model
+				nu = fit$df.residual[features]
+			}else{
+				# mixed model
+				nu = fit$rdf[features]
+			}	
+
+			# if sample size is large enough
+			if( all(nu > 50) ){
+				# Use asymptotic normal null distribution 
+				res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
+			}else{
+				# 
+				res = LS.empirical(beta, sqrt(diag(Sigma)), cov2cor(Sigma), nu)
+			}
 
 			df = data.frame(stat = res$beta / res$se,
 							pvalue = res$p,

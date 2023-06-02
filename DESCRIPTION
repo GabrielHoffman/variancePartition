@@ -59,7 +59,7 @@ Imports:
     RhpcBLASctl,
     progress,
     reshape2,
-    remaCor (>= 0.0.11),
+    remaCor (>= 0.0.12),
     aod,
     scales,
     Rdpack,
