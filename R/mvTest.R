@@ -133,10 +133,10 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 
 			if( is(fit, "MArrayLM") ){
 				# fixed effect model
-				nu = fit$df.residual[features]
+				nu = fit$df.residual
 			}else{
 				# mixed model
-				nu = fit$rdf[features]
+				nu = fit$rdf
 			}	
 
 			# if sample size is large enough
