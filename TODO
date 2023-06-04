@@ -1,4 +1,22 @@
 
+
+June 2, 2023
+	DONE: Reproducable RNG
+
+		# Use on.exit({})
+		# withRandom <- function(expr, seed = 1) {
+		#     old <- .Random.seed
+		#     on.exit({.Random.seed <<- old})
+		#     set.seed(seed)
+		#     expr
+		# }
+		# use with options() and omp_set_threads
+
+		# Use seed with LS.empirical
+
+
+
+
 March 14, 2023
 	in deviation() add pearson residuals
 	need to pass in y= vobj
