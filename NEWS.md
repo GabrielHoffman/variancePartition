@@ -2,8 +2,7 @@
  - May 31, 2023
  - fix convergence issues
  - fix initialization of `lmer()` fit
-
-
+ - use 1 OMP thread internally, then restore to original value
 
  # variancePartition 2.0.4
  - May 30, 2023
