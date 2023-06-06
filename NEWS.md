@@ -1,3 +1,7 @@
+# variancePartition 1.31.1
+ - June 4, 2023
+ - Rename for Bioconductor compatability
+
 # variancePartition 2.0.5
  - May 31, 2023
  - fix convergence issues
