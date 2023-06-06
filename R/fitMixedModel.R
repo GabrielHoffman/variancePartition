@@ -80,13 +80,7 @@ run_lmm_on_gene = function(obj, formula, data, control, na.action, REML, fxn, fi
 
 # run analysis on each batch
 #' @importFrom BiocParallel bpstopOnError<- bptry
-#' @importFrom RhpcBLASctl omp_set_num_threads omp_get_max_threads
 run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.init=NULL, dreamCheck = FALSE, varTol= 1e-5){
-
-	# only use 1 thread internally then reset to original value
-	n_max_threads = omp_get_max_threads()
-	omp_set_num_threads(1)
-	on.exit(omp_set_num_threads(n_max_threads))
 
 	# create list with one gene per entry
 	exprList = lapply(seq(nrow(obj)), function(j){
@@ -137,7 +131,13 @@ run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.
 }
 
 #' @importFrom BiocParallel bpstopOnError<-
+#' @importFrom RhpcBLASctl omp_set_num_threads omp_get_max_threads
 run_lmm = function( obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol= 1e-5, BPPARAM=SerialParam(),... ){
+
+	# only use 1 thread internally then reset to original value
+	n_max_threads = omp_get_max_threads()
+	omp_set_num_threads(1)
+	on.exit(omp_set_num_threads(n_max_threads))
 
 	if(any(obj$weights < 0)) stop("All weights must be positive")
 
