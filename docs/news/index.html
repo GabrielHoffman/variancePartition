@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,12 +55,25 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.31.1" id="variancepartition-1311">variancePartition 1.31.1<a class="anchor" aria-label="anchor" href="#variancepartition-1311"></a></h2>
+<ul><li>June 4, 2023</li>
+<li>Rename for Bioconductor compatability</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.5" id="variancepartition-205">variancePartition 2.0.5<a class="anchor" aria-label="anchor" href="#variancepartition-205"></a></h2>
 <ul><li>May 31, 2023</li>
 <li>fix convergence issues</li>
-<li>fix initialization of <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> fit</li>
-</ul><p># variancePartition 2.0.4 - May 30, 2023 - When running <code><a href="../reference/dream-method.html">dream()</a></code>, ensure model convergence using second fitting with <code>Nelder_Mead</code> to avoid edge cases where the approximate hessian from <code>lmerTest::as_lmerModLT()</code> has a negative eigenvalue - fix issue in <code><a href="../reference/get_prediction-method.html">get_prediction()</a></code> returning NA values when variables modeled as categorical and levels are omitted - fix issue in <code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code> when some genes don’t converge - retry <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> model fit with another optimizer after it fails convergence test.</p>
-</div>
+<li>fix initialization of <code>lmer()</code> fit</li>
+<li>use 1 OMP thread internally, then restore to original value</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.0.4" id="variancepartition-204">variancePartition 2.0.4<a class="anchor" aria-label="anchor" href="#variancepartition-204"></a></h2>
+<ul><li>May 30, 2023</li>
+<li>When running <code><a href="../reference/dream-method.html">dream()</a></code>, ensure model convergence using second fitting with <code>Nelder_Mead</code> to avoid edge cases where the approximate hessian from <code>lmerTest::as_lmerModLT()</code> has a negative eigenvalue</li>
+<li>fix issue in <code><a href="../reference/get_prediction-method.html">get_prediction()</a></code> returning NA values when variables modeled as categorical and levels are omitted</li>
+<li>fix issue in <code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code> when some genes don’t converge</li>
+<li>retry <code>lmer()</code> model fit with another optimizer after it fails convergence test.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.3" id="variancepartition-203">variancePartition 2.0.3<a class="anchor" aria-label="anchor" href="#variancepartition-203"></a></h2>
 <ul><li>May 13, 2023</li>
@@ -287,7 +300,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.25.5" id="variancepartition-1255">variancePartition 1.25.5<a class="anchor" aria-label="anchor" href="#variancepartition-1255"></a></h2>
-<ul><li>add <code><a href="../reference/getTreat-method.html">getTreat()</a></code> to evaluate <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">treat()</a></code>/<code><a href="https://rdrr.io/pkg/limma/man/toptable.html" class="external-link">topTreat()</a></code> seamlessly on results of <code><a href="../reference/dream-method.html">dream()</a></code>
+<ul><li>add <code><a href="../reference/getTreat-method.html">getTreat()</a></code> to evaluate <code>treat()</code>/<code>topTreat()</code> seamlessly on results of <code><a href="../reference/dream-method.html">dream()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -295,7 +308,7 @@
 <ul><li>in <code><a href="../reference/dream-method.html">dream()</a></code> set default <code>ddf = "adaptive"</code>, which uses “KR” for less than 12 samples</li>
 <li>all functions default tp <code>BPPARAM=SerialParam()</code>
 </li>
-<li>add <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> to vignette for <code><a href="../reference/dream-method.html">dream()</a></code>
+<li>add <code>eBayes()</code> to vignette for <code><a href="../reference/dream-method.html">dream()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -319,7 +332,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.23.5" id="variancepartition-1235">variancePartition 1.23.5<a class="anchor" aria-label="anchor" href="#variancepartition-1235"></a></h2>
 <ul><li>use <code>RhpcBLASctl::omp_set_num_threads(1)</code> to use only 1 OpenMP thread for linear algebra within each BiocParallel process</li>
-<li>update <code><a href="../reference/dream-method.html">dream()</a></code> so <code>useWeights=FALSE</code> works with <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>
+<li>update <code><a href="../reference/dream-method.html">dream()</a></code> so <code>useWeights=FALSE</code> works with <code>lmFit()</code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -737,7 +750,7 @@
 <li>define isVaryingCoefficientModel() (hidden)</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.3.11" id="variancepartition-1311">variancePartition 1.3.11<a class="anchor" aria-label="anchor" href="#variancepartition-1311"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.3.11" id="variancepartition-1311-1">variancePartition 1.3.11<a class="anchor" aria-label="anchor" href="#variancepartition-1311-1"></a></h2>
 <ul><li>in canCorPairs() and other functions, convert formula with as.formula()</li>
 <li>improve error messages for canCorPairs()</li>
 </ul></div>
