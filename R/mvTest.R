@@ -131,22 +131,22 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 							method = method)
 		}else{
 
-			if( is(fit, "MArrayLM") ){
-				# fixed effect model
-				nu = fit$df.residual
-			}else{
-				# mixed model
-				nu = fit$rdf
-			}	
+			# if( is(fit, "MArrayLM") ){
+			# 	# fixed effect model
+			# 	nu = fit$df.residual
+			# }else{
+			# 	# mixed model
+			# 	nu = fit$rdf
+			# }	
 
 			# if sample size is large enough
-			if( all(nu > 50) ){
+			# if( all(nu > 50) ){
 				# Use asymptotic normal null distribution 
 				res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
-			}else{
-				# 
-				res = LS.empirical(beta, sqrt(diag(Sigma)), cov2cor(Sigma), nu)
-			}
+			# }else{
+			# 	# 
+			# 	res = LS.empirical(beta, sqrt(diag(Sigma)), cov2cor(Sigma), nu)
+			# }
 
 			df = data.frame(stat = res$beta / res$se,
 							pvalue = res$p,
