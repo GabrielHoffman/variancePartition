@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,6 +88,11 @@
 <span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Age</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitVarPartModel-method.html">fitVarPartModel</a></span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span> <span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> BiocParallel errors</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span>   1 remote errors, element index: 1</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span>   0 unevaluated and other errors</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span>   first remote error:</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> Error in omp_get_max_threads(): could not find function "omp_get_max_threads"</span>
 <span class="r-in"><span> </span></span>
 <span class="r-in"><span><span class="co"># evaluate the collinearity score on the first model fit</span></span></span>
 <span class="r-in"><span><span class="co"># this reports the correlation matrix between coefficients estimates</span></span></span>
@@ -97,11 +102,7 @@
 <span class="r-in"><span><span class="co"># estimates may be problematic</span></span></span>
 <span class="r-in"><span><span class="co"># In that case, a least one variable should be omitted</span></span></span>
 <span class="r-in"><span><span class="fu">colinearityScore</span><span class="op">(</span><span class="va">res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7397006</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"vcor")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             (Intercept)        Age</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)   1.0000000 -0.7397006</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Age          -0.7397006  1.0000000</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'object' in selecting a method for function 'vcov': object 'res' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
