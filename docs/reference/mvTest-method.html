@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -184,22 +184,26 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># compute observation weights</span></span></span>
 <span class="r-in"><span><span class="va">vobj</span> <span class="op">=</span> <span class="fu"><a href="voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span> <span class="va">dge</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> BiocParallel errors</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span>   1 remote errors, element index: 1</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span>   0 unevaluated and other errors</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span>   first remote error:</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> Error in omp_get_max_threads(): could not find function "omp_get_max_threads"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit dream model </span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">vobj</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'vobj' not found</span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'fit' in selecting a method for function 'eBayes': object 'fit' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Multivariate test of features 1 and 2</span></span></span>
 <span class="r-in"><span><span class="fu">mvTest</span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, coef<span class="op">=</span><span class="st">"Disease1"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       stat       pvalue n_features    lambda method</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 7.684811 1.532232e-14          2 0.9645329     FE</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'fit' in selecting a method for function 'mvTest': object 'fit' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Test multiple sets of features</span></span></span>
 <span class="r-in"><span><span class="va">lst</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, b<span class="op">=</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">mvTest</span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="va">lst</span>, coef<span class="op">=</span><span class="st">"Disease1"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ID     stat       pvalue n_features    lambda method</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  a 7.684811 1.532232e-14          2 0.9645329     FE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  b 7.075316 1.491091e-12          2 1.0000000     FE</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'fit' in selecting a method for function 'mvTest': object 'fit' not found</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
