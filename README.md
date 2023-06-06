@@ -12,10 +12,18 @@
 
 <br>
 
-### Install from GitHub
+### Installation
+
+#### Latest features from GitHub
 
 ```r
 devtools::install_github("DiseaseNeuroGenomics/variancePartition")
+```
+
+#### Stable release from Bioconductor
+
+```r
+BiocManager::install("variancePartition")
 ```
 
 
@@ -35,10 +43,15 @@ See repo of [examples from the paper](https://github.com/GabrielHoffman/dream_an
 Please help speed up bug fixes by providing a 'minimal reproducible example' that starts with a new R session.  I recommend the [reprex package](https://reprex.tidyverse.org) to produce a GitHub-ready example that is reproducable from a fresh R session.
 
 ## References
-Manuscript describing `dream` for differential expression: 
+
+Describes extensions of `dream` including two-stage precision weights and empirical Bayes moderated t-statistics for linear mixed models 
+
+- [Hoffman, et al, biorxiv (2023)](https://doi.org/10.1101/2023.03.17.533005)
+
+Describes `dream` for differential expression: 
 
 - [Hoffman and Roussos, Bioinformatics (2021)](https://doi.org/10.1093/bioinformatics/btaa687)
 
-Manuscript describing the `variancePartition` package:
+Describes the `variancePartition` package:
 
 - [Hoffman and Schadt, BMC Bioinformatics (2016)](https://doi.org/10.1186/s12859-016-1323-z)
