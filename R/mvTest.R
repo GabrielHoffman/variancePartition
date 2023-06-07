@@ -66,7 +66,7 @@ setGeneric("mvTest", signature=c("fit", "vobj", 'features'),
 
 #' @rdname mvTest-method
 #' @aliases mvTest,MArrayLM,EList,integer-method
-#' @importFrom remaCor RE2C LS LS.empirical
+#' @importFrom remaCor RE2C LS
 #' @importFrom stats coefficients pchisq cov2cor
 #' @importFrom corpcor estimate.lambda
 #' @export
