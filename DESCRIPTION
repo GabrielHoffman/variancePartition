@@ -24,6 +24,7 @@ Suggests:
     DESeq2,
     RUnit,
     Rfast,
+    zenith,
     statmod,
     BiocGenerics,
     r2glmm,    
