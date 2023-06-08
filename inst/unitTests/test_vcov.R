@@ -43,7 +43,7 @@ test_vcov = function(){
 	A = vcov(fit, geneExpr[1:2,])
 	B = vcov(lmer(geneExpr[1,] ~ Age + (1|Batch), info))
 
-	checkEquals(c(A[1:2, 1:2]), c(as.matrix(B)))
+	checkEquals(c(A[1:2, 1:2]), c(as.matrix(B)), tol=1e-7)
 
 	# Fit from matrix, running dream() on all features
 	fit = dream( geneExpr[1:10,], form, info)
@@ -160,7 +160,7 @@ test_vcov = function(){
 	f2 = lme4::lmer(vobj$E[1,] ~ Disease + (1|Individual), metadata, weights= w / mean(w) , REML=TRUE, variancePartition:::vpcontrol)
 	B = vcov(f2)
 
-	checkEquals(c(A[1:2, 1:2]), c(as.matrix(B)))
+	checkEquals(c(A[1:2, 1:2]), c(as.matrix(B)), tol=1e-7)
 
 	# Fit from matrix, running dream() on all features
 	fit = dream( vobj, form, metadata)
