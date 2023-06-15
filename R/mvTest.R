@@ -16,7 +16,7 @@
 #' @param vobj matrix or \code{EList} object returned by \code{voom()}
 #' @param features a) indeces or names of features to perform multivariate test on, b) list of indeces or names.  If missing, perform joint test on all features.
 #' @param coef name of coefficient or contrast to be tested
-#' @param method statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
+#' @param method statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'hotelling'} performs the Hotelling T2 test. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
 #' @param shrink.cov shrink the covariance matrix between coefficients using the Schafer-Strimmer method 
 #' @param progressbar if TRUE, show progress bar
 #' @param ... other arugments
@@ -59,19 +59,19 @@
 #' @docType methods
 #' @rdname mvTest-method
 setGeneric("mvTest", signature=c("fit", "vobj", 'features'),
-  function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...)
+  function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...)
       standardGeneric("mvTest")
 )
 
 
 #' @rdname mvTest-method
 #' @aliases mvTest,MArrayLM,EList,integer-method
-#' @importFrom remaCor RE2C LS 
+#' @importFrom remaCor RE2C LS LS.empirical hotelling
 #' @importFrom stats coefficients pchisq cov2cor
 #' @importFrom corpcor estimate.lambda
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "vector"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){
 
 	method = match.arg(method)
 
@@ -99,6 +99,18 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 
 	n_features = length(features)
 
+	# Residual degrees of freedom
+	if( is(fit, "MArrayLM") ){
+		# fixed effect model
+		nu = fit$df.residual[features]
+	}else{
+		# mixed model
+		nu = fit$rdf[features]
+	}	
+	# since mixed model estimates rdf per-gene
+	# use minmum to be conservative
+	nu = min(nu)
+
 	# extract covariance
 	#-------------------
 	# get Sigma directly
@@ -117,7 +129,11 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 						Schafer = estimate.lambda(P, verbose=FALSE),
 						'FALSE' = 0)
 
+	# if number of features is small, don't shrink
+	if( 2*n_features < sqrt(nu) ) lambda = 0
+
 	Sigma = (1-lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
+
 
 	# Meta-analyis method
 	#####################
@@ -131,22 +147,14 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 							method = method)
 		}else{
 
-			# if( is(fit, "MArrayLM") ){
-			# 	# fixed effect model
-			# 	nu = fit$df.residual
-			# }else{
-			# 	# mixed model
-			# 	nu = fit$rdf
-			# }	
-
 			# if sample size is large enough
-			# if( all(nu > 50) ){
+			# and the number of features is small compared to nu
+			if( nu > 50 && n_features < sqrt(nu) ){
 				# Use asymptotic normal null distribution 
 				res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
-			# }else{
-			# 	# 
-			# 	res = LS.empirical(beta, sqrt(diag(Sigma)), cov2cor(Sigma), nu)
-			# }
+			}else{
+				res = LS.empirical(beta, sqrt(diag(Sigma)), cov2cor(Sigma), nu)
+			}
 
 			df = data.frame(stat = res$beta / res$se,
 							pvalue = res$p,
@@ -200,9 +208,24 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 			df = data.frame(stat = tstat, 
 							pvalue = pv, 
 							n_features = n_features,
-						lambda = lambda,
+							lambda = lambda,
 							method = method)
 		}
+	}else if( method == "hotelling"){
+
+		# in case Sigma_corr is not invertable
+		res = tryCatch( hotelling(beta, Sigma, nu), 
+			error = function(e){
+			warning("Covariance matrix is not invertable. Returning NA values.")
+			NA
+			})  
+
+		df = data.frame(stat = res$stat, 
+									pvalue = res$p.value,
+									n_features = n_features,
+									lambda = lambda,
+									method = method)
+
 	}else if( method == "sidak"){
 		pv = 1 - (1 - min(tab$P.Value))^nrow(tab)
 
@@ -231,7 +254,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 #' @aliases mvTest,MArrayLM,EList,missing-method
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "missing"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){ 
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){ 
 
 	mvTest(fit, vobj, features=seq(nrow(vobj)), coef, method, shrink.cov=shrink.cov, progressbar=progressbar,... )
 })
@@ -244,7 +267,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 #' @importFrom stats runif
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "list"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){ 
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){ 
 
 	if( is.null(names(features)) ){
 		stop("features list must have non-null names(features)")
@@ -276,7 +299,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "
 #' @aliases mvTest,MArrayLM,matrix-method
 #' @export
 setMethod("mvTest", c('MArrayLM', "matrix"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){
+function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){
 		
 	method = match.arg(method)	
 
