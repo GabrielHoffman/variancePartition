@@ -1,3 +1,6 @@
+# variancePartition 1.31.6
+ - update `mvTest()` to include Hotelling T2 test and `LS.empirical()`
+
 # variancePartition 1.31.1
  - June 4, 2023
  - Rename for Bioconductor compatability
