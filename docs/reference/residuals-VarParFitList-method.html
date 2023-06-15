@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.6</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,15 +106,9 @@ missing in the original data</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit model</span></span></span>
 <span class="r-in"><span><span class="va">modelFit</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitVarPartModel-method.html">fitVarPartModel</a></span><span class="op">(</span> <span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">info</span> <span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> BiocParallel errors</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>   1 remote errors, element index: 1</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>   0 unevaluated and other errors</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>   first remote error:</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> Error in omp_get_max_threads(): could not find function "omp_get_max_threads"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extract residuals of model fit</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals</a></span><span class="op">(</span> <span class="va">modelFit</span> <span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'object' in selecting a method for function 'residuals': object 'modelFit' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
