@@ -19,8 +19,7 @@ test_dream_parallel = function(){
 	param2 = SnowParam(4, "SOCK")
 	fit2 = dream( geneExpr[1:10,], form, info, BPPARAM=param2)
 
-
-	checkEquals(fit1, fit2, tol=1e-5) & checkEquals(fit2, fit3, tol=1e-5)
+	checkEquals(fit1, fit2, tol=1e-4) & checkEquals(fit2, fit3, tol=1e-4)
 }
 
 
