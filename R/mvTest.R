@@ -99,17 +99,16 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling
 
 	n_features = length(features)
 
-	# Residual degrees of freedom
-	if( is(fit, "MArrayLM") ){
-		# fixed effect model
-		nu = fit$df.residual[features]
-	}else{
-		# mixed model
-		nu = fit$rdf[features]
-	}	
+	# Residual degrees of freedom	
 	# since mixed model estimates rdf per-gene
 	# use minmum to be conservative
-	nu = min(nu)
+	if( is(fit, "MArrayLM2") ){
+		# mixed model
+		nu = min(fit[features,]$rdf)
+	}else{
+		# fixed effect model
+		nu = min(fit$df.residual)
+	}	
 
 	# extract covariance
 	#-------------------
