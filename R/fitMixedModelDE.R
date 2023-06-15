@@ -41,6 +41,13 @@ residuals.MArrayLM2 = function( object, y, ..., type = c("response", 'pearson'))
 	}
 
 	if( ! missing(y) ){
+		# subset to intersecting features
+		featureIds = intersect(rownames(object$residuals), rownames(y))
+
+		object = object[featureIds,]
+		object$residuals = object$residuals[featureIds,,drop=FALSE]
+		y = y[featureIds,,drop=FALSE]
+
 		if( ! all.equal(dim(object$residuals), dim(y)) ){
 			stop("Dimension of object and y must be the same")
 		}
@@ -72,6 +79,8 @@ residuals.MArrayLM2 = function( object, y, ..., type = c("response", 'pearson'))
 	}
 	result
 }
+
+
 
 
 

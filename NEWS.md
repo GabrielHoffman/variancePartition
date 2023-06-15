@@ -8,7 +8,7 @@
  - fix initialization of `lmer()` fit
  - use 1 OMP thread internally, then restore to original value
 
- # variancePartition 2.0.4
+# variancePartition 2.0.4
  - May 30, 2023
  - When running `dream()`, ensure model convergence using second fitting with `Nelder_Mead` to avoid edge cases where the approximate hessian from `lmerTest::as_lmerModLT()` has a negative eigenvalue
  - fix issue in `get_prediction()` returning NA values when variables modeled as categorical and levels are omitted
