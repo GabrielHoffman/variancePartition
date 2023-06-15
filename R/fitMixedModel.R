@@ -79,7 +79,7 @@ run_lmm_on_gene = function(obj, formula, data, control, na.action, REML, fxn, fi
 
 
 # run analysis on each batch
-#' @importFrom BiocParallel bpstopOnError<- bptry
+#' @importFrom BiocParallel bpstopOnError<- bptry bplapply SerialParam
 run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.init=NULL, dreamCheck = FALSE, varTol= 1e-5){
 
 	# create list with one gene per entry
@@ -130,7 +130,8 @@ run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.
 		 errors = errorText)
 }
 
-#' @importFrom BiocParallel bpstopOnError<-
+
+#' @importFrom BiocParallel bpstopOnError<- bpiterate
 #' @importFrom RhpcBLASctl omp_set_num_threads omp_get_max_threads
 run_lmm = function( obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol= 1e-5, BPPARAM=SerialParam(),... ){
 
