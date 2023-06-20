@@ -7,6 +7,8 @@
 \alias{mvTest,MArrayLM,EList,integer-method}
 \alias{mvTest,MArrayLM,EList,missing-method}
 \alias{mvTest,MArrayLM,EList,list-method}
+\alias{mvTest,mvTest_input,ANY,ANY-method}
+\alias{mvTest,mvTest_input,method}
 \alias{mvTest,MArrayLM,matrix,ANY-method}
 \alias{mvTest,MArrayLM,matrix-method}
 \title{Multivariate tests on results from \code{dream()}}
@@ -16,9 +18,9 @@ mvTest(
   vobj,
   features,
   coef,
-  method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
+  method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE,
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -27,9 +29,9 @@ mvTest(
   vobj,
   features,
   coef,
-  method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
+  method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE,
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -38,9 +40,9 @@ mvTest(
   vobj,
   features,
   coef,
-  method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
+  method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE,
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -49,9 +51,20 @@ mvTest(
   vobj,
   features,
   coef,
-  method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
+  method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE,
+  BPPARAM = SerialParam(),
+  ...
+)
+
+\S4method{mvTest}{mvTest_input,ANY,ANY}(
+  fit,
+  vobj,
+  features,
+  coef,
+  method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
+  shrink.cov = TRUE,
+  BPPARAM = SerialParam(),
   ...
 )
 
@@ -60,9 +73,9 @@ mvTest(
   vobj,
   features,
   coef,
-  method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
+  method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"),
   shrink.cov = TRUE,
-  progressbar = TRUE,
+  BPPARAM = SerialParam(),
   ...
 )
 }
@@ -75,11 +88,11 @@ mvTest(
 
 \item{coef}{name of coefficient or contrast to be tested}
 
-\item{method}{statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'hotelling'} performs the Hotelling T2 test. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.}
+\item{method}{statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'FE.empirical'} use compute empirical p-values by sampling from the null distribution and fitting with a gamma. \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'hotelling'} performs the Hotelling T2 test. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.}
 
 \item{shrink.cov}{shrink the covariance matrix between coefficients using the Schafer-Strimmer method}
 
-\item{progressbar}{if TRUE, show progress bar}
+\item{BPPARAM}{parameters for parallel evaluation}
 
 \item{...}{other arugments}
 }
@@ -120,5 +133,5 @@ mvTest(fit, vobj, 1:2, coef="Disease1")
 
 # Test multiple sets of features
 lst = list(a = 1:2, b=3:4)
-mvTest(fit, vobj, lst, coef="Disease1")
+mvTest(fit, vobj, lst, coef="Disease1", BPPARAM=SnowParam(2))
 }

@@ -16,9 +16,9 @@
 #' @param vobj matrix or \code{EList} object returned by \code{voom()}
 #' @param features a) indeces or names of features to perform multivariate test on, b) list of indeces or names.  If missing, perform joint test on all features.
 #' @param coef name of coefficient or contrast to be tested
-#' @param method statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'hotelling'} performs the Hotelling T2 test. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
+#' @param method statistical method used to perform multivariate test.  See details.  \code{'FE'} is a fixed effect test that models the covariance between coefficients.  \code{'FE.empirical'} use compute empirical p-values by sampling from the null distribution and fitting with a gamma. \code{'RE2C'} is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. \code{'tstat'} combines the t-statistics and models the covariance between coefficients. \code{'hotelling'} performs the Hotelling T2 test. \code{'sidak'} returns the smallest p-value and accounting for the number of tests. \code{'fisher'} combines the p-value using Fisher's method assuming independent tests.
 #' @param shrink.cov shrink the covariance matrix between coefficients using the Schafer-Strimmer method 
-#' @param progressbar if TRUE, show progress bar
+#' @param BPPARAM parameters for parallel evaluation
 #' @param ... other arugments
 #'  
 #' @details See package \code{remaCor} for details about the \code{remaCor::RE2C()} test, and see \code{remaCor::LS()} for details about the fixed effect test.  When only 1 feature is selected, the original p-value is returned and the test statistic is set to \code{NA}.
@@ -54,12 +54,12 @@
 #' 
 #' # Test multiple sets of features
 #' lst = list(a = 1:2, b=3:4)
-#' mvTest(fit, vobj, lst, coef="Disease1")
+#' mvTest(fit, vobj, lst, coef="Disease1", BPPARAM=SnowParam(2))
 #' @export
 #' @docType methods
 #' @rdname mvTest-method
 setGeneric("mvTest", signature=c("fit", "vobj", 'features'),
-  function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...)
+  function(fit, vobj, features, coef, method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, BPPARAM = SerialParam(), ...)
       standardGeneric("mvTest")
 )
 
@@ -71,7 +71,7 @@ setGeneric("mvTest", signature=c("fit", "vobj", 'features'),
 #' @importFrom corpcor estimate.lambda
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "vector"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){
+function(fit, vobj, features, coef, method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, BPPARAM = SerialParam(), ...){
 
 	method = match.arg(method)
 
@@ -136,7 +136,8 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling
 
 	# Meta-analyis method
 	#####################
-	if( method == "FE"){
+
+	if( method == "FE.empirical"){
 		if( n_features == 1){
 			# for one test, return estimated t-stat as stat
 			df = data.frame(stat = tab$t, 
@@ -146,15 +147,31 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling
 							method = method)
 		}else{
 
-			# if sample size is large enough
-			# and the number of features is small compared to nu
-			if( nu > 50 && n_features < sqrt(nu) ){
-				# Use asymptotic normal null distribution 
-				res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
-			}else{
-				res = LS.empirical(beta, sqrt(diag(Sigma)), cov2cor(Sigma), nu)
-			}
+			# Ensures that sampling from Wishart is defined
+			nu = max(nu, n_features)
+			
+			res = LS.empirical(beta, sqrt(diag(Sigma)), cov2cor(Sigma), nu,...)
 
+			df = data.frame(stat = res$beta / res$se,
+							pvalue = res$p,
+							n_features = n_features,
+							lambda = lambda, 
+							method = method)
+		}
+
+	}else if( method == "FE"){
+		if( n_features == 1){
+			# for one test, return estimated t-stat as stat
+			df = data.frame(stat = tab$t, 
+							pvalue = tab$P.Value, 
+							n_features = 1,
+							lambda = lambda,
+							method = method)
+		}else{
+
+			# Use asymptotic normal null distribution 
+			res = LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
+		
 			df = data.frame(stat = res$beta / res$se,
 							pvalue = res$p,
 							n_features = n_features,
@@ -253,52 +270,66 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling
 #' @aliases mvTest,MArrayLM,EList,missing-method
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "missing"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){ 
+function(fit, vobj, features, coef, method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, BPPARAM = SerialParam(), ...){ 
 
-	mvTest(fit, vobj, features=seq(nrow(vobj)), coef, method, shrink.cov=shrink.cov, progressbar=progressbar,... )
+	mvTest(fit, vobj, features=seq(nrow(vobj)), coef, method, shrink.cov=shrink.cov, BPPARAM, ... )
 })
 
 
 
 #' @rdname mvTest-method
 #' @aliases mvTest,MArrayLM,EList,list-method
-#' @import progress
 #' @importFrom stats runif
 #' @export
 setMethod("mvTest", c('MArrayLM', "EList", "list"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){ 
+function(fit, vobj, features, coef, method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, BPPARAM = SerialParam(), ...){ 
 
 	if( is.null(names(features)) ){
 		stop("features list must have non-null names(features)")
 	}
 
-	# set up progress bar
-	pb <- progress_bar$new(format = ":current/:total [:bar] :percent ETA::eta", total = length(features), width= 60, clear=FALSE)
+	it = iterRowsSplit(vobj$E, vobj$weights, fit, splitList=features)
 
-	# features is list
-	res = lapply( names(features), function(id){
-		if( progressbar & runif(1) < .05){
-			ratio = match(id, names(features)) / length(features)
-			pb$update(ratio = ratio )
-		}
-		res = mvTest(fit, vobj, features[[id]], coef, method, shrink.cov=shrink.cov)
-		data.frame(ID = id, res)
-		})
-	res = do.call(rbind, res)
+	res = bpiterate(it, mvTest, 		
+								coef = coef,
+								method = method, 
+								shrink.cov = shrink.cov,
+								BPPARAM = BPPARAM)
 
-	if( progressbar & ! pb$finished ){
-		pb$update(1.0)
-	}
-	pb$terminate()
-
-	res
+	do.call(rbind, res)
 })
+
+#' Class mvTest_input
+#'
+#' Class \code{mvTest_input} work is with \code{iterRowsSplit()}
+#'
+#' @name mvTest_input-class
+#' @rdname mvTest_input-class
+#' @exportClass mvTest_input
+setClass("mvTest_input", representation(vobj="EList", fit="MArrayLM", ID="character"))
+
+#' @rdname mvTest-method
+#' @aliases mvTest,mvTest_input,method
+#' @export
+setMethod("mvTest", c('mvTest_input'),
+function(fit, vobj, features, coef, method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, ...){
+		
+	res = mvTest(fit@fit, fit@vobj,
+		coef = coef, 
+		method = method, 
+		shrink.cov = shrink.cov, 
+		...)
+
+	data.frame(ID = fit@ID, res)
+})
+
+
 
 #' @rdname mvTest-method
 #' @aliases mvTest,MArrayLM,matrix-method
 #' @export
 setMethod("mvTest", c('MArrayLM', "matrix"),
-function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE, progressbar=TRUE,...){
+function(fit, vobj, features, coef, method = c("FE.empirical", "FE", "RE2C", "tstat", "hotelling", "sidak", "fisher"), shrink.cov=TRUE,...){
 		
 	method = match.arg(method)	
 
@@ -307,7 +338,7 @@ function(fit, vobj, features, coef, method = c("FE", "RE2C", "tstat", "hotelling
 
 	vobj = new("EList", list(E = vobj, weights = W)) 
 
-	mvTest(fit, vobj, features, coef, method, shrink.cov=shrink.cov, progressbar=progressbar,...  )
+	mvTest(fit, vobj, features, coef, method, shrink.cov=shrink.cov, ,...  )
 })
 
 

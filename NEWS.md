@@ -1,3 +1,6 @@
+# variancePartition 1.31.7
+ - update `mvTest()` to run in parallel
+
 # variancePartition 1.31.6
  - update `mvTest()` to include Hotelling T2 test and `LS.empirical()`
 

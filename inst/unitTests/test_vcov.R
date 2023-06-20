@@ -507,7 +507,39 @@ test_vcovSqrt = function(){
 	checkEqualsNumeric(crossprod(P), V.orig, tol=1e-2)
 }
 
+test_mvTest = function(){
 
+	library(variancePartition)
+	library(edgeR)
+	library(BiocParallel)
+
+	data(varPartDEdata)
+
+	# normalize RNA-seq counts
+	dge = DGEList(counts = countMatrix)
+	dge = calcNormFactors(dge)
+
+	# specify formula with random effect for Individual
+	form <- ~ Disease + (1|Individual) 
+
+	# compute observation weights
+	vobj = voomWithDreamWeights( dge[1:20,], form, metadata)
+
+	# fit dream model 
+	fit = dream( vobj, form, metadata)
+	fit = eBayes(fit)
+
+	# Multivariate test of features 1 and 2
+	res1 = mvTest(fit, vobj, rownames(vobj)[1:2], coef="Disease1", method="tstat")
+	res2 = mvTest(fit, vobj, rownames(vobj)[3:4], coef="Disease1", method="tstat")
+	res3 = rbind(res1, res2)
+
+	# Test multiple sets of features
+	lst = list(a = rownames(vobj)[1:2], b=rownames(vobj)[3:4])
+	res4 = mvTest(fit, vobj, lst, coef="Disease1", method="tstat", BPPARAM=SnowParam(2))
+
+	checkEquals(res3, res4[,-1])
+}
 
 
 
