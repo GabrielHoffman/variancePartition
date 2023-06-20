@@ -1,4 +1,7 @@
 
+June 15, 2023
+	Parallelize mvTest() with iterator
+
 
 June 2, 2023
 	DONE: Reproducable RNG

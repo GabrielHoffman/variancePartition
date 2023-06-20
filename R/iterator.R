@@ -70,3 +70,57 @@ iterRows = function( Values, Weights = matrix(1, nrow(Values), ncol(Values)), us
 
 
 
+
+
+# Iterator over chunks of rows
+#' @importFrom iterators iter
+iterRowsSplit = function( Values, Weights = matrix(1, nrow(Values), ncol(Values)), fit = NULL, useWeights = TRUE, scale=TRUE, splitList){
+
+    stopifnot( dim(Values) == dim(Weights) )
+
+    n_features = nrow(Values)
+
+    xit = iter(seq(length(splitList)))
+
+  function(){
+    # get array of indeces
+
+    j <- tryCatch(nextElem(xit), 
+        error = function(e) NULL)
+
+    if( is.null(j) ){
+        res = NULL
+    }else{
+
+        featureIDs = splitList[[j]]
+
+        if( all(is.numeric(featureIDs)) ){
+            k = featureIDs
+        }else{
+            # get index of feature ID
+            k = match(featureIDs, rownames(Values))
+        }
+
+        # extract weights corresponding to indeces in j
+        Weights.sub = Weights[k,,drop=FALSE]
+
+        # scale *rows* to have mean 1
+        if( scale )
+            Weights.sub = Weights.sub / rowMeans(Weights.sub)
+
+        vobj = new("EList", list(E = Values[featureIDs,,drop=FALSE], weights = Weights.sub))
+
+        res = new("mvTest_input",
+                    vobj = vobj,
+                    fit = fit[featureIDs,],
+                    ID = names(splitList)[j])
+     }
+     res
+  }
+}
+
+
+
+
+
+
