@@ -103,7 +103,7 @@ tx2gene.lst = unstack(tx2gene[keep,])
 
 # Run multivariate test on entries in each feature set
 # Default method is "FE.empirical", but use "FE" here to reduce runtime
-res = mvTest(fit, vobj, tx2gene.lst, coef="conditionB", method = "FE", BPPARAM=SnowParam(2))
+res = mvTest(fit, vobj, tx2gene.lst, coef="conditionB", method = "FE")
 
 # truncate gene names since they have version numbers
 # ENST00000498289.5 -> ENST00000498289
