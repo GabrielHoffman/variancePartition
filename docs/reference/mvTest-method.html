@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.7</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,8 +27,8 @@
     <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
     <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
     <a class="dropdown-item" href="../articles/dream.html">dream</a>
-    <a class="dropdown-item" href="../articles/multivariate_tests.html">Multivariate tests</a>
-    <a class="dropdown-item" href="../articles/theory_practice_random_effects.html">Theory and practice of random effects and REML</a>
+    <a class="dropdown-item" href="../articles/mvtests.html">Multivariate tests</a>
+    <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects and REML</a>
   </div>
 </li>
 <li class="nav-item">
@@ -66,9 +66,9 @@
 <span>  <span class="va">vobj</span>,</span>
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE.empirical"</span>, <span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"hotelling"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
 <span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -78,9 +78,9 @@
 <span>  <span class="va">vobj</span>,</span>
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE.empirical"</span>, <span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"hotelling"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
 <span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -90,9 +90,9 @@
 <span>  <span class="va">vobj</span>,</span>
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE.empirical"</span>, <span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"hotelling"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
 <span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -102,9 +102,21 @@
 <span>  <span class="va">vobj</span>,</span>
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE.empirical"</span>, <span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"hotelling"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
 <span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for mvTest_input,ANY,ANY</span></span>
+<span><span class="fu">mvTest</span><span class="op">(</span></span>
+<span>  <span class="va">fit</span>,</span>
+<span>  <span class="va">vobj</span>,</span>
+<span>  <span class="va">features</span>,</span>
+<span>  <span class="va">coef</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE.empirical"</span>, <span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"hotelling"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -114,9 +126,9 @@
 <span>  <span class="va">vobj</span>,</span>
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">coef</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FE.empirical"</span>, <span class="st">"FE"</span>, <span class="st">"RE2C"</span>, <span class="st">"tstat"</span>, <span class="st">"hotelling"</span>, <span class="st">"sidak"</span>, <span class="st">"fisher"</span><span class="op">)</span>,</span>
 <span>  shrink.cov <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  progressbar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -140,15 +152,15 @@
 
 
 <dt>method</dt>
-<dd><p>statistical method used to perform multivariate test.  See details.  <code>'FE'</code> is a fixed effect test that models the covariance between coefficients.  <code>'RE2C'</code> is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. <code>'tstat'</code> combines the t-statistics and models the covariance between coefficients. <code>'sidak'</code> returns the smallest p-value and accounting for the number of tests. <code>'fisher'</code> combines the p-value using Fisher's method assuming independent tests.</p></dd>
+<dd><p>statistical method used to perform multivariate test.  See details.  <code>'FE'</code> is a fixed effect test that models the covariance between coefficients.  <code>'FE.empirical'</code> use compute empirical p-values by sampling from the null distribution and fitting with a gamma. <code>'RE2C'</code> is a random effect test of heterogeneity of the estimated coefficients that models the covariance between coefficients, and also incorporates a fixed effects test too. <code>'tstat'</code> combines the t-statistics and models the covariance between coefficients. <code>'hotelling'</code> performs the Hotelling T2 test. <code>'sidak'</code> returns the smallest p-value and accounting for the number of tests. <code>'fisher'</code> combines the p-value using Fisher's method assuming independent tests.</p></dd>
 
 
 <dt>shrink.cov</dt>
 <dd><p>shrink the covariance matrix between coefficients using the Schafer-Strimmer method</p></dd>
 
 
-<dt>progressbar</dt>
-<dd><p>if TRUE, show progress bar</p></dd>
+<dt>BPPARAM</dt>
+<dd><p>parameters for parallel evaluation</p></dd>
 
 
 <dt>...</dt>
@@ -191,15 +203,15 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Multivariate test of features 1 and 2</span></span></span>
 <span class="r-in"><span><span class="fu">mvTest</span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, coef<span class="op">=</span><span class="st">"Disease1"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       stat       pvalue n_features    lambda method</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 7.684811 1.532232e-14          2 0.9645329     FE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       stat       pvalue n_features lambda       method</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 7.011637 7.273953e-10          2      0 FE.empirical</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Test multiple sets of features</span></span></span>
 <span class="r-in"><span><span class="va">lst</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, b<span class="op">=</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">mvTest</span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="va">lst</span>, coef<span class="op">=</span><span class="st">"Disease1"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ID     stat       pvalue n_features    lambda method</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  a 7.684811 1.532232e-14          2 0.9645329     FE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  b 7.075316 1.491091e-12          2 1.0000000     FE</span>
+<span class="r-in"><span><span class="fu">mvTest</span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="va">lst</span>, coef<span class="op">=</span><span class="st">"Disease1"</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ID     stat       pvalue n_features lambda       method</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  a 7.011637 7.653129e-10          2      0 FE.empirical</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  b 7.075316 4.740443e-09          2      1 FE.empirical</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

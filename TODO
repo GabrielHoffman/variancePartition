@@ -1,4 +1,7 @@
 
+
+Upload to Bioconductor once remaCor 0.0.15 is accepted to CRAN
+
 June 15, 2023
 	Parallelize mvTest() with iterator
 

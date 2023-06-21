@@ -19,6 +19,12 @@
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/multivariate_tests.html</loc>
   </url>
   <url>
+    <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/mvtests.html</loc>
+  </url>
+  <url>
+    <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/rnd_effects.html</loc>
+  </url>
+  <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/theory_practice_random_effects.html</loc>
   </url>
   <url>
@@ -146,6 +152,9 @@
   </url>
   <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/mvTest.html</loc>
+  </url>
+  <url>
+    <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/mvTest_input-class.html</loc>
   </url>
   <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotCompareP-method.html</loc>
