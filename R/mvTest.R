@@ -129,7 +129,7 @@ function(fit, vobj, features, coef, method = c("FE.empirical", "FE", "RE2C", "ts
 						'FALSE' = 0)
 
 	# if number of features is small, don't shrink
-	if( 2*n_features < sqrt(nu) ) lambda = 0
+	# if( 2*n_features < sqrt(nu) ) lambda = 0
 
 	Sigma = (1-lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
 
