@@ -1,3 +1,6 @@
+# variancePartition 1.31.8
+ - Fix error message when linear mixed model fails
+
 # variancePartition 1.31.7
  - update `mvTest()` to run in parallel
 

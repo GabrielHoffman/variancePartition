@@ -133,7 +133,6 @@ function(fit, vobj, features, coef, method = c("FE.empirical", "FE", "RE2C", "ts
 
 	Sigma = (1-lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
 
-
 	# Meta-analyis method
 	#####################
 

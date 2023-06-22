@@ -233,7 +233,13 @@ setMethod("fitVarPartModel", "sparseMatrix",
 
 	# if no model succeeded
 	if( length(res.unlist) == 0){
-		txt = paste("All models failed.  The first model fails with:\n", res$errors[1])
+		errTxt = res$error.initial
+
+		if( ! is.null(errTxt) ){
+			txt = paste("All models failed.  The first model fails with:\n", errTxt)
+		}else{
+			txt = paste("All models failed.  The first model fails with:\n", res$errors[1])
+		}
 		stop(txt)
 	}
 
