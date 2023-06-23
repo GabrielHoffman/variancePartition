@@ -431,7 +431,9 @@ assign("[.MArrayLM2",
 
 	if( ! is.null(object$rdf) ){
 		if(!missing(i)){
+			names(object$rdf) = rownames(object)
 			obj$rdf = object$rdf[i]
+			names(obj$rdf) = c()
 		}else{
 			obj$rdf = object$rdf
 		}
