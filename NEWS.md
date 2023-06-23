@@ -1,3 +1,6 @@
+# variancePartition 1.31.9
+ - Fix issue in `mvTest()` when specifying features with strings
+
 # variancePartition 1.31.8
  - Fix error message when linear mixed model fails
 
