@@ -1,3 +1,6 @@
+# variancePartition 1.31.10
+ - `filterInputData()` now ensures EList contains a matrix
+
 # variancePartition 1.31.9
  - Fix issue in `mvTest()` when specifying features with strings
 

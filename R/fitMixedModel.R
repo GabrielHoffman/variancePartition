@@ -223,7 +223,6 @@ filterInputData = function(exprObj, formula, data, useWeights, isCounts = FALSE)
 		stop( "the number of samples in exprObj (i.e. cols) must be the same as in data (i.e rows)" )
 	}
 
-
 	# check if variables in formula has NA's
 	hasNA = hasMissingData(formula, data)
 
@@ -252,7 +251,10 @@ filterInputData = function(exprObj, formula, data, useWeights, isCounts = FALSE)
 	    }
 	}
 
-    # If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
+	# Ensure that exprObj$E is a matrix
+	if( ! is.matrix(exprObj$E) ) exprObj$E = as.matrix(exprObj$E)
+
+  # If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
 	if( ! identical(colnames(exprObj), rownames(data)) ){
 		 warning( "Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently." )
 	}
