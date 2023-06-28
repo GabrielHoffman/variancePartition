@@ -243,16 +243,18 @@ filterInputData = function(exprObj, formula, data, useWeights, isCounts = FALSE)
 		# convert exprObj to EList if not already
 		if( ! is(exprObj, "EList") ){
 			W = matrix(1, nrow(exprObj), ncol(exprObj))
-	    	exprObj = new("EList", list(E = exprObj, weights=W))
-	    }
+		  	exprObj = new("EList", list(E = exprObj, weights=W))
+		}
 
-	    if( ! useWeights ){
-	    	exprObj$weights[] = 1
-	    }
+		if( ! useWeights ){
+			exprObj$weights[] = 1
+		}
 	}
 
 	# Ensure that exprObj$E is a matrix
-	if( ! is.matrix(exprObj$E) ) exprObj$E = as.matrix(exprObj$E)
+	if( is(exprObj, "EList") & ! is.matrix(exprObj$E) ){
+		exprObj$E = as.matrix(exprObj$E)
+	}
 
   # If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
 	if( ! identical(colnames(exprObj), rownames(data)) ){
