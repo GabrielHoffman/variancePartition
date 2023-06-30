@@ -10,7 +10,7 @@
 #' @param data \code{data.frame} with columns corresponding to formula 
 #' @param lib.size numeric vector containing total library sizes for each sample.  Defaults to the normalized (effective) library sizes in \code{counts} if \code{counts} is a \code{DGEList} or to the columnwise count totals if \code{counts} is a matrix.
 #' @param normalize.method the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the \code{method} argument of \code{normalizeBetweenArrays} when the data is single-channel.  Any normalization factors found in \code{counts} will still be used even if \code{normalize.method="none"}.
-#' @param span width of the lowess smoothing window as a proportion.
+#' @param span width of the lowess smoothing window as a proportion. Setting \code{span="auto"} uses \code{fANCOVA::loess.as()} to estimate the tuning parameter from the data
 #' @param weights Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
@@ -50,6 +50,7 @@
 #' @importFrom stats approxfun predict as.formula
 #' @importFrom limma asMatrixWeights
 #' @importFrom stats sigma
+#' @importFrom fANCOVA loess.as
 #' @export
 voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize.method="none", span=0.5, weights = NULL, plot=FALSE, save.plot=FALSE, BPPARAM=SerialParam(),...){
 
@@ -186,25 +187,30 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 		sx <- sx[!allzero]
 		sy <- sy[!allzero]
 	}
-	l <- stats::lowess(sx,sy,f=span)
+
+	if( span == "auto" ){
+		# fit loess with automatic select of tuning parameter
+		fit = loess.as(sx,sy)
+
+		# sort by x value
+		i = order(fit$x)
+		l = list(x = fit$x[i], y = fit$fitted[i] )
+	}else{
+		l <- stats::lowess(sx,sy,f=span)
+	}
+
+	#	Make interpolating rule
+	suppressWarnings({
+		f <- approxfun(l, rule=2)
+	})
+
 	if(plot) {
 		plot(sx,sy,xlab="log2( count size + 0.5 )",ylab="Sqrt( standard deviation )",pch=16,cex=0.25)
 		title("voom: Mean-variance trend")
 		lines(l,col="red")
 	}
 
-	#	Make interpolating rule
-	#	Special treatment of zero counts is now removed;
-	#	instead zero counts get same variance as smallest gene average.
-	#	l$x <- c(0.5^0.25, l$x)
-	#	l$x <- c(log2(0.5), l$x)
-	#	var0 <- var(log2(0.5*1e6/(lib.size+0.5)))^0.25
-	#	var0 <- max(var0,1e-6)
-	#	l$y <- c(var0, l$y)
-	suppressWarnings({
-		f <- approxfun(l, rule=2)
-		})
-
+	# apply interpolation to data
 	fitted.cpm <- 2^fitted.values
 	fitted.count <- 1e-6 * t(t(fitted.cpm)*(lib.size+1))
 	fitted.logcount <- log2(fitted.count)

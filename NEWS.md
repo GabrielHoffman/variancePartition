@@ -1,3 +1,6 @@
+# variancePartition 1.31.11
+ - setting `voomWithDreamWeights(..., span="auto"` now estimates tuning parameter from data using `fANCOVA::loess.as()`
+
 # variancePartition 1.31.10
  - `filterInputData()` now ensures EList contains a matrix
 
