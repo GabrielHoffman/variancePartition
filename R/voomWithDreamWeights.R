@@ -190,7 +190,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size=NULL, normalize
 
 	if( span == "auto" ){
 		# fit loess with automatic select of tuning parameter
-		fit = loess.as(sx,sy)
+		fit = fANCOVA::loess.as(sx,sy)
 
 		# sort by x value
 		i = order(fit$x)
