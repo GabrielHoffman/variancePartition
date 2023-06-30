@@ -150,6 +150,11 @@ dream = function(
 
 		# run limma fixed effects models
 		design = model.matrix( objFlt$formula, objFlt$data)
+
+		if( kappa(design) > 1e7){
+			stop("Design matrix is singular, covariates are very correlated")
+		}
+
 		res2 = lmFit( objFlt$exprObj, design )
 		res2$residuals = residuals( res2, objFlt$exprObj )
 
