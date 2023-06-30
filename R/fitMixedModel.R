@@ -135,6 +135,8 @@ run_lmm_on_batch = function(obj, form, data, control, na.action, REML, fxn, fit.
 #' @importFrom RhpcBLASctl omp_set_num_threads omp_get_max_threads
 run_lmm = function( obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol= 1e-5, BPPARAM=SerialParam(),... ){
 
+	stopifnot( is(BPPARAM, 'BiocParallelParam') )
+
 	# only use 1 thread internally then reset to original value
 	n_max_threads = omp_get_max_threads()
 	omp_set_num_threads(1)
