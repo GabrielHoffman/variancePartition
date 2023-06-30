@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.11</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 <span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save.plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu">SerialParam</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -99,7 +99,7 @@
 
 
 <dt>span</dt>
-<dd><p>width of the lowess smoothing window as a proportion.</p></dd>
+<dd><p>width of the lowess smoothing window as a proportion. Setting <code>span="auto"</code> uses <code><a href="https://rdrr.io/pkg/fANCOVA/man/loess.as.html" class="external-link">fANCOVA::loess.as()</a></code> to estimate the tuning parameter from the data</p></dd>
 
 
 <dt>weights</dt>
