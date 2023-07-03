@@ -1,3 +1,7 @@
+# variancePartition 1.31.12
+ - July 3, 2023
+ - `makeContrastsDream()` converts `NA` `contrasts` to `NULL`
+
 # variancePartition 1.31.11
  - setting `voomWithDreamWeights(..., span="auto")` now estimates tuning parameter from data using `fANCOVA::loess.as()`
 

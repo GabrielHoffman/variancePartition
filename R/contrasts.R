@@ -130,6 +130,8 @@ getContrast = function( exprObj, formula, data, coefficient){
 #' @export
 makeContrastsDream = function(formula, data, ..., contrasts=NULL, suppressWarnings=FALSE, nullOnError=FALSE){
 
+  if( is.na(contrasts) ) contrasts = NULL
+  
   # address special case of matching terms with colon (:)
   # since colon is implicitly converted to dot internally somewhere
   contrasts = gsub(":", '.', contrasts)
