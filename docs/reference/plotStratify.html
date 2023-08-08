@@ -161,19 +161,19 @@
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create data.frame with expression and Tissue information for each sample</span></span></span>
-<span class="r-in"><span><span class="va">GE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span> Expression <span class="op">=</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, Tissue <span class="op">=</span> <span class="va">info</span><span class="op">$</span><span class="va">Tissue</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">GE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Expression <span class="op">=</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, Tissue <span class="op">=</span> <span class="va">info</span><span class="op">$</span><span class="va">Tissue</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot expression stratified by Tissue</span></span></span>
-<span class="r-in"><span><span class="fu">plotStratify</span><span class="op">(</span> <span class="va">Expression</span> <span class="op">~</span> <span class="va">Tissue</span>, <span class="va">GE</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotStratify</span><span class="op">(</span><span class="va">Expression</span> <span class="op">~</span> <span class="va">Tissue</span>, <span class="va">GE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotStratify-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Omit legend and color boxes grey</span></span></span>
-<span class="r-in"><span><span class="fu">plotStratify</span><span class="op">(</span> <span class="va">Expression</span> <span class="op">~</span> <span class="va">Tissue</span>, <span class="va">GE</span>, colorBy <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotStratify</span><span class="op">(</span><span class="va">Expression</span> <span class="op">~</span> <span class="va">Tissue</span>, <span class="va">GE</span>, colorBy <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotStratify-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Specify colors</span></span></span>
-<span class="r-in"><span><span class="va">col</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> B<span class="op">=</span><span class="st">"green"</span>, A<span class="op">=</span><span class="st">"red"</span>, C<span class="op">=</span><span class="st">"yellow"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plotStratify</span><span class="op">(</span> <span class="va">Expression</span> <span class="op">~</span> <span class="va">Tissue</span>, <span class="va">GE</span>, colorBy<span class="op">=</span><span class="va">col</span>, sort<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>B <span class="op">=</span> <span class="st">"green"</span>, A <span class="op">=</span> <span class="st">"red"</span>, C <span class="op">=</span> <span class="st">"yellow"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotStratify</span><span class="op">(</span><span class="va">Expression</span> <span class="op">~</span> <span class="va">Tissue</span>, <span class="va">GE</span>, colorBy <span class="op">=</span> <span class="va">col</span>, sort <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotStratify-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

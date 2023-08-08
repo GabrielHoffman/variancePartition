@@ -35,10 +35,10 @@ library(lme4)
 fit <- lm(Reaction ~ Days, sleepstudy)
 
 # prediction of intercept
-get_prediction( fit, ~ 1)
+get_prediction(fit, ~1)
 
 # prediction of Days without intercept
-get_prediction( fit, ~ 0 + Days)
+get_prediction(fit, ~ 0 + Days)
 
 # Linear mixed model
 
@@ -46,9 +46,9 @@ get_prediction( fit, ~ 0 + Days)
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 
 # predict Days, but exclude intercept
-get_prediction( fm1, ~ 0 + Days)
+get_prediction(fm1, ~ 0 + Days)
 
 # predict Days and (Days | Subject) random effect, but exclude intercept
-get_prediction( fm1, ~ 0 + Days +  (Days | Subject))
+get_prediction(fm1, ~ 0 + Days + (Days | Subject))
 
 }

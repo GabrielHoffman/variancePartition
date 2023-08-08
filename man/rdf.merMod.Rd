@@ -15,7 +15,7 @@ rdf.merMod(model, method = c("linear", "quadratic"))
 residual degrees of freedom
 }
 \description{
-For a linear model with \eqn{n} samples and \eqn{p} covariates, \eqn{RSS/\sigma^2 \sim \chi^2_{\nu}} where \eqn{\nu = n-p} is the residual degrees of freedom.  In the case of a linear mixed model, the distribution is no longer exactly a chi-square distribution, but can be approximated with a chi-square distribution. 
+For a linear model with \eqn{n} samples and \eqn{p} covariates, \eqn{RSS/\sigma^2 \sim \chi^2_{\nu}} where \eqn{\nu = n-p} is the residual degrees of freedom.  In the case of a linear mixed model, the distribution is no longer exactly a chi-square distribution, but can be approximated with a chi-square distribution.
 
 Given the hat matrix, \eqn{H}, that maps between observed and fitted responses, the approximate residual degrees of freedom is \eqn{\nu = tr((I-H)^T(I-H))}.  For a linear model, this simplifies to the well known form \eqn{\nu = n - p}. In the more general case, such as a linear mixed model, the original form simplifies only to \eqn{n - 2tr(H) + tr(HH)} and is an approximation rather than being exact.  The third term here is quadratic time in the number of samples, \eqn{n}, and can be computationally expensive to evaluate for larger datasets.  Here we develop a linear time algorithm that takes advantage of the fact that \eqn{H} is low rank.
 

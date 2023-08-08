@@ -1,11 +1,10 @@
-
 #' Simulation dataset for examples
 #'
 #' A simulated dataset of gene expression and metadata
 #'
-#' \itemize{    
-#'	\item geneCounts gene expression in the form of RNA-seq counts
-#'	\item geneExpr gene expression on a continuous scale
+#' \itemize{
+#' 	\item geneCounts gene expression in the form of RNA-seq counts
+#' 	\item geneExpr gene expression on a continuous scale
 #'  \item info metadata about the study design
 #' }
 #' @docType data
@@ -20,9 +19,9 @@ NULL
 ##'
 ##' A simulated dataset of gene counts
 ##'
-##' \itemize{    
-##'	\item geneCounts gene expression in the form of RNA-seq counts
-##'	\item geneExpr gene expression on a continuous scale
+##' \itemize{
+##' 	\item geneCounts gene expression in the form of RNA-seq counts
+##' 	\item geneExpr gene expression on a continuous scale
 ##'  \item info metadata about the study design
 ##' }
 #' @docType data
@@ -36,9 +35,9 @@ NULL
 ##'
 ##' A simulated dataset of gene counts
 ##'
-##' \itemize{    
-##'	\item geneCounts gene expression in the form of RNA-seq counts
-##'	\item geneExpr gene expression on a continuous scale
+##' \itemize{
+##' 	\item geneCounts gene expression in the form of RNA-seq counts
+##' 	\item geneExpr gene expression on a continuous scale
 ##'  \item info metadata about the study design
 ##' }
 #' @docType data
@@ -54,9 +53,9 @@ NULL
 ##'
 ##' A simulated dataset of gene counts
 ##'
-##' \itemize{    
-##'	\item geneCounts gene expression in the form of RNA-seq counts
-##'	\item geneExpr gene expression on a continuous scale
+##' \itemize{
+##' 	\item geneCounts gene expression in the form of RNA-seq counts
+##' 	\item geneExpr gene expression on a continuous scale
 ##'  \item info metadata about the study design
 ##' }
 #' @docType data
@@ -69,9 +68,9 @@ NULL
 ##'
 ##' A simulated dataset of gene counts
 ##'
-##' \itemize{    
-##'	\item geneCounts gene expression in the form of RNA-seq counts
-##'	\item geneExpr gene expression on a continuous scale
+##' \itemize{
+##' 	\item geneCounts gene expression in the form of RNA-seq counts
+##' 	\item geneExpr gene expression on a continuous scale
 ##'  \item info metadata about the study design
 ##' }
 #' @docType data
@@ -84,9 +83,9 @@ NULL
 ##'
 ##' A simulated dataset of gene counts
 ##'
-##' \itemize{    
-##'	\item geneCounts gene expression in the form of RNA-seq counts
-##'	\item geneExpr gene expression on a continuous scale
+##' \itemize{
+##' 	\item geneCounts gene expression in the form of RNA-seq counts
+##' 	\item geneExpr gene expression on a continuous scale
 ##'  \item info metadata about the study design
 ##' }
 #' @docType data

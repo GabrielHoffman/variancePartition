@@ -85,15 +85,16 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># load simulated data:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Age</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Age</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Tissue</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitVarPartModel-method.html">fitVarPartModel</a></span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span> <span class="op">)</span></span></span>
-<span class="r-in"><span> </span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitVarPartModel-method.html">fitVarPartModel</a></span><span class="op">(</span><span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># evaluate the collinearity score on the first model fit</span></span></span>
 <span class="r-in"><span><span class="co"># this reports the correlation matrix between coefficients estimates</span></span></span>
 <span class="r-in"><span><span class="co"># for fixed effects</span></span></span>
 <span class="r-in"><span><span class="co"># the collinearity score is the maximum absolute correlation value</span></span></span>
-<span class="r-in"><span><span class="co"># If the collinearity score &gt; .999 then the variance partition </span></span></span>
+<span class="r-in"><span><span class="co"># If the collinearity score &gt; .999 then the variance partition</span></span></span>
 <span class="r-in"><span><span class="co"># estimates may be problematic</span></span></span>
 <span class="r-in"><span><span class="co"># In that case, a least one variable should be omitted</span></span></span>
 <span class="r-in"><span><span class="fu">colinearityScore</span><span class="op">(</span><span class="va">res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>

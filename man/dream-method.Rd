@@ -48,7 +48,7 @@ MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-v
 Fit linear mixed model for differential expression and preform hypothesis test on fixed effects as specified in the contrast matrix \code{L}
 }
 \details{
-A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression (Hoffman and Roussos, 2021).  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
+A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression (Hoffman and Roussos, 2021).  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is
 
 \code{fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)}
 
@@ -71,47 +71,47 @@ library(BiocParallel)
 # info: information/metadata about each sample
 data(varPartData)
 
-form <- ~ Batch + (1|Individual) + (1|Tissue) 
+form <- ~ Batch + (1 | Individual) + (1 | Tissue)
 
 # Fit linear mixed model for each gene
 # run on just 10 genes for time
 # NOTE: dream() runs on *normalized* data
-fit = dream( geneExpr[1:10,], form, info)
-fit = eBayes(fit)
+fit <- dream(geneExpr[1:10, ], form, info)
+fit <- eBayes(fit)
 
 # view top genes
-topTable( fit, coef="Batch2", number=3 )
+topTable(fit, coef = "Batch2", number = 3)
 
-# get contrast matrix testing if the coefficient for Batch3 is 
+# get contrast matrix testing if the coefficient for Batch3 is
 # different from coefficient for Batch2
 # Name this comparison as 'compare_3_2'
 # The variable of interest must be a fixed effect
-L = makeContrastsDream(form, info, contrasts=c(compare_3_2 = "Batch3 - Batch2"))
+L <- makeContrastsDream(form, info, contrasts = c(compare_3_2 = "Batch3 - Batch2"))
 
 # plot contrasts
-plotContrasts( L )
+plotContrasts(L)
 
 # Fit linear mixed model for each gene
 # run on just 10 genes for time
-fit2 = dream( geneExpr[1:10,], form, info, L)
-fit2 = eBayes(fit2)
+fit2 <- dream(geneExpr[1:10, ], form, info, L)
+fit2 <- eBayes(fit2)
 
 # view top genes for this contrast
-topTable( fit2, coef="compare_3_2", number=3)
+topTable(fit2, coef = "compare_3_2", number = 3)
 
 # Parallel processing using multiple cores with reduced memory usage
-param = SnowParam(4, "SOCK", progressbar=TRUE)
-fit3 = dream( geneExpr[1:10,], form, info, L, BPPARAM = param)
-fit3 = eBayes(fit3)
+param <- SnowParam(4, "SOCK", progressbar = TRUE)
+fit3 <- dream(geneExpr[1:10, ], form, info, L, BPPARAM = param)
+fit3 <- eBayes(fit3)
 
 # Fit fixed effect model for each gene
 # Use lmFit in the backend
-form <- ~ Batch 
-fit4 = dream( geneExpr[1:10,], form, info, L)
-fit4 = eBayes( fit4 )
+form <- ~Batch
+fit4 <- dream(geneExpr[1:10, ], form, info, L)
+fit4 <- eBayes(fit4)
 
 # view top genes
-topTable( fit4, coef="compare_3_2", number=3 )
+topTable(fit4, coef = "compare_3_2", number = 3)
 
 # Compute residuals using dream
 residuals(fit4)[1:4, 1:4]

@@ -32,10 +32,11 @@ text-align: justify}
 
 ```{r knitr, echo=FALSE, results='hide'}
 library("knitr")
-opts_chunk$set(tidy=FALSE,dev="pdf",fig.show="hide",
-               fig.width=4,fig.height=4.5,
-               message=FALSE, warning=FALSE)
-
+opts_chunk$set(
+  tidy = FALSE, dev = "pdf", fig.show = "hide",
+  fig.width = 4, fig.height = 4.5,
+  message = FALSE, warning = FALSE
+)
 ``` 
 
 
@@ -63,39 +64,39 @@ Thus the faction evaluated by variancePartition is different than `r2glmm` by de
 Here is some code explicitly demonstrating this difference:
 
 ```{r options, results="hide", echo=FALSE}
-options(digits=3, width=80, prompt=" ", continue=" ")
-opts_chunk$set(comment=NA, fig.width=7, fig.height=7)
+options(digits = 3, width = 80, prompt = " ", continue = " ")
+opts_chunk$set(comment = NA, fig.width = 7, fig.height = 7)
 ```
 
 ```{r code, cache=TRUE}
-library('variancePartition')
-library('lme4')
-library('r2glmm')
+library("variancePartition")
+library("lme4")
+library("r2glmm")
 
 set.seed(1)
 
-N = 1000
-beta = 3
-alpha = c(1, 5, 7)
+N <- 1000
+beta <- 3
+alpha <- c(1, 5, 7)
 
 # generate 1 fixed variable and 1 random variable with 3 levels
-data = data.frame(X=rnorm(N), Subject = sample(c('A', 'B', 'C'), 100, replace=TRUE))
+data <- data.frame(X = rnorm(N), Subject = sample(c("A", "B", "C"), 100, replace = TRUE))
 
 # simulate variable
 # y = X\beta + Subject\alpha + \sigma^2
-data$y = data$X*beta + model.matrix(~ data$Subject) %*% alpha  + rnorm(N, 0, 1)
+data$y <- data$X * beta + model.matrix(~ data$Subject) %*% alpha + rnorm(N, 0, 1)
 
 # fit model
-fit = lmer( y ~ X +(1|Subject), data, REML=FALSE)
+fit <- lmer(y ~ X + (1 | Subject), data, REML = FALSE)
 
 # calculate variance fraction using variancePartition
 # include the total sum in the denominator
-frac = calcVarPart(fit)
+frac <- calcVarPart(fit)
 frac
 
 # the variance fraction excluding the random effect from the denominator
 # is the same as from r2glmm
-frac[['X']] / (frac[['X']] + frac[['Residuals']])
+frac[["X"]] / (frac[["X"]] + frac[["Residuals"]])
 
 # using r2glmm
 r2beta(fit)
@@ -123,7 +124,7 @@ Since the goal of the analysis is different, the consideration of using REML ver
 
 
 ```{r resetOptions, results="hide", echo=FALSE}
-options(prompt="> ", continue="+ ")
+options(prompt = "> ", continue = "+ ")
 ``` 
 
 

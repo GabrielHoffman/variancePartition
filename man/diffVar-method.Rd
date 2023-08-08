@@ -52,37 +52,37 @@ library(edgeR)
 data(varPartDEdata)
 
 # filter genes by number of counts
-isexpr = rowSums(cpm(countMatrix)>0.1) >= 5
+isexpr <- rowSums(cpm(countMatrix) > 0.1) >= 5
 
 # Standard usage of limma/voom
-dge = DGEList( countMatrix[isexpr,] )
-dge = calcNormFactors( dge )
+dge <- DGEList(countMatrix[isexpr, ])
+dge <- calcNormFactors(dge)
 
 # make this vignette faster by analyzing a subset of genes
-dge = dge[1:1000,]
+dge <- dge[1:1000, ]
 
 # regression formula
-form <- ~ Disease 
+form <- ~Disease
 
 # estimate precision weights
-vobj = voomWithDreamWeights( dge, form, metadata )
+vobj <- voomWithDreamWeights(dge, form, metadata)
 
 # fit dream model
-fit = dream( vobj, form, metadata )
-fit = eBayes(fit)
+fit <- dream(vobj, form, metadata)
+fit <- eBayes(fit)
 
 # fit differential variance model
-res = diffVar( fit )
+res <- diffVar(fit)
 
 # extract results for differential variance based on Disease
-topTable(res, coef = "Disease1", number=3)
+topTable(res, coef = "Disease1", number = 3)
 
 # Box plot of top hit
-# Since ASCL3 has a negative logFC, 
-# the deviation from expectation is *smaller* in 
+# Since ASCL3 has a negative logFC,
+# the deviation from expectation is *smaller* in
 # Disease==1 compared to baseline.
-gene = "ENST00000325884.1 gene=ASCL3"
-boxplot(vobj$E[gene,] ~ metadata$Disease, main=gene)
+gene <- "ENST00000325884.1 gene=ASCL3"
+boxplot(vobj$E[gene, ] ~ metadata$Disease, main = gene)
 
 }
 \references{

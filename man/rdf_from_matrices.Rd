@@ -12,7 +12,7 @@ rdf_from_matrices(A, B)
 \item{B}{a \code{matrix} or \code{sparseMatrix}}
 }
 \description{
-Defining \eqn{H = A^TA + B^TB} where \eqn{A} and \eqn{B} are low rank, compute 
+Defining \eqn{H = A^TA + B^TB} where \eqn{A} and \eqn{B} are low rank, compute
 \eqn{n - 2tr(H) + tr(HH)} in \eqn{O(np^2)} instead of \eqn{O(n^2p^2)}.
 }
 \seealso{

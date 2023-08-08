@@ -100,7 +100,7 @@
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Reaction</span> <span class="op">~</span> <span class="va">Days</span>, <span class="va">sleepstudy</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># prediction of intercept</span></span></span>
-<span class="r-in"><span><span class="fu">get_prediction</span><span class="op">(</span> <span class="va">fit</span>, <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">get_prediction</span><span class="op">(</span><span class="va">fit</span>, <span class="op">~</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        1        2        3        4        5        6        7        8 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 251.4051 251.4051 251.4051 251.4051 251.4051 251.4051 251.4051 251.4051 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        9       10       11       12       13       14       15       16 </span>
@@ -149,7 +149,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 251.4051 251.4051 251.4051 251.4051 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># prediction of Days without intercept</span></span></span>
-<span class="r-in"><span><span class="fu">get_prediction</span><span class="op">(</span> <span class="va">fit</span>, <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Days</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">get_prediction</span><span class="op">(</span><span class="va">fit</span>, <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Days</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        1        2        3        4        5        6        7        8 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  0.00000 10.46729 20.93457 31.40186 41.86914 52.33643 62.80372 73.27100 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        9       10       11       12       13       14       15       16 </span>
@@ -203,7 +203,7 @@
 <span class="r-in"><span><span class="va">fm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">Reaction</span> <span class="op">~</span> <span class="va">Days</span> <span class="op">+</span> <span class="op">(</span><span class="va">Days</span> <span class="op">|</span> <span class="va">Subject</span><span class="op">)</span>, <span class="va">sleepstudy</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># predict Days, but exclude intercept</span></span></span>
-<span class="r-in"><span><span class="fu">get_prediction</span><span class="op">(</span> <span class="va">fm1</span>, <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Days</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">get_prediction</span><span class="op">(</span><span class="va">fm1</span>, <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Days</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        1        2        3        4        5        6        7        8 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  0.00000 10.46729 20.93457 31.40186 41.86914 52.33643 62.80372 73.27100 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        9       10       11       12       13       14       15       16 </span>
@@ -252,7 +252,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 62.80372 73.27100 83.73829 94.20557 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># predict Days and (Days | Subject) random effect, but exclude intercept</span></span></span>
-<span class="r-in"><span><span class="fu">get_prediction</span><span class="op">(</span> <span class="va">fm1</span>, <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Days</span> <span class="op">+</span>  <span class="op">(</span><span class="va">Days</span> <span class="op">|</span> <span class="va">Subject</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">get_prediction</span><span class="op">(</span><span class="va">fm1</span>, <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Days</span> <span class="op">+</span> <span class="op">(</span><span class="va">Days</span> <span class="op">|</span> <span class="va">Subject</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           1           2           3           4           5           6 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2.2585509  21.9248127  41.5910744  61.2573361  80.9235979 100.5898596 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           7           8           9          10          11          12 </span>

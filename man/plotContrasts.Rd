@@ -29,12 +29,12 @@ Consider a variable \code{v} with levels \code{c('A', 'B', 'C')}.  A contrast co
 # info: information/metadata about each sample
 data(varPartData)
 
-# 1) get contrast matrix testing if the coefficient for Batch2 is different from Batch3 
-form <- ~ Batch + (1|Individual) + (1|Tissue) 
-L = makeContrastsDream(form, info, contrasts=c(Batch_3_vs_2 = "Batch3 - Batch2"))
+# 1) get contrast matrix testing if the coefficient for Batch2 is different from Batch3
+form <- ~ Batch + (1 | Individual) + (1 | Tissue)
+L <- makeContrastsDream(form, info, contrasts = c(Batch_3_vs_2 = "Batch3 - Batch2"))
 
 # plot contrasts
-plotContrasts( L )
+plotContrasts(L)
 }
 \seealso{
 \code{makeContrastsDream()}

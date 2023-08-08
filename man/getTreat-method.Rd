@@ -32,15 +32,15 @@ Test if coefficient is different from a specified value
 \examples{
 
 data(varPartData)
-	
-form <- ~ Age + Batch + (1|Individual) + (1|Tissue) 
 
-fit = dream( geneExpr, form, info)
-fit = eBayes(fit)
+form <- ~ Age + Batch + (1 | Individual) + (1 | Tissue)
 
-coef = 'Age'
+fit <- dream(geneExpr, form, info)
+fit <- eBayes(fit)
+
+coef <- "Age"
 
 # Evaluate treat()/topTreat() in a way that works seamlessly for dream()
-getTreat(fit, lfc=log2(1.03), coef, sort.by="none", number=3)
+getTreat(fit, lfc = log2(1.03), coef, sort.by = "none", number = 3)
 
 }

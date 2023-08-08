@@ -58,21 +58,21 @@ library(BiocParallel)
 data(varPartDEdata)
 
 # normalize RNA-seq counts
-dge = DGEList(counts = countMatrix)
-dge = calcNormFactors(dge)
+dge <- DGEList(counts = countMatrix)
+dge <- calcNormFactors(dge)
 
 # specify formula with random effect for Individual
-form <- ~ Disease + (1|Individual) 
+form <- ~ Disease + (1 | Individual)
 
 # compute observation weights
-vobj = voomWithDreamWeights( dge[1:20,], form, metadata)
+vobj <- voomWithDreamWeights(dge[1:20, ], form, metadata)
 
-# fit dream model 
-res = dream( vobj, form, metadata)
-res = eBayes(res)
+# fit dream model
+res <- dream(vobj, form, metadata)
+res <- eBayes(res)
 
 # extract results
-topTable(res, coef="Disease1", number=3)
+topTable(res, coef = "Disease1", number = 3)
 
 }
 \seealso{

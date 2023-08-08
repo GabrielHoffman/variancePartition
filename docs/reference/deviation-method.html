@@ -99,28 +99,28 @@
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartDEdata</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># filter genes by number of counts</span></span></span>
-<span class="r-in"><span><span class="va">isexpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="va">isexpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Standard usage of limma/voom</span></span></span>
-<span class="r-in"><span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span> <span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>,<span class="op">]</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span> <span class="va">dge</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>, <span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span><span class="va">dge</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># make this vignette faster by analyzing a subset of genes</span></span></span>
-<span class="r-in"><span><span class="va">dge</span> <span class="op">=</span> <span class="va">dge</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,<span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="va">dge</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># regression formula</span></span></span>
-<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Disease</span> </span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span><span class="va">Disease</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># estimate precision weights</span></span></span>
-<span class="r-in"><span><span class="va">vobj</span> <span class="op">=</span> <span class="fu"><a href="voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span> <span class="va">dge</span>, <span class="va">form</span>, <span class="va">metadata</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">vobj</span> <span class="op">&lt;-</span> <span class="fu"><a href="voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span><span class="va">dge</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit dream model</span></span></span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">vobj</span>, <span class="va">form</span>, <span class="va">metadata</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span><span class="va">vobj</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compute deviation from expection for each observation</span></span></span>
 <span class="r-in"><span><span class="co"># using model residuals</span></span></span>
-<span class="r-in"><span><span class="va">z</span> <span class="op">=</span> <span class="fu">deviation</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu">deviation</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               sample_01 sample_02 sample_03 sample_04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000570099.1 gene=YPEL3 0.04040445 0.1318337 0.3916526 0.4099356</span>

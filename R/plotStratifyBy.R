@@ -1,11 +1,9 @@
-
-
 #' plotStratify
 #'
 #' Plot gene expression stratified by another variable
 #'
 #' @param formula specify variables shown in the x- and y-axes.  Y-axis should be continuous variable, x-axis should be discrete.
-#' @param data data.frame storing continuous and discrete variables specified in formula  
+#' @param data data.frame storing continuous and discrete variables specified in formula
 #' @param xlab label x-asis. Defaults to value of xval
 #' @param ylab label y-asis. Defaults to value of yval
 #' @param main main label
@@ -29,122 +27,125 @@
 #'
 #' # load library
 #' # library(variancePartition)
-#' 
+#'
 #' # load simulated data:
 #' data(varPartData)
-#' 
+#'
 #' # Create data.frame with expression and Tissue information for each sample
-#' GE = data.frame( Expression = geneExpr[1,], Tissue = info$Tissue)
-#' 
+#' GE <- data.frame(Expression = geneExpr[1, ], Tissue = info$Tissue)
+#'
 #' # Plot expression stratified by Tissue
-#' plotStratify( Expression ~ Tissue, GE )
+#' plotStratify(Expression ~ Tissue, GE)
 #'
 #' # Omit legend and color boxes grey
-#' plotStratify( Expression ~ Tissue, GE, colorBy = NULL)
+#' plotStratify(Expression ~ Tissue, GE, colorBy = NULL)
 #'
 #' # Specify colors
-#' col = c( B="green", A="red", C="yellow")
-#' plotStratify( Expression ~ Tissue, GE, colorBy=col, sort=FALSE)
+#' col <- c(B = "green", A = "red", C = "yellow")
+#' plotStratify(Expression ~ Tissue, GE, colorBy = col, sort = FALSE)
 #'
 #' @export
-plotStratify = function( formula, data, xlab, ylab, main, sortBy, colorBy, sort=TRUE, text=NULL, text.y=1, text.size=5, pts.cex=1, ylim=NULL, legend=TRUE, x.labels=FALSE ){
+plotStratify <- function(formula, data, xlab, ylab, main, sortBy, colorBy, sort = TRUE, text = NULL, text.y = 1, text.size = 5, pts.cex = 1, ylim = NULL, legend = TRUE, x.labels = FALSE) {
+  mc <- match.call()
+  m <- match(c("formula", "data"), names(mc), 0L)
+  mf <- mc[c(1L, m)]
+  mf[[1L]] <- as.name("model.frame")
+  mf <- eval(mf, parent.frame())
+  data.st <- data.frame(mf)
 
-	mc <- match.call()
-	m <- match(c("formula","data"), names(mc), 0L)
-	mf <- mc[c(1L, m)]
-	mf[[1L]] <- as.name("model.frame")
-	mf <- eval(mf, parent.frame())
-	data.st <- data.frame(mf)
+  if (ncol(data.st) != 2) {
+    stop("formula must have exactly 2 entries")
+  }
 
-	if( ncol(data.st) != 2){
-		stop("formula must have exactly 2 entries")
-	}
+  xval <- colnames(data.st)[attr(attr(mf, "terms"), "response") + 1]
+  yval <- colnames(data.st)[attr(attr(mf, "terms"), "response")]
 
-	xval = colnames(data.st)[attr(attr(mf, "terms"), "response")+1]
-	yval = colnames(data.st)[attr(attr(mf, "terms"), "response")] 
+  if (missing(xlab)) {
+    xlab <- xval
+  }
+  if (missing(sortBy) || is.null(sortBy)) {
+    sortBy <- xval
+  }
+  if (missing(colorBy)) {
+    colorBy <- xval
+  }
+  if (missing(ylab)) {
+    ylab <- yval
+  }
 
-	if( missing(xlab) ){ 
-		xlab = xval
-	}
-	if( missing(sortBy) || is.null(sortBy) ){ 
-		sortBy = xval
-	}
-	if( missing(colorBy) ){
-		colorBy = xval
-	}	
-	if( missing(ylab) ){
-		ylab = yval
-	}
+  # check that sortBy exist in data.st
+  if (!(sortBy %in% colnames(data.st))) {
+    stop(paste("sortBy is not found in colnames(data): sortBy =", sortBy))
+  }
 
-    # check that sortBy exist in data.st
-    if( !(sortBy %in% colnames(data.st)) ){
-    	stop(paste("sortBy is not found in colnames(data): sortBy =", sortBy))
+  data.st[[yval]] <- as.numeric(data.st[[yval]])
+
+  xpos <- 0.5 # text.x * nlevels(data.st[[xval]])
+  ypos <- text.y * (max(data.st[[yval]]) - min(data.st[[yval]])) + min(data.st[[yval]])
+
+  if (sort) {
+    # sort categories by median expression
+    data.st[["reorder"]] <- reorder(data.st[[sortBy]], data.st[[yval]], FUN = median)
+    ord <- "reorder"
+  } else {
+    ord <- xval
+  }
+
+  pOut <- ggplot(data.st, aes_string(x = ord, y = yval)) +
+    theme_bw() +
+    theme(plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) +
+    ylab(ylab) +
+    xlab(xlab) +
+    theme(plot.title = element_text(hjust = 0.5))
+
+  if (any(is.null(colorBy)) || any(is.na(colorBy))) {
+    pOut <- pOut + geom_boxplot(color = "grey", fill = "grey", outlier.colour = "black", outlier.shape = 20)
+  } else {
+    # if colors are specified and all levels of xval are represented
+    if (sum(levels(data.st[[xval]]) %in% names(colorBy)) == nlevels(data.st[[xval]]) && nlevels(data.st[[xval]]) > 0) {
+      # 		i = match(levels(data.st[[ord]]), levels(data.st[[xval]]) )
+      # pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
+
+      i <- match(levels(data.st[[xval]]), names(colorBy))
+
+      pOut <- pOut + geom_boxplot(aes_string(fill = xval), color = colorBy[i], outlier.colour = "black", outlier.shape = 20) + scale_fill_manual(values = array(colorBy)[i])
+    } else {
+      # color boxes by colorBy variable in data.st
+      pOut <- pOut + geom_boxplot(aes_string(color = colorBy, fill = colorBy), outlier.colour = "black", outlier.shape = 20)
     }
 
-    data.st[[yval]] = as.numeric( data.st[[yval]] )
-
-    xpos = 0.5 #text.x * nlevels(data.st[[xval]])
-    ypos = text.y * (max(data.st[[yval]]) - min(data.st[[yval]])) + min(data.st[[yval]])
-
-    if( sort ){    	
-	    # sort categories by median expression
-	    data.st[['reorder']] = reorder(data.st[[sortBy]],data.st[[yval]], FUN=median)
-	    ord = "reorder"
-    }else{
-    	ord = xval
+    # add legend
+    if (legend) {
+      pOut <- pOut + theme(legend.justification = c(1, 0), legend.position = c(1, 0), legend.key = element_rect(fill = "transparent"), axis.text.x = element_text(angle = 30), legend.background = element_rect(fill = "transparent"))
+    } else {
+      pOut <- pOut + theme(legend.position = "none", axis.text.x = element_text(angle = 30))
     }
-   
-    pOut = ggplot( data.st, aes_string(x=ord, y=yval)) + theme_bw() + theme( plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab(ylab) + xlab(xlab) + theme(plot.title=element_text(hjust=0.5)) 
+  }
 
-    if(  any(is.null(colorBy)) || any(is.na(colorBy)) ){
-        pOut = pOut + geom_boxplot(color="grey", fill="grey", outlier.colour='black',outlier.shape = 20)
-    }else{
+  if (!x.labels) {
+    pOut <- pOut + theme(axis.ticks.x = element_blank(), axis.text.x = element_blank())
+  }
 
-    	# if colors are specified and all levels of xval are represented
-    	if( sum(levels(data.st[[xval]]) %in% names(colorBy)) == nlevels(data.st[[xval]]) && nlevels(data.st[[xval]]) > 0 ){
+  # add median bar
+  pOut <- pOut + stat_summary(geom = "crossbar", width = 0.65, fatten = 0, color = "black", fun.data = function(x) {
+    return(c(y = median(x), ymin = median(x), ymax = median(x)))
+  })
 
-    # 		i = match(levels(data.st[[ord]]), levels(data.st[[xval]]) )
- 			# pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
+  if (!missing(ylim)) {
+    pOut <- pOut + ylim(ylim)
+  }
 
- 			i = match(levels(data.st[[xval]]), names(colorBy) )
+  if (!missing(main)) {
+    pOut <- pOut + ggtitle(main)
+  }
 
- 			pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy)[i])
- 		}else{
+  if (!missing(text)) {
+    pOut <- pOut + annotate("text", label = text, x = xpos, y = ypos, size = text.size, hjust = 0)
+  }
 
-	        # color boxes by colorBy variable in data.st
-	        pOut = pOut + geom_boxplot( aes_string(color=colorBy, fill=colorBy), outlier.colour='black', outlier.shape = 20)
-	    }
+  # pOut = pOut + geom_jitter(size=pts.cex,height=0, width=0, col="black")
 
-	    # add legend
-	    if( legend ){
-	    	pOut = pOut + theme(legend.justification=c(1,0), legend.position=c(1,0), legend.key = element_rect(fill="transparent"), axis.text.x=element_text(angle=30), legend.background = element_rect(fill="transparent"))
-	    }else{
-	    	pOut = pOut + theme(legend.position="none", axis.text.x=element_text(angle=30))
-	    }
-    }
-
-    if( ! x.labels ){
-		pOut = pOut + theme(axis.ticks.x = element_blank(), axis.text.x = element_blank())
-	}
-
-    # add median bar
-    pOut = pOut + stat_summary(geom = "crossbar", width=0.65, fatten=0, color="black", fun.data = function(x){ return(c(y=median(x), ymin=median(x), ymax=median(x))) })
-
-    if( ! missing(ylim) ){
-    	pOut = pOut + ylim(ylim)
-    }
-
-    if( ! missing(main) ){
-    	 pOut = pOut + ggtitle(main)
-   	}
-
-    if( ! missing(text) ){
-        pOut = pOut + annotate("text", label = text, x = xpos, y=ypos, size = text.size, hjust=0)
-    }
-
-    #pOut = pOut + geom_jitter(size=pts.cex,height=0, width=0, col="black")
-
-    return( pOut )
+  return(pOut)
 }
 
 
@@ -176,104 +177,107 @@ plotStratify = function( formula, data, xlab, ylab, main, sortBy, colorBy, sort=
 #'
 #' # load library
 #' # library(variancePartition)
-#' 
+#'
 #' # load simulated data:
 #' data(varPartData)
-#' 
+#'
 #' # Create data.frame with expression and Tissue information for each sample
-#' GE = data.frame( Expression = geneExpr[1,], Tissue = info$Tissue)
-#' 
+#' GE <- data.frame(Expression = geneExpr[1, ], Tissue = info$Tissue)
+#'
 #' # Plot expression stratified by Tissue
-#' plotStratifyBy( GE, "Tissue", "Expression")
+#' plotStratifyBy(GE, "Tissue", "Expression")
 #'
 #' # Omit legend and color boxes grey
-#' plotStratifyBy( GE, "Tissue", "Expression", colorBy = NULL)
+#' plotStratifyBy(GE, "Tissue", "Expression", colorBy = NULL)
 #'
 #' # Specify colors
-#' col = c( B="green", A="red", C="yellow")
-#' plotStratifyBy( GE, "Tissue", "Expression", colorBy=col, sort=FALSE)
+#' col <- c(B = "green", A = "red", C = "yellow")
+#' plotStratifyBy(GE, "Tissue", "Expression", colorBy = col, sort = FALSE)
 #'
 #' @export
-plotStratifyBy = function( geneExpr, xval, yval, xlab=xval, ylab=yval, main=NULL, sortBy=xval, colorBy=xval, sort=TRUE, text=NULL, text.y=1, text.size=5, pts.cex=1, ylim=NULL, legend=TRUE, x.labels=FALSE ){
+plotStratifyBy <- function(geneExpr, xval, yval, xlab = xval, ylab = yval, main = NULL, sortBy = xval, colorBy = xval, sort = TRUE, text = NULL, text.y = 1, text.size = 5, pts.cex = 1, ylim = NULL, legend = TRUE, x.labels = FALSE) {
+  geneExpr <- data.frame(geneExpr)
+  geneExpr <- droplevels(geneExpr)
 
-	geneExpr = data.frame( geneExpr )
-    geneExpr = droplevels( geneExpr )
+  sortBy <- xval
 
-    sortBy = xval    
+  # check that xval and yval exist in geneExpr
+  if (!(xval %in% colnames(geneExpr))) {
+    stop(paste("xval is not found in colnames(geneExpr): xval =", xval))
+  }
+  if (!(yval %in% colnames(geneExpr))) {
+    stop(paste("yval is not found in colnames(geneExpr): yval =", yval))
+  }
 
-    # check that xval and yval exist in geneExpr
-    if( !(xval %in% colnames(geneExpr)) ){
-    	stop(paste("xval is not found in colnames(geneExpr): xval =", xval))
-    }
-    if( !(yval %in% colnames(geneExpr)) ){
-    	stop(paste("yval is not found in colnames(geneExpr): yval =", yval))
-    }
+  # check that sortBy exist in geneExpr
+  if (!(sortBy %in% colnames(geneExpr))) {
+    stop(paste("sortBy is not found in colnames(geneExpr): sortBy =", sortBy))
+  }
 
-    # check that sortBy exist in geneExpr
-    if( !(sortBy %in% colnames(geneExpr)) ){
-    	stop(paste("sortBy is not found in colnames(geneExpr): sortBy =", sortBy))
-    }
+  geneExpr[[yval]] <- as.numeric(geneExpr[[yval]])
 
-    geneExpr[[yval]] = as.numeric( geneExpr[[yval]] )
+  xpos <- 0.5 # text.x * nlevels(geneExpr[[xval]])
+  ypos <- text.y * (max(geneExpr[[yval]]) - min(geneExpr[[yval]])) + min(geneExpr[[yval]])
 
-    xpos = 0.5 #text.x * nlevels(geneExpr[[xval]])
-    ypos = text.y * (max(geneExpr[[yval]]) - min(geneExpr[[yval]])) + min(geneExpr[[yval]])
+  if (sort) {
+    # sort categories by median expression
+    geneExpr[["reorder"]] <- reorder(geneExpr[[sortBy]], geneExpr[[yval]], FUN = median)
+    ord <- "reorder"
+  } else {
+    ord <- xval
+  }
 
-    if( sort ){    	
-	    # sort categories by median expression
-	    geneExpr[['reorder']] = reorder(geneExpr[[sortBy]],geneExpr[[yval]], FUN=median)
-	    ord = "reorder"
-    }else{
-    	ord = xval
-    }
-   
-    pOut = ggplot( geneExpr, aes_string(x=ord, y=yval)) + theme_bw() + theme( plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab(ylab) + xlab(xlab) + theme(plot.title=element_text(hjust=0.5))
+  pOut <- ggplot(geneExpr, aes_string(x = ord, y = yval)) +
+    theme_bw() +
+    theme(plot.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) +
+    ylab(ylab) +
+    xlab(xlab) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-    if(  any(is.null(colorBy)) || any(is.na(colorBy)) ){
-        pOut = pOut + geom_boxplot(color="grey", fill="grey", outlier.colour='black',outlier.shape = 20)
-    }else{
-
-    	# if colors are specified and all levels of xval are represented
-    	if( sum(levels(geneExpr[[xval]]) %in% names(colorBy)) == nlevels(geneExpr[[xval]]) ){
-
-    # 		i = match(levels(geneExpr[[ord]]), levels(geneExpr[[xval]]) )
- 			# pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
- 			i = match(levels(geneExpr[[xval]]), names(colorBy) )
- 			pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy)[i])
- 		}else{
-
-	        # color boxes by colorBy variable in geneExpr
-	        pOut = pOut + geom_boxplot( aes_string(color=colorBy, fill=colorBy), outlier.colour='black', outlier.shape = 20)
-	    }
-
-	    # add legend
-	    if( legend ){
-	    	pOut = pOut + theme(legend.justification=c(1,0), legend.position=c(1,0), legend.key = element_rect(fill="transparent"), axis.text.x=element_text(angle=30), legend.background = element_rect(fill="transparent"))
-	    }else{
-	    	pOut = pOut + theme(legend.position="none", axis.text.x=element_text(angle=30))
-	    }
+  if (any(is.null(colorBy)) || any(is.na(colorBy))) {
+    pOut <- pOut + geom_boxplot(color = "grey", fill = "grey", outlier.colour = "black", outlier.shape = 20)
+  } else {
+    # if colors are specified and all levels of xval are represented
+    if (sum(levels(geneExpr[[xval]]) %in% names(colorBy)) == nlevels(geneExpr[[xval]])) {
+      # 		i = match(levels(geneExpr[[ord]]), levels(geneExpr[[xval]]) )
+      # pOut = pOut + geom_boxplot(aes_string(fill=xval), color=colorBy[i], outlier.colour='black',outlier.shape = 20) + scale_fill_manual( values=array(colorBy))
+      i <- match(levels(geneExpr[[xval]]), names(colorBy))
+      pOut <- pOut + geom_boxplot(aes_string(fill = xval), color = colorBy[i], outlier.colour = "black", outlier.shape = 20) + scale_fill_manual(values = array(colorBy)[i])
+    } else {
+      # color boxes by colorBy variable in geneExpr
+      pOut <- pOut + geom_boxplot(aes_string(color = colorBy, fill = colorBy), outlier.colour = "black", outlier.shape = 20)
     }
 
-    if( ! x.labels ){
-		pOut = pOut + theme(axis.ticks.x = element_blank(), axis.text.x = element_blank())
-	}
-
-    # add median bar
-    pOut = pOut + stat_summary(geom = "crossbar", width=0.65, fatten=0, color="black", fun.data = function(x){ return(c(y=median(x), ymin=median(x), ymax=median(x))) })
-
-    if( !is.null(ylim)){
-    	pOut = pOut + ylim(ylim)
+    # add legend
+    if (legend) {
+      pOut <- pOut + theme(legend.justification = c(1, 0), legend.position = c(1, 0), legend.key = element_rect(fill = "transparent"), axis.text.x = element_text(angle = 30), legend.background = element_rect(fill = "transparent"))
+    } else {
+      pOut <- pOut + theme(legend.position = "none", axis.text.x = element_text(angle = 30))
     }
+  }
 
-    if( !is.null(main) ){
-    	 pOut = pOut + ggtitle(main)
-   	}
+  if (!x.labels) {
+    pOut <- pOut + theme(axis.ticks.x = element_blank(), axis.text.x = element_blank())
+  }
 
-    if( !is.null(text) ){
-        pOut = pOut + annotate("text", label = text, x = xpos, y=ypos, size = text.size, hjust=0)
-    }
+  # add median bar
+  pOut <- pOut + stat_summary(geom = "crossbar", width = 0.65, fatten = 0, color = "black", fun.data = function(x) {
+    return(c(y = median(x), ymin = median(x), ymax = median(x)))
+  })
 
-    #pOut = pOut + geom_jitter(size=pts.cex,height=0, width=0, col="black")
+  if (!is.null(ylim)) {
+    pOut <- pOut + ylim(ylim)
+  }
 
-    return( pOut )
+  if (!is.null(main)) {
+    pOut <- pOut + ggtitle(main)
+  }
+
+  if (!is.null(text)) {
+    pOut <- pOut + annotate("text", label = text, x = xpos, y = ypos, size = text.size, hjust = 0)
+  }
+
+  # pOut = pOut + geom_jitter(size=pts.cex,height=0, width=0, col="black")
+
+  return(pOut)
 }

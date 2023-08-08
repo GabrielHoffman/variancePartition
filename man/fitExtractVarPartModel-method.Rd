@@ -108,7 +108,7 @@ list() of where each entry is a model fit produced by \code{lmer()} or \code{lm(
 Fit linear (mixed) model to estimate contribution of multiple sources of variation while simultaneously correcting for all other variables. Report fraction of variance attributable to each variable
 }
 \details{
-A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is 
+A linear (mixed) model is fit for each gene in exprObj, using formula to specify variables in the regression.  If categorical variables are modeled as random effects (as is recommended), then a linear mixed model us used.  For example if formula is \code{~ a + b + (1|c)}, then the model is
 
 fit <- lmer( exprObj[j,] ~ a + b + (1|c), data=data)
 
@@ -139,29 +139,28 @@ data(varPartData)
 # Specify variables to consider
 # Age is continuous so we model it as a fixed effect
 # Individual and Tissue are both categorical, so we model them as random effects
-form <- ~ Age + (1|Individual) + (1|Tissue) 
+form <- ~ Age + (1 | Individual) + (1 | Tissue)
 
 # Step 1: fit linear mixed model on gene expression
 # If categorical variables are specified, a linear mixed model is used
 # If all variables are modeled as continuous, a linear model is used
 # each entry in results is a regression model fit on a single gene
 # Step 2: extract variance fractions from each model fit
-# for each gene, returns fraction of variation attributable to each variable 
+# for each gene, returns fraction of variation attributable to each variable
 # Interpretation: the variance explained by each variable
 # after correction for all other variables
-varPart <- fitExtractVarPartModel( geneExpr, form, info )
- 
+varPart <- fitExtractVarPartModel(geneExpr, form, info)
+
 # violin plot of contribution of each variable to total variance
-plotVarPart( sortCols( varPart ) )
+plotVarPart(sortCols(varPart))
 
 # Note: fitExtractVarPartModel also accepts ExpressionSet
-data(sample.ExpressionSet, package="Biobase")
+data(sample.ExpressionSet, package = "Biobase")
 
 # ExpressionSet example
-form <- ~ (1|sex) + (1|type) + score
+form <- ~ (1 | sex) + (1 | type) + score
 info2 <- Biobase::pData(sample.ExpressionSet)
-varPart2 <- fitExtractVarPartModel( sample.ExpressionSet, form, info2 )
-
+varPart2 <- fitExtractVarPartModel(sample.ExpressionSet, form, info2)
 
 
 }

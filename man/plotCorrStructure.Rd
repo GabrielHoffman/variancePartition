@@ -40,34 +40,34 @@ library(BiocParallel)
 data(varPartData)
 
 # specify formula
-form <- ~ Age + (1|Individual) + (1|Tissue)
+form <- ~ Age + (1 | Individual) + (1 | Tissue)
 
 # fit and return linear mixed models for each gene
-fitList <- fitVarPartModel( geneExpr[1:10,], form, info )
+fitList <- fitVarPartModel(geneExpr[1:10, ], form, info)
 
 # Focus on the first gene
-fit = fitList[[1]]
+fit <- fitList[[1]]
 
 # plot correlation sturcture based on Individual, reordering samples with hclust
-plotCorrStructure( fit, "Individual" )
+plotCorrStructure(fit, "Individual")
 
 # don't reorder
-plotCorrStructure( fit, "Individual", reorder=FALSE )
+plotCorrStructure(fit, "Individual", reorder = FALSE)
 
 # plot correlation sturcture based on Tissue, reordering samples with hclust
-plotCorrStructure( fit, "Tissue" )
+plotCorrStructure(fit, "Tissue")
 
 # don't reorder
-plotCorrStructure( fit, "Tissue", FALSE )
+plotCorrStructure(fit, "Tissue", FALSE)
 
 # plot correlation structure based on all random effects
 # reorder manually by Tissue and Individual
-idx = order(info$Tissue, info$Individual)
-plotCorrStructure( fit, reorder=idx )
+idx <- order(info$Tissue, info$Individual)
+plotCorrStructure(fit, reorder = idx)
 
 # plot correlation structure based on all random effects
-# reorder manually by Individual, then Tissue 
-idx = order(info$Individual, info$Tissue)
-plotCorrStructure( fit, reorder=idx )
+# reorder manually by Individual, then Tissue
+idx <- order(info$Individual, info$Tissue)
+plotCorrStructure(fit, reorder = idx)
 
 }

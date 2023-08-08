@@ -28,11 +28,13 @@ rmarkdown::render('FAQ.Rmd')
 --->
 
 ```{r setup, echo=FALSE, results="hide"}
-knitr::opts_chunk$set(tidy=FALSE, cache=TRUE,
-                      dev="png",
-                      package.startup.message = FALSE,
-                      message=FALSE, error=FALSE, warning=TRUE)
-options(width=100)
+knitr::opts_chunk$set(
+  tidy = FALSE, cache = TRUE,
+  dev = "png",
+  package.startup.message = FALSE,
+  message = FALSE, error = FALSE, warning = TRUE
+)
+options(width = 100)
 ```	
 
 
@@ -123,23 +125,23 @@ This situtation is indicated by the following errors:
   + __Global__: set the number of threads to be a smaller number.  I have found that reducing the number of threads reduces the chance of random failures like this.
 
     ```{r, eval=FALSE, echo=TRUE}
-    library(BiocParallel)
+library(BiocParallel)
 
-    # globally specify that all multithreading using bpiterate from BiocParallel
-    # should use 8 cores
-    register(SnowParam(8))
+# globally specify that all multithreading using bpiterate from BiocParallel
+# should use 8 cores
+register(SnowParam(8))
     ```
 
   + __Local__: set the number of theads at each function call.  This re-initializes the parallel backend and should address the error 
 
     ```{r, eval=FALSE, echo=TRUE}
-    fitExtractVarPartModel(..., BPPARAM=SnowParam(8))
+fitExtractVarPartModel(..., BPPARAM = SnowParam(8))
 
-    fitVarPartModel(..., BPPARAM=SnowParam(8))
+fitVarPartModel(..., BPPARAM = SnowParam(8))
 
-    dream(..., BPPARAM=SnowParam(8))
+dream(..., BPPARAM = SnowParam(8))
 
-    voomWithDreamWeights(...,BPPARAM=SnowParam(8))
+voomWithDreamWeights(..., BPPARAM = SnowParam(8))
     ```
 
 

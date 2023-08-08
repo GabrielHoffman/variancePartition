@@ -29,28 +29,28 @@ library(edgeR)
 data(varPartDEdata)
 
 # filter genes by number of counts
-isexpr = rowSums(cpm(countMatrix)>0.1) >= 5
+isexpr <- rowSums(cpm(countMatrix) > 0.1) >= 5
 
 # Standard usage of limma/voom
-dge = DGEList( countMatrix[isexpr,] )
-dge = calcNormFactors( dge )
+dge <- DGEList(countMatrix[isexpr, ])
+dge <- calcNormFactors(dge)
 
 # make this vignette faster by analyzing a subset of genes
-dge = dge[1:1000,]
+dge <- dge[1:1000, ]
 
 # regression formula
-form <- ~ Disease 
+form <- ~Disease
 
 # estimate precision weights
-vobj = voomWithDreamWeights( dge, form, metadata )
+vobj <- voomWithDreamWeights(dge, form, metadata)
 
 # fit dream model
-fit = dream( vobj, form, metadata )
-fit = eBayes(fit)
+fit <- dream(vobj, form, metadata)
+fit <- eBayes(fit)
 
 # Compute deviation from expection for each observation
 # using model residuals
-z = deviation(fit)
+z <- deviation(fit)
 z[1:4, 1:4]
 
 }

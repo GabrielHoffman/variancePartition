@@ -50,17 +50,17 @@ data(varPartData)
 # Perform very simple analysis for demonstration
 
 # Analysis 1
-form <- ~ Batch 
-fit = dream( geneExpr, form, info)
-fit = eBayes( fit )
-res = topTable( fit, number=Inf, coef="Batch3" )
+form <- ~Batch
+fit <- dream(geneExpr, form, info)
+fit <- eBayes(fit)
+res <- topTable(fit, number = Inf, coef = "Batch3")
 
 # Analysis 2
-form <- ~ Batch + (1|Tissue)
-fit2 = dream( geneExpr, form, info)
-res2 = topTable( fit2, number=Inf, coef="Batch3" )
+form <- ~ Batch + (1 | Tissue)
+fit2 <- dream(geneExpr, form, info)
+res2 <- topTable(fit2, number = Inf, coef = "Batch3")
 
 # Compare p-values
-plotCompareP( res$P.Value, res2$P.Value, runif(nrow(res)), .3 )
+plotCompareP(res$P.Value, res2$P.Value, runif(nrow(res)), .3)
 
 }

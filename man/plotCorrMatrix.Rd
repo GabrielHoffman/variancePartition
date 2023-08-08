@@ -38,15 +38,15 @@ Plots image of correlation matrix using customized call to heatmap.2
 \examples{
 
 # simulate simple matrix of 10 variables
-mat = matrix(rnorm(1000), ncol=10)
+mat <- matrix(rnorm(1000), ncol = 10)
 
 # compute correlation matrix
-C = cor(mat)
+C <- cor(mat)
 
 # plot correlations
-plotCorrMatrix( C )
+plotCorrMatrix(C)
 
 # plot squared correlations
-plotCorrMatrix( C^2, dendrogram="none" )
+plotCorrMatrix(C^2, dendrogram = "none")
 
 }

@@ -96,12 +96,12 @@
 <span class="r-in"><span><span class="co"># info: information/metadata about each sample</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># 1) get contrast matrix testing if the coefficient for Batch2 is different from Batch3 </span></span></span>
-<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span></span>
-<span class="r-in"><span><span class="va">L</span> <span class="op">=</span> <span class="fu"><a href="makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Batch_3_vs_2 <span class="op">=</span> <span class="st">"Batch3 - Batch2"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># 1) get contrast matrix testing if the coefficient for Batch2 is different from Batch3</span></span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Tissue</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">L</span> <span class="op">&lt;-</span> <span class="fu"><a href="makeContrastsDream.html">makeContrastsDream</a></span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Batch_3_vs_2 <span class="op">=</span> <span class="st">"Batch3 - Batch2"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># plot contrasts</span></span></span>
-<span class="r-in"><span><span class="fu">plotContrasts</span><span class="op">(</span> <span class="va">L</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotContrasts</span><span class="op">(</span><span class="va">L</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotContrasts-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
