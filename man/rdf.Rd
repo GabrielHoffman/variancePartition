@@ -15,7 +15,7 @@ Residual degrees of freedom
 \examples{
 library(lme4)
 
-fit = lm(Reaction ~ Days, sleepstudy)
+fit <- lm(Reaction ~ Days, sleepstudy)
 rdf(fit)
 
 }

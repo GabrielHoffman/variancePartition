@@ -39,10 +39,10 @@ form <- ~ Individual + Tissue + Batch + Age + Height
 
 # Compute Canonical Correlation Analysis (CCA)
 # between all pairs of variables
-# returns absolute correlation value  
-C = canCorPairs( form, info)
+# returns absolute correlation value
+C <- canCorPairs(form, info)
 
 # Plot correlation matrix
-plotCorrMatrix( C )
+plotCorrMatrix(C)
 
 }

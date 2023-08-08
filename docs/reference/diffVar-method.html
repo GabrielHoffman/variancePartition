@@ -133,30 +133,30 @@
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartDEdata</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># filter genes by number of counts</span></span></span>
-<span class="r-in"><span><span class="va">isexpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="va">isexpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Standard usage of limma/voom</span></span></span>
-<span class="r-in"><span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span> <span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>,<span class="op">]</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span> <span class="va">dge</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>, <span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span><span class="va">dge</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># make this vignette faster by analyzing a subset of genes</span></span></span>
-<span class="r-in"><span><span class="va">dge</span> <span class="op">=</span> <span class="va">dge</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,<span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="va">dge</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># regression formula</span></span></span>
-<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Disease</span> </span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span><span class="va">Disease</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># estimate precision weights</span></span></span>
-<span class="r-in"><span><span class="va">vobj</span> <span class="op">=</span> <span class="fu"><a href="voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span> <span class="va">dge</span>, <span class="va">form</span>, <span class="va">metadata</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">vobj</span> <span class="op">&lt;-</span> <span class="fu"><a href="voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span><span class="va">dge</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit dream model</span></span></span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">vobj</span>, <span class="va">form</span>, <span class="va">metadata</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span><span class="va">vobj</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit differential variance model</span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">=</span> <span class="fu">diffVar</span><span class="op">(</span> <span class="va">fit</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">diffVar</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># extract results for differential variance based on Disease</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">res</span>, coef <span class="op">=</span> <span class="st">"Disease1"</span>, number<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">res</span>, coef <span class="op">=</span> <span class="st">"Disease1"</span>, number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                    logFC   AveExpr         t      P.Value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000325884.1 gene=ASCL3  -0.3412386 0.2331510 -4.861381 5.876367e-05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000309971.4 gene=GLE1   -0.7335446 0.5318544 -4.656878 9.887849e-05</span>
@@ -167,11 +167,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000410040.1 gene=IL18R1 0.03134491 1.285258</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Box plot of top hit</span></span></span>
-<span class="r-in"><span><span class="co"># Since ASCL3 has a negative logFC, </span></span></span>
-<span class="r-in"><span><span class="co"># the deviation from expectation is *smaller* in </span></span></span>
+<span class="r-in"><span><span class="co"># Since ASCL3 has a negative logFC,</span></span></span>
+<span class="r-in"><span><span class="co"># the deviation from expectation is *smaller* in</span></span></span>
 <span class="r-in"><span><span class="co"># Disease==1 compared to baseline.</span></span></span>
-<span class="r-in"><span><span class="va">gene</span> <span class="op">=</span> <span class="st">"ENST00000325884.1 gene=ASCL3"</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">vobj</span><span class="op">$</span><span class="va">E</span><span class="op">[</span><span class="va">gene</span>,<span class="op">]</span> <span class="op">~</span> <span class="va">metadata</span><span class="op">$</span><span class="va">Disease</span>, main<span class="op">=</span><span class="va">gene</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">gene</span> <span class="op">&lt;-</span> <span class="st">"ENST00000325884.1 gene=ASCL3"</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">vobj</span><span class="op">$</span><span class="va">E</span><span class="op">[</span><span class="va">gene</span>, <span class="op">]</span> <span class="op">~</span> <span class="va">metadata</span><span class="op">$</span><span class="va">Disease</span>, main <span class="op">=</span> <span class="va">gene</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="diffVar-method-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

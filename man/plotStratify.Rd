@@ -70,16 +70,16 @@ Plot gene expression stratified by another variable
 data(varPartData)
 
 # Create data.frame with expression and Tissue information for each sample
-GE = data.frame( Expression = geneExpr[1,], Tissue = info$Tissue)
+GE <- data.frame(Expression = geneExpr[1, ], Tissue = info$Tissue)
 
 # Plot expression stratified by Tissue
-plotStratify( Expression ~ Tissue, GE )
+plotStratify(Expression ~ Tissue, GE)
 
 # Omit legend and color boxes grey
-plotStratify( Expression ~ Tissue, GE, colorBy = NULL)
+plotStratify(Expression ~ Tissue, GE, colorBy = NULL)
 
 # Specify colors
-col = c( B="green", A="red", C="yellow")
-plotStratify( Expression ~ Tissue, GE, colorBy=col, sort=FALSE)
+col <- c(B = "green", A = "red", C = "yellow")
+plotStratify(Expression ~ Tissue, GE, colorBy = col, sort = FALSE)
 
 }

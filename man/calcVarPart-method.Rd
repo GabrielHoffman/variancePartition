@@ -37,13 +37,13 @@ fraction of variance explained / ICC for each variable in the regression model
 Compute fraction of variation attributable to each variable in regression model.  Also interpretable as the intra-class correlation after correcting for all other variables in the model.
 }
 \details{
-For linear model, variance fractions are computed based on the sum of squares explained by each component.  For the linear mixed model, the variance fractions are computed by variance component estimates for random effects and sum of squares for fixed effects.  
+For linear model, variance fractions are computed based on the sum of squares explained by each component.  For the linear mixed model, the variance fractions are computed by variance component estimates for random effects and sum of squares for fixed effects.
 
-For a generalized linear model, the variance fraction also includes the contribution of the link function so that fractions are reported on the linear (i.e. link) scale rather than the observed (i.e. response) scale. For linear regression with an identity link, fractions are the same on both scales.  But for logit or probit links, the fractions are not well defined on the observed scale due to the transformation imposed by the link function.  
+For a generalized linear model, the variance fraction also includes the contribution of the link function so that fractions are reported on the linear (i.e. link) scale rather than the observed (i.e. response) scale. For linear regression with an identity link, fractions are the same on both scales.  But for logit or probit links, the fractions are not well defined on the observed scale due to the transformation imposed by the link function.
 
-The variance implied by the link function is the variance of the corresponding distribution:  
+The variance implied by the link function is the variance of the corresponding distribution:
 
- logit -> logistic distribution -> variance is pi^2/3  
+ logit -> logistic distribution -> variance is pi^2/3
 
  probit -> standard normal distribution -> variance is 1
 
@@ -60,15 +60,15 @@ library(lme4)
 data(varPartData)
 
 # Linear mixed model
-fit <- lmer( geneExpr[1,] ~ (1|Tissue) + Age, info)
-calcVarPart( fit )
+fit <- lmer(geneExpr[1, ] ~ (1 | Tissue) + Age, info)
+calcVarPart(fit)
 
 # Linear model
 # Note that the two models produce slightly different results
-# This is expected: they are different statistical estimates 
+# This is expected: they are different statistical estimates
 # of the same underlying value
-fit <- lm( geneExpr[1,] ~ Tissue + Age, info)
-calcVarPart( fit )
+fit <- lm(geneExpr[1, ] ~ Tissue + Age, info)
+calcVarPart(fit)
 
 }
 \references{

@@ -35,27 +35,27 @@ A simulated dataset of gene counts
 A simulated dataset of gene counts
 }
 \details{
-\itemize{    
-\item geneCounts gene expression in the form of RNA-seq counts
-\item geneExpr gene expression on a continuous scale
+\itemize{
+	\item geneCounts gene expression in the form of RNA-seq counts
+	\item geneExpr gene expression on a continuous scale
  \item info metadata about the study design
 }
 
-\itemize{    
-\item geneCounts gene expression in the form of RNA-seq counts
-\item geneExpr gene expression on a continuous scale
+\itemize{
+	\item geneCounts gene expression in the form of RNA-seq counts
+	\item geneExpr gene expression on a continuous scale
  \item info metadata about the study design
 }
 
-\itemize{    
-\item geneCounts gene expression in the form of RNA-seq counts
-\item geneExpr gene expression on a continuous scale
+\itemize{
+	\item geneCounts gene expression in the form of RNA-seq counts
+	\item geneExpr gene expression on a continuous scale
  \item info metadata about the study design
 }
 
-\itemize{    
-\item geneCounts gene expression in the form of RNA-seq counts
-\item geneExpr gene expression on a continuous scale
+\itemize{
+	\item geneCounts gene expression in the form of RNA-seq counts
+	\item geneExpr gene expression on a continuous scale
  \item info metadata about the study design
 }
 }

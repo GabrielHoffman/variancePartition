@@ -128,11 +128,11 @@
 <span class="r-in"><span><span class="co"># info: information/metadata about each sample</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Tissue</span><span class="op">)</span> </span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Batch</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Individual</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Tissue</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Define contrasts</span></span></span>
 <span class="r-in"><span><span class="co"># Note that for each contrass, the weights sum to 1</span></span></span>
-<span class="r-in"><span><span class="va">L</span> <span class="op">=</span> <span class="fu">makeContrastsDream</span><span class="op">(</span> <span class="va">form</span>, <span class="va">info</span>, contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Batch1_vs_2 <span class="op">=</span> <span class="st">"Batch1 - Batch2"</span>, Batch3_vs_4 <span class="op">=</span> <span class="st">"Batch3 - Batch4"</span>, Batch1_vs_34 <span class="op">=</span> <span class="st">"Batch1 - (Batch3 + Batch4)/2"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">L</span> <span class="op">&lt;-</span> <span class="fu">makeContrastsDream</span><span class="op">(</span><span class="va">form</span>, <span class="va">info</span>, contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Batch1_vs_2 <span class="op">=</span> <span class="st">"Batch1 - Batch2"</span>, Batch3_vs_4 <span class="op">=</span> <span class="st">"Batch3 - Batch4"</span>, Batch1_vs_34 <span class="op">=</span> <span class="st">"Batch1 - (Batch3 + Batch4)/2"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show contrasts matrix</span></span></span>
 <span class="r-in"><span><span class="va">L</span></span></span>
@@ -149,7 +149,7 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit linear mixed model for each gene</span></span></span>
 <span class="r-in"><span><span class="co"># run on just 10 genes for time</span></span></span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span> <span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, L<span class="op">=</span><span class="va">L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="dream-method.html">dream</a></span><span class="op">(</span><span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, L <span class="op">=</span> <span class="va">L</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># examine contrasts after fitting</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -169,7 +169,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene6  -3.5432476</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show results from first contrast</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Batch1_vs_2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="st">"Batch1_vs_2"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              logFC     AveExpr           t   P.Value adj.P.Val       z.std</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene6   0.67049689  -3.1554790  1.52366339 0.1319712 0.6497599  1.50637414</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene2   0.49420745  -1.1281610  1.36219015 0.1774115 0.6497599  1.34876797</span>
@@ -183,7 +183,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -0.02567263   0.9171386 -0.06725961 0.9465626 0.9465626 -0.06702401</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show results from second contrast</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Batch3_vs_4"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="st">"Batch3_vs_4"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              logFC     AveExpr           t    P.Value adj.P.Val       z.std</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene8  -0.80455799   0.9171386 -2.16904635 0.03340121 0.3340121 -2.12722716</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene1  -0.39590682 -10.4664549 -1.16045670 0.24967624 0.9767482 -1.15113612</span>
@@ -197,7 +197,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene6   0.01251517  -3.1554790  0.02924752 0.97674821 0.9767482  0.02914593</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show results from third contrast</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef<span class="op">=</span><span class="st">"Batch1_vs_34"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="st">"Batch1_vs_34"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              logFC     AveExpr           t    P.Value adj.P.Val       z.std</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene6   1.04103369  -3.1554790  2.37923408 0.01998146 0.1998146  2.32669579</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene2   0.39117058  -1.1281610  1.08409908 0.28193902 0.9421247  1.07597371</span>

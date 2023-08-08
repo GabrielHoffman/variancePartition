@@ -36,15 +36,15 @@ Define generic \code{vcovSqrt()} for result of \code{lmFit()} and \code{dream()}
 # info: information/metadata about each sample
 data(varPartData)
 
-form <- ~ Batch 
+form <- ~Batch
 
-fit = dream( geneExpr[1:2,], form, info)
-fit = eBayes(fit)
+fit <- dream(geneExpr[1:2, ], form, info)
+fit <- eBayes(fit)
 
 # Compute covariance directly
-Sigma = vcov(fit, geneExpr[1:2,])
+Sigma <- vcov(fit, geneExpr[1:2, ])
 
 # Compute factor of covariance
-S = crossprod(vcovSqrt(fit, geneExpr[1:2,]))
+S <- crossprod(vcovSqrt(fit, geneExpr[1:2, ]))
 
 }

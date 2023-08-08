@@ -37,9 +37,9 @@ library(lme4)
 data(varPartData)
 
 # Linear mixed model
-fit <- lmer( geneExpr[1,] ~ (1|Individual) + (1|Tissue) + Age, info)
+fit <- lmer(geneExpr[1, ] ~ (1 | Individual) + (1 | Tissue) + Age, info)
 
 # Effective sample size
-ESS( fit )
+ESS(fit)
 
 }
