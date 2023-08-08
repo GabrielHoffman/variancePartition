@@ -94,52 +94,59 @@ function(fit, returnFractions=TRUE, ...){
 		idx = which(fit$assign == i)
 		dsgn[,idx,drop=FALSE] %*% fit$coefficients[idx]
 	})
-	colnames(fxeff) = attr(fit$terms,"term.labels")
+	colnames(fxeff) = attr(fit$terms, "term.labels")
+
+	# get weights
+	w = weights(fit)
+	if( is.null(w) ){
+		w = rep(1, nrow(fit$model))
+	}
 
 	# get sum of squares explained by each variable
-	fixedSS = apply(fxeff, 2, ss) 
+	SS = apply(fxeff, 2, function(x) 
+							weighted.var(x,w) * (length(x)-1), 
+							simplify=FALSE) 
 
-	# Total sum of squares bu summing predictions for each variable
-	ssFixedTotal = ss(rowSums(fxeff)) 
+	# Compute residual sum of squares
+	SS['Residuals'] = sigma(fit)^2 * rdf(fit)
 
-	# scale SS by the sum and the total SS
-	# Evaluate sum of squares for each component
-	ssComp = vapply(names(fixedSS), function(key){
-		as.array(fixedSS[[key]] / sum(fixedSS) * ssFixedTotal)
-	}, numeric(1))
-
-	# get residual sum of squares
-	ssComp['Residuals'] = RSS(fit) 
+	SS = unlist(SS)
 
 	if( returnFractions ){
 		# get variance fractions by dividing each SS by total sum of squares
-		res = ssComp / sum(ssComp)
+		res = SS / sum(SS)
 	}else{
-		res = ssComp
+		res = SS / nrow(fit$model)
 	}
 
 	res
 })
 
 
-# Residual sum of squares
-RSS = function (object){
-    w <- object$weights
-    r <- residuals(object)
-    if (is.null(w)) 
-        w <- rep(1, length(r))
-    sum(w * residuals(object)^2)
+
+
+# from modi::weighted.var()
+#' @importFrom stats weighted.mean
+weighted.var = function (x, w, na.rm = FALSE){
+    if (missing(w)) {
+        w <- rep.int(1, length(x))
+    }
+    else if (length(w) != length(x)) {
+        stop("x and w must have the same length")
+    }
+    if (min(w) < 0) {
+        stop("there are negative weights")
+    }
+    if (is.integer(w)) {
+        w <- as.numeric(w)
+    }
+    if (na.rm) {
+        w <- w[obs.ind <- !is.na(x)]
+        x <- x[obs.ind]
+    }
+    w <- w * length(w)/sum(w)
+    return(sum(w * (x - weighted.mean(x, w))^2)/(sum(w) - 1))
 }
-
-# Sum of squares
-ss = function(x){
-	# sum((x-mean(x))^2)
-	# correct for the fact that var() gives the bias corrected value
-	var(x)*(length(x)-1)
-}
-
-
-
 
 
 #' @export
@@ -205,7 +212,7 @@ getDistrVar = function( fit ){
 	distVar = switch(famLink,
 		"binomial logit" = (pi^2)/3,
 		"binomial probit" = 1,
-		"gaussian identity" = var(residuals(fit)),
+		"gaussian identity" = sigma(fit)^2 * rdf(fit),
 		"poisson log" = {
 				beta_0 =  coef(summary(fit))['(Intercept)','Estimate']
 				log(1 + 1/exp(beta_0))
@@ -227,18 +234,25 @@ getDistrVar = function( fit ){
 # evaluate GLM's
 cvp_glm = function(fit, returnFractions=TRUE,...){
 
-	# N = nrow(fit$model)
+	# get weights
+	w = weights(fit)
+	if( is.null(w) ){
+		w = rep(1, nrow(fit$model))
+	}
 
 	# Compute eta for each term
 	# predicted value in linear space for each term
 	Eta = predict(fit, type="terms")
 
+	# residual variance based on link function
 	distVar = getDistrVar( fit )
 
 	# variance on linear scale
 	# get variance of each term
 	# append with variance due to link function
-	var_term = c(apply(Eta, 2, var), distVar)
+	var_term = apply(Eta, 2, function(x) 
+							weighted.var(x,w) * (length(x)-1)) 
+	var_term = c(var_term, Residuals = distVar)
 
 	names(var_term) = c(colnames(Eta), "Residuals")
 
@@ -295,6 +309,13 @@ cvp_glmm = function(fit, returnFractions=TRUE,...){
 #' @importFrom lme4 VarCorr fixef
 getVarianceComponents = function( fit ){
 	
+	# get weights
+	w = weights(fit)
+	if( is.null(w) ){
+		w = rep(1, nrow(fit$model))
+	}
+
+	# get random effects estimates
 	varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)
 
 	# order variables by name
@@ -315,23 +336,26 @@ getVarianceComponents = function( fit ){
 		colnames(fxeff) = colnames(fit@pp$X)[idx]
 
 		# compute variance of each fixed effect
+		# variance of each term
 		N = nrow(fxeff)
 
-		# variance of eahc term
-		fixedVar = apply(fxeff, 2, var) * (N-1) / N
+		fixedVar = apply(fxeff, 2, function(x) 
+							weighted.var(x,w) * (N-1) / N) 
 
-		# variance of sum of terms
-		varFixedTotal = var(rowSums(fxeff)) * (N-1) / N
+		varFixedTotal = weighted.var(rowSums(fxeff), w) * (N-1) / N
 
-		# scale variance by the sum  and the total variance
-		for( key in names(fixedVar)){
-			varComp[[key]] = as.array(fixedVar[[key]] / sum(fixedVar) * varFixedTotal)
-		}
+    for (key in names(fixedVar)) {
+        varComp[[key]] = as.array(fixedVar[[key]]/sum(fixedVar) * 
+            varFixedTotal)
+    }
 	}
 
 	# get residuals
-	varComp$Residuals = sigma(fit)^2
-	names(varComp$Residuals) = ''
+	varComp$Residuals = sigma(fit)^2 
 	
 	return(varComp)
 }
+
+
+
+

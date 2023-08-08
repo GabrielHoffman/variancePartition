@@ -16,16 +16,10 @@
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/index.html</loc>
   </url>
   <url>
-    <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/multivariate_tests.html</loc>
-  </url>
-  <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/mvtests.html</loc>
   </url>
   <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/rnd_effects.html</loc>
-  </url>
-  <url>
-    <loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/theory_practice_random_effects.html</loc>
   </url>
   <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/authors.html</loc>
@@ -185,6 +179,9 @@
   </url>
   <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotVarianceEstimates.html</loc>
+  </url>
+  <url>
+    <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/rdf.html</loc>
   </url>
   <url>
     <loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/rdf.merMod.html</loc>

@@ -1,3 +1,9 @@
+
+# variancePartition 1.31.13
+ - August 7, 2023
+ - fix bug in `calcVarPart()` where weights was ignored in some cases
+  - add additional tests to check this
+
 # variancePartition 1.31.12
  - July 3, 2023
  - `makeContrastsDream()` converts `NA` `contrasts` to `NULL`

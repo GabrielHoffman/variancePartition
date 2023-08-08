@@ -1,7 +1,29 @@
 # Gabriel Hoffman
 # December 13, 2020
 #
-# Compute the residual degrees of freeom for a linear mixed model
+# Compute the residual degrees of freedom for a linear mixed model
+
+#' Residual degrees of freedom
+#' 
+#' Residual degrees of freedom
+#' 
+#' @param fit model fit from \code{lm()}, \code{glm()}, \code{lmer()}
+#' 
+#' @examples
+#' library(lme4)
+#' 
+#' fit = lm(Reaction ~ Days, sleepstudy)
+#' rdf(fit)
+#' 
+#' @export
+#' @seealso \code{rdf.merMod}
+rdf = function(fit){
+	if( is(fit, "lm") ) return( fit$df.residual )
+	if( is(fit, "glm") ) return( fit$df.residual )
+	if( is(fit, "merMod") ) return( rdf.merMod(fit) )
+	NA
+}
+
 
 # trace only gives correct rdf if evals are 1 and 0
 # trace is given in the book with H is idempotent.
@@ -102,6 +124,7 @@ rdf_from_matrices = function(A,B){
 
 
 
+
 #' Approximate residual degrees of freedom
 #'
 #' Compute the approximate residual degrees of freedom from a linear mixed model.
@@ -170,7 +193,6 @@ rdf.merMod = function(model, method=c("linear", "quadratic")) {
 	}
     rdf
 }
-
 
 
 #' Shrinkage metric for eBayes
