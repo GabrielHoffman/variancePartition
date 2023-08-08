@@ -70,3 +70,83 @@ test_calcVarPart = function(){
 
 	TRUE
 }
+
+
+test_calcVarPart_weights = function(){
+
+	library(variancePartition)
+	library(lme4)
+	library(RUnit)
+	# source("/Users/gabrielhoffman/workspace/repos/variancePartition/R/./checkModelStatus.R")
+	# source("/Users/gabrielhoffman/workspace/repos/variancePartition/R/calcVarPart.R")
+
+	# set weights
+	w = c(10000, 2:nrow(sleepstudy))
+	w = w / mean(w) 
+
+	# lm() 
+	#######
+	fit = lm(Reaction ~ Days, sleepstudy)
+
+	rsq = summary(fit)$r.squared
+	rsq_vp = calcVarPart(fit)['Days']
+	checkEqualsNumeric(rsq, rsq_vp)
+
+	# lm() weighted
+	#######
+	fit = lm(Reaction ~ Days, sleepstudy, weights=w)
+
+	rsq = summary(fit)$r.squared
+	rsq_vp = calcVarPart(fit)['Days']
+	checkEqualsNumeric(rsq, rsq_vp)
+
+	# glm() 
+	#######
+
+	fit1 = lm(Reaction ~ Days, sleepstudy)
+	fit2 = glm(Reaction ~ Days, data=sleepstudy)
+
+	checkEqualsNumeric(calcVarPart(fit1), calcVarPart(fit2))
+
+	# glm() weighted
+	#######
+
+	fit1 = lm(Reaction ~ Days, data=sleepstudy, weights=w)
+	fit2 = glm(Reaction ~ Days, data=sleepstudy, weights=w)
+
+	checkEqualsNumeric(calcVarPart(fit1), calcVarPart(fit2))
+
+	# lmer()
+	########
+
+	set.seed(13)
+	# random effect with zero estimated variance component
+	sleepstudy$tmp = sample(letters[1:2], nrow(sleepstudy), replace=TRUE)
+
+	fit1 = lm(Reaction ~ Days, sleepstudy)
+	fit2 = lmer(Reaction ~ Days + (1|tmp), data=sleepstudy, REML=FALSE)
+
+	calcVarPart(fit1)
+	calcVarPart(fit2)[-1]
+
+	checkEqualsNumeric(calcVarPart(fit1), calcVarPart(fit2)[-1])
+
+	# lmer() weighted
+	########
+
+	set.seed(13)
+	# random effect with zero estimated variance component
+	sleepstudy$tmp = sample(letters[1:2], nrow(sleepstudy), replace=TRUE)
+
+	fit1 = lm(Reaction ~ Days, sleepstudy, weights=w)
+	fit2 = lmer(Reaction ~ Days + (1|tmp), data=sleepstudy, weights=w, REML=FALSE)
+
+	calcVarPart(fit1)
+	calcVarPart(fit2)
+
+	checkEqualsNumeric(calcVarPart(fit1), calcVarPart(fit2)[-1])
+}
+
+
+
+
