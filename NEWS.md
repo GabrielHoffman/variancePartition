@@ -1,6 +1,6 @@
 
 
-# variancePartition 1.31.13
+# variancePartition 1.31.15
  - August 10, 2023
  - `fit = dream()` now returns `fit$loglik` (the log-likelihood for each gene), and `fit$edf` (the effective degreees of freedom for each gene)
 
