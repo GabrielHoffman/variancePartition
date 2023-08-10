@@ -177,7 +177,7 @@ dream <- function(exprObj,
 
 
 #' @importFrom lme4 VarCorr refit
-#' @importFrom stats sigma
+#' @importFrom stats sigma logLik
 create_eval_dream <- function(L, ddf, univariateContrasts) {
   function(x) {
     # convert to result of lmerTest::lmer()
@@ -232,6 +232,7 @@ create_eval_dream <- function(L, ddf, univariateContrasts) {
     list(
       ret = new("MArrayLM", ret),
       varComp = varComp,
+      logLik = as.numeric(logLik(fit)),
       # effective degrees of freedom as sum of diagonals of hat matrix
       edf = sum(h),
       hatvalues = h,
@@ -378,6 +379,8 @@ combineResults <- function(exprObj, L, resList, univariateContrasts) {
       rdf = NULL,
       df.residual = NULL,
       hatvalues = NULL,
+      edf = NULL,
+      logLik = NULL,
       Amean = NULL,
       method = "lmer",
       sigma = NULL,
@@ -409,6 +412,8 @@ combineResults <- function(exprObj, L, resList, univariateContrasts) {
 
   hatvalues <- t(do.call(cbind, lapply(resList, function(x) x$hatvalues)))
 
+  logLik <- sapply(resList, function(x) x$logLik)
+
   design <- resList[[1]]$ret$design
 
   Amean <- sapply(resList, function(x) x$ret$Amean)
@@ -430,6 +435,8 @@ combineResults <- function(exprObj, L, resList, univariateContrasts) {
     rdf = c(rdf),
     df.residual = df.residual,
     hatvalues = hatvalues,
+    edf = rowSums(hatvalues),
+    logLik = logLik,
     Amean = Amean,
     method = "lmer",
     sigma = sigma,

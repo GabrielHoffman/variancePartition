@@ -437,6 +437,26 @@ assign(
       }
     }
 
+    if (!is.null(object$edf)) {
+      if (!missing(i)) {
+        names(object$edf) <- rownames(object)
+        obj$edf <- object$edf[i]
+        # names(obj$edf) <- c()
+      } else {
+        obj$edf <- object$edf
+      }
+    }
+
+    if (!is.null(object$logLik)) {
+      if (!missing(i)) {
+        names(object$logLik) <- rownames(object)
+        obj$logLik <- object$logLik[i]
+        # names(obj$logLik) <- c()
+      } else {
+        obj$logLik <- object$logLik
+      }
+    }
+
     # obj$pValue = object$pValue[i,j]
     obj$s2.prior <- object$s2.prior
     obj$df.prior <- object$df.prior
