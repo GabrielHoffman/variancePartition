@@ -1,4 +1,8 @@
 
+# variancePartition 1.31.16
+ - August 18, 2023
+ - in `dream()`, if `"Kenward-Roger"`` is specified but gives covariance matrix that has poor condition number or is not positive definite, then fall back to `"Satterthwaite"` for hypothesis testing in linear mixed models
+ - Update documentation, and reformat code
 
 # variancePartition 1.31.15
  - August 10, 2023

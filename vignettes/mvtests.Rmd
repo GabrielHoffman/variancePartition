@@ -2,7 +2,7 @@
 title: "Multivariate tests"
 subtitle: "Combining results of univariate tests"
 author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
-date: "Run on `r Sys.time()`"
+date: "Run on `r format(Sys.time())`"
 output:
   rmarkdown::html_document:
     highlight: pygments
