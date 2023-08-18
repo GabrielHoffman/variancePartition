@@ -207,7 +207,7 @@ For gene43, variation across Individuals explains 91.4\% of variance in gene exp
 
 ### Intuition about the backend
 
-At the heart of `variancePartition`, a regression model is fit for each gene separately and summary statistics are extracted and reported to the user for visualization and downstream analysis.  For a single model fit, `calcVarPart()` computes the fraction of variance explained by each variable.  `calcVarPart()` is defined by this package, and computes these statistics from either a fixed effects model fit with `lm()` or a linear mixed model fit with `lme4::lmer()`.  `fitExtractVarPart()` loops over each gene, fits the regression model and returns the variance fractions reported by `calcVarPart()`.
+At the heart of `variancePartition`, a regression model is fit for each gene separately and summary statistics are extracted and reported to the user for visualization and downstream analysis.  For a single model fit, `calcVarPart()` computes the fraction of variance explained by each variable.  `calcVarPart()` is defined by this package, and computes these statistics from either a fixed effects model fit with `lm()` or a linear mixed model fit with `lme4::lmer()`.  `fitExtractVarPartModel()` loops over each gene, fits the regression model and returns the variance fractions reported by `calcVarPart()`.
 
 Fitting the regression model and extracting variance statistics can also be done directly:
 ```{r cache=TRUE}
@@ -289,9 +289,9 @@ In biological datasets technical variability (i.e. batch effects) can often redu
 
 Evaluating the correlation between variables in a important part in interpreting variancePartition results.  When comparing two continuous variables, Pearson correlation is widely used.  But variancePartition includes categorical variables in the model as well.  In order to accommodate the correlation between a continuous and a categorical variable, or two categorical variables we used canonical correlation analysis.  
 
-Canonical Correlation Analysis (CCA) is similar to correlation between two vectors, except that CCA can accommodate matricies as well.  For a pair of variables, canCorPairs assesses the degree to which they co-vary and contain the same information.  Variables in the formula can be a continuous variable or a discrete variable expanded to a matrix (which is done in the backend of a regression model).  For a pair of variables, canCorPairs uses CCA to compute the correlation between these variables and returns the pairwise correlation matrix.
+Canonical Correlation Analysis (CCA) is similar to correlation between two vectors, except that CCA can accommodate matricies as well.  For a pair of variables, `canCorPairs()` assesses the degree to which they co-vary and contain the same information.  Variables in the formula can be a continuous variable or a discrete variable expanded to a matrix (which is done in the backend of a regression model).  For a pair of variables, `canCorPairs()` uses CCA to compute the correlation between these variables and returns the pairwise correlation matrix.
 
-Statistically, let `rho` be the array of correlation values returned by the standard R function cancor to compute CCA.  canCorPairs returns `rho / sum(rho)` which is the fraction of the maximum possible correlation. Note that CCA returns correlations values between 0 and 1
+Statistically, let `rho` be the array of correlation values returned by the standard R function cancor to compute CCA.  `canCorPairs()` returns `rho / sum(rho)` which is the fraction of the maximum possible correlation. Note that CCA returns correlations values between 0 and 1
 
 ```{r canCorPairs, cache=TRUE, results='hide', fig.width=5, fig.height=5}
 form <- ~ Individual + Tissue + Batch + Age + Height
