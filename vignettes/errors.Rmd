@@ -69,24 +69,24 @@ library(variancePartition)
 data(varPartData)
 
 # Redundant formula
-# This example is an extreme example of redundancy 
+# This example is an extreme example of redundancy
 # but more subtle cases often show up in real data
 form <- ~ Tissue + (1 | Tissue)
 
-fit <- dream(geneExpr[1:30,], form, info)
+fit <- dream(geneExpr[1:30, ], form, info)
 
 ## Warning in dream(geneExpr[1:30, ], form, info): Model failed for 29 responses.
 ##   See errors with attr(., 'errors')
 
 # Extract gene-level errors
-attr(fit, 'errors')[1:2] 
+attr(fit, "errors")[1:2]
 
-## gene1 
-## "Error in lmerTest:::as_lmerModLT(model, devfun, tol = tol): (converted from warning) 
-## Model may not have converged with 1 eigenvalue close to zero: -2.0e-09\n" 
+## gene1
+## "Error in lmerTest:::as_lmerModLT(model, devfun, tol = tol): (converted from warning)
+## Model may not have converged with 1 eigenvalue close to zero: -2.0e-09\n"
 
-## gene2 
-## "Error: (converted from warning) Model failed to converge 
+## gene2
+## "Error: (converted from warning) Model failed to converge
 ##   with 1 negative eigenvalue: -1.5e-08\n"
 ```
 

@@ -180,7 +180,6 @@ dream <- function(exprObj,
 #' @importFrom stats sigma logLik
 create_eval_dream <- function(L, ddf, univariateContrasts) {
   function(x) {
-
     # convert to result of lmerTest::lmer()
     fit <- as_lmerModLmerTest2(x)
 
@@ -244,8 +243,7 @@ create_eval_dream <- function(L, ddf, univariateContrasts) {
 
 #' @importFrom lmerTest as_lmerModLmerTest contest
 #' @importFrom pbkrtest vcovAdj.lmerMod
-eval_contrasts <- function(fit, L, ddf, kappa.tol = 1e6, pd.tol=1e-8) {
-
+eval_contrasts <- function(fit, L, ddf, kappa.tol = 1e6, pd.tol = 1e-8) {
   # convert to lmerModLmerTest object
   if (!is(fit, "lmerModLmerTest")) {
     fit <- as_lmerModLmerTest2(fit)
@@ -261,17 +259,17 @@ eval_contrasts <- function(fit, L, ddf, kappa.tol = 1e6, pd.tol=1e-8) {
 
     # if poor condition number, or not positive definite
     # fall back on Satterthwaite
-    if (kappa(V) > kappa.tol | ! isPositiveDefinite(V, pd.tol)) {
-      ddf = "Satterthwaite"
+    if (kappa(V) > kappa.tol | !isPositiveDefinite(V, pd.tol)) {
+      ddf <- "Satterthwaite"
     }
-  } 
+  }
 
-  if( ddf == "Satterthwaite" ) {
+  if (ddf == "Satterthwaite") {
     # standard
     V <- as.matrix(vcov(fit))
   }
 
-  cons = contest(fit, t(L), ddf = ddf, joint = FALSE, confint = FALSE)
+  cons <- contest(fit, t(L), ddf = ddf, joint = FALSE, confint = FALSE)
 
   # extract results
   df <- cons$df
@@ -283,7 +281,7 @@ eval_contrasts <- function(fit, L, ddf, kappa.tol = 1e6, pd.tol=1e-8) {
 
   SE <- matrix(cons[["Std. Error"]], ncol = 1)
   colnames(SE) <- "logFC"
-  rownames(SE) <- colnames(L)  
+  rownames(SE) <- colnames(L)
 
   list(
     cons = cons,
@@ -492,14 +490,12 @@ combineResults <- function(exprObj, L, resList, univariateContrasts) {
 
 
 
-isPositiveDefinite <- function( x, tol = 1e-8 ){
-
+isPositiveDefinite <- function(x, tol = 1e-8) {
   # ensure matrix is square
   stopifnot(nrow(x) == ncol(x))
 
   # compute eigen values
   ev <- eigen(x, only.values = TRUE)$values
 
-  all( ev > tol )
+  all(ev > tol)
 }
-

@@ -153,9 +153,9 @@ form <- ~ Disease + (1 | Individual)
 vobjDream <- voomWithDreamWeights(dge, form, metadata, BPPARAM = param)
 
 # Fit the dream model on each gene
-# For the hypothesis testing, by default, 
+# For the hypothesis testing, by default,
 # dream() uses the KR method for <= 20 samples,
-# otherwise it uses the Satterthwaite approximation 
+# otherwise it uses the Satterthwaite approximation
 fitmm <- dream(vobjDream, form, metadata)
 fitmm <- eBayes(fitmm)
 ```

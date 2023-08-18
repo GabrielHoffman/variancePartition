@@ -48,10 +48,9 @@ setGeneric("topTable", function(fit, coef = NULL, number = 10, genelist = fit$ge
 #' @aliases toptable,MArrayLM-method
 setMethod(
   "topTable", "MArrayLM",
-  function(
-      fit, coef = NULL, number = 10, genelist = fit$genes,
-      adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,
-      lfc = 0, confint = FALSE) {
+  function(fit, coef = NULL, number = 10, genelist = fit$genes,
+           adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,
+           lfc = 0, confint = FALSE) {
     limma::topTable(fit, coef = coef, number = number, genelist = genelist, adjust.method = adjust.method, sort.by = sort.by, resort.by = resort.by, p.value = p.value, lfc = lfc, confint = confint)
   }
 )
@@ -80,10 +79,9 @@ setMethod(
 #' @aliases toptable,MArrayLM2-method
 setMethod(
   "topTable", "MArrayLM2",
-  function(
-      fit, coef = NULL, number = 10, genelist = fit$genes,
-      adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,
-      lfc = 0, confint = FALSE) {
+  function(fit, coef = NULL, number = 10, genelist = fit$genes,
+           adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,
+           lfc = 0, confint = FALSE) {
     if (!is(fit, "MArrayLM2")) {
       stop("fit must be an MArrayLM2 object")
     }
@@ -170,7 +168,7 @@ setMethod(
 )
 
 
-.topTableT <- function(fit, coef=1, number=10, genelist=NULL, A=NULL, eb=NULL, adjust.method="BH", sort.by="B", resort.by=NULL, p.value=1, lfc=0, confint=FALSE, ...)
+.topTableT <- function(fit, coef = 1, number = 10, genelist = NULL, A = NULL, eb = NULL, adjust.method = "BH", sort.by = "B", resort.by = NULL, p.value = 1, lfc = 0, confint = FALSE, ...)
                        # 	Summary table of top genes for a single coefficient
                        # 	Gordon Smyth
 # 	21 Nov 2002. Forked from toptable() 1 Feb 2018. Last revised 1 Feb 2018.
