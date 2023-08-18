@@ -1,8 +1,8 @@
 ---
-title: "dream"
+title: "dream analysis"
 subtitle: "Differential expression testing with linear mixed models for repeated measures"
 author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
-date: "Run on `r Sys.time()`"
+date: "Run on `r format(Sys.time())`"
 output:
   rmarkdown::html_document:
     highlight: pygments
@@ -153,7 +153,9 @@ form <- ~ Disease + (1 | Individual)
 vobjDream <- voomWithDreamWeights(dge, form, metadata, BPPARAM = param)
 
 # Fit the dream model on each gene
-# By default, uses the Satterthwaite approximation for the hypothesis test
+# For the hypothesis testing, by default, 
+# dream() uses the KR method for <= 20 samples,
+# otherwise it uses the Satterthwaite approximation 
 fitmm <- dream(vobjDream, form, metadata)
 fitmm <- eBayes(fitmm)
 ```

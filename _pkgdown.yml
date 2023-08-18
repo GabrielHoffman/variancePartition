@@ -12,3 +12,13 @@ template:
 search:
   exclude: ['news/index.html']
 
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - dream
+  - rnd_effects
+  - mvtests
+  - errors
+  - additional_visualization
+  - FAQ

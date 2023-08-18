@@ -1,7 +1,7 @@
 ---
-title: "Theory and practice of random effects and REML"
+title: "Theory and practice of random effects"
 author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
-date: "Run on `r Sys.time()`"
+date: "Run on `r format(Sys.time())`"
 output:
   rmarkdown::html_document:
     highlight: pygments

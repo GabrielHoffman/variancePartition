@@ -6,7 +6,7 @@
 #' @param formula specifies variables for the linear (mixed) model.  Must only specify covariates, since the rows of exprObj are automatically used as a response. e.g.: \code{~ a + b + (1|c)}  Formulas with only fixed effects also work, and \code{lmFit()} followed by \code{contrasts.fit()} are run.
 #' @param data data.frame with columns corresponding to formula
 #' @param L contrast matrix specifying a linear combination of fixed effects to test
-#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 10 samples.
+#' @param ddf Specifiy "Satterthwaite" or "Kenward-Roger" method to estimate effective degress of freedom for hypothesis testing in the linear mixed model.  Note that Kenward-Roger is more accurate, but is *much* slower.  Satterthwaite is a good enough approximation for most datasets. "adaptive" (Default) uses KR for <= 20 samples.
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param control control settings for \code{lmer()}
 #' @param hideErrorsInBackend default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")}
@@ -180,6 +180,7 @@ dream <- function(exprObj,
 #' @importFrom stats sigma logLik
 create_eval_dream <- function(L, ddf, univariateContrasts) {
   function(x) {
+
     # convert to result of lmerTest::lmer()
     fit <- as_lmerModLmerTest2(x)
 
@@ -243,14 +244,34 @@ create_eval_dream <- function(L, ddf, univariateContrasts) {
 
 #' @importFrom lmerTest as_lmerModLmerTest contest
 #' @importFrom pbkrtest vcovAdj.lmerMod
-eval_contrasts <- function(fit, L, ddf, kappa.tol = 1e6) {
+eval_contrasts <- function(fit, L, ddf, kappa.tol = 1e6, pd.tol=1e-8) {
+
   # convert to lmerModLmerTest object
   if (!is(fit, "lmerModLmerTest")) {
     fit <- as_lmerModLmerTest2(fit)
   }
 
-  # Evaluate contrasts
-  cons <- contest(fit, t(L), ddf = ddf, joint = FALSE, confint = FALSE)
+  # determine ddf method
+  # if KR method is specified but gives invalid covariance matrix
+  # fall back on Satterthwaite
+  # compute variance-covariance matrix
+  if (ddf == "Kenward-Roger") {
+    # get vcov using KR adjusted method
+    V <- as.matrix(vcovAdj.lmerMod(fit, 0))
+
+    # if poor condition number, or not positive definite
+    # fall back on Satterthwaite
+    if (kappa(V) > kappa.tol | ! isPositiveDefinite(V, pd.tol)) {
+      ddf = "Satterthwaite"
+    }
+  } 
+
+  if( ddf == "Satterthwaite" ) {
+    # standard
+    V <- as.matrix(vcov(fit))
+  }
+
+  cons = contest(fit, t(L), ddf = ddf, joint = FALSE, confint = FALSE)
 
   # extract results
   df <- cons$df
@@ -262,21 +283,7 @@ eval_contrasts <- function(fit, L, ddf, kappa.tol = 1e6) {
 
   SE <- matrix(cons[["Std. Error"]], ncol = 1)
   colnames(SE) <- "logFC"
-  rownames(SE) <- colnames(L)
-
-  # compute variance-covariance matrix
-  if (ddf == "Kenward-Roger") {
-    # get vcov using KR adjusted method
-    V <- as.matrix(vcovAdj.lmerMod(fit, 0))
-
-    # if poor condition number, use standard vcov
-    if (kappa(V) > kappa.tol) {
-      V <- vcov(fit)
-    }
-  } else {
-    # standard
-    V <- as.matrix(vcov(fit))
-  }
+  rownames(SE) <- colnames(L)  
 
   list(
     cons = cons,
@@ -482,3 +489,17 @@ combineResults <- function(exprObj, L, resList, univariateContrasts) {
   # eBayes can be run afterwards, if wanted
   ret <- .standard_transform(ret)
 }
+
+
+
+isPositiveDefinite <- function( x, tol = 1e-8 ){
+
+  # ensure matrix is square
+  stopifnot(nrow(x) == ncol(x))
+
+  # compute eigen values
+  ev <- eigen(x, only.values = TRUE)$values
+
+  all( ev > tol )
+}
+

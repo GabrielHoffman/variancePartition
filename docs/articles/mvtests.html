@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.16</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,16 +36,20 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
+  <a class="nav-link" href="../articles/variancePartition.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
-    <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
-    <a class="dropdown-item" href="../articles/dream.html">dream</a>
+    <a class="dropdown-item" href="../articles/dream.html">dream analysis</a>
+    <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects</a>
     <a class="dropdown-item" href="../articles/mvtests.html">Multivariate tests</a>
-    <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects and REML</a>
+    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
+    <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
+    <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
   </div>
 </li>
 <li class="nav-item">
@@ -81,8 +85,8 @@ univariate tests</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2023-08-07
-22:37:52.100031</h4>
+            <h4 data-toc-skip class="date">Run on 2023-08-18
+15:40:56</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/mvtests.Rmd" class="external-link"><code>vignettes/mvtests.Rmd</code></a></small>
       <div class="d-none name"><code>mvtests.Rmd</code></div>
@@ -116,24 +120,24 @@ gene-level. This is done with the function.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">tximportData</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># specify directory</span></span>
-<span><span class="va">path</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package<span class="op">=</span><span class="st">"tximportData"</span><span class="op">)</span></span>
+<span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"tximportData"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># read sample meta-data</span></span>
-<span><span class="va">samples</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>,<span class="st">"samples.txt"</span><span class="op">)</span>, header<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">samples.ext</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>,<span class="st">"samples_extended.txt"</span><span class="op">)</span>, header<span class="op">=</span><span class="cn">TRUE</span>, sep<span class="op">=</span><span class="st">"\t"</span><span class="op">)</span></span>
+<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"samples.txt"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">samples.ext</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"samples_extended.txt"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, sep <span class="op">=</span> <span class="st">"\t"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># read assignment of transcripts to genes</span></span>
 <span><span class="co"># remove genes on the PAR, since these are present twice</span></span>
-<span><span class="va">tx2gene</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"tx2gene.gencode.v27.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">tx2gene</span> <span class="op">=</span> <span class="va">tx2gene</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"PAR_Y"</span>, <span class="va">tx2gene</span><span class="op">$</span><span class="va">GENEID</span>, invert<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>,<span class="op">]</span></span>
+<span><span class="va">tx2gene</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"tx2gene.gencode.v27.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tx2gene</span> <span class="op">&lt;-</span> <span class="va">tx2gene</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"PAR_Y"</span>, <span class="va">tx2gene</span><span class="op">$</span><span class="va">GENEID</span>, invert <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="co"># read transcript-level quatifictions</span></span>
-<span><span class="va">files</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"salmon"</span>, <span class="va">samples</span><span class="op">$</span><span class="va">run</span>, <span class="st">"quant.sf.gz"</span><span class="op">)</span></span>
-<span><span class="va">txi</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/tximport/man/tximport.html" class="external-link">tximport</a></span><span class="op">(</span><span class="va">files</span>, type <span class="op">=</span> <span class="st">"salmon"</span>, txOut<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">path</span>, <span class="st">"salmon"</span>, <span class="va">samples</span><span class="op">$</span><span class="va">run</span>, <span class="st">"quant.sf.gz"</span><span class="op">)</span></span>
+<span><span class="va">txi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tximport/man/tximport.html" class="external-link">tximport</a></span><span class="op">(</span><span class="va">files</span>, type <span class="op">=</span> <span class="st">"salmon"</span>, txOut <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create metadata simulating two conditions</span></span>
-<span><span class="va">sampleTable</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>condition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">sampleTable</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">sampleTable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>condition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">sampleTable</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="standard-dream-analysis">Standard dream analysis<a class="anchor" aria-label="anchor" href="#standard-dream-analysis"></a>
@@ -144,18 +148,18 @@ gene-level. This is done with the function.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioinf.wehi.edu.au/edgeR/" class="external-link">edgeR</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Prepare transcript-level reads</span></span>
-<span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span><span class="va">txi</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span></span>
+<span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span><span class="va">txi</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span></span>
 <span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">condition</span>, data <span class="op">=</span> <span class="va">sampleTable</span><span class="op">)</span></span>
-<span><span class="va">isexpr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html" class="external-link">filterByExpr</a></span><span class="op">(</span><span class="va">dge</span>, <span class="va">design</span><span class="op">)</span></span>
-<span><span class="va">dge</span> <span class="op">=</span> <span class="va">dge</span><span class="op">[</span><span class="va">isexpr</span>,<span class="op">]</span></span>
-<span><span class="va">dge</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span><span class="va">dge</span><span class="op">)</span> </span>
+<span><span class="va">isexpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html" class="external-link">filterByExpr</a></span><span class="op">(</span><span class="va">dge</span>, <span class="va">design</span><span class="op">)</span></span>
+<span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="va">dge</span><span class="op">[</span><span class="va">isexpr</span>, <span class="op">]</span></span>
+<span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span><span class="va">dge</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Estimate precision weights</span></span>
-<span><span class="va">vobj</span> <span class="op">=</span> <span class="fu"><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span><span class="va">dge</span>, <span class="op">~</span> <span class="va">condition</span>, <span class="va">sampleTable</span><span class="op">)</span></span>
+<span><span class="va">vobj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span><span class="va">dge</span>, <span class="op">~</span><span class="va">condition</span>, <span class="va">sampleTable</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fit regression model one transcript at a time</span></span>
-<span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">vobj</span>, <span class="op">~</span> <span class="va">condition</span>, <span class="va">sampleTable</span><span class="op">)</span></span>
-<span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">vobj</span>, <span class="op">~</span><span class="va">condition</span>, <span class="va">sampleTable</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="multivariate-analysis">Multivariate analysis<a class="anchor" aria-label="anchor" href="#multivariate-analysis"></a>
@@ -166,16 +170,16 @@ between transcript and gene is stored in as a list.</p>
 <code class="sourceCode R"><span><span class="co"># Prepare transcript to gene mapping</span></span>
 <span><span class="co"># keep only transcripts present in vobj</span></span>
 <span><span class="co"># then convert to list with key GENEID and values TXNAMEs</span></span>
-<span><span class="va">keep</span> <span class="op">=</span> <span class="va">tx2gene</span><span class="op">$</span><span class="va">TXNAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">vobj</span><span class="op">)</span></span>
-<span><span class="va">tx2gene.lst</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/stack.html" class="external-link">unstack</a></span><span class="op">(</span><span class="va">tx2gene</span><span class="op">[</span><span class="va">keep</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="va">tx2gene</span><span class="op">$</span><span class="va">TXNAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">vobj</span><span class="op">)</span></span>
+<span><span class="va">tx2gene.lst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/stack.html" class="external-link">unstack</a></span><span class="op">(</span><span class="va">tx2gene</span><span class="op">[</span><span class="va">keep</span>, <span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Run multivariate test on entries in each feature set</span></span>
 <span><span class="co"># Default method is "FE.empirical", but use "FE" here to reduce runtime</span></span>
-<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/mvTest-method.html">mvTest</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="va">tx2gene.lst</span>, coef<span class="op">=</span><span class="st">"conditionB"</span>, method <span class="op">=</span> <span class="st">"FE"</span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mvTest-method.html">mvTest</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">vobj</span>, <span class="va">tx2gene.lst</span>, coef <span class="op">=</span> <span class="st">"conditionB"</span>, method <span class="op">=</span> <span class="st">"FE"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># truncate gene names since they have version numbers</span></span>
 <span><span class="co"># ENST00000498289.5 -&gt; ENST00000498289</span></span>
-<span><span class="va">res</span><span class="op">$</span><span class="va">ID.short</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\..+"</span>, <span class="st">""</span>, <span class="va">res</span><span class="op">$</span><span class="va">ID</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">res</span><span class="op">$</span><span class="va">ID.short</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\..+"</span>, <span class="st">""</span>, <span class="va">res</span><span class="op">$</span><span class="va">ID</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="gene-set-analysis">Gene set analysis<a class="anchor" aria-label="anchor" href="#gene-set-analysis"></a>
@@ -187,9 +191,9 @@ statistics.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://DiseaseNeuroGenomics.github.io/zenith" class="external-link">zenith</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">GSEABase</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">gs</span> <span class="op">=</span> <span class="fu"><a href="http://gabrielhoffman.github.io/zenith/reference/get_MSigDB.html" class="external-link">get_MSigDB</a></span><span class="op">(</span><span class="st">"C1"</span>, to<span class="op">=</span><span class="st">"ENSEMBL"</span><span class="op">)</span></span>
+<span><span class="va">gs</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://gabrielhoffman.github.io/zenith/reference/get_MSigDB.html" class="external-link">get_MSigDB</a></span><span class="op">(</span><span class="st">"C1"</span>, to <span class="op">=</span> <span class="st">"ENSEMBL"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">df_gsa</span> <span class="op">=</span> <span class="fu"><a href="http://gabrielhoffman.github.io/zenith/reference/zenithPR_gsa.html" class="external-link">zenithPR_gsa</a></span><span class="op">(</span> <span class="va">res</span><span class="op">$</span><span class="va">stat</span>, <span class="va">res</span><span class="op">$</span><span class="va">ID.short</span>, <span class="va">gs</span>, inter.gene.cor<span class="op">=</span><span class="fl">.05</span><span class="op">)</span></span>
+<span><span class="va">df_gsa</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://gabrielhoffman.github.io/zenith/reference/zenithPR_gsa.html" class="external-link">zenithPR_gsa</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">stat</span>, <span class="va">res</span><span class="op">$</span><span class="va">ID.short</span>, <span class="va">gs</span>, inter.gene.cor <span class="op">=</span> <span class="fl">.05</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df_gsa</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                NGenes Correlation      delta        se     p.less   p.greater     PValue Direction</span></span>
@@ -212,7 +216,7 @@ statistics.</p>
 </h2>
 <details><pre><code><span><span class="co">## R version 4.3.0 (2023-04-21)</span></span>
 <span><span class="co">## Platform: x86_64-apple-darwin22.4.0 (64-bit)</span></span>
-<span><span class="co">## Running under: macOS Ventura 13.4</span></span>
+<span><span class="co">## Running under: macOS Ventura 13.5</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Users/gabrielhoffman/prog/R-4.3.0/lib/libRblas.dylib </span></span>
@@ -228,26 +232,26 @@ statistics.</p>
 <span><span class="co">## [1] stats4    stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] org.Hs.eg.db_3.17.0      msigdbr_7.5.1            GSEABase_1.62.0         </span></span>
-<span><span class="co">##  [4] graph_1.78.0             annotate_1.78.0          XML_3.99-0.14           </span></span>
-<span><span class="co">##  [7] AnnotationDbi_1.62.1     IRanges_2.34.0           S4Vectors_0.38.1        </span></span>
-<span><span class="co">## [10] Biobase_2.60.0           BiocGenerics_0.46.0      zenith_1.2.0            </span></span>
-<span><span class="co">## [13] edgeR_3.42.4             variancePartition_1.31.7 BiocParallel_1.34.2     </span></span>
-<span><span class="co">## [16] limma_3.56.2             ggplot2_3.4.2            tximportData_1.28.0     </span></span>
-<span><span class="co">## [19] tximport_1.28.0          readr_2.1.4             </span></span>
+<span><span class="co">##  [1] org.Hs.eg.db_3.17.0       msigdbr_7.5.1             GSEABase_1.62.0          </span></span>
+<span><span class="co">##  [4] graph_1.78.0              annotate_1.78.0           XML_3.99-0.14            </span></span>
+<span><span class="co">##  [7] AnnotationDbi_1.62.1      IRanges_2.34.1            S4Vectors_0.38.1         </span></span>
+<span><span class="co">## [10] Biobase_2.60.0            BiocGenerics_0.46.0       zenith_1.3.0             </span></span>
+<span><span class="co">## [13] edgeR_3.42.4              variancePartition_1.31.16 BiocParallel_1.34.2      </span></span>
+<span><span class="co">## [16] limma_3.56.2              ggplot2_3.4.2             tximportData_1.28.0      </span></span>
+<span><span class="co">## [19] tximport_1.28.0           readr_2.1.4              </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##   [1] jsonlite_1.8.5              magrittr_2.0.3              nloptr_2.0.3               </span></span>
 <span><span class="co">##   [4] rmarkdown_2.22              fs_1.6.2                    zlibbioc_1.46.0            </span></span>
-<span><span class="co">##   [7] ragg_1.2.5                  vctrs_0.6.2                 memoise_2.0.1              </span></span>
-<span><span class="co">##  [10] minqa_1.2.5                 RCurl_1.98-1.12             htmltools_0.5.5            </span></span>
-<span><span class="co">##  [13] S4Arrays_1.0.4              progress_1.2.2              curl_5.0.0                 </span></span>
-<span><span class="co">##  [16] broom_1.0.4                 sass_0.4.6                  KernSmooth_2.23-21         </span></span>
+<span><span class="co">##   [7] ragg_1.2.5                  vctrs_0.6.3                 memoise_2.0.1              </span></span>
+<span><span class="co">##  [10] minqa_1.2.5                 RCurl_1.98-1.12             progress_1.2.2             </span></span>
+<span><span class="co">##  [13] htmltools_0.5.5             S4Arrays_1.0.4              curl_5.0.0                 </span></span>
+<span><span class="co">##  [16] broom_1.0.5                 sass_0.4.6                  KernSmooth_2.23-21         </span></span>
 <span><span class="co">##  [19] bslib_0.4.2                 desc_1.4.2                  pbkrtest_0.5.2             </span></span>
 <span><span class="co">##  [22] plyr_1.8.8                  cachem_1.0.8                lifecycle_1.0.3            </span></span>
 <span><span class="co">##  [25] iterators_1.0.14            pkgconfig_2.0.3             Matrix_1.5-4.1             </span></span>
 <span><span class="co">##  [28] R6_2.5.1                    fastmap_1.1.1               GenomeInfoDbData_1.2.10    </span></span>
-<span><span class="co">##  [31] rbibutils_2.2.13            MatrixGenerics_1.12.0       digest_0.6.31              </span></span>
+<span><span class="co">##  [31] rbibutils_2.2.13            MatrixGenerics_1.12.0       digest_0.6.33              </span></span>
 <span><span class="co">##  [34] numDeriv_2016.8-1.1         colorspace_2.1-0            rprojroot_2.0.3            </span></span>
 <span><span class="co">##  [37] textshaping_0.3.6           GenomicRanges_1.52.0        RSQLite_2.3.1              </span></span>
 <span><span class="co">##  [40] filelock_1.0.2              RcppZiggurat_0.1.6          fansi_1.0.4                </span></span>
@@ -255,7 +259,7 @@ statistics.</p>
 <span><span class="co">##  [46] aod_1.3.2                   withr_2.5.0                 backports_1.4.1            </span></span>
 <span><span class="co">##  [49] DBI_1.1.3                   gplots_3.1.3                MASS_7.3-60                </span></span>
 <span><span class="co">##  [52] DelayedArray_0.26.3         corpcor_1.6.10              gtools_3.9.4               </span></span>
-<span><span class="co">##  [55] caTools_1.18.2              tools_4.3.0                 remaCor_0.0.15             </span></span>
+<span><span class="co">##  [55] caTools_1.18.2              tools_4.3.0                 remaCor_0.0.17             </span></span>
 <span><span class="co">##  [58] glue_1.6.2                  nlme_3.1-162                grid_4.3.0                 </span></span>
 <span><span class="co">##  [61] reshape2_1.4.4              generics_0.1.3              gtable_0.3.3               </span></span>
 <span><span class="co">##  [64] tzdb_0.4.0                  tidyr_1.3.0                 hms_1.1.3                  </span></span>
@@ -270,13 +274,13 @@ statistics.</p>
 <span><span class="co">##  [91] codetools_0.2-19            tibble_3.2.1                Rgraphviz_2.44.0           </span></span>
 <span><span class="co">##  [94] cli_3.6.1                   xtable_1.8-4                systemfonts_1.0.4          </span></span>
 <span><span class="co">##  [97] Rdpack_2.4                  munsell_0.5.0               jquerylib_0.1.4            </span></span>
-<span><span class="co">## [100] Rcpp_1.0.10                 GenomeInfoDb_1.36.0         EnvStats_2.7.0             </span></span>
+<span><span class="co">## [100] Rcpp_1.0.11                 GenomeInfoDb_1.36.1         EnvStats_2.7.0             </span></span>
 <span><span class="co">## [103] dbplyr_2.3.2                png_0.1-8                   Rfast_2.0.7                </span></span>
 <span><span class="co">## [106] parallel_4.3.0              pkgdown_2.0.7               blob_1.2.4                 </span></span>
 <span><span class="co">## [109] prettyunits_1.1.1           bitops_1.0-7                lme4_1.1-33                </span></span>
-<span><span class="co">## [112] mvtnorm_1.2-1               lmerTest_3.1-3              scales_1.2.1               </span></span>
-<span><span class="co">## [115] purrr_1.0.1                 crayon_1.5.2                rlang_1.1.1                </span></span>
-<span><span class="co">## [118] EnrichmentBrowser_2.30.1    KEGGREST_1.40.0</span></span></code></pre>
+<span><span class="co">## [112] mvtnorm_1.2-2               lmerTest_3.1-3              scales_1.2.1               </span></span>
+<span><span class="co">## [115] purrr_1.0.1                 crayon_1.5.2                fANCOVA_0.6-1              </span></span>
+<span><span class="co">## [118] rlang_1.1.1                 EnrichmentBrowser_2.30.1    KEGGREST_1.40.0</span></span></code></pre>
 <p>&lt;&gt;</p>
 </details>
 </div>

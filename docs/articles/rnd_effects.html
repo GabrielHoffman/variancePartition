@@ -6,12 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="variancePartition">
-<title>Theory and practice of random effects and REML • variancePartition</title>
+<title>Theory and practice of random effects • variancePartition</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Theory and practice of random effects and REML">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Theory and practice of random effects">
 <meta property="og:description" content="variancePartition">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.16</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,16 +36,20 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
+  <a class="nav-link" href="../articles/variancePartition.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
-    <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
-    <a class="dropdown-item" href="../articles/dream.html">dream</a>
+    <a class="dropdown-item" href="../articles/dream.html">dream analysis</a>
+    <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects</a>
     <a class="dropdown-item" href="../articles/mvtests.html">Multivariate tests</a>
-    <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects and REML</a>
+    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
+    <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
+    <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
   </div>
 </li>
 <li class="nav-item">
@@ -75,12 +79,12 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Theory and practice of random effects and REML</h1>
+      <img src="" class="logo" alt=""><h1>Theory and practice of random effects</h1>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2023-08-07
-22:38:02.603337</h4>
+            <h4 data-toc-skip class="date">Run on 2023-08-18
+15:45:24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/rnd_effects.Rmd" class="external-link"><code>vignettes/rnd_effects.Rmd</code></a></small>
       <div class="d-none name"><code>rnd_effects.Rmd</code></div>
@@ -141,36 +145,36 @@ most accurate. So in variancePartition the fractions are defined as:
 <code>r2glmm</code> by definition.</p>
 <p>Here is some code explicitly demonstrating this difference:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="http://bioconductor.org/packages/variancePartition" class="external-link">'variancePartition'</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/lme4/lme4/" class="external-link">'lme4'</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/bcjaeger/r2glmm" class="external-link">'r2glmm'</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="http://bioconductor.org/packages/variancePartition" class="external-link">"variancePartition"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/lme4/lme4/" class="external-link">"lme4"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/bcjaeger/r2glmm" class="external-link">"r2glmm"</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">N</span> <span class="op">=</span> <span class="fl">1000</span></span>
-<span><span class="va">beta</span> <span class="op">=</span> <span class="fl">3</span></span>
-<span><span class="va">alpha</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span></span>
+<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span>
+<span><span class="va">beta</span> <span class="op">&lt;-</span> <span class="fl">3</span></span>
+<span><span class="va">alpha</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># generate 1 fixed variable and 1 random variable with 3 levels</span></span>
-<span><span class="va">data</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span>, Subject <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span><span class="op">)</span>, <span class="fl">100</span>, replace<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>X <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span>, Subject <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fl">100</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># simulate variable</span></span>
 <span><span class="co"># y = X\beta + Subject\alpha + \sigma^2</span></span>
-<span><span class="va">data</span><span class="op">$</span><span class="va">y</span> <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span><span class="op">*</span><span class="va">beta</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span> <span class="va">data</span><span class="op">$</span><span class="va">Subject</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">alpha</span>  <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">X</span> <span class="op">*</span> <span class="va">beta</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span> <span class="va">data</span><span class="op">$</span><span class="va">Subject</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">alpha</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># fit model</span></span>
-<span><span class="va">fit</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span> <span class="va">y</span> <span class="op">~</span> <span class="va">X</span> <span class="op">+</span><span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Subject</span><span class="op">)</span>, <span class="va">data</span>, REML<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">X</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Subject</span><span class="op">)</span>, <span class="va">data</span>, REML <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># calculate variance fraction using variancePartition</span></span>
 <span><span class="co"># include the total sum in the denominator</span></span>
-<span><span class="va">frac</span> <span class="op">=</span> <span class="fu"><a href="../reference/calcVarPart-method.html">calcVarPart</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="va">frac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calcVarPart-method.html">calcVarPart</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="va">frac</span></span></code></pre></div>
 <pre><code>  Subject         X Residuals 
    0.4505    0.4952    0.0543 </code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># the variance fraction excluding the random effect from the denominator</span></span>
 <span><span class="co"># is the same as from r2glmm</span></span>
-<span><span class="va">frac</span><span class="op">[[</span><span class="st">'X'</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="op">(</span><span class="va">frac</span><span class="op">[[</span><span class="st">'X'</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span> <span class="va">frac</span><span class="op">[[</span><span class="st">'Residuals'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">frac</span><span class="op">[[</span><span class="st">"X"</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="op">(</span><span class="va">frac</span><span class="op">[[</span><span class="st">"X"</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span> <span class="va">frac</span><span class="op">[[</span><span class="st">"Residuals"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code>[1] 0.901</code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># using r2glmm</span></span>
@@ -259,17 +263,39 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] knitr_1.43
+[1] r2glmm_0.1.2              lme4_1.1-33              
+[3] Matrix_1.5-4.1            variancePartition_1.31.16
+[5] BiocParallel_1.34.2       limma_3.56.2             
+[7] ggplot2_3.4.2             knitr_1.43               
 
 loaded via a namespace (and not attached):
- [1] vctrs_0.6.3       cli_3.6.1         rlang_1.1.1       xfun_0.39        
- [5] stringi_1.7.12    purrr_1.0.1       textshaping_0.3.6 jsonlite_1.8.5   
- [9] glue_1.6.2        rprojroot_2.0.3   htmltools_0.5.5   ragg_1.2.5       
-[13] sass_0.4.6        rmarkdown_2.22    evaluate_0.21     jquerylib_0.1.4  
-[17] fastmap_1.1.1     yaml_2.3.7        lifecycle_1.0.3   memoise_2.0.1    
-[21] stringr_1.5.0     compiler_4.3.0    fs_1.6.2          systemfonts_1.0.4
-[25] digest_0.6.31     R6_2.5.1          magrittr_2.0.3    bslib_0.5.0      
-[29] tools_4.3.0       pkgdown_2.0.7     cachem_1.0.8      desc_1.4.2       </code></pre>
+ [1] gtable_0.3.3        xfun_0.39           bslib_0.4.2        
+ [4] caTools_1.18.2      Biobase_2.60.0      lattice_0.21-8     
+ [7] numDeriv_2016.8-1.1 vctrs_0.6.3         tools_4.3.0        
+[10] Rdpack_2.4          bitops_1.0-7        generics_0.1.3     
+[13] pbkrtest_0.5.2      parallel_4.3.0      tibble_3.2.1       
+[16] fansi_1.0.4         pkgconfig_2.0.3     KernSmooth_2.23-21 
+[19] desc_1.4.2          lifecycle_1.0.3     compiler_4.3.0     
+[22] stringr_1.5.0       textshaping_0.3.6   gplots_3.1.3       
+[25] munsell_0.5.0       RhpcBLASctl_0.23-42 codetools_0.2-19   
+[28] lmerTest_3.1-3      htmltools_0.5.5     sass_0.4.6         
+[31] yaml_2.3.7          tidyr_1.3.0         nloptr_2.0.3       
+[34] pillar_1.9.0        pkgdown_2.0.7       jquerylib_0.1.4    
+[37] MASS_7.3-60         aod_1.3.2           cachem_1.0.8       
+[40] iterators_1.0.14    boot_1.3-28.1       nlme_3.1-162       
+[43] gtools_3.9.4        tidyselect_1.2.0    digest_0.6.33      
+[46] mvtnorm_1.2-2       fANCOVA_0.6-1       stringi_1.7.12     
+[49] reshape2_1.4.4      dplyr_1.1.2         purrr_1.0.1        
+[52] splines_4.3.0       rprojroot_2.0.3     fastmap_1.1.1      
+[55] grid_4.3.0          colorspace_2.1-0    cli_3.6.1          
+[58] magrittr_2.0.3      utf8_1.2.3          broom_1.0.5        
+[61] corpcor_1.6.10      withr_2.5.0         backports_1.4.1    
+[64] scales_1.2.1        remaCor_0.0.17      rmarkdown_2.22     
+[67] ragg_1.2.5          memoise_2.0.1       evaluate_0.21      
+[70] EnvStats_2.7.0      rbibutils_2.2.13    rlang_1.1.1        
+[73] Rcpp_1.0.11         glue_1.6.2          BiocGenerics_0.46.0
+[76] minqa_1.2.5         jsonlite_1.8.5      plyr_1.8.8         
+[79] R6_2.5.1            systemfonts_1.0.4   fs_1.6.2           </code></pre>
 </details>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

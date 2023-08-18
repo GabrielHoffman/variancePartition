@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.16</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,16 +36,20 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
+  <a class="nav-link" href="../articles/variancePartition.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
-    <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
-    <a class="dropdown-item" href="../articles/dream.html">dream</a>
+    <a class="dropdown-item" href="../articles/dream.html">dream analysis</a>
+    <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects</a>
     <a class="dropdown-item" href="../articles/mvtests.html">Multivariate tests</a>
-    <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects and REML</a>
+    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
+    <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
+    <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
   </div>
 </li>
 <li class="nav-item">
@@ -79,8 +83,8 @@
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2023-08-07
-22:37:42.960458</h4>
+            <h4 data-toc-skip class="date">Run on 2023-08-18
+15:38:01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/FAQ.Rmd" class="external-link"><code>vignettes/FAQ.Rmd</code></a></small>
       <div class="d-none name"><code>FAQ.Rmd</code></div>
@@ -103,192 +107,39 @@ body {
 text-align: justify}
 </style>
 <div class="section level2">
-<h2 id="interpretation">Interpretation<a class="anchor" aria-label="anchor" href="#interpretation"></a>
+<h2 id="interperting-the-residual-variance">Interperting the residual variance<a class="anchor" aria-label="anchor" href="#interperting-the-residual-variance"></a>
 </h2>
-<ul>
-<li>
-<strong>Interperting the residual variance</strong>. In general, I
-recommend against interpreting the fraction of variance explained by
-residuals. This fraction is driven by 1) the particulars of the study
-design, 2) measurement precision (i.e. high read counts give more
-precise measurements), 3) biological variability and 4) technical
-variability (i.e. batch effects). If you have additional variables that
-explain variation in measured gene expression, you should include them
-in order to avoid confounding with your variable of interest. But a
-particular residual fraction is not ‘good’ or ‘bad’ and is not a good
-metric of determining whether more variables should be included.</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="errors-and-warnings">Errors and warnings<a class="anchor" aria-label="anchor" href="#errors-and-warnings"></a>
-</h2>
-<p>Errors and warnings in <code>variancePartition</code> are mostly
-designed to let the user know that there is an isssue with the model.
-Note that some of these warnings and errors can be overridden by
-specifying <code>suppressWarnings=TRUE</code> for <code><a href="../reference/dream-method.html">dream()</a></code>
-and <code>showWarnings=FALSE</code> for
-<code><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel()</a></code> and
-<code><a href="../reference/fitVarPartModel-method.html">fitVarPartModel()</a></code>.</p>
-<p>Here is a guide to interperting interpreting warnings and errors from
-<code>variancePartition</code> and <code>dream</code>. Note that some of
-the document can be found in “1) Tutorial on using
-variancePartition”.</p>
+<p>In general, I recommend against interpreting the fraction of variance
+explained by residuals. This fraction is driven by:</p>
+<ol style="list-style-type: decimal">
+<li>the particulars of the study design</li>
+<li>measurement precision (i.e. high read counts give more precise
+measurements)</li>
+<li>biological variability</li>
+<li>technical variability (i.e. batch effects).</li>
+</ol>
+<p>If you have additional variables that explain variation in measured
+gene expression, you should include them in order to avoid confounding
+with your variable of interest. But a particular residual fraction is
+not ‘good’ or ‘bad’ and is not a good metric of determining whether more
+variables should be included.</p>
 </div>
 <div class="section level2">
 <h2 id="current-github-issues">Current GitHub issues<a class="anchor" aria-label="anchor" href="#current-github-issues"></a>
 </h2>
-<p>See <a href="https://github.com/GabrielHoffman/variancePartition/issues" class="external-link">GitHub
+<p>See <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/issues" class="external-link">GitHub
 page</a> for up-to-date responses to users’ questions.</p>
-<div class="section level3">
-<h3 id="warnings">Warnings<a class="anchor" aria-label="anchor" href="#warnings"></a>
-</h3>
-<ul>
-<li>
-<p><code>No Intercept term was specified in the formula:  The results will not behave as expected and may be very wrong!!</code></p>
-<p>An intercept (i.e. mean term) must be specified order for the results
-to be statistically valid. Otherwise, the variance percentages will be
-<em>very</em> overestimated.</p>
-</li>
-<li>
-<p><code>Categorical variables modeled as fixed effect: The results will not behave as expected and may be very wrong!!</code></p>
-<p>If a linear mixed model is used, all categorical variables must be
-modeled as a random effect. Alternatively, a fixed effect model can be
-used by modeling all variables as fixed.</p>
-</li>
-<li>
-<p><code>Cannot have more than one varying coefficient term:\newline The results will not behave as expected and may be very wrong!!</code></p>
-<p>Only one varying coefficient term can be specified. For example, the
-formula <code>~(Tissue+0|Individual) + (Batch+0|Individual)</code>
-contains two varying coefficient terms and the results from this
-analysis are not easily interpretable. Only a formula with one term like
-<code>(Tissue+0|Individual)</code> is allowed.</p>
-</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="errors">Errors<a class="anchor" aria-label="anchor" href="#errors"></a>
-</h3>
-<ul>
-<li><p><code>Colinear score &gt; .99: Covariates in the formula are so strongly correlated that the parameter estimates from this model are not meaningful.  Dropping one or more of the covariates will fix this problem</code></p></li>
-<li><p><code>Error in asMethod(object) : not a positive definite matrix</code></p></li>
-<li><p><code>In vcov.merMod(fit) : Computed variance-covariance matrix problem: not a positive definite matrix; returning NA matrix</code></p></li>
-<li>
-<p><code>fixed-effect model matrix is rank deficient so dropping 26 columns / coefficients</code></p>
-<p>Including variables that are highly correlated can produce misleading
-results (see Section “Detecting problems caused by collinearity of
-variables”). In this case, parameter estimates from this model are not
-meaningful. Dropping one or more of the covariates will fix this
-problem.</p>
-</li>
-<li>
-<p><code>Error in checkNlevels(reTrms$flist, n = n, control): number of levels of each grouping factor must be &lt; number of observations</code></p>
-<p>This arises when using a varying coefficient model that examines the
-effect of one variable inside subsets of the data defined by another:
-<code>~(A+0|B)</code>. See Section “Variation within multiple subsets of
-the data”. There must be enough observations of each level of the
-variable B with each level of variable A. Consider an example with
-samples from multiple tissues from a set of individual where we are
-interested in the variation across individuals within each tissue using
-the formula: <code>~(Tissue+0|Individual)</code>. This analysis will
-only work if there are multiple samples from the same individual in at
-least one tissue. If all tissues only have one sample per individual,
-the analysis will fail and <code>variancePartition</code> will give this
-error.</p>
-</li>
-<li>
-<p><code>Problem with varying coefficient model in formula: should have form (A+0|B)</code></p>
-<p>When analyzing the variation of one variable inside another (see
-Section “Variation within multiple subsets of the data”.), the formula
-most be specified as <code>(Tissue+0|Individual)</code>. This error
-occurs when the formula contains <code>(Tissue|Individual)</code>
-instead.</p>
-</li>
-<li><p><code>fatal error in wrapper code</code></p></li>
-<li><p><code>Error in mcfork() : unable to fork, possible reason: Cannot allocate memory</code></p></li>
-<li>
-<p><code>Error: cannot allocate buffer</code></p>
-<p>This error occurs when <code>fitVarPartModel</code> uses too many
-threads and takes up too much memory. The easiest solution is to use
-<code>fitExtractVarPartModel</code> instead. Occasionally there is an
-issue in the parallel backend that is out of my control. Using fewer
-threads or restarting R will solve the problem.</p>
-</li>
-</ul>
-<div class="section level4">
-<h4 id="errors-problems-removing-samples-with-nananinf-values">Errors: Problems removing samples with NA/NaN/Inf values<a class="anchor" aria-label="anchor" href="#errors-problems-removing-samples-with-nananinf-values"></a>
-</h4>
-<p><code>variancePartition</code> fits a regression model for each gene
-and drops samples that have NA/NaN/Inf values in each model fit. This is
-generally seamless but can cause an issue when a variable specified in
-the formula no longer varies within the subset of samples that are
-retained. Consider an example with variables for sex and age where age
-is NA for all males samples. Dropping samples with invalid values for
-variables included in the formula will retain only female samples. This
-will cause <code>variancePartition</code> to throw an error because
-there is now no variation in sex in the retained subset of the data.
-This can be resolved by removing either age or sex from the formula.</p>
-<p>This situtation is indicated by the following errors:</p>
-<ul>
-<li><p><code>Error: grouping factors must have &gt; 1 sampled level</code></p></li>
-<li><p><code>Error: Invalid grouping factor specification, Individual</code></p></li>
-<li><p><code>Error in contrasts&lt;-(*tmp*, value = contr.funs[1 + isOF[nn]]): contrasts can be applied only to factors with 2 or more levels</code></p></li>
-<li><p><code>Error in checkNlevels(reTrms\$flist, n = n, control): grouping factors must have &gt; 1 sampled level</code></p></li>
-</ul>
-</div>
-<div class="section level4">
-<h4 id="errors-with-biocparallel-multithreading-backend">Errors with BiocParallel multithreading backend<a class="anchor" aria-label="anchor" href="#errors-with-biocparallel-multithreading-backend"></a>
-</h4>
-<ul>
-<li><p><code>Error: 'bpiterate' receive data failed: error reading from connection</code></p></li>
-<li>
-<p><code>Error in serialize(data, node$con, xdr = FALSE) : ignoring SIGPIPE signal</code></p>
-<p><code>variancePartition</code> uses the <code>BiocParallel</code>
-package to run analysis in parallel across multiple cores. If there is
-an issue with the parallel backend you might see these errors. This
-often occurs in long interactive sessions, or if you manually kill a
-function running in parallel. There are two ways to address this
-issue.</p>
-<ul>
-<li>
-<p><strong>Global</strong>: set the number of threads to be a
-smaller number. I have found that reducing the number of threads reduces
-the chance of random failures like this.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># globally specify that all multithreading using bpiterate from BiocParallel</span></span>
-<span><span class="co"># should use 8 cores</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">register</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</li>
-<li>
-<p><strong>Local</strong>: set the number of theads at each function
-call. This re-initializes the parallel backend and should address the
-error</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel</a></span><span class="op">(</span><span class="va">...</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/fitVarPartModel-method.html">fitVarPartModel</a></span><span class="op">(</span><span class="va">...</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">...</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights</a></span><span class="op">(</span><span class="va">...</span>,BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
 <details><pre><code><span><span class="co">## R version 4.3.0 (2023-04-21)</span></span>
 <span><span class="co">## Platform: x86_64-apple-darwin22.4.0 (64-bit)</span></span>
-<span><span class="co">## Running under: macOS Ventura 13.4</span></span>
+<span><span class="co">## Running under: macOS Ventura 13.5</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Users/gabrielhoffman/prog/R-4.3.0/lib/libRblas.dylib </span></span>
-<span><span class="co">## LAPACK: /usr/local/Cellar/r/4.2.3/lib/R/lib/libRlapack.dylib;  LAPACK version 3.10.1</span></span>
+<span><span class="co">## LAPACK: /usr/local/Cellar/r/4.3.0_1/lib/R/lib/libRlapack.dylib;  LAPACK version 3.11.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## locale:</span></span>
 <span><span class="co">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
@@ -300,12 +151,12 @@ error</p>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] vctrs_0.6.2       cli_3.6.1         knitr_1.43        rlang_1.1.1       xfun_0.39        </span></span>
-<span><span class="co">##  [6] stringi_1.7.12    purrr_1.0.1       textshaping_0.3.6 jsonlite_1.8.4    glue_1.6.2       </span></span>
-<span><span class="co">## [11] rprojroot_2.0.3   htmltools_0.5.5   ragg_1.2.5        sass_0.4.6        rmarkdown_2.21   </span></span>
+<span><span class="co">##  [1] vctrs_0.6.3       cli_3.6.1         knitr_1.43        rlang_1.1.1       xfun_0.39        </span></span>
+<span><span class="co">##  [6] stringi_1.7.12    purrr_1.0.1       textshaping_0.3.6 jsonlite_1.8.5    glue_1.6.2       </span></span>
+<span><span class="co">## [11] rprojroot_2.0.3   htmltools_0.5.5   ragg_1.2.5        sass_0.4.6        rmarkdown_2.22   </span></span>
 <span><span class="co">## [16] evaluate_0.21     jquerylib_0.1.4   fastmap_1.1.1     yaml_2.3.7        lifecycle_1.0.3  </span></span>
 <span><span class="co">## [21] memoise_2.0.1     stringr_1.5.0     compiler_4.3.0    fs_1.6.2          systemfonts_1.0.4</span></span>
-<span><span class="co">## [26] digest_0.6.31     R6_2.5.1          magrittr_2.0.3    bslib_0.4.2       tools_4.3.0      </span></span>
+<span><span class="co">## [26] digest_0.6.33     R6_2.5.1          magrittr_2.0.3    bslib_0.4.2       tools_4.3.0      </span></span>
 <span><span class="co">## [31] pkgdown_2.0.7     cachem_1.0.8      desc_1.4.2</span></span></code></pre>
 </details>
 </div>
