@@ -14,11 +14,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
   %\usepackage[utf8]{inputenc}
-header-includes:
-- \usepackage{caption}
-- \usepackage{multirow}
-- \usepackage{blkarray}
-- \usepackage{amsmath}
 ---
 
 
