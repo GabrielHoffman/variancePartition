@@ -84,7 +84,7 @@
 </h4>
             
             <h4 data-toc-skip class="date">Run on 2023-08-18
-15:40:54</h4>
+20:58:34</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/errors.Rmd" class="external-link"><code>vignettes/errors.Rmd</code></a></small>
       <div class="d-none name"><code>errors.Rmd</code></div>
@@ -140,30 +140,30 @@ rounding errors in floating point arithmetic.</p>
 has failed for a subset of genes, and also provides the gene-level
 errors. All <strong>successful</strong> model fits are returned to be
 used for downstream analysis.</p>
-<p>Here we demonstrate how dream() handles model fits:</p>
+<p>Here we demonstrate how <code><a href="../reference/dream-method.html">dream()</a></code> handles model fits:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/variancePartition" class="external-link">variancePartition</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartData</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Redundant formula</span></span>
-<span><span class="co"># This example is an extreme example of redundancy </span></span>
+<span><span class="co"># This example is an extreme example of redundancy</span></span>
 <span><span class="co"># but more subtle cases often show up in real data</span></span>
 <span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Tissue</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Tissue</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,<span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Warning in dream(geneExpr[1:30, ], form, info): Model failed for 29 responses.</span></span>
 <span><span class="co">##   See errors with attr(., 'errors')</span></span>
 <span></span>
 <span><span class="co"># Extract gene-level errors</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">'errors'</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">"errors"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">## gene1 </span></span>
-<span><span class="co">## "Error in lmerTest:::as_lmerModLT(model, devfun, tol = tol): (converted from warning) </span></span>
-<span><span class="co">## Model may not have converged with 1 eigenvalue close to zero: -2.0e-09\n" </span></span>
+<span><span class="co">## gene1</span></span>
+<span><span class="co">## "Error in lmerTest:::as_lmerModLT(model, devfun, tol = tol): (converted from warning)</span></span>
+<span><span class="co">## Model may not have converged with 1 eigenvalue close to zero: -2.0e-09\n"</span></span>
 <span></span>
-<span><span class="co">## gene2 </span></span>
-<span><span class="co">## "Error: (converted from warning) Model failed to converge </span></span>
+<span><span class="co">## gene2</span></span>
+<span><span class="co">## "Error: (converted from warning) Model failed to converge</span></span>
 <span><span class="co">##   with 1 negative eigenvalue: -1.5e-08\n"</span></span></code></pre></div>
 </div>
 </div>

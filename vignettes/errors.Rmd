@@ -62,7 +62,7 @@ the fixed effects will be jointly unidentifiable`
 
  In these cases, `dream()` gives a warning that the model has failed for a subset of genes, and also provides the gene-level errors.  All **successful** model fits are returned to be used for downstream analysis.  
 
- Here we demonstrate how dream() handles model fits:
+ Here we demonstrate how `dream()` handles model fits:
 
 ```{r error, eval=FALSE}
 library(variancePartition)
