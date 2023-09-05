@@ -17,6 +17,7 @@ fitExtractVarPartModel(
   REML = FALSE,
   useWeights = TRUE,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -29,6 +30,7 @@ fitExtractVarPartModel(
   REML = FALSE,
   useWeights = TRUE,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -41,6 +43,7 @@ fitExtractVarPartModel(
   REML = FALSE,
   useWeights = TRUE,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -53,6 +56,7 @@ fitExtractVarPartModel(
   REML = FALSE,
   useWeights = TRUE,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -65,6 +69,7 @@ fitExtractVarPartModel(
   REML = FALSE,
   useWeights = TRUE,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -77,6 +82,7 @@ fitExtractVarPartModel(
   REML = FALSE,
   useWeights = TRUE,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -94,6 +100,8 @@ fitExtractVarPartModel(
 \item{useWeights}{if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified}
 
 \item{control}{control settings for \code{lmer()}}
+
+\item{hideErrorsInBackend}{default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")}}
 
 \item{showWarnings}{default TRUE. Indicate model failures}
 

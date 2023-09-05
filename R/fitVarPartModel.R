@@ -9,6 +9,7 @@
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param fxn apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself
 #' @param control control settings for \code{lmer()}
+#' @param hideErrorsInBackend default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")}
 #' @param showWarnings default TRUE. Indicate model failures
 #' @param BPPARAM parameters for parallel evaluation
 #' @param ... Additional arguments for \code{lmer()} or \code{lm()}
@@ -99,7 +100,7 @@
 #' @rdname fitVarPartModel-method
 setGeneric("fitVarPartModel",
   signature = "exprObj",
-  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
     standardGeneric("fitVarPartModel")
   }
 )
@@ -111,7 +112,7 @@ setGeneric("fitVarPartModel",
 #' @aliases fitVarPartModel,matrix-method
 setMethod(
   "fitVarPartModel", "matrix",
-  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
     weights <- matrix(1, nrow(exprObj), ncol(exprObj))
     exprObj <- new("EList", list(E = exprObj, weights = weights))
 
@@ -120,6 +121,7 @@ setMethod(
       useWeights = useWeights,
       fxn = fxn,
       control = control,
+      hideErrorsInBackend = hideErrorsInBackend,
       BPPARAM = BPPARAM,
       ...
     )
@@ -132,12 +134,13 @@ setMethod(
 #' @aliases fitVarPartModel,data.frame-method
 setMethod(
   "fitVarPartModel", "data.frame",
-  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
     fitVarPartModel(as.matrix(exprObj), formula, data,
       REML = REML,
       useWeights = useWeights,
       fxn = fxn,
       control = control,
+      hideErrorsInBackend = hideErrorsInBackend,
       BPPARAM = BPPARAM,
       ...
     )
@@ -150,12 +153,13 @@ setMethod(
 #' @aliases fitVarPartModel,EList-method
 setMethod(
   "fitVarPartModel", "EList",
-  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
     .fitVarPartModel(exprObj, formula, data,
       REML = REML,
       useWeights = useWeights,
       fxn = fxn,
       control = control,
+      hideErrorsInBackend = hideErrorsInBackend,
       BPPARAM = BPPARAM,
       ...
     )
@@ -169,7 +173,7 @@ setMethod(
 #' @importFrom Biobase ExpressionSet exprs
 setMethod(
   "fitVarPartModel", "ExpressionSet",
-  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
     exprObj <- as.matrix(exprs(exprObj))
 
     fitVarPartModel(exprObj, formula, data,
@@ -177,6 +181,7 @@ setMethod(
       useWeights = useWeights,
       fxn = fxn,
       control = control,
+      hideErrorsInBackend = hideErrorsInBackend,
       BPPARAM = BPPARAM,
       ...
     )
@@ -190,12 +195,13 @@ setMethod(
 #' @importFrom Matrix sparseMatrix
 setMethod(
   "fitVarPartModel", "sparseMatrix",
-  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+  function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, fxn = identity, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
     .fitVarPartModel(exprObj, formula, data,
       REML = REML,
       useWeights = useWeights,
       fxn = fxn,
       control = control,
+      hideErrorsInBackend = hideErrorsInBackend,
       BPPARAM = BPPARAM,
       ...
     )
@@ -216,6 +222,7 @@ setMethod(
                              useWeights = TRUE,
                              fxn = identity,
                              control = vpcontrol,
+                             hideErrorsInBackend = FALSE,
                              showWarnings = TRUE,
                              BPPARAM = SerialParam(),
                              ...) {
@@ -231,30 +238,29 @@ setMethod(
     ...
   )
 
+  if (!is.null(res$error.initial) & !hideErrorsInBackend) {
+    stop(paste0("Initial model failed:\n", res$error.initial))
+  }
+
   # Get results from successful models
   res.unlist <- unlist(res$succeeded, recursive = FALSE)
 
-  # if no model succeeded
-  if (length(res.unlist) == 0) {
-    errTxt <- res$error.initial
-
-    if (!is.null(errTxt)) {
-      txt <- paste("All models failed.  The first model fails with:\n", errTxt)
-    } else {
-      txt <- paste("All models failed.  The first model fails with:\n", res$errors[1])
-    }
-    stop(txt)
+  if (length(res.unlist) == 0 & !hideErrorsInBackend) {
+    txt <- paste("All models failed.  The first model fails with:\n", res$errors[1])
+     stop(txt)
   }
 
-  method <- ifelse(.isMixedModelFormula(formula),
-    "lmer", "lm"
-  )
+  method <- ifelse(.isMixedModelFormula(formula), "lmer", "lm")
+
+  if( length(res.unlist) == 0) res.unlist = list()
+  
   returnList <- new("VarParFitList", res.unlist, method = method)
 
   # assign errors as attribute
   attr(returnList, "errors") <- res$errors
+  attr(returnList, "error.initial") <- res$error.initial
 
-  if (!is.null(attr(returnList, "errors")) & showWarnings) {
+  if (!is.null(attr(returnList, "errors")) & !hideErrorsInBackend) {
     txt <- paste("Model failed for", length(attr(returnList, "errors")), "responses.\n  See errors with attr(., 'errors')")
     warning(txt)
   }

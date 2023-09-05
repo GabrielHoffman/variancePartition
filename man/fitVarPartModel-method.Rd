@@ -18,6 +18,7 @@ fitVarPartModel(
   useWeights = TRUE,
   fxn = identity,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -31,6 +32,7 @@ fitVarPartModel(
   useWeights = TRUE,
   fxn = identity,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -44,6 +46,7 @@ fitVarPartModel(
   useWeights = TRUE,
   fxn = identity,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -57,6 +60,7 @@ fitVarPartModel(
   useWeights = TRUE,
   fxn = identity,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -70,6 +74,7 @@ fitVarPartModel(
   useWeights = TRUE,
   fxn = identity,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -83,6 +88,7 @@ fitVarPartModel(
   useWeights = TRUE,
   fxn = identity,
   control = vpcontrol,
+  hideErrorsInBackend = FALSE,
   showWarnings = TRUE,
   BPPARAM = SerialParam(),
   ...
@@ -102,6 +108,8 @@ fitVarPartModel(
 \item{fxn}{apply function to model fit for each gene.  Defaults to identify function so it returns the model fit itself}
 
 \item{control}{control settings for \code{lmer()}}
+
+\item{hideErrorsInBackend}{default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")}}
 
 \item{showWarnings}{default TRUE. Indicate model failures}
 
