@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.17</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,7 @@
 <span>  useWeights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fxn <span class="op">=</span> <span class="va">identity</span>,</span>
 <span>  control <span class="op">=</span> <span class="va">vpcontrol</span>,</span>
+<span>  hideErrorsInBackend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  showWarnings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -87,6 +88,7 @@
 <span>  useWeights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fxn <span class="op">=</span> <span class="va">identity</span>,</span>
 <span>  control <span class="op">=</span> <span class="va">vpcontrol</span>,</span>
+<span>  hideErrorsInBackend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  showWarnings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -101,6 +103,7 @@
 <span>  useWeights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fxn <span class="op">=</span> <span class="va">identity</span>,</span>
 <span>  control <span class="op">=</span> <span class="va">vpcontrol</span>,</span>
+<span>  hideErrorsInBackend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  showWarnings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -115,6 +118,7 @@
 <span>  useWeights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fxn <span class="op">=</span> <span class="va">identity</span>,</span>
 <span>  control <span class="op">=</span> <span class="va">vpcontrol</span>,</span>
+<span>  hideErrorsInBackend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  showWarnings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -129,6 +133,7 @@
 <span>  useWeights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fxn <span class="op">=</span> <span class="va">identity</span>,</span>
 <span>  control <span class="op">=</span> <span class="va">vpcontrol</span>,</span>
+<span>  hideErrorsInBackend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  showWarnings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -143,6 +148,7 @@
 <span>  useWeights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fxn <span class="op">=</span> <span class="va">identity</span>,</span>
 <span>  control <span class="op">=</span> <span class="va">vpcontrol</span>,</span>
+<span>  hideErrorsInBackend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  showWarnings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -152,7 +158,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>exprObj</dt>
-<dd><p>matrix of expression data (g genes x n samples), or <code>ExpressionSet</code>, or <code>EList</code> returned by <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code> from the <code>limma</code> package</p></dd>
+<dd><p>matrix of expression data (g genes x n samples), or <code>ExpressionSet</code>, or <code>EList</code> returned by <code>voom()</code> from the <code>limma</code> package</p></dd>
 
 
 <dt>formula</dt>
@@ -168,7 +174,7 @@
 
 
 <dt>useWeights</dt>
-<dd><p>if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an <code>EList()</code> from <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code> or <code>weightsMatrix</code> is specified</p></dd>
+<dd><p>if TRUE, analysis uses heteroskedastic error estimates from voom().  Value is ignored unless exprObj is an <code>EList()</code> from <code>voom()</code> or <code>weightsMatrix</code> is specified</p></dd>
 
 
 <dt>fxn</dt>
@@ -176,7 +182,11 @@
 
 
 <dt>control</dt>
-<dd><p>control settings for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code></p></dd>
+<dd><p>control settings for <code>lmer()</code></p></dd>
+
+
+<dt>hideErrorsInBackend</dt>
+<dd><p>default FALSE.  If TRUE, hide errors in <code>attr(.,"errors")</code> and <code>attr(.,"error.initial")</code></p></dd>
 
 
 <dt>showWarnings</dt>
@@ -188,14 +198,14 @@
 
 
 <dt>...</dt>
-<dd><p>Additional arguments for <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p></dd>
+<dd><p>Additional arguments for <code>lmer()</code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of where each entry is a model fit produced by <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
+<p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> of where each entry is a model fit produced by <code>lmer()</code> or <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
 
 
     </div>

@@ -1,3 +1,6 @@
+# variancePartition 1.31.18
+ - Sept 5, 2023
+ - improved error handling for `fitVarPartModel()`, `fitExtractVarPartModel()`, and `voomWithDreamWeights()`
 
 # variancePartition 1.31.16
  - August 18, 2023
