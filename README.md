@@ -9,7 +9,7 @@
 <br>
 
 ### Update
-variancePartition 1.31.1 includes a major rewrite of the backend for better bug handling.  See [Changelog](news/index.html).  Importantly, the new version is compatible with emprical Bayes moderated t-statistics for linear mixed models using `eBayes()`.
+variancePartition 1.31.1 includes a major rewrite of the backend for better error handling.  See [Changelog](news/index.html).  Importantly, the new version is compatible with emprical Bayes moderated t-statistics for linear mixed models using `eBayes()`.
 
 <br>
 
