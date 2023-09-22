@@ -11,6 +11,7 @@
 #' @param weights Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
+#' @param rescaleWeightsAfter default = TRUE, should the output weights be scaled by the input weights
 #' @param BPPARAM parameters for parallel evaluation
 #' @param      ... other arguments are passed to \code{lmer}.
 #'
@@ -49,7 +50,8 @@
 #' @importFrom stats sigma
 #' @importFrom fANCOVA loess.as
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, plot = FALSE, save.plot = FALSE, BPPARAM = SerialParam(), ...) {
+voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, BPPARAM = SerialParam(), ...) {
+
   objFlt <- filterInputData(counts, formula, data, useWeights = FALSE, isCounts = TRUE)
 
   counts <- objFlt$exprObj
@@ -100,6 +102,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   }
 
   # convert sample-level weights array to matrix
+  # weights <- weights / mean(weights) # normalize to scale 1
   weightsMatrix <- asMatrixWeights(weights, dim(y))
 
   # put weights into EList
@@ -226,9 +229,10 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   }
 
   # rescale by input weights
-  out$weights <- t(weights * t(out$weights))
-  out$targets$sample.weights <- weights
-
+  if( rescaleWeightsAfter ){
+    out$weights <- t(weights * t(out$weights))
+    out$targets$sample.weights <- weights
+  }
   if (save.plot) {
     out$voom.xy <- list(x = sx, y = sy, xlab = "log2( count size + 0.5 )", ylab = "Sqrt( standard deviation )")
     out$voom.line <- l

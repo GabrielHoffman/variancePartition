@@ -14,6 +14,7 @@ voomWithDreamWeights(
   weights = NULL,
   plot = FALSE,
   save.plot = FALSE,
+  rescaleWeightsAfter = TRUE,
   BPPARAM = SerialParam(),
   ...
 )
@@ -36,6 +37,8 @@ voomWithDreamWeights(
 \item{plot}{logical, should a plot of the mean-variance trend be displayed?}
 
 \item{save.plot}{logical, should the coordinates and line of the plot be saved in the output?}
+
+\item{rescaleWeightsAfter}{default = TRUE, should the output weights be scaled by the input weights}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
