@@ -97,6 +97,63 @@ test_usingWeights_dream = function(){
 
 
 
+# Sept 22, 2023
+test_reweigthing_voom = function(){
 
+	library(edgeR)
+	library(limma)
+	data(varPartDEdata)
+
+	# normalize RNA-seq counts
+	dge <- DGEList(counts = countMatrix)
+	dge <- calcNormFactors(dge)
+
+	form <- ~ Disease 
+	dsgn = model.matrix(form, metadata)
+
+	w = rep(2, nrow(metadata))
+
+	# Recover voom results
+	#----------------------
+
+	# no weights
+	vobj1 = voom(dge, dsgn)
+	vobj2 <- voomWithDreamWeights(dge, form, metadata)
+	checkEqualsNumeric(vobj1$weights, vobj2$weights)
+
+	# constant weights 
+	#-----------------
+	vobj1 = voom(dge, dsgn, weights=w)
+
+	# disable rescaling by input weights
+	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w, rescaleWeightsAfter=FALSE)
+	checkEqualsNumeric(vobj1$weights, vobj2$weights)
+
+	# manual rescaling of weights after voom
+	vobj1 = voom(dge, dsgn, weights=w)
+	vobj1$weights <- t(w * t(vobj1$weights))
+
+	# enble rescaling by input weights
+	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w)
+	checkEqualsNumeric(vobj1$weights, vobj2$weights)
+
+	# varying weights 
+	#----------------
+	w = 1:nrow(metadata)
+
+	vobj1 = voom(dge, dsgn, weights=w)
+
+	# disable rescaling by input weights
+	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w, rescaleWeightsAfter=FALSE)
+	checkEqualsNumeric(vobj1$weights, vobj2$weights)
+
+	# manual rescaling of weights after voom
+	vobj1 = voom(dge, dsgn, weights=w)
+	vobj1$weights <- t(w * t(vobj1$weights))
+
+	# enble rescaling by input weights
+	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w)
+	checkEqualsNumeric(vobj1$weights, vobj2$weights)
+}	
 
 
