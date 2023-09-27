@@ -66,6 +66,10 @@ test_vcov = function(){
 	dge = DGEList(counts = countMatrix)
 	dge = calcNormFactors(dge)
 
+	# filterInputData = variancePartition:::filterInputData
+	# .isMixedModelFormula = variancePartition:::.isMixedModelFormula
+	# source("variancePartition/R/voomWithDreamWeights.R")
+
 	form <- ~ Disease 
 	vobj = voomWithDreamWeights( dge[1:20,], form, metadata)
 
@@ -73,15 +77,16 @@ test_vcov = function(){
 	#-------------
 
 	# Fit from matrix, running dream() on subset of features
+	i = 1:2
 	form <- ~ Disease
-	fit = dream( vobj[1:2,], form, metadata)
+	fit = dream( vobj[i,], form, metadata)
 	fit = eBayes(fit)
 
-	A = vcov(fit, vobj[1:2,])
+	A = vcov(fit, vobj[i,])
 
-	w = vobj$weights[1,]
-	w = w/mean(w)
-	fit.lm = lm(vobj$E[1,] ~ Disease, metadata, weights=w)
+	w = vobj$weights[i[1],]
+	# w = w/mean(w)
+	fit.lm = lm(vobj$E[i[1],] ~ Disease, metadata, weights=w)
 	B = vcov(fit.lm)
 
 	checkEquals(c(A[1:2, 1:2]), c(B))
@@ -90,7 +95,7 @@ test_vcov = function(){
 	fit = dream( vobj, form, metadata)
 	fit = eBayes(fit)
 
-	C = vcov(fit[1:2,], vobj[1:2,])
+	C = vcov(fit[i,], vobj[i,])
 
 	checkEquals(A, C)
 
