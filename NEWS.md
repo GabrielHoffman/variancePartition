@@ -1,3 +1,7 @@
+# variancePartition 1.31.20
+ - Sept 26, 2023
+ - allow `weights` to be a matrix in `voomWithDreamWeights()`
+
 # variancePartition 1.31.19
  - Sept 22, 2023
  - add `rescaleWeightsAfter` argument to `voomWithDreamWeights()`
