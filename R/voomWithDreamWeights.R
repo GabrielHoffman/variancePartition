@@ -97,13 +97,20 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
     weights <- rep(1, ncol(y))
   }
 
-  if (length(weights) != ncol(y)) {
-    stop("length of weights must equal ncol(counts)")
-  }
+  # if weights is not already a matrix, convert it to a matrix
+  if( is.matrix(weights) ){
+    stopifnot( dim(weights) == dim(y))
+    weightsMatrix = weights
+  }else{
 
-  # convert sample-level weights array to matrix
-  # weights <- weights / mean(weights) # normalize to scale 1
-  weightsMatrix <- asMatrixWeights(weights, dim(y))
+    if (length(weights) != ncol(y)) {
+      stop("length of weights must equal ncol(counts)")
+    }
+
+    # convert sample-level weights array to matrix
+    # weights <- weights / mean(weights) # normalize to scale 1
+    weightsMatrix <- asMatrixWeights(weights, dim(y))
+  }
 
   # put weights into EList
   obj <- new("EList", list(E = y, weights = weightsMatrix))
@@ -135,7 +142,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   } else {
     design <- model.matrix(formula, data)
 
-    # fit <- lmFit(y,design,weights=weights,...)
+    # fit <- lmFit(obj$E,design,weights=weights,...)
     # Use weights included in EList
     fit <- lmFit(obj, design, ...)
 
@@ -229,9 +236,10 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   }
 
   # rescale by input weights
-  if( rescaleWeightsAfter ){
-    out$weights <- t(weights * t(out$weights))
-    out$targets$sample.weights <- weights
+  if( rescaleWeightsAfter ){    
+    out$weights <- weightsMatrix * out$weights
+    # out$weights <- t(weights * t(out$weights))
+    # out$targets$sample.weights <- weights
   }
   if (save.plot) {
     out$voom.xy <- list(x = sx, y = sy, xlab = "log2( count size + 0.5 )", ylab = "Sqrt( standard deviation )")

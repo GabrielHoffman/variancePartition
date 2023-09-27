@@ -154,6 +154,17 @@ test_reweigthing_voom = function(){
 	# enble rescaling by input weights
 	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
+
+	# weights as matrix
+	#------------------
+
+	weightsMatrix = matrix(w, 
+					nrow = nrow(dge), 
+					ncol = length(w), 
+					byrow = TRUE)
+	# enble rescaling by input weights
+	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=weightsMatrix)
+	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 }	
 
 
