@@ -23,7 +23,7 @@ test_voomWithDreamWeights = function(){
 }
 
 
-test_usingWeights_fitExtractVarPartModel= function(){
+test_usingWeights_fitExtractVarPartModel = function(){
 	library(edgeR)
 
 	data(varPartDEdata)

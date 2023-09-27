@@ -110,6 +110,11 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
     # convert sample-level weights array to matrix
     # weights <- weights / mean(weights) # normalize to scale 1
     weightsMatrix <- asMatrixWeights(weights, dim(y))
+
+    # Sept 27, 2023
+    # Solves numerical issue
+    # Somehow this flag causes very subtle erro in test_vcov.R
+    attr(weightsMatrix,"arrayweights") = NULL
   }
 
   # put weights into EList
@@ -239,7 +244,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   if( rescaleWeightsAfter ){    
     out$weights <- weightsMatrix * out$weights
     # out$weights <- t(weights * t(out$weights))
-    # out$targets$sample.weights <- weights
+    out$targets$sample.weights <- colMeans(weightsMatrix)
   }
   if (save.plot) {
     out$voom.xy <- list(x = sx, y = sy, xlab = "log2( count size + 0.5 )", ylab = "Sqrt( standard deviation )")
