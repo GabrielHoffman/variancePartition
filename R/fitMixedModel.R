@@ -18,7 +18,7 @@ vpcontrol.NM <- lme4::lmerControl(
 
 #' @importFrom lme4 lmer refit
 #' @importFrom stats update
-run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5) {
+run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE) {
   # if sparseMatrix, convert to matrix
   if (is(obj$E, "dgCMatrix")) {
     obj$E <- as.matrix(obj$E)
@@ -30,7 +30,9 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
   data$w.local <- c(obj$weights)
 
   # scale regression weights
-  data$w.local <- data$w.local / mean(data$w.local)
+  if( rescaleWeights ){
+    data$w.local <- data$w.local / mean(data$w.local)
+  }
 
   form.local <- update(formula, y.local ~ .)
 
@@ -85,7 +87,7 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
 
 # run analysis on each batch
 #' @importFrom BiocParallel bpstopOnError<- bptry bplapply SerialParam
-run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5) {
+run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE) {
   # create list with one gene per entry
   exprList <- lapply(seq(nrow(obj)), function(j) {
     new("EList", list(
@@ -108,6 +110,7 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
     fit.init = fit.init,
     dreamCheck = dreamCheck,
     varTol = varTol,
+    rescaleWeights = rescaleWeights,
     BPPARAM = BPPARAM
   ))
 
@@ -141,7 +144,7 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
 
 #' @importFrom BiocParallel bpstopOnError<- bpiterate
 #' @importFrom RhpcBLASctl omp_set_num_threads omp_get_max_threads
-run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol = 1e-5, BPPARAM = SerialParam(), ...) {
+run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE, BPPARAM = SerialParam(), ...) {
   stopifnot(is(BPPARAM, "BiocParallelParam"))
 
   # only use 1 thread internally then reset to original value
@@ -206,6 +209,7 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
     fit.init = fit.init,
     dreamCheck = dreamCheck,
     varTol = varTol,
+    rescaleWeights = rescaleWeights,
     fxn = fxn,
     BPPARAM = BPPARAM,
     reduce.in.order = TRUE

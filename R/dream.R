@@ -126,6 +126,7 @@ dream <- function(exprObj,
       BPPARAM = BPPARAM,
       dreamCheck = TRUE,
       useInitialFit = FALSE,
+      rescaleWeights = FALSE,
       ...
     )
 
