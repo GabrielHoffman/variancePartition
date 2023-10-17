@@ -108,14 +108,18 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
     }
 
     # convert sample-level weights array to matrix
-    # weights <- weights / mean(weights) # normalize to scale 1
     weightsMatrix <- asMatrixWeights(weights, dim(y))
 
     # Sept 27, 2023
-    # Solves numerical issue
-    # Somehow this flag causes very subtle erro in test_vcov.R
-    attr(weightsMatrix,"arrayweights") = NULL
+    # Fixes error reported here
+    # https://support.bioconductor.org/p/9154670/
+    attr(weightsMatrix,"arrayweights") <- NULL
   }
+  rownames(weightsMatrix) <- rownames(y)
+  
+  # rescale input weights to have mean 1 
+  # before scaling output weights
+  weightsMatrix <- weightsMatrix / rowMeans(weightsMatrix)  
 
   # put weights into EList
   obj <- new("EList", list(E = y, weights = weightsMatrix))
@@ -127,18 +131,20 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
 
   if (.isMixedModelFormula(formula)) {
     # fit linear mixed model
-    vpList <- fitVarPartModel(obj, formula, data, ..., fxn = function(fit) {
+    vpList <- fitVarPartModel(obj, formula, data, rescaleWeights = TRUE, ..., fxn = function(fit) {
       # extract
       # 1) sqrt residual variance (i.e. residual standard deviation)
-      # 2) fitted values
+      # 3) fitted values
       list(
         sd = sigma(fit),
+        Amean = mean(fit@frame[, 1], na.rm = TRUE),
         fitted.values = predict(fit)
       )
     }, BPPARAM = BPPARAM)
 
     fit <- list()
     fit$sigma <- sapply(vpList, function(x) x$sd)
+    fit$Amean <- sapply(vpList, function(x) x$Amean)
     fit$df.residual <- rep(2, length(fit$sigma)) # check this
 
     # extract fitted values
@@ -160,7 +166,8 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   }
 
   # only keep y where model has converged
-  y <- y[rownames(fitted.values), , drop = FALSE]
+  keepGenes = rownames(fitted.values)
+  y <- y[keepGenes, , drop = FALSE]
 
   if (is.null(fit$Amean)) fit$Amean <- rowMeans(y, na.rm = TRUE)
 
@@ -185,13 +192,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   sx <- fit$Amean + mean(log2(lib.size + 1)) - log2(1e6)
 
   # get residual standard deviation
-  if (is(fit, "MArrayLM2")) {
-    # fit is result of dream()
-    sy <- sqrt(attr(fit, "varComp")$resid)
-  } else {
-    # fit is result of lmFit()
-    sy <- sqrt(fit$sigma)
-  }
+  sy <- sqrt(fit$sigma)
 
   allzero <- rowSums(counts) == 0
   if (any(allzero)) {
@@ -241,11 +242,16 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   }
 
   # rescale by input weights
-  if( rescaleWeightsAfter ){    
-    out$weights <- weightsMatrix * out$weights
-    # out$weights <- t(weights * t(out$weights))
+  if( rescaleWeightsAfter ){  
+    w <- weightsMatrix[keepGenes,,drop=FALSE]
+
+    out$weights <- w * out$weights
     out$targets$sample.weights <- colMeans(weightsMatrix)
   }
+  
+  # remove rownames to be compatible with voom()
+  attr(out$weights, "dimnames") = NULL
+
   if (save.plot) {
     out$voom.xy <- list(x = sx, y = sy, xlab = "log2( count size + 0.5 )", ylab = "Sqrt( standard deviation )")
     out$voom.line <- l

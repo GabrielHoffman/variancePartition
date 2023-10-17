@@ -1,4 +1,14 @@
 
+Oct 6, 2023
+	See ~/Downloads/RUSH.RDATA
+
+	Since genes are dropped by voomWithDreamWeights(),  the out$weights and weightsMatrix are no longer the same size:
+
+	https://github.com/GabrielHoffman/variancePartition/blob/3b7b52f14ffe47a28425e05da001fbd785874318/R/voomWithDreamWeights.R#L245C36-L245C47
+
+	Need to match names instead
+
+
 
 Upload to Bioconductor once remaCor 0.0.16 is accepted to CRAN
 
