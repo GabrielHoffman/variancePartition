@@ -52,11 +52,12 @@
 #' @export
 voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, BPPARAM = SerialParam(), ...) {
 
-  objFlt <- filterInputData(counts, formula, data, useWeights = FALSE, isCounts = TRUE)
+  objFlt <- filterInputData(counts, formula, data, weights, useWeights = FALSE, isCounts = TRUE)
 
   counts <- objFlt$exprObj
   formula <- objFlt$formula
   data <- objFlt$data
+  weights <- objFlt$weights
 
   out <- list()
 
