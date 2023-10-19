@@ -224,14 +224,15 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
 
 
 
-filterInputData <- function(exprObj, formula, data, useWeights, isCounts = FALSE) {
+filterInputData <- function(exprObj, formula, data, weights = NULL, useWeights = TRUE, isCounts = FALSE) {
   # convert to data.frame
   data <- as.data.frame(data)
-  keep <- colnames(data) %in% all.vars(formula)
-  data <- droplevels(data[, keep, drop = FALSE])
 
   # make sure form is a formula
   formula <- stats::as.formula(formula)
+
+  keep <- colnames(data) %in% all.vars(formula)
+  data <- droplevels(data[, keep, drop = FALSE])
 
   # check that variables in the formula are all in the data
   idx <- unique(all.vars(formula)) %in% colnames(data)
@@ -258,7 +259,19 @@ filterInputData <- function(exprObj, formula, data, useWeights, isCounts = FALSE
     idx <- unique(unlist(idx))
 
     data <- droplevels(data[-idx, , drop = FALSE])
-    exprObj <- exprObj[, -idx, drop = FALSE]
+
+    if( is(exprObj, "DGEList") ){
+      exprObj <- exprObj[, -idx]
+    }else{      
+      exprObj <- exprObj[, -idx, drop = FALSE]
+    }
+    if( !is.null(weights) ){
+      if( is.matrix(weights) ){
+        weights <- weights[, -idx, drop = FALSE]
+      }else{        
+        weights <- weights[-idx]
+      }
+    }
   }
 
   if (!isCounts) {
@@ -286,6 +299,7 @@ filterInputData <- function(exprObj, formula, data, useWeights, isCounts = FALSE
   list(
     exprObj = exprObj,
     formula = formula,
-    data = data
+    data = data,
+    weights = weights
   )
 }
