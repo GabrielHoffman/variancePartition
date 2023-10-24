@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.32.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,26 @@
       <small>Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.31.22" id="variancepartition-13122">variancePartition 1.31.22<a class="anchor" aria-label="anchor" href="#variancepartition-13122"></a></h2>
+<ul><li>Oct 19, 2023</li>
+<li>fix handling of variables with missing data</li>
+<li>return <code>fit$genes</code> properly</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.31.21" id="variancepartition-13121">variancePartition 1.31.21<a class="anchor" aria-label="anchor" href="#variancepartition-13121"></a></h2>
+<ul><li>Oct 16, 2023</li>
+<li>handle weights properly when the linear mixed model fails for some genes</li>
+<li>
+<code>lmFit()</code> and</li>
+<li>in <code>iterRows()</code> set <code>scale = FALSE</code> as default</li>
+<li>in <code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code>, scale in input weights and weights in side <code><a href="../reference/fitVarPartModel-method.html">fitVarPartModel()</a></code>
+<ul><li>get weights estimated most similar to <code>voomLmFit()</code>
+</li>
+</ul></li>
+<li>in <code><a href="../reference/dream-method.html">dream()</a></code> use <code>rescaleWeights = FALSE</code> to get <code>sigma</code> estimates compatable with <code>lmFit()</code>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.31.20" id="variancepartition-13120">variancePartition 1.31.20<a class="anchor" aria-label="anchor" href="#variancepartition-13120"></a></h2>
 <ul><li>Sept 26, 2023</li>

@@ -374,6 +374,7 @@ createContrastL <- function(formula, data, L) {
 
 #' @importFrom methods as
 combineResults <- function(exprObj, L, resList, univariateContrasts) {
+
   # only keep expression data from genes in resList
   exprObj <- exprObj[names(resList), seq(ncol(exprObj)), drop = FALSE]
 
@@ -451,7 +452,7 @@ combineResults <- function(exprObj, L, resList, univariateContrasts) {
   )
 
   if ("genes" %in% names(exprObj)) {
-    ret$genes <- rownames(coefficients)
+    ret$genes <- exprObj$genes
   }
 
   ret <- new("MArrayLM", ret)

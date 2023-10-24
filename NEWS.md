@@ -1,3 +1,18 @@
+
+# variancePartition 1.31.22
+ - Oct 19, 2023
+ - fix handling of variables with missing data
+ - return `fit$genes` properly
+
+# variancePartition 1.31.21
+ - Oct 16, 2023
+ - handle weights properly when the linear mixed model fails for some genes
+ - `lmFit()` and 
+  - in `iterRows()` set `scale = FALSE` as default
+  - in `voomWithDreamWeights()`, scale in input weights and weights in side `fitVarPartModel()`
+    - get weights estimated most similar to `voomLmFit()`
+  - in `dream()` use `rescaleWeights = FALSE` to get `sigma` estimates compatable with `lmFit()`
+
 # variancePartition 1.31.20
  - Sept 26, 2023
  - allow `weights` to be a matrix in `voomWithDreamWeights()`
