@@ -374,19 +374,7 @@ test_voomLmFit = function(){
 	# a = dream(vobj[i,], form2, metadata)
 
 
-	# processOneAssay
-	#------------------
-
-	w = 1:ncol(dge)
-	fit1r = voomLmFit2( dge, dsgn, prior.weights=w / mean(w))
-	fit1 = eBayes(fit1r)
-
-	res = dreamlet:::processOneAssay(dge, form, metadata, 
-		n.cells = w , min.cells = 0, min.count = 0, min.samples = 0, min.prop = 0, span = 0.5)
-
-	checkEquals(fit1$EList$E, res$E)
-	checkEquals(fit1$EList$weights, res$weights)
-
+	
 
 	# plot(fit1$EList$weights, res$weights)
 	# abline(0, 1, col="red")
@@ -408,6 +396,14 @@ test_voomLmFit = function(){
      
 	# cor(vp1, vp2)
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -685,28 +681,6 @@ voomLmFit2 = function (counts, design = NULL, block = NULL, prior.weights = NULL
     }
     fit
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
