@@ -227,7 +227,7 @@ setMethod(
                              BPPARAM = SerialParam(),
                              ...) {
   # filter and check input data
-  objFlt <- filterInputData(exprObj, formula, data, useWeights)
+  objFlt <- filterInputData(exprObj, formula, data, useWeights = useWeights)
 
   res <- run_lmm(objFlt$exprObj, objFlt$formula, objFlt$data,
     REML = REML,

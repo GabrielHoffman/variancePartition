@@ -45,7 +45,7 @@ Please help speed up bug fixes by providing a 'minimal reproducible example' tha
 
 ## References
 
-Describes extensions of `dream` including two-stage precision weights and empirical Bayes moderated t-statistics for linear mixed models 
+Describes extensions of `dream` including empirical Bayes moderated t-statistics for linear mixed models and applications to single cell data
 
 - [Hoffman, et al, biorxiv (2023)](https://doi.org/10.1101/2023.03.17.533005)
 

@@ -9,6 +9,7 @@
 #' @param normalize.method the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the \code{method} argument of \code{normalizeBetweenArrays} when the data is single-channel.  Any normalization factors found in \code{counts} will still be used even if \code{normalize.method="none"}.
 #' @param span width of the lowess smoothing window as a proportion. Setting \code{span="auto"} uses \code{fANCOVA::loess.as()} to estimate the tuning parameter from the data
 #' @param weights Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}
+#' @param prior.count average count to be added to each observation to avoid taking log of zero. The count applied to each sample is normalized by library size so given equal log CPM for a gene with zero counts across multiple samples
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
 #' @param rescaleWeightsAfter default = TRUE, should the output weights be scaled by the input weights
@@ -48,15 +49,18 @@
 #' @importFrom stats approxfun predict as.formula
 #' @importFrom limma asMatrixWeights
 #' @importFrom stats sigma
+#' @importFrom Matrix t
+#' @importFrom matrixStats colSums2 rowSums2
 #' @importFrom fANCOVA loess.as
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, BPPARAM = SerialParam(), ...) {
+voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, BPPARAM = SerialParam(), ...) {
 
-  objFlt <- filterInputData(counts, formula, data, useWeights = FALSE, isCounts = TRUE)
+  objFlt <- filterInputData(counts, formula, data, weights, useWeights = FALSE, isCounts = TRUE)
 
   counts <- objFlt$exprObj
   formula <- objFlt$formula
   data <- objFlt$data
+  weights <- objFlt$weights
 
   out <- list()
 
@@ -86,10 +90,16 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   if (n < 2L) stop("Need at least two genes to fit a mean-variance trend")
 
   # Check lib.size
-  if (is.null(lib.size)) lib.size <- colSums(counts)
+  if (is.null(lib.size)){
+    lib.size <- colSums2(counts)
+  }
+
+  # Augment observed counts with prior counts
+  # scaled so no variance is introduced across samples
+  countsAug = augmentPriorCount(counts, lib.size, prior.count)
 
   # 	Fit linear model to log2-counts-per-million
-  y <- t(log2(t(counts + 0.5) / (lib.size + 1) * 1e6))
+  y <- t(log2(t(countsAug) / (lib.size + 1) * 1e6))
   y <- normalizeBetweenArrays(y, method = normalize.method)
 
   if (is.null(weights)) {
@@ -108,14 +118,18 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
     }
 
     # convert sample-level weights array to matrix
-    # weights <- weights / mean(weights) # normalize to scale 1
     weightsMatrix <- asMatrixWeights(weights, dim(y))
 
     # Sept 27, 2023
-    # Solves numerical issue
-    # Somehow this flag causes very subtle erro in test_vcov.R
-    attr(weightsMatrix,"arrayweights") = NULL
+    # Fixes error reported here
+    # https://support.bioconductor.org/p/9154670/
+    attr(weightsMatrix,"arrayweights") <- NULL
   }
+  rownames(weightsMatrix) <- rownames(y)
+  
+  # rescale input weights to have mean 1 
+  # before scaling output weights
+  weightsMatrix <- weightsMatrix / rowMeans(weightsMatrix)  
 
   # put weights into EList
   obj <- new("EList", list(E = y, weights = weightsMatrix))
@@ -127,18 +141,20 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
 
   if (.isMixedModelFormula(formula)) {
     # fit linear mixed model
-    vpList <- fitVarPartModel(obj, formula, data, ..., fxn = function(fit) {
+    vpList <- fitVarPartModel(obj, formula, data, rescaleWeights = TRUE, ..., fxn = function(fit) {
       # extract
       # 1) sqrt residual variance (i.e. residual standard deviation)
-      # 2) fitted values
+      # 3) fitted values
       list(
         sd = sigma(fit),
+        Amean = mean(fit@frame[, 1], na.rm = TRUE),
         fitted.values = predict(fit)
       )
     }, BPPARAM = BPPARAM)
 
     fit <- list()
     fit$sigma <- sapply(vpList, function(x) x$sd)
+    fit$Amean <- sapply(vpList, function(x) x$Amean)
     fit$df.residual <- rep(2, length(fit$sigma)) # check this
 
     # extract fitted values
@@ -160,7 +176,8 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   }
 
   # only keep y where model has converged
-  y <- y[rownames(fitted.values), , drop = FALSE]
+  keepGenes = rownames(fitted.values)
+  y <- y[keepGenes, , drop = FALSE]
 
   if (is.null(fit$Amean)) fit$Amean <- rowMeans(y, na.rm = TRUE)
 
@@ -185,15 +202,9 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   sx <- fit$Amean + mean(log2(lib.size + 1)) - log2(1e6)
 
   # get residual standard deviation
-  if (is(fit, "MArrayLM2")) {
-    # fit is result of dream()
-    sy <- sqrt(attr(fit, "varComp")$resid)
-  } else {
-    # fit is result of lmFit()
-    sy <- sqrt(fit$sigma)
-  }
+  sy <- sqrt(fit$sigma)
 
-  allzero <- rowSums(counts) == 0
+  allzero <- rowSums2(counts) == 0
   if (any(allzero)) {
     sx <- sx[!allzero]
     sy <- sy[!allzero]
@@ -241,11 +252,16 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   }
 
   # rescale by input weights
-  if( rescaleWeightsAfter ){    
-    out$weights <- weightsMatrix * out$weights
-    # out$weights <- t(weights * t(out$weights))
+  if( rescaleWeightsAfter ){  
+    w <- weightsMatrix[keepGenes,,drop=FALSE]
+
+    out$weights <- w * out$weights
     out$targets$sample.weights <- colMeans(weightsMatrix)
   }
+  
+  # remove rownames to be compatible with voom()
+  attr(out$weights, "dimnames") = NULL
+
   if (save.plot) {
     out$voom.xy <- list(x = sx, y = sy, xlab = "log2( count size + 0.5 )", ylab = "Sqrt( standard deviation )")
     out$voom.line <- l

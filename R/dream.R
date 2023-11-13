@@ -112,7 +112,7 @@ dream <- function(exprObj,
   ddf <- ifelse(ddf == "adaptive" & ncol(exprObj) < 20, "Kenward-Roger", "Satterthwaite")
 
   # filter and check input data
-  objFlt <- filterInputData(exprObj, formula, data, useWeights)
+  objFlt <- filterInputData(exprObj, formula, data, useWeights = useWeights)
 
   # process contrasts to create L matrix
   ctst <- createContrastL(objFlt$formula, objFlt$data, L)
@@ -126,6 +126,7 @@ dream <- function(exprObj,
       BPPARAM = BPPARAM,
       dreamCheck = TRUE,
       useInitialFit = FALSE,
+      rescaleWeights = FALSE,
       ...
     )
 

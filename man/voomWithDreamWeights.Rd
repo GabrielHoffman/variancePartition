@@ -12,6 +12,7 @@ voomWithDreamWeights(
   normalize.method = "none",
   span = 0.5,
   weights = NULL,
+  prior.count = 0.5,
   plot = FALSE,
   save.plot = FALSE,
   rescaleWeightsAfter = TRUE,
@@ -33,6 +34,8 @@ voomWithDreamWeights(
 \item{span}{width of the lowess smoothing window as a proportion. Setting \code{span="auto"} uses \code{fANCOVA::loess.as()} to estimate the tuning parameter from the data}
 
 \item{weights}{Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}}
+
+\item{prior.count}{average count to be added to each observation to avoid taking log of zero. The count applied to each sample is normalized by library size so given equal log CPM for a gene with zero counts across multiple samples}
 
 \item{plot}{logical, should a plot of the mean-variance trend be displayed?}
 
