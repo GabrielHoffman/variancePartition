@@ -1,6 +1,5 @@
 
-
-# variancePartition 1.32.2
+# variancePartition 1.33.2
  - Nov 13, 2023
  - add `augmentPriorCount()`
  - add `prior.count` argument to `voomWithDreamWeights()` and feed it to `augmentPriorCount()`
