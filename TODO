@@ -1,4 +1,9 @@
 
+Nov 12, 2023
+	Push latest version to Bioc
+	voomWithDreamWeights() should allow users to chanage pseudocount
+
+
 Oct 6, 2023
 	See ~/Downloads/RUSH.RDATA
 

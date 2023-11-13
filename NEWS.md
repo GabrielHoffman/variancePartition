@@ -1,4 +1,9 @@
 
+# variancePartition 1.33.2
+ - Nov 13, 2023
+ - add `augmentPriorCount()`
+ - add `prior.count` argument to `voomWithDreamWeights()` and feed it to `augmentPriorCount()`
+
 # variancePartition 1.33.1
  - Nov 2, 2023
  - move `omp_set_num_threads()` deeper in nesting
