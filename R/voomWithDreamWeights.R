@@ -9,7 +9,7 @@
 #' @param normalize.method the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the \code{method} argument of \code{normalizeBetweenArrays} when the data is single-channel.  Any normalization factors found in \code{counts} will still be used even if \code{normalize.method="none"}.
 #' @param span width of the lowess smoothing window as a proportion. Setting \code{span="auto"} uses \code{fANCOVA::loess.as()} to estimate the tuning parameter from the data
 #' @param weights Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}
-#' @param prior.count average count to be added to each observation to avoid taking log of zero. CThe cunt applied to each sample is normalized by library size so give equal log CPM for a gene with zero counts across multiple samples
+#' @param prior.count average count to be added to each observation to avoid taking log of zero. The count applied to each sample is normalized by library size so given equal log CPM for a gene with zero counts across multiple samples
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
 #' @param rescaleWeightsAfter default = TRUE, should the output weights be scaled by the input weights
