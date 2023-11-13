@@ -9,6 +9,7 @@
 #' @param normalize.method the microarray-style normalization method to be applied to the logCPM values (if any).  Choices are as for the \code{method} argument of \code{normalizeBetweenArrays} when the data is single-channel.  Any normalization factors found in \code{counts} will still be used even if \code{normalize.method="none"}.
 #' @param span width of the lowess smoothing window as a proportion. Setting \code{span="auto"} uses \code{fANCOVA::loess.as()} to estimate the tuning parameter from the data
 #' @param weights Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}
+#' @param prior.count average count to be added to each observation to avoid taking log of zero. CThe cunt applied to each sample is normalized by library size so give equal log CPM for a gene with zero counts across multiple samples
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
 #' @param rescaleWeightsAfter default = TRUE, should the output weights be scaled by the input weights
@@ -48,9 +49,11 @@
 #' @importFrom stats approxfun predict as.formula
 #' @importFrom limma asMatrixWeights
 #' @importFrom stats sigma
+#' @importFrom Matrix t
+#' @importFrom matrixStats colSums2 rowSums2
 #' @importFrom fANCOVA loess.as
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, BPPARAM = SerialParam(), ...) {
+voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, BPPARAM = SerialParam(), ...) {
 
   objFlt <- filterInputData(counts, formula, data, weights, useWeights = FALSE, isCounts = TRUE)
 
@@ -87,10 +90,16 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   if (n < 2L) stop("Need at least two genes to fit a mean-variance trend")
 
   # Check lib.size
-  if (is.null(lib.size)) lib.size <- colSums(counts)
+  if (is.null(lib.size)){
+    lib.size <- colSums2(counts)
+  }
+
+  # Augment observed counts with prior counts
+  # scaled so no variance is introduced across samples
+  countsAug = augmentPriorCount(counts, lib.size, prior.count)
 
   # 	Fit linear model to log2-counts-per-million
-  y <- t(log2(t(counts + 0.5) / (lib.size + 1) * 1e6))
+  y <- t(log2(t(countsAug) / (lib.size + 1) * 1e6))
   y <- normalizeBetweenArrays(y, method = normalize.method)
 
   if (is.null(weights)) {
@@ -195,7 +204,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   # get residual standard deviation
   sy <- sqrt(fit$sigma)
 
-  allzero <- rowSums(counts) == 0
+  allzero <- rowSums2(counts) == 0
   if (any(allzero)) {
     sx <- sx[!allzero]
     sy <- sy[!allzero]

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,10 +73,11 @@
 <span>  normalize.method <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  span <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  prior.count <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save.plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rescaleWeightsAfter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu">SerialParam</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -109,6 +110,10 @@
 
 <dt>weights</dt>
 <dd><p>Can be a numeric matrix of individual weights of same dimensions as the <code>counts</code>, or a numeric vector of sample weights with length equal to <code>ncol(counts)</code></p></dd>
+
+
+<dt>prior.count</dt>
+<dd><p>average count to be added to each observation to avoid taking log of zero. CThe cunt applied to each sample is normalized by library size so give equal log CPM for a gene with zero counts across multiple samples</p></dd>
 
 
 <dt>plot</dt>
@@ -173,13 +178,13 @@
 <span class="r-in"><span><span class="co"># extract results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">res</span>, coef <span class="op">=</span> <span class="st">"Disease1"</span>, number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                    logFC  AveExpr        t      P.Value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000456159.1 gene=MET     1.0182945 2.458926 6.167647 3.897397e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000418210.2 gene=TMEM64  1.0375652 4.715367 6.494861 6.543987e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000555834.1 gene=RPS6KL1 0.9355651 5.272063 5.736384 1.484023e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000456159.1 gene=MET     1.0180275 2.458905 6.166796 3.907307e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000418210.2 gene=TMEM64  1.0375134 4.715361 6.494270 6.553058e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000555834.1 gene=RPS6KL1 0.9355383 5.272059 5.736273 1.484416e-06</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                   adj.P.Val        B    z.std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000456159.1 gene=MET     6.543987e-06 6.322906 5.073902</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000418210.2 gene=TMEM64  6.543987e-06 6.877272 4.974430</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000555834.1 gene=RPS6KL1 9.893485e-06 4.978796 4.813375</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000456159.1 gene=MET     6.553058e-06 6.320412 5.073419</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000418210.2 gene=TMEM64  6.553058e-06 6.875648 4.974162</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000555834.1 gene=RPS6KL1 9.896105e-06 4.978554 4.813322</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

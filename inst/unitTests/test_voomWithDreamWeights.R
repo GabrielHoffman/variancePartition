@@ -17,7 +17,12 @@ test_voomWithDreamWeights = function(){
 	vobj1 = voom( dge[1:100,], design)
 	vobj1$targets$sample.weights = 1
 
-	vobj2 = voomWithDreamWeights( dge[1:100,], form, data=metadata)
+	# original 
+	# vobj2 = voomWithDreamWeights( dge[1:100,], form, data=metadata)
+
+	# disable scaled pseudocounts
+	dge$counts = dge$counts + 0.5
+	vobj2 = voomWithDreamWeights( dge[1:100,], form, data=metadata, prior.count=0)
 
 	checkEquals(vobj1, vobj2)
 }
@@ -109,6 +114,10 @@ test_reweigthing_voom = function(){
 	dge <- DGEList(counts = countMatrix)
 	dge <- calcNormFactors(dge)
 
+	# disable scaled pseudocounts
+	dge2 = dge
+	dge2$counts = dge2$counts + 0.5
+
 	form <- ~ Disease 
 	dsgn = model.matrix(form, metadata)
 
@@ -120,7 +129,7 @@ test_reweigthing_voom = function(){
 
 	# no weights
 	vobj1 = voom(dge, dsgn)
-	vobj2 <- voomWithDreamWeights(dge, form, metadata)
+	vobj2 <- voomWithDreamWeights(dge2, form, metadata, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# constant weights 
@@ -128,7 +137,7 @@ test_reweigthing_voom = function(){
 	vobj1 = voom(dge, dsgn, weights=w.scale)
 
 	# disable rescaling by input weights
-	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w.scale, rescaleWeightsAfter=FALSE)
+	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=w.scale, rescaleWeightsAfter=FALSE, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# manual rescaling of weights after voom
@@ -136,7 +145,7 @@ test_reweigthing_voom = function(){
 	vobj1$weights <- t(w.scale * t(vobj1$weights))
 
 	# enble rescaling by input weights
-	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w)
+	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# varying weights 
@@ -147,7 +156,7 @@ test_reweigthing_voom = function(){
 	vobj1 = voom(dge, dsgn, weights=w.scale)
 
 	# disable rescaling by input weights
-	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w, rescaleWeightsAfter=FALSE)
+	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=w, rescaleWeightsAfter=FALSE, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# manual rescaling of weights after voom
@@ -155,7 +164,7 @@ test_reweigthing_voom = function(){
 	vobj1$weights <- t(w.scale * t(vobj1$weights))
 
 	# enble rescaling by input weights
-	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=w)
+	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# weights as matrix
@@ -166,7 +175,7 @@ test_reweigthing_voom = function(){
 					ncol = length(w), 
 					byrow = TRUE)
 	# enble rescaling by input weights
-	vobj2 <- voomWithDreamWeights(dge, form, metadata, weights=weightsMatrix)
+	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=weightsMatrix, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 }	
 
@@ -191,6 +200,10 @@ test_voomLmFit = function(){
 	b = getNormLibSizes(dge)
 	checkEqualsNumeric(a,b)
 
+	# disable scaled pseudocounts
+	dge2 = dge
+	dge2$counts = dge2$counts + 0.5
+
 	form <- ~ Disease 
 	dsgn = model.matrix(form, metadata)
 
@@ -200,7 +213,7 @@ test_voomLmFit = function(){
 	fit1 = voomLmFit2( dge, dsgn, prior.weights=w)
 	fit1$EList$genes = NULL
 
-	vobj <- voomWithDreamWeights(dge, form, metadata, weights=w)
+	vobj <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count=0)
 	fit2 = dream(vobj, form, metadata)
 	fit2$targets = vobj$targets[,1:3]
 	fit2$EList = vobj
@@ -261,7 +274,7 @@ test_voomLmFit = function(){
 	fit1 = voomLmFit2( dge, dsgn, prior.weights=w  / mean(w))
 	fit1$EList$genes = NULL
 
-	vobj <- voomWithDreamWeights(dge, form, metadata, weights=w )
+	vobj <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count=0 )
 	fit2 = dream(vobj, form, metadata)
 	fit2$targets = vobj$targets[,1:3]
 	fit2$EList = vobj
