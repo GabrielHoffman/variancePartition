@@ -35,7 +35,7 @@ iterIndeces <- function(count, sizeOfChunk = 1) {
 
 # Iterator over chunks of rows
 #' @importFrom iterators icount
-iterRows <- function(Values, Weights = matrix(1, nrow(Values), ncol(Values)), useWeights = TRUE, sizeOfChunk = 1, scale = TRUE) {
+iterRows <- function(Values, Weights = matrix(1, nrow(Values), ncol(Values)), useWeights = TRUE, sizeOfChunk = 1, scale = FALSE) {
   stopifnot(dim(Values) == dim(Weights))
 
   n_features <- nrow(Values)

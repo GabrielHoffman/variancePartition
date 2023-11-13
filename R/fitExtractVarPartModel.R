@@ -94,6 +94,7 @@ setGeneric("fitExtractVarPartModel",
 setMethod(
   "fitExtractVarPartModel", "matrix",
   function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+
     weights <- matrix(1, nrow(exprObj), ncol(exprObj))
     exprObj <- new("EList", list(E = exprObj, weights = weights))
 
@@ -116,6 +117,7 @@ setMethod(
 setMethod(
   "fitExtractVarPartModel", "data.frame",
   function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+
     fitExtractVarPartModel(as.matrix(exprObj), formula, data,
       REML = REML,
       useWeights = useWeights,
@@ -135,6 +137,7 @@ setMethod(
 setMethod(
   "fitExtractVarPartModel", "EList",
   function(exprObj, formula, data, REML = FALSE, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+
     .fitExtractVarPartModel(exprObj, formula, data,
       REML = REML,
       useWeights = useWeights,
@@ -154,6 +157,7 @@ setMethod(
 setMethod(
   "fitExtractVarPartModel", "ExpressionSet",
   function(exprObj, formula, data, REML = FALSE, useWeights = TRUE, control = vpcontrol, hideErrorsInBackend = FALSE, showWarnings = TRUE, BPPARAM = SerialParam(), ...) {
+    
     exprObj <- as.matrix(exprs(exprObj))
 
     fitExtractVarPartModel(exprObj, formula, data,
@@ -202,7 +206,7 @@ setMethod(
                                     BPPARAM = SerialParam(),
                                     ...) {
   # filter and check input data
-  objFlt <- filterInputData(exprObj, formula, data, useWeights)
+  objFlt <- filterInputData(exprObj, formula, data, useWeights = useWeights)
 
   res <- run_lmm(objFlt$exprObj, objFlt$formula, objFlt$data,
     fxn = calcVarPart,

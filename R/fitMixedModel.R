@@ -18,7 +18,7 @@ vpcontrol.NM <- lme4::lmerControl(
 
 #' @importFrom lme4 lmer refit
 #' @importFrom stats update
-run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5) {
+run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE) {
   # if sparseMatrix, convert to matrix
   if (is(obj$E, "dgCMatrix")) {
     obj$E <- as.matrix(obj$E)
@@ -30,7 +30,9 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
   data$w.local <- c(obj$weights)
 
   # scale regression weights
-  data$w.local <- data$w.local / mean(data$w.local)
+  if( rescaleWeights ){
+    data$w.local <- data$w.local / mean(data$w.local)
+  }
 
   form.local <- update(formula, y.local ~ .)
 
@@ -85,7 +87,7 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
 
 # run analysis on each batch
 #' @importFrom BiocParallel bpstopOnError<- bptry bplapply SerialParam
-run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5) {
+run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE) {
   # create list with one gene per entry
   exprList <- lapply(seq(nrow(obj)), function(j) {
     new("EList", list(
@@ -93,6 +95,11 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
       weights = obj$weights[j, , drop = FALSE]
     ))
   })
+
+  # only use 1 thread internally then reset to original value
+  n_max_threads <- omp_get_max_threads()
+  omp_set_num_threads(1)
+  on.exit(omp_set_num_threads(n_max_threads))
 
   # run iterator
   # bplapply is much faster for small chunks than
@@ -108,6 +115,7 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
     fit.init = fit.init,
     dreamCheck = dreamCheck,
     varTol = varTol,
+    rescaleWeights = rescaleWeights,
     BPPARAM = BPPARAM
   ))
 
@@ -141,13 +149,8 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
 
 #' @importFrom BiocParallel bpstopOnError<- bpiterate
 #' @importFrom RhpcBLASctl omp_set_num_threads omp_get_max_threads
-run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol = 1e-5, BPPARAM = SerialParam(), ...) {
+run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE, BPPARAM = SerialParam(), ...) {
   stopifnot(is(BPPARAM, "BiocParallelParam"))
-
-  # only use 1 thread internally then reset to original value
-  n_max_threads <- omp_get_max_threads()
-  omp_set_num_threads(1)
-  on.exit(omp_set_num_threads(n_max_threads))
 
   if (any(obj$weights < 0)) stop("All weights must be positive")
 
@@ -206,6 +209,7 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
     fit.init = fit.init,
     dreamCheck = dreamCheck,
     varTol = varTol,
+    rescaleWeights = rescaleWeights,
     fxn = fxn,
     BPPARAM = BPPARAM,
     reduce.in.order = TRUE
@@ -220,14 +224,15 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
 
 
 
-filterInputData <- function(exprObj, formula, data, useWeights, isCounts = FALSE) {
+filterInputData <- function(exprObj, formula, data, weights = NULL, useWeights = TRUE, isCounts = FALSE) {
   # convert to data.frame
   data <- as.data.frame(data)
-  keep <- colnames(data) %in% all.vars(formula)
-  data <- droplevels(data[, keep, drop = FALSE])
 
   # make sure form is a formula
   formula <- stats::as.formula(formula)
+
+  keep <- colnames(data) %in% all.vars(formula)
+  data <- droplevels(data[, keep, drop = FALSE])
 
   # check that variables in the formula are all in the data
   idx <- unique(all.vars(formula)) %in% colnames(data)
@@ -254,7 +259,19 @@ filterInputData <- function(exprObj, formula, data, useWeights, isCounts = FALSE
     idx <- unique(unlist(idx))
 
     data <- droplevels(data[-idx, , drop = FALSE])
-    exprObj <- exprObj[, -idx, drop = FALSE]
+
+    if( is(exprObj, "DGEList") ){
+      exprObj <- exprObj[, -idx]
+    }else{      
+      exprObj <- exprObj[, -idx, drop = FALSE]
+    }
+    if( !is.null(weights) ){
+      if( is.matrix(weights) ){
+        weights <- weights[, -idx, drop = FALSE]
+      }else{        
+        weights <- weights[-idx]
+      }
+    }
   }
 
   if (!isCounts) {
@@ -282,6 +299,7 @@ filterInputData <- function(exprObj, formula, data, useWeights, isCounts = FALSE
   list(
     exprObj = exprObj,
     formula = formula,
-    data = data
+    data = data,
+    weights = weights
   )
 }
