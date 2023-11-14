@@ -1,4 +1,4 @@
-R/augmentPriorCount.R#' Augment observed read counts with prior count
+#' Augment observed read counts with prior count
 #' 
 #' Augment observed read counts with prior count since log of zero counts is undefined.  The prior count added to each sample is scaled so that no variance is introduced
 #' 
@@ -28,7 +28,7 @@ R/augmentPriorCount.R#' Augment observed read counts with prior count
 #' dge <- DGEList(counts = countMatrix)
 #' dge <- calcNormFactors(dge)
 #' 
-#' countsAugmented = augmentPriorCount( dge$counts, dge$samples$lib.size, 1)
+#' countsAugmented <- augmentPriorCount( dge$counts, dge$samples$lib.size, 1)
 #' 
 #' @importFrom matrixStats colSums2 
 #' @export
