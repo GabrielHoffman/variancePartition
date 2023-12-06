@@ -29,7 +29,7 @@
 #' dge <- calcNormFactors(dge)
 #' 
 #' countsAugmented <- augmentPriorCount( dge$counts, dge$samples$lib.size, 1)
-#' 
+# 
 #' @importFrom matrixStats colSums2 
 #' @export
 augmentPriorCount = function(counts, 
