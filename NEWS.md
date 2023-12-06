@@ -1,4 +1,9 @@
 
+
+# variancePartition 1.33.3
+ - Dec 5, 2023
+ - in `residuals()` when dividing by `sqrt(1-hatvalues)` add small offset to make sure the value is positive
+
 # variancePartition 1.33.2
  - Nov 13, 2023
  - add `augmentPriorCount()`

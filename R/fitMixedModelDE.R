@@ -73,7 +73,10 @@ residuals.MArrayLM2 <- function(object, y, ..., type = c("response", "pearson"))
     } else {
       w <- 1
     }
-    result <- residResponse * sqrt(w) / sqrt(1 - object$hatvalues)
+    # with linear mixed model, hatvalues can be effectively 1
+    # so add a small value, sqrt(.Machine$double.eps), to keep this 
+    # value positive
+    result <- residResponse * sqrt(w) / sqrt(1 - object$hatvalues + sqrt(.Machine$double.eps))
   }
   result
 }

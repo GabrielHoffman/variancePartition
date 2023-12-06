@@ -1,4 +1,11 @@
 
+Nov 27,
+	note that augmentPriorCount() can cause log CPM values to be different
+	from standard methods for low counts 
+
+Nov 14, 
+	Get BIC for each fit for lmFit().  Alreaday works with lmer
+
 Nov 12, 2023
 	Push latest version to Bioc
 	voomWithDreamWeights() should allow users to change pseudocount
