@@ -36,8 +36,7 @@ data(varPartDEdata)
 dge <- DGEList(counts = countMatrix)
 dge <- calcNormFactors(dge)
 
-countsAugmented = augmentPriorCount( dge$counts, dge$samples$lib.size, 1)
-
+countsAugmented <- augmentPriorCount( dge$counts, dge$samples$lib.size, 1)
 }
 \seealso{
 \code{edgeR::cpm()}
