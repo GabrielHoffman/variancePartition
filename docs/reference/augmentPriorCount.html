@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,8 +110,7 @@
 <span class="r-in"><span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">countMatrix</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span><span class="va">dge</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">countsAugmented</span> <span class="op">=</span> <span class="fu">augmentPriorCount</span><span class="op">(</span> <span class="va">dge</span><span class="op">$</span><span class="va">counts</span>, <span class="va">dge</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">lib.size</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">countsAugmented</span> <span class="op">&lt;-</span> <span class="fu">augmentPriorCount</span><span class="op">(</span> <span class="va">dge</span><span class="op">$</span><span class="va">counts</span>, <span class="va">dge</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">lib.size</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
