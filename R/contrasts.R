@@ -168,8 +168,9 @@ makeContrastsDream <- function(formula, data, ..., contrasts = NULL, suppressWar
       eval_tidy(expr, data, env)
     }
   }
+  # comment out 12/13/23 to handle failure with only one contrast
   # nullOnError can only by TRUE if more than 1 contrast is specified
-  nullOnError <- nullOnError & (length(contrasts) > 1)
+  # nullOnError <- nullOnError & (length(contrasts) > 1)
   res <- lapply(e, eval_tidy_safe, env = L_uni_env, nullOnError = nullOnError)
   L <- do.call(cbind, res)
 

@@ -2,7 +2,8 @@
 # variancePartition 1.33.4
  - Dec 13, 2023
  - fix bug with BiocParallel in Windows
-  - https://github.com/GabrielHoffman/variancePartition/issues/91
+   - https://github.com/GabrielHoffman/variancePartition/issues/91
+ - handle case where a songle contrasts fails in `makeContrastsDream()`
 
 # variancePartition 1.33.3
  - Dec 5, 2023
