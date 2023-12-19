@@ -307,7 +307,7 @@ setMethod(
 
     it <- iterRowsSplit(vobj$E, vobj$weights, fit, splitList = features)
 
-    BPPARAM$exportglobals <- FALSE
+    # BPPARAM$exportglobals <- FALSE
     res <- bpiterate(it, mvTest,
       coef = coef,
       method = method,
