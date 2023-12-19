@@ -105,7 +105,7 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
   # bplapply is much faster for small chunks than
   # bpiterate using an iterator
   BPPARAM <- SerialParam(stop.on.error = FALSE)
-  BPPARAM$exportglobals <- FALSE
+  # BPPARAM$exportglobals <- FALSE
   res <- bptry(bplapply(exprList, run_lmm_on_gene,
     form = form,
     data = data,
@@ -201,7 +201,7 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
 
   # iterate over batches
   bpstopOnError(BPPARAM) <- FALSE
-  BPPARAM$exportglobals <- FALSE
+  # BPPARAM$exportglobals <- FALSE
   resList <- bpiterate(it, run_lmm_on_batch,
     form = form,
     data = data,
