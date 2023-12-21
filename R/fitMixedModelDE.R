@@ -488,6 +488,10 @@ assign(
       obj$df.total <- rowMeans(obj$df.residual)
     }
 
+    # subset residuals and hatvalues
+    obj$residuals = obj$residuals[rownames(obj),]
+    obj$hatvalues = obj$hatvalues[rownames(obj),]
+
     # the F-statistic and p-value are evaluated when subsetting is applied
     # so need to apply df2 here
     # If columns have been subsetted, need to re-generate F
