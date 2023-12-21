@@ -1,9 +1,15 @@
 
+# variancePartition 1.33.5
+ - Dec 21, 2023
+ - fix issue with ddf always calling `"Satterthwaite"`
+ - enforce subsetting of residuals in `assign( "[.MArrayLM2",)`
+   - this comes with when `rdf < 1`
+
 # variancePartition 1.33.4
  - Dec 13, 2023
  - fix bug with BiocParallel in Windows
    - https://github.com/GabrielHoffman/variancePartition/issues/91
- - handle case where a songle contrasts fails in `makeContrastsDream()`
+ - handle case where a single contrasts fails in `makeContrastsDream()`
 
 # variancePartition 1.33.3
  - Dec 5, 2023

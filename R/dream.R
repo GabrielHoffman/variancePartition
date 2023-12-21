@@ -109,7 +109,11 @@ dream <- function(exprObj,
                   BPPARAM = SerialParam(),
                   ...) {
   ddf <- match.arg(ddf)
-  ddf <- ifelse(ddf == "adaptive" & ncol(exprObj) < 20, "Kenward-Roger", "Satterthwaite")
+
+  # if ddf is "adaptive" and # samples < 20, use "Satterthwaite"
+  if( ddf == "adaptive" ){
+    ddf = ifelse( ncol(exprObj) < 20, "Kenward-Roger", "Satterthwaite")
+  }
 
   # filter and check input data
   objFlt <- filterInputData(exprObj, formula, data, useWeights = useWeights)
