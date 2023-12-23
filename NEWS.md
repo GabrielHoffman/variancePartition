@@ -1,4 +1,7 @@
 
+# variancePartition 1.33.6
+ - fix issue with subsetting using logicals
+
 # variancePartition 1.33.5
  - Dec 21, 2023
  - fix issue with ddf always calling `"Satterthwaite"`

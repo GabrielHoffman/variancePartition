@@ -385,6 +385,14 @@ assign(
       stop("Two subscripts required", call. = FALSE)
     }
 
+    if( !missing(j) ){
+      if( is.logical(j) ) j <- which(j)
+    }
+
+    if( !missing(i) ){
+      if( is.logical(i) ) i <- which(i)
+    }
+
     # apply standard MArrayLM subsetting
     obj <- as(object, "MArrayLM")
 
