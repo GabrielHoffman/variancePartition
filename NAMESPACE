@@ -2,8 +2,12 @@
 
 S3method("[", MArrayLM2)
 S3method("as.data.frame", 'varPartResults')
+S3method("logLik", MArrayLM)
+S3method("logLik", MArrayLM2)
 S3method("residuals", MArrayLM2)
 S3method(as.data.frame,varPartResults)
+S3method(logLik,MArrayLM)
+S3method(logLik,MArrayLM2)
 export("[.MArrayLM2")
 export(ESS)
 export(applyQualityWeights)

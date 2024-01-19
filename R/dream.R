@@ -159,6 +159,7 @@ dream <- function(exprObj,
 
     res2 <- lmFit(objFlt$exprObj, design)
     res2$residuals <- residuals(res2, objFlt$exprObj)
+    res2$logLik = logLik(res2, objFlt$exprObj)
 
     # apply contrasts
     if (!ctst$univariateContrasts) {
