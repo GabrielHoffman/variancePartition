@@ -64,7 +64,6 @@ While \code{REML=TRUE} is required by \code{lmerTest} when ddf='Kenward-Roger', 
 }
 \examples{
 # library(variancePartition)
-library(BiocParallel)
 
 # load simulated data:
 # geneExpr: matrix of *normalized* gene expression values

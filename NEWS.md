@@ -1,4 +1,8 @@
 
+# variancePartition 1.33.8
+ - Jan 22, 2024
+ - add `BIC()` for result of `dream()` and `lmFit()`
+
 # variancePartition 1.33.7
  - Jan 19, 2024
  - add `logLik()` for result of `dream()` and `lmFit()`
