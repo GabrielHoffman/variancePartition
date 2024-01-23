@@ -275,6 +275,7 @@ test_voomLmFit = function(){
 	fit1$EList$genes = NULL
 
 	vobj <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count=0 )
+
 	fit2 = dream(vobj, form, metadata)
 	fit2$targets = vobj$targets[,1:3]
 	fit2$EList = vobj
@@ -694,9 +695,4 @@ voomLmFit2 = function (counts, design = NULL, block = NULL, prior.weights = NULL
     }
     fit
 }
-
-
-
-
-
 
