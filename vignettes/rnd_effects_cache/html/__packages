@@ -1,0 +1,15 @@
+base
+methods
+datasets
+utils
+grDevices
+graphics
+stats
+knitr
+ggplot2
+limma
+BiocParallel
+variancePartition
+Matrix
+lme4
+r2glmm
