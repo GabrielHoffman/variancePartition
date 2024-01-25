@@ -104,7 +104,7 @@ run_model_check_mixed <- function(fit, dreamCheck = FALSE) {
   for (i in 1:length(varType)) {
     # if factor is not random
     if (!dreamCheck && varType[i] %in% c("factor", "character") && (!names(varType)[i] %in% randVar)) {
-      txt <- paste("Categorical variables modeled as fixed effect:", paste(names(varType)[i], collapse = ", "), "\n  Must model either _all_ or _no_ categorical variables\n    as random effects here")
+      txt <- paste("Categorical variables modeled as fixed effect:", paste(names(varType)[i], collapse = ", "), "\n  Must model either _all_ or _no_ categorical variables as random effects here")
       stop(txt)
     }
 

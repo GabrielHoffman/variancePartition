@@ -1,4 +1,8 @@
 
+# variancePartition 1.33.9
+ - Jan 25, 2024
+ - bug fix in `BIC()` and `.fitExtractVarPartModel()`
+
 # variancePartition 1.33.8
  - Jan 22, 2024
  - add `BIC()` for result of `dream()` and `lmFit()`

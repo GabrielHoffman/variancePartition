@@ -237,18 +237,18 @@ setMethod(
     "linear mixed model", "anova"
   )
 
-  res <- new("varPartResults", df,
+  res2 <- new("varPartResults", df,
     type = modelType,
     method = "Variance explained (%)"
   )
 
-  attr(res, "errors") <- res$errors
-  attr(res, "error.initial") <- res$error.initial
+  attr(res2, "errors") <- res$errors
+  attr(res2, "error.initial") <- res$error.initial
 
-  if (!is.null(attr(res, "errors")) & !hideErrorsInBackend) {
-    txt <- paste("Model failed for", length(attr(res, "errors")), "responses.\n  See errors with attr(., 'errors')")
+  if (!is.null(attr(res2, "errors")) & !hideErrorsInBackend) {
+    txt <- paste("Model failed for", length(attr(res2, "errors")), "responses.\n  See errors with attr(., 'errors')")
     warning(txt)
   }
 
-  res
+  res2
 }

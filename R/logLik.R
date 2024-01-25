@@ -96,11 +96,12 @@ BIC.MArrayLM = function(object, vobj, ...){
 #' BIC from model fit using edf
 #'
 #' @param object result of \code{dream()}
+#' @param vobj \code{EList} used to fit model
 #' @param ... See \code{?stats::BIC}
 #'
 #' @rawNamespace S3method("BIC", MArrayLM)
 #' @export
-BIC.MArrayLM2 = function(object, vobj,...){
+BIC.MArrayLM2 = function(object, vobj, ...){
 
 	if( !is.null(object$BIC) ){
 		return( object$BIC )
