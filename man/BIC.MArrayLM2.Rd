@@ -9,6 +9,8 @@
 \arguments{
 \item{object}{result of \code{dream()}}
 
+\item{vobj}{\code{EList} used to fit model}
+
 \item{...}{See \code{?stats::BIC}}
 }
 \description{

@@ -13,12 +13,30 @@ search:
   exclude: ['news/index.html']
 
 articles:
-- title: Articles
+- title: dream
   navbar: ~
-  contents:
-  - dream
-  - rnd_effects
-  - mvtests
-  - errors
-  - additional_visualization
-  - FAQ
+  contents: dream
+
+- title: rnd_effects
+  navbar: ~
+  contents: rnd_effects
+
+- title: mvtests
+  navbar: ~
+  contents: mvtests
+
+- title: additional_visualization
+  navbar: ~
+  contents: additional_visualization
+
+- title: errors
+  navbar: ~
+  contents: errors
+
+- title: FAQ
+  navbar: ~
+  contents: FAQ
+
+  
+
+
