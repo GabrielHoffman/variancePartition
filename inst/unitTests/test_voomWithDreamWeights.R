@@ -695,4 +695,3 @@ voomLmFit2 = function (counts, design = NULL, block = NULL, prior.weights = NULL
     }
     fit
 }
-
