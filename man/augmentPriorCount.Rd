@@ -4,7 +4,12 @@
 \alias{augmentPriorCount}
 \title{Augment observed read counts with prior count}
 \usage{
-augmentPriorCount(counts, lib.size = colSums2(counts), prior.count = 0.5)
+augmentPriorCount(
+  counts,
+  lib.size = colSums2(counts),
+  prior.count = 0.5,
+  scaledByLib = TRUE
+)
 }
 \arguments{
 \item{counts}{matrix of read counts with genes as rows and samples as columns}
@@ -12,6 +17,8 @@ augmentPriorCount(counts, lib.size = colSums2(counts), prior.count = 0.5)
 \item{lib.size}{library sizes, the sum of all ready for each sample}
 
 \item{prior.count}{average prior count added to each sample.}
+
+\item{scaledByLib}{if \code{TRUE}, scale pseudocount by \code{lib.size}.  Else to standard constant pseudocount addition}
 }
 \value{
 matrix with augmented counts

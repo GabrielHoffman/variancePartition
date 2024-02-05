@@ -16,6 +16,7 @@ voomWithDreamWeights(
   plot = FALSE,
   save.plot = FALSE,
   rescaleWeightsAfter = TRUE,
+  scaledByLib = TRUE,
   BPPARAM = SerialParam(),
   ...
 )
@@ -42,6 +43,8 @@ voomWithDreamWeights(
 \item{save.plot}{logical, should the coordinates and line of the plot be saved in the output?}
 
 \item{rescaleWeightsAfter}{default = TRUE, should the output weights be scaled by the input weights}
+
+\item{scaledByLib}{if \code{TRUE}, scale pseudocount by \code{lib.size}.  Else to standard constant pseudocount addition}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
