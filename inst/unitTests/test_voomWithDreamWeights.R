@@ -695,3 +695,30 @@ voomLmFit2 = function (counts, design = NULL, block = NULL, prior.weights = NULL
     }
     fit
 }
+
+test_augmentPriorCount = function(){
+
+	library(edgeR)
+	library(variancePartition)
+
+	data(varPartDEdata)
+
+	# normalize RNA-seq counts
+	dge <- DGEList(counts = countMatrix)
+	dge <- calcNormFactors(dge)
+
+	A <- augmentPriorCount( dge$counts, dge$samples$lib.size, 1)
+	B <- augmentPriorCount( dge$counts, dge$samples$lib.size, 1, scaledByLib=FALSE)
+
+	checkEquals(max(dge$counts - A) != -1, TRUE)
+	checkEquals(max(dge$counts - B), -1)
+
+	vobj1 = voomWithDreamWeights( dge, ~1, data=metadata)
+	vobj2 = voomWithDreamWeights( dge, ~1, data=metadata, scaledByLib=FALSE)
+
+	checkEquals(max(vobj1$E - vobj2$E ) < 1, TRUE)
+
+	# with scaledByLib = FALSE, get original voom
+	vobj3 = voom(dge, model.matrix(~1, metadata))
+	checkEquals(vobj3$E, vobj2$E )
+}

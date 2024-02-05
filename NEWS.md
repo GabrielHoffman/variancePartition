@@ -1,4 +1,8 @@
 
+# variancePartition 1.33.10
+ - Feb 5, 2024
+ - in `augmentPriorCount()` and `voomWithDreamWeights()`, add argument `scaledByLib=TRUE`
+
 # variancePartition 1.33.9
  - Jan 25, 2024
  - bug fix in `BIC()` and `.fitExtractVarPartModel()`

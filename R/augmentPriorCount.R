@@ -4,7 +4,8 @@
 #' 
 #' @param counts matrix of read counts with genes as rows and samples as columns
 #' @param lib.size library sizes, the sum of all ready for each sample 
-#' @param prior.count average prior count added to each sample.  
+#' @param prior.count average prior count added to each sample. 
+#' @param scaledByLib if \code{TRUE}, scale pseudocount by \code{lib.size}.  Else to standard constant pseudocount addition 
 #' 
 #' @return
 #' matrix with augmented counts
@@ -34,8 +35,12 @@
 #' @export
 augmentPriorCount = function(counts, 
 					lib.size = colSums2(counts), 
-					prior.count = 0.5){
+					prior.count = 0.5, scaledByLib = TRUE){
 
+	if( ! scaledByLib ){
+		# do standard, constant pseudocount addition
+		lib.size = rep(1, ncol(counts))
+	}
 	stopifnot(length(lib.size) == ncol(counts))
 
 	# prior count scaled by library size deviation
