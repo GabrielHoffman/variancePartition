@@ -54,7 +54,7 @@
 #' @importFrom matrixStats colSums2 rowSums2
 #' @importFrom fANCOVA loess.as
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, scaledByLib = TRUE, BPPARAM = SerialParam(), ...) {
+voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, scaledByLib = FALSE, BPPARAM = SerialParam(), ...) {
 
   objFlt <- filterInputData(counts, formula, data, weights, useWeights = FALSE, isCounts = TRUE)
 

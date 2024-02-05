@@ -8,7 +8,7 @@ augmentPriorCount(
   counts,
   lib.size = colSums2(counts),
   prior.count = 0.5,
-  scaledByLib = TRUE
+  scaledByLib = FALSE
 )
 }
 \arguments{

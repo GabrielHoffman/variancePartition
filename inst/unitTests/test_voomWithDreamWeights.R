@@ -707,13 +707,13 @@ test_augmentPriorCount = function(){
 	dge <- DGEList(counts = countMatrix)
 	dge <- calcNormFactors(dge)
 
-	A <- augmentPriorCount( dge$counts, dge$samples$lib.size, 1)
+	A <- augmentPriorCount( dge$counts, dge$samples$lib.size, 1, scaledByLib=TRUE)
 	B <- augmentPriorCount( dge$counts, dge$samples$lib.size, 1, scaledByLib=FALSE)
 
 	checkEquals(max(dge$counts - A) != -1, TRUE)
 	checkEquals(max(dge$counts - B), -1)
 
-	vobj1 = voomWithDreamWeights( dge, ~1, data=metadata)
+	vobj1 = voomWithDreamWeights( dge, ~1, data=metadata, scaledByLib=TRUE)
 	vobj2 = voomWithDreamWeights( dge, ~1, data=metadata, scaledByLib=FALSE)
 
 	checkEquals(max(vobj1$E - vobj2$E ) < 1, TRUE)

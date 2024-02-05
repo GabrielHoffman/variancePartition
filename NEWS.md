@@ -1,7 +1,7 @@
 
 # variancePartition 1.33.10
  - Feb 5, 2024
- - in `augmentPriorCount()` and `voomWithDreamWeights()`, add argument `scaledByLib=TRUE`
+ - in `augmentPriorCount()` and `voomWithDreamWeights()`, add argument `scaledByLib=FALSE`
 
 # variancePartition 1.33.9
  - Jan 25, 2024
