@@ -16,7 +16,7 @@ voomWithDreamWeights(
   plot = FALSE,
   save.plot = FALSE,
   rescaleWeightsAfter = TRUE,
-  scaledByLib = TRUE,
+  scaledByLib = FALSE,
   BPPARAM = SerialParam(),
   ...
 )

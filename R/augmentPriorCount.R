@@ -35,7 +35,7 @@
 #' @export
 augmentPriorCount = function(counts, 
 					lib.size = colSums2(counts), 
-					prior.count = 0.5, scaledByLib = TRUE){
+					prior.count = 0.5, scaledByLib = FALSE){
 
 	if( ! scaledByLib ){
 		# do standard, constant pseudocount addition
