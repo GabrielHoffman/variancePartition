@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.11</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,8 +47,8 @@
     <a class="dropdown-item" href="../articles/dream.html">dream analysis</a>
     <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects</a>
     <a class="dropdown-item" href="../articles/mvtests.html">Multivariate tests</a>
-    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
     <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
+    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
     <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
   </div>
 </li>
@@ -83,8 +83,8 @@
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2023-10-24
-15:31:21</h4>
+            <h4 data-toc-skip class="date">Run on 2024-02-07
+12:08:50</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/variancePartition.Rmd" class="external-link"><code>vignettes/variancePartition.Rmd</code></a></small>
       <div class="d-none name"><code>variancePartition.Rmd</code></div>
@@ -1004,18 +1004,22 @@ and read into R with the Bioconductor package <code>ballgown</code>.</p>
 <span>  <span class="va">gene_expression</span>, <span class="va">form</span>,</span>
 <span>  <span class="va">info_ballgown</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in filterInputData(exprObj, formula, data, useWeights): Sample names of responses (i.e. columns of exprObj) do not match</span></span>
+<pre><code><span><span class="co">## Warning in filterInputData(exprObj, formula, data, useWeights = useWeights): Sample names of responses (i.e. columns of exprObj) do not match</span></span>
 <span><span class="co">## sample names of metadata (i.e. rows of data).  Recommend consistent</span></span>
 <span><span class="co">## names so downstream results are labeled consistently.</span></span></code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">## Warning in .fitExtractVarPartModel(exprObj, formula, data, REML = REML, : Model failed for 1 responses.</span></span>
+<span><span class="co">##   See errors with attr(., 'errors')</span></span></code></pre>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Transcript-level analysis</span></span>
 <span><span class="va">varPart_transcript</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel</a></span><span class="op">(</span></span>
 <span>  <span class="va">transcript_fpkm</span>, <span class="va">form</span>,</span>
 <span>  <span class="va">info_ballgown</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in filterInputData(exprObj, formula, data, useWeights): Sample names of responses (i.e. columns of exprObj) do not match</span></span>
+<pre><code><span><span class="co">## Warning in filterInputData(exprObj, formula, data, useWeights = useWeights): Sample names of responses (i.e. columns of exprObj) do not match</span></span>
 <span><span class="co">## sample names of metadata (i.e. rows of data).  Recommend consistent</span></span>
 <span><span class="co">## names so downstream results are labeled consistently.</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in .fitExtractVarPartModel(exprObj, formula, data, REML = REML, : Model failed for 2 responses.</span></span>
+<span><span class="co">##   See errors with attr(., 'errors')</span></span></code></pre>
 <p>Note that <code>ballgownrsem</code> can be used for a similar
 analysis of <code>RSEM</code> results.</p>
 <p>See <a href="http://bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html" class="external-link">tutorial</a>
@@ -1423,7 +1427,7 @@ specify the weights with the <code>weightsMatrix</code> parameter.</p>
 </h2>
 <details><pre><code><span><span class="co">## R version 4.3.0 (2023-04-21)</span></span>
 <span><span class="co">## Platform: x86_64-apple-darwin22.4.0 (64-bit)</span></span>
-<span><span class="co">## Running under: macOS Ventura 13.5</span></span>
+<span><span class="co">## Running under: macOS 14.2.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Users/gabrielhoffman/prog/R-4.3.0/lib/libRblas.dylib </span></span>
@@ -1443,9 +1447,9 @@ specify the weights with the <code>weightsMatrix</code> parameter.</p>
 <span><span class="co">##  [4] SummarizedExperiment_1.30.1 Biobase_2.60.0              MatrixGenerics_1.12.0      </span></span>
 <span><span class="co">##  [7] matrixStats_1.0.0           GenomicRanges_1.52.0        GenomeInfoDb_1.36.1        </span></span>
 <span><span class="co">## [10] IRanges_2.34.1              S4Vectors_0.38.1            BiocGenerics_0.46.0        </span></span>
-<span><span class="co">## [13] edgeR_3.42.4                lme4_1.1-33                 Matrix_1.5-4.1             </span></span>
-<span><span class="co">## [16] variancePartition_1.31.16   BiocParallel_1.34.2         limma_3.56.2               </span></span>
-<span><span class="co">## [19] ggplot2_3.4.2               knitr_1.43                 </span></span>
+<span><span class="co">## [13] edgeR_3.42.4                lme4_1.1-34                 Matrix_1.5-4.1             </span></span>
+<span><span class="co">## [16] variancePartition_1.33.11   BiocParallel_1.34.2         limma_3.56.2               </span></span>
+<span><span class="co">## [19] ggplot2_3.4.4              </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##   [1] RColorBrewer_1.1-3       jsonlite_1.8.5           magrittr_2.0.3          </span></span>
@@ -1453,7 +1457,7 @@ specify the weights with the <code>weightsMatrix</code> parameter.</p>
 <span><span class="co">##   [7] fs_1.6.2                 BiocIO_1.10.0            zlibbioc_1.46.0         </span></span>
 <span><span class="co">##  [10] ragg_1.2.5               vctrs_0.6.3              memoise_2.0.1           </span></span>
 <span><span class="co">##  [13] minqa_1.2.5              Rsamtools_2.16.0         RCurl_1.98-1.12         </span></span>
-<span><span class="co">##  [16] htmltools_0.5.5          S4Arrays_1.0.4           broom_1.0.5             </span></span>
+<span><span class="co">##  [16] htmltools_0.5.5          S4Arrays_1.2.0           broom_1.0.5             </span></span>
 <span><span class="co">##  [19] sass_0.4.6               KernSmooth_2.23-21       bslib_0.4.2             </span></span>
 <span><span class="co">##  [22] desc_1.4.2               pbkrtest_0.5.2           plyr_1.8.8              </span></span>
 <span><span class="co">##  [25] cachem_1.0.8             GenomicAlignments_1.36.0 lifecycle_1.0.3         </span></span>
@@ -1462,32 +1466,32 @@ specify the weights with the <code>weightsMatrix</code> parameter.</p>
 <span><span class="co">##  [34] digest_0.6.33            numDeriv_2016.8-1.1      colorspace_2.1-0        </span></span>
 <span><span class="co">##  [37] AnnotationDbi_1.62.1     rprojroot_2.0.3          textshaping_0.3.6       </span></span>
 <span><span class="co">##  [40] RSQLite_2.3.1            labeling_0.4.2           fansi_1.0.4             </span></span>
-<span><span class="co">##  [43] httr_1.4.6               mgcv_1.8-42              compiler_4.3.0          </span></span>
-<span><span class="co">##  [46] bit64_4.0.5              aod_1.3.2                withr_2.5.0             </span></span>
-<span><span class="co">##  [49] backports_1.4.1          viridis_0.6.3            DBI_1.1.3               </span></span>
-<span><span class="co">##  [52] highr_0.10               gplots_3.1.3             MASS_7.3-60             </span></span>
-<span><span class="co">##  [55] DelayedArray_0.26.3      rjson_0.2.21             corpcor_1.6.10          </span></span>
-<span><span class="co">##  [58] gtools_3.9.4             caTools_1.18.2           tools_4.3.0             </span></span>
-<span><span class="co">##  [61] remaCor_0.0.17           glue_1.6.2               restfulr_0.0.15         </span></span>
-<span><span class="co">##  [64] nlme_3.1-162             grid_4.3.0               reshape2_1.4.4          </span></span>
-<span><span class="co">##  [67] generics_0.1.3           sva_3.48.0               gtable_0.3.3            </span></span>
-<span><span class="co">##  [70] tidyr_1.3.0              utf8_1.2.3               XVector_0.40.0          </span></span>
-<span><span class="co">##  [73] pillar_1.9.0             stringr_1.5.0            genefilter_1.82.1       </span></span>
-<span><span class="co">##  [76] splines_4.3.0            dplyr_1.1.2              lattice_0.21-8          </span></span>
-<span><span class="co">##  [79] survival_3.5-5           rtracklayer_1.60.0       bit_4.0.5               </span></span>
-<span><span class="co">##  [82] annotate_1.78.0          tidyselect_1.2.0         locfit_1.5-9.7          </span></span>
-<span><span class="co">##  [85] Biostrings_2.68.1        gridExtra_2.3            RhpcBLASctl_0.23-42     </span></span>
-<span><span class="co">##  [88] xfun_0.39                stringi_1.7.12           yaml_2.3.7              </span></span>
-<span><span class="co">##  [91] boot_1.3-28.1            evaluate_0.21            codetools_0.2-19        </span></span>
-<span><span class="co">##  [94] tibble_3.2.1             cli_3.6.1                xtable_1.8-4            </span></span>
-<span><span class="co">##  [97] systemfonts_1.0.4        Rdpack_2.4               munsell_0.5.0           </span></span>
-<span><span class="co">## [100] jquerylib_0.1.4          Rcpp_1.0.11              EnvStats_2.7.0          </span></span>
-<span><span class="co">## [103] png_0.1-8                XML_3.99-0.14            parallel_4.3.0          </span></span>
-<span><span class="co">## [106] pkgdown_2.0.7            blob_1.2.4               bitops_1.0-7            </span></span>
-<span><span class="co">## [109] viridisLite_0.4.2        mvtnorm_1.2-2            lmerTest_3.1-3          </span></span>
-<span><span class="co">## [112] scales_1.2.1             purrr_1.0.1              crayon_1.5.2            </span></span>
-<span><span class="co">## [115] fANCOVA_0.6-1            rlang_1.1.1              cowplot_1.1.1           </span></span>
-<span><span class="co">## [118] KEGGREST_1.40.0</span></span></code></pre>
+<span><span class="co">##  [43] mgcv_1.8-42              httr_1.4.6               abind_1.4-5             </span></span>
+<span><span class="co">##  [46] compiler_4.3.0           bit64_4.0.5              aod_1.3.2               </span></span>
+<span><span class="co">##  [49] withr_2.5.0              backports_1.4.1          viridis_0.6.3           </span></span>
+<span><span class="co">##  [52] DBI_1.1.3                highr_0.10               gplots_3.1.3            </span></span>
+<span><span class="co">##  [55] MASS_7.3-60              DelayedArray_0.26.3      rjson_0.2.21            </span></span>
+<span><span class="co">##  [58] corpcor_1.6.10           gtools_3.9.4             caTools_1.18.2          </span></span>
+<span><span class="co">##  [61] tools_4.3.0              remaCor_0.0.17           glue_1.6.2              </span></span>
+<span><span class="co">##  [64] restfulr_0.0.15          nlme_3.1-162             grid_4.3.0              </span></span>
+<span><span class="co">##  [67] reshape2_1.4.4           generics_0.1.3           sva_3.48.0              </span></span>
+<span><span class="co">##  [70] gtable_0.3.3             tidyr_1.3.0              utf8_1.2.3              </span></span>
+<span><span class="co">##  [73] XVector_0.40.0           pillar_1.9.0             stringr_1.5.0           </span></span>
+<span><span class="co">##  [76] genefilter_1.82.1        splines_4.3.0            dplyr_1.1.2             </span></span>
+<span><span class="co">##  [79] lattice_0.21-8           survival_3.5-5           rtracklayer_1.60.0      </span></span>
+<span><span class="co">##  [82] bit_4.0.5                annotate_1.78.0          tidyselect_1.2.0        </span></span>
+<span><span class="co">##  [85] locfit_1.5-9.7           Biostrings_2.68.1        knitr_1.43              </span></span>
+<span><span class="co">##  [88] gridExtra_2.3            RhpcBLASctl_0.23-42      xfun_0.39               </span></span>
+<span><span class="co">##  [91] stringi_1.7.12           yaml_2.3.7               boot_1.3-28.1           </span></span>
+<span><span class="co">##  [94] evaluate_0.21            codetools_0.2-19         tibble_3.2.1            </span></span>
+<span><span class="co">##  [97] cli_3.6.1                xtable_1.8-4             systemfonts_1.0.4       </span></span>
+<span><span class="co">## [100] Rdpack_2.4               munsell_0.5.0            jquerylib_0.1.4         </span></span>
+<span><span class="co">## [103] Rcpp_1.0.11              EnvStats_2.7.0           png_0.1-8               </span></span>
+<span><span class="co">## [106] XML_3.99-0.14            parallel_4.3.0           pkgdown_2.0.7           </span></span>
+<span><span class="co">## [109] blob_1.2.4               bitops_1.0-7             viridisLite_0.4.2       </span></span>
+<span><span class="co">## [112] mvtnorm_1.2-2            lmerTest_3.1-3           scales_1.2.1            </span></span>
+<span><span class="co">## [115] purrr_1.0.2              crayon_1.5.2             fANCOVA_0.6-1           </span></span>
+<span><span class="co">## [118] rlang_1.1.1              cowplot_1.1.1            KEGGREST_1.40.0</span></span></code></pre>
 </details>
 </div>
 <div class="section level2">
