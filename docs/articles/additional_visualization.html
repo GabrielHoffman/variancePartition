@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.11</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,8 +47,8 @@
     <a class="dropdown-item" href="../articles/dream.html">dream analysis</a>
     <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects</a>
     <a class="dropdown-item" href="../articles/mvtests.html">Multivariate tests</a>
-    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
     <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
+    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
     <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
   </div>
 </li>
@@ -83,8 +83,8 @@
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2023-10-24
-15:30:54</h4>
+            <h4 data-toc-skip class="date">Run on 2024-02-07
+11:59:39</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/additional_visualization.Rmd" class="external-link"><code>vignettes/additional_visualization.Rmd</code></a></small>
       <div class="d-none name"><code>additional_visualization.Rmd</code></div>
@@ -198,7 +198,7 @@ code to generate these plots is shown below.</p>
 </h2>
 <details><pre><code><span><span class="co">## R version 4.3.0 (2023-04-21)</span></span>
 <span><span class="co">## Platform: x86_64-apple-darwin22.4.0 (64-bit)</span></span>
-<span><span class="co">## Running under: macOS Ventura 13.5</span></span>
+<span><span class="co">## Running under: macOS 14.2.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Users/gabrielhoffman/prog/R-4.3.0/lib/libRblas.dylib </span></span>
@@ -214,39 +214,40 @@ code to generate these plots is shown below.</p>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] variancePartition_1.31.22 BiocParallel_1.34.2      </span></span>
+<span><span class="co">## [1] variancePartition_1.33.11 BiocParallel_1.34.2      </span></span>
 <span><span class="co">## [3] limma_3.56.2              ggplot2_3.4.4            </span></span>
 <span><span class="co">## [5] knitr_1.43               </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] gtable_0.3.3        xfun_0.39           bslib_0.4.2        </span></span>
-<span><span class="co">##  [4] caTools_1.18.2      Biobase_2.60.0      lattice_0.21-8     </span></span>
-<span><span class="co">##  [7] numDeriv_2016.8-1.1 vctrs_0.6.3         tools_4.3.0        </span></span>
-<span><span class="co">## [10] Rdpack_2.4          bitops_1.0-7        generics_0.1.3     </span></span>
-<span><span class="co">## [13] pbkrtest_0.5.2      parallel_4.3.0      tibble_3.2.1       </span></span>
-<span><span class="co">## [16] fansi_1.0.4         highr_0.10          pkgconfig_2.0.3    </span></span>
-<span><span class="co">## [19] Matrix_1.5-4.1      KernSmooth_2.23-21  desc_1.4.2         </span></span>
-<span><span class="co">## [22] lifecycle_1.0.3     compiler_4.3.0      stringr_1.5.0      </span></span>
-<span><span class="co">## [25] textshaping_0.3.6   gplots_3.1.3        munsell_0.5.0      </span></span>
-<span><span class="co">## [28] RhpcBLASctl_0.23-42 codetools_0.2-19    lmerTest_3.1-3     </span></span>
-<span><span class="co">## [31] htmltools_0.5.5     sass_0.4.6          yaml_2.3.7         </span></span>
-<span><span class="co">## [34] tidyr_1.3.0         nloptr_2.0.3        pillar_1.9.0       </span></span>
-<span><span class="co">## [37] pkgdown_2.0.7       jquerylib_0.1.4     MASS_7.3-60        </span></span>
-<span><span class="co">## [40] aod_1.3.2           cachem_1.0.8        iterators_1.0.14   </span></span>
-<span><span class="co">## [43] boot_1.3-28.1       nlme_3.1-162        gtools_3.9.4       </span></span>
-<span><span class="co">## [46] tidyselect_1.2.0    digest_0.6.33       mvtnorm_1.2-2      </span></span>
-<span><span class="co">## [49] fANCOVA_0.6-1       stringi_1.7.12      reshape2_1.4.4     </span></span>
-<span><span class="co">## [52] dplyr_1.1.2         purrr_1.0.2         splines_4.3.0      </span></span>
-<span><span class="co">## [55] rprojroot_2.0.3     fastmap_1.1.1       grid_4.3.0         </span></span>
-<span><span class="co">## [58] colorspace_2.1-0    cli_3.6.1           magrittr_2.0.3     </span></span>
-<span><span class="co">## [61] utf8_1.2.3          broom_1.0.5         corpcor_1.6.10     </span></span>
-<span><span class="co">## [64] withr_2.5.0         backports_1.4.1     scales_1.2.1       </span></span>
-<span><span class="co">## [67] remaCor_0.0.17      rmarkdown_2.22      lme4_1.1-33        </span></span>
-<span><span class="co">## [70] ragg_1.2.5          memoise_2.0.1       evaluate_0.21      </span></span>
-<span><span class="co">## [73] EnvStats_2.7.0      rbibutils_2.2.13    rlang_1.1.1        </span></span>
-<span><span class="co">## [76] Rcpp_1.0.11         glue_1.6.2          BiocGenerics_0.46.0</span></span>
-<span><span class="co">## [79] minqa_1.2.5         jsonlite_1.8.5      plyr_1.8.8         </span></span>
-<span><span class="co">## [82] R6_2.5.1            systemfonts_1.0.4   fs_1.6.2</span></span></code></pre>
+<span><span class="co">##  [1] tidyselect_1.2.0    dplyr_1.1.2         bitops_1.0-7       </span></span>
+<span><span class="co">##  [4] fastmap_1.1.1       digest_0.6.33       lifecycle_1.0.3    </span></span>
+<span><span class="co">##  [7] magrittr_2.0.3      compiler_4.3.0      rlang_1.1.1        </span></span>
+<span><span class="co">## [10] sass_0.4.6          tools_4.3.0         utf8_1.2.3         </span></span>
+<span><span class="co">## [13] yaml_2.3.7          plyr_1.8.8          KernSmooth_2.23-21 </span></span>
+<span><span class="co">## [16] withr_2.5.0         purrr_1.0.2         numDeriv_2016.8-1.1</span></span>
+<span><span class="co">## [19] BiocGenerics_0.46.0 desc_1.4.2          grid_4.3.0         </span></span>
+<span><span class="co">## [22] aod_1.3.2           fansi_1.0.4         caTools_1.18.2     </span></span>
+<span><span class="co">## [25] colorspace_2.1-0    scales_1.2.1        gtools_3.9.4       </span></span>
+<span><span class="co">## [28] iterators_1.0.14    MASS_7.3-60         cli_3.6.1          </span></span>
+<span><span class="co">## [31] mvtnorm_1.2-2       rmarkdown_2.22      ragg_1.2.5         </span></span>
+<span><span class="co">## [34] generics_0.1.3      reshape2_1.4.4      minqa_1.2.5        </span></span>
+<span><span class="co">## [37] cachem_1.0.8        stringr_1.5.0       splines_4.3.0      </span></span>
+<span><span class="co">## [40] parallel_4.3.0      matrixStats_1.0.0   vctrs_0.6.3        </span></span>
+<span><span class="co">## [43] boot_1.3-28.1       Matrix_1.5-4.1      jsonlite_1.8.5     </span></span>
+<span><span class="co">## [46] pbkrtest_0.5.2      systemfonts_1.0.4   jquerylib_0.1.4    </span></span>
+<span><span class="co">## [49] tidyr_1.3.0         glue_1.6.2          pkgdown_2.0.7      </span></span>
+<span><span class="co">## [52] nloptr_2.0.3        codetools_0.2-19    stringi_1.7.12     </span></span>
+<span><span class="co">## [55] gtable_0.3.3        EnvStats_2.7.0      lme4_1.1-34        </span></span>
+<span><span class="co">## [58] lmerTest_3.1-3      munsell_0.5.0       tibble_3.2.1       </span></span>
+<span><span class="co">## [61] remaCor_0.0.17      pillar_1.9.0        htmltools_0.5.5    </span></span>
+<span><span class="co">## [64] gplots_3.1.3        R6_2.5.1            textshaping_0.3.6  </span></span>
+<span><span class="co">## [67] Rdpack_2.4          rprojroot_2.0.3     evaluate_0.21      </span></span>
+<span><span class="co">## [70] lattice_0.21-8      Biobase_2.60.0      highr_0.10         </span></span>
+<span><span class="co">## [73] rbibutils_2.2.13    backports_1.4.1     RhpcBLASctl_0.23-42</span></span>
+<span><span class="co">## [76] memoise_2.0.1       broom_1.0.5         fANCOVA_0.6-1      </span></span>
+<span><span class="co">## [79] corpcor_1.6.10      bslib_0.4.2         Rcpp_1.0.11        </span></span>
+<span><span class="co">## [82] nlme_3.1-162        xfun_0.39           fs_1.6.2           </span></span>
+<span><span class="co">## [85] pkgconfig_2.0.3</span></span></code></pre>
 </details>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

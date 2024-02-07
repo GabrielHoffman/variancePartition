@@ -1,4 +1,10 @@
 
+# variancePartition 1.33.11
+ - Feb 7, 2024
+ - fix bug in `dream(...,ddf="Kenward-Roger")` that gave false positives and negatives
+   - scaled weights properly to fix this issue, since `df` in `lmerTest::contest()` assumes mean of weights is 1.
+   - old code used unscaled weights, so df values were too large
+
 # variancePartition 1.33.10
  - Feb 5, 2024
  - in `augmentPriorCount()` and `voomWithDreamWeights()`, add argument `scaledByLib=FALSE`

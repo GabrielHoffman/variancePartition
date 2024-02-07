@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.31.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.11</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,8 +47,8 @@
     <a class="dropdown-item" href="../articles/dream.html">dream analysis</a>
     <a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects</a>
     <a class="dropdown-item" href="../articles/mvtests.html">Multivariate tests</a>
-    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
     <a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a>
+    <a class="dropdown-item" href="../articles/errors.html">Error handling</a>
     <a class="dropdown-item" href="../articles/FAQ.html">Frequently asked questions</a>
   </div>
 </li>
@@ -85,8 +85,8 @@ testing with linear mixed models for repeated measures</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2023-10-24
-15:31:01</h4>
+            <h4 data-toc-skip class="date">Run on 2024-02-07
+11:59:45</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/dream.Rmd" class="external-link"><code>vignettes/dream.Rmd</code></a></small>
       <div class="d-none name"><code>dream.Rmd</code></div>
@@ -480,7 +480,7 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 </h2>
 <details><pre><code><span><span class="co">## R version 4.3.0 (2023-04-21)</span></span>
 <span><span class="co">## Platform: x86_64-apple-darwin22.4.0 (64-bit)</span></span>
-<span><span class="co">## Running under: macOS Ventura 13.5</span></span>
+<span><span class="co">## Running under: macOS 14.2.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Users/gabrielhoffman/prog/R-4.3.0/lib/libRblas.dylib </span></span>
@@ -496,33 +496,33 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] edgeR_3.43.4              variancePartition_1.31.13 BiocParallel_1.35.2      </span></span>
-<span><span class="co">## [4] limma_3.57.4              ggplot2_3.4.2             pander_0.6.5             </span></span>
+<span><span class="co">## [1] edgeR_3.42.4              variancePartition_1.33.11 BiocParallel_1.34.2      </span></span>
+<span><span class="co">## [4] limma_3.56.2              ggplot2_3.4.4             pander_0.6.5             </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##  [1] tidyselect_1.2.0    farver_2.1.1        dplyr_1.1.2         bitops_1.0-7       </span></span>
-<span><span class="co">##  [5] fastmap_1.1.1       digest_0.6.31       lifecycle_1.0.3     statmod_1.5.0      </span></span>
+<span><span class="co">##  [5] fastmap_1.1.1       digest_0.6.33       lifecycle_1.0.3     statmod_1.5.0      </span></span>
 <span><span class="co">##  [9] magrittr_2.0.3      compiler_4.3.0      rlang_1.1.1         sass_0.4.6         </span></span>
 <span><span class="co">## [13] tools_4.3.0         utf8_1.2.3          yaml_2.3.7          knitr_1.43         </span></span>
 <span><span class="co">## [17] labeling_0.4.2      plyr_1.8.8          KernSmooth_2.23-21  withr_2.5.0        </span></span>
-<span><span class="co">## [21] purrr_1.0.1         numDeriv_2016.8-1.1 BiocGenerics_0.47.0 desc_1.4.2         </span></span>
+<span><span class="co">## [21] purrr_1.0.2         numDeriv_2016.8-1.1 BiocGenerics_0.46.0 desc_1.4.2         </span></span>
 <span><span class="co">## [25] grid_4.3.0          aod_1.3.2           fansi_1.0.4         caTools_1.18.2     </span></span>
 <span><span class="co">## [29] colorspace_2.1-0    scales_1.2.1        gtools_3.9.4        iterators_1.0.14   </span></span>
 <span><span class="co">## [33] MASS_7.3-60         cli_3.6.1           mvtnorm_1.2-2       rmarkdown_2.22     </span></span>
 <span><span class="co">## [37] ragg_1.2.5          generics_0.1.3      reshape2_1.4.4      minqa_1.2.5        </span></span>
 <span><span class="co">## [41] cachem_1.0.8        stringr_1.5.0       splines_4.3.0       parallel_4.3.0     </span></span>
-<span><span class="co">## [45] vctrs_0.6.3         boot_1.3-28.1       Matrix_1.5-4.1      jsonlite_1.8.5     </span></span>
-<span><span class="co">## [49] pbkrtest_0.5.2      systemfonts_1.0.4   locfit_1.5-9.8      jquerylib_0.1.4    </span></span>
-<span><span class="co">## [53] tidyr_1.3.0         snow_0.4-4          glue_1.6.2          pkgdown_2.0.7      </span></span>
-<span><span class="co">## [57] nloptr_2.0.3        codetools_0.2-19    stringi_1.7.12      gtable_0.3.3       </span></span>
-<span><span class="co">## [61] EnvStats_2.7.0      lme4_1.1-33         lmerTest_3.1-3      munsell_0.5.0      </span></span>
-<span><span class="co">## [65] tibble_3.2.1        remaCor_0.0.17      pillar_1.9.0        htmltools_0.5.5    </span></span>
-<span><span class="co">## [69] gplots_3.1.3        R6_2.5.1            textshaping_0.3.6   Rdpack_2.4         </span></span>
-<span><span class="co">## [73] rprojroot_2.0.3     evaluate_0.21       lattice_0.21-8      Biobase_2.61.0     </span></span>
-<span><span class="co">## [77] highr_0.10          rbibutils_2.2.13    backports_1.4.1     RhpcBLASctl_0.23-42</span></span>
-<span><span class="co">## [81] memoise_2.0.1       broom_1.0.5         fANCOVA_0.6-1       corpcor_1.6.10     </span></span>
-<span><span class="co">## [85] bslib_0.5.0         Rcpp_1.0.11         nlme_3.1-162        xfun_0.39          </span></span>
-<span><span class="co">## [89] fs_1.6.2            pkgconfig_2.0.3</span></span></code></pre>
+<span><span class="co">## [45] matrixStats_1.0.0   vctrs_0.6.3         boot_1.3-28.1       Matrix_1.5-4.1     </span></span>
+<span><span class="co">## [49] jsonlite_1.8.5      pbkrtest_0.5.2      systemfonts_1.0.4   locfit_1.5-9.7     </span></span>
+<span><span class="co">## [53] jquerylib_0.1.4     tidyr_1.3.0         snow_0.4-4          glue_1.6.2         </span></span>
+<span><span class="co">## [57] pkgdown_2.0.7       nloptr_2.0.3        codetools_0.2-19    stringi_1.7.12     </span></span>
+<span><span class="co">## [61] gtable_0.3.3        EnvStats_2.7.0      lme4_1.1-34         lmerTest_3.1-3     </span></span>
+<span><span class="co">## [65] munsell_0.5.0       tibble_3.2.1        remaCor_0.0.17      pillar_1.9.0       </span></span>
+<span><span class="co">## [69] htmltools_0.5.5     gplots_3.1.3        R6_2.5.1            textshaping_0.3.6  </span></span>
+<span><span class="co">## [73] Rdpack_2.4          rprojroot_2.0.3     evaluate_0.21       lattice_0.21-8     </span></span>
+<span><span class="co">## [77] Biobase_2.60.0      highr_0.10          rbibutils_2.2.13    backports_1.4.1    </span></span>
+<span><span class="co">## [81] RhpcBLASctl_0.23-42 memoise_2.0.1       broom_1.0.5         fANCOVA_0.6-1      </span></span>
+<span><span class="co">## [85] corpcor_1.6.10      bslib_0.4.2         Rcpp_1.0.11         nlme_3.1-162       </span></span>
+<span><span class="co">## [89] xfun_0.39           fs_1.6.2            pkgconfig_2.0.3</span></span></code></pre>
 <p>&lt;&gt;</p>
 </details>
 </div>
