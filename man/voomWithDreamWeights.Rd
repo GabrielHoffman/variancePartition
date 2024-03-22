@@ -17,6 +17,7 @@ voomWithDreamWeights(
   save.plot = FALSE,
   rescaleWeightsAfter = TRUE,
   scaledByLib = FALSE,
+  priorWeightsAsCounts = FALSE,
   BPPARAM = SerialParam(),
   ...
 )
@@ -45,6 +46,8 @@ voomWithDreamWeights(
 \item{rescaleWeightsAfter}{default = TRUE, should the output weights be scaled by the input weights}
 
 \item{scaledByLib}{if \code{TRUE}, scale pseudocount by \code{lib.size}.  Else to standard constant pseudocount addition}
+
+\item{priorWeightsAsCounts}{if \code{weights} is \code{NULL}, set weights to be equal to counts, following delta method for log2 CPM}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 
