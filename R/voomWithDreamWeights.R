@@ -100,7 +100,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   # scaled so no variance is introduced across samples
   countsAug = augmentPriorCount(counts, lib.size, prior.count, scaledByLib)
 
-  if( priorWeightsAsCounts && is.null(weights) ){
+  if( priorWeightsAsCounts && (is.null(weights) | all(weights == 1))){
     weights = countsAug
   }
 
