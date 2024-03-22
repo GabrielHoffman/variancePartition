@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.12</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,8 @@
 <span>  save.plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rescaleWeightsAfter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  scaledByLib <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  priorWeightsAsCounts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu">SerialParam</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -131,6 +132,10 @@
 
 <dt>scaledByLib</dt>
 <dd><p>if <code>TRUE</code>, scale pseudocount by <code>lib.size</code>.  Else to standard constant pseudocount addition</p></dd>
+
+
+<dt>priorWeightsAsCounts</dt>
+<dd><p>if <code>weights</code> is <code>NULL</code>, set weights to be equal to counts, following delta method for log2 CPM</p></dd>
 
 
 <dt>BPPARAM</dt>

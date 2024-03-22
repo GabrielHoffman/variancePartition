@@ -1,4 +1,10 @@
 
+# variancePartition 1.33.12
+ - March 22, 2024
+ - Fix use with `voomWithDreamWeights()` taking raw counts
+  - https://github.com/GabrielHoffman/variancePartition/issues/97
+ - in `voomWithDreamWeights()`, add argument \code{priorWeightsAsCounts=FALSE}
+
 # variancePartition 1.33.11
  - Feb 7, 2024
  - fix bug in `dream(...,ddf="Kenward-Roger")` that gave false positives and negatives

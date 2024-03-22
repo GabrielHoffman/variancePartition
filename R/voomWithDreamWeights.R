@@ -14,6 +14,7 @@
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
 #' @param rescaleWeightsAfter default = TRUE, should the output weights be scaled by the input weights
 #' @param scaledByLib if \code{TRUE}, scale pseudocount by \code{lib.size}.  Else to standard constant pseudocount addition 
+#' @param priorWeightsAsCounts if \code{weights} is \code{NULL}, set weights to be equal to counts, following delta method for log2 CPM
 #' @param BPPARAM parameters for parallel evaluation
 #' @param      ... other arguments are passed to \code{lmer}.
 #'
@@ -54,7 +55,7 @@
 #' @importFrom matrixStats colSums2 rowSums2
 #' @importFrom fANCOVA loess.as
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, scaledByLib = FALSE, BPPARAM = SerialParam(), ...) {
+voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, scaledByLib = FALSE, priorWeightsAsCounts = FALSE, BPPARAM = SerialParam(), ...) {
 
   objFlt <- filterInputData(counts, formula, data, weights, useWeights = FALSE, isCounts = TRUE)
 
@@ -98,6 +99,10 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   # Augment observed counts with prior counts
   # scaled so no variance is introduced across samples
   countsAug = augmentPriorCount(counts, lib.size, prior.count, scaledByLib)
+
+  if( priorWeightsAsCounts && is.null(weights) ){
+    weights = countsAug
+  }
 
   # 	Fit linear model to log2-counts-per-million
   y <- t(log2(t(countsAug) / (lib.size + 1) * 1e6))

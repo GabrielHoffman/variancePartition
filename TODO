@@ -1,3 +1,7 @@
+March 18
+	Set prior weights to be counts + prior count
+		based on Poisson delta method
+
 
 Nov 27,
 	note that augmentPriorCount() can cause log CPM values to be different

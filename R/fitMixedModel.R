@@ -289,7 +289,7 @@ filterInputData <- function(exprObj, formula, data, weights = NULL, useWeights =
   }
 
   # Ensure that exprObj$E is a matrix
-  if (is(exprObj, "EList") & !is.matrix(exprObj$E)) {
+  if (is(exprObj, "EList") && !is.matrix(exprObj$E)) {
     exprObj$E <- as.matrix(exprObj$E)
   }
 
