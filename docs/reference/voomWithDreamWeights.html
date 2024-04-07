@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.13</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,6 +74,7 @@
 <span>  span <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prior.count <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  prior.count.for.weights <span class="op">=</span> <span class="va">prior.count</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save.plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rescaleWeightsAfter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -116,6 +117,10 @@
 
 <dt>prior.count</dt>
 <dd><p>average count to be added to each observation to avoid taking log of zero. The count applied to each sample is normalized by library size so given equal log CPM for a gene with zero counts across multiple samples</p></dd>
+
+
+<dt>prior.count.for.weights</dt>
+<dd><p>count added to regularize weights</p></dd>
 
 
 <dt>plot</dt>

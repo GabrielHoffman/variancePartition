@@ -10,6 +10,7 @@
 #' @param span width of the lowess smoothing window as a proportion. Setting \code{span="auto"} uses \code{fANCOVA::loess.as()} to estimate the tuning parameter from the data
 #' @param weights Can be a numeric matrix of individual weights of same dimensions as the \code{counts}, or a numeric vector of sample weights with length equal to \code{ncol(counts)}
 #' @param prior.count average count to be added to each observation to avoid taking log of zero. The count applied to each sample is normalized by library size so given equal log CPM for a gene with zero counts across multiple samples
+#' @param prior.count.for.weights count added to regularize weights
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
 #' @param rescaleWeightsAfter default = TRUE, should the output weights be scaled by the input weights
@@ -55,7 +56,7 @@
 #' @importFrom matrixStats colSums2 rowSums2
 #' @importFrom fANCOVA loess.as
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, scaledByLib = FALSE, priorWeightsAsCounts = FALSE, BPPARAM = SerialParam(), ...) {
+voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, prior.count.for.weights = prior.count, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, scaledByLib = FALSE, priorWeightsAsCounts = FALSE, BPPARAM = SerialParam(), ...) {
 
   objFlt <- filterInputData(counts, formula, data, weights, useWeights = FALSE, isCounts = TRUE)
 
@@ -101,7 +102,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   countsAug = augmentPriorCount(counts, lib.size, prior.count, scaledByLib)
 
   if( priorWeightsAsCounts && (is.null(weights) | all(weights == 1))){
-    weights = countsAug
+    weights = countsAug + prior.count.for.weights
   }
 
   # 	Fit linear model to log2-counts-per-million
