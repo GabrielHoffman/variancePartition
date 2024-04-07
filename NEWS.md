@@ -1,9 +1,13 @@
 
+# variancePartition 1.33.13
+ - April 6, 2024
+ - in `voomWithDreamWeights()`, add argument  `prior.count.for.weights`
+
 # variancePartition 1.33.12
  - March 22, 2024
  - Fix use with `voomWithDreamWeights()` taking raw counts
   - https://github.com/GabrielHoffman/variancePartition/issues/97
- - in `voomWithDreamWeights()`, add argument \code{priorWeightsAsCounts=FALSE}
+ - in `voomWithDreamWeights()`, add argument `priorWeightsAsCounts=FALSE` and `prior.count.for.weights`
 
 # variancePartition 1.33.11
  - Feb 7, 2024
