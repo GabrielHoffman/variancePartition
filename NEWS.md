@@ -1,4 +1,8 @@
 
+# variancePartition 1.33.14
+ - April 19, 2024
+ - in `topTable()` resolve issue when specifying multiple coeffs
+
 # variancePartition 1.33.13
  - April 6, 2024
  - in `voomWithDreamWeights()`, add argument  `prior.count.for.weights`

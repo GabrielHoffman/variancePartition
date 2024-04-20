@@ -51,6 +51,11 @@ setMethod(
   function(fit, coef = NULL, number = 10, genelist = fit$genes,
            adjust.method = "BH", sort.by = "p", resort.by = NULL, p.value = 1,
            lfc = 0, confint = FALSE) {
+   
+    if( length(coef) > 1 & ! sort.by %in% c("F", "none")){
+      sort.by = "F"
+    }
+
     limma::topTable(fit, coef = coef, number = number, genelist = genelist, adjust.method = adjust.method, sort.by = sort.by, resort.by = resort.by, p.value = p.value, lfc = lfc, confint = confint)
   }
 )
@@ -109,7 +114,7 @@ setMethod(
         coef <- ncol(fit)
       }
     }
-
+    browser()
     if (length(coef) > 1) {
       if (!is.null(fit$treat.lfc)) {
         stop("Treat p-values can only be displayed for single coefficients")
@@ -118,14 +123,15 @@ setMethod(
       if (length(fit$coef[1, coef]) < ncol(fit)) {
         fit <- fit[, coef]
       }
-      if (sort.by != "none") {
-        sort.by <- "F"
+      if( ! sort.by %in% c("F", "none")){
+        sort.by = "F"
       }
       # tab = topTableF(fit, number = number, genelist = genelist,
       #     adjust.method = adjust.method, sort.by = sort.by,
       #     p.value = p.value, lfc = lfc)
 
       tab <- limma::topTable(fit,
+        coef = coef,
         number = number, genelist = genelist,
         adjust.method = adjust.method, sort.by = sort.by,
         p.value = p.value, lfc = lfc
@@ -295,7 +301,6 @@ setMethod(
 
     # margin.error <- sqrt(eb$s2.post[top])*fit$stdev.unscaled[top,coef]*qt(alpha,df=eb$df.total[top])
     # margin.error <- eb$sigma[top]*fit$stdev.unscaled[top,coef]*qt(alpha,df=eb$df.total[top])
-
 
     tab$CI.L <- M[top] - margin.error
     tab$CI.R <- M[top] + margin.error
