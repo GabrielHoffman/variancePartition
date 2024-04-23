@@ -114,13 +114,13 @@ setMethod(
         coef <- ncol(fit)
       }
     }
-    browser()
     if (length(coef) > 1) {
       if (!is.null(fit$treat.lfc)) {
         stop("Treat p-values can only be displayed for single coefficients")
       }
       coef <- unique(coef)
       if (length(fit$coef[1, coef]) < ncol(fit)) {
+        # F-test is performed in subseting code by classifyTestsF()
         fit <- fit[, coef]
       }
       if( ! sort.by %in% c("F", "none")){
