@@ -119,9 +119,11 @@ setMethod(
         stop("Treat p-values can only be displayed for single coefficients")
       }
       coef <- unique(coef)
+      n.coef <- length(coef)
       if (length(fit$coef[1, coef]) < ncol(fit)) {
         # F-test is performed in subseting code by classifyTestsF()
         fit <- fit[, coef]
+        coef <- NULL # since subsetting is performed here, don't need to do it later
       }
       if( ! sort.by %in% c("F", "none")){
         sort.by = "F"
@@ -142,7 +144,7 @@ setMethod(
         # convert p-values to F-statistics
         # this corresponds to constant degrees of freedom equals Inf
         tab$P.Value <- pmax(tab$P.Value, 1e-300)
-        tab$F.std <- qf(tab$P.Value, df1 = length(coef), df2 = Inf, lower.tail = FALSE)
+        tab$F.std <- qf(tab$P.Value, df1 = n.coef, df2 = Inf, lower.tail = FALSE)
       }
 
       return(tab)

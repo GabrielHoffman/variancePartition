@@ -13,7 +13,7 @@
 #' @param prior.count.for.weights count added to regularize weights
 #' @param plot logical, should a plot of the mean-variance trend be displayed?
 #' @param save.plot logical, should the coordinates and line of the plot be saved in the output?
-#' @param rescaleWeightsAfter default = TRUE, should the output weights be scaled by the input weights
+#' @param rescaleWeightsAfter default = FALSE, should the output weights be scaled by the input weights
 #' @param scaledByLib if \code{TRUE}, scale pseudocount by \code{lib.size}.  Else to standard constant pseudocount addition 
 #' @param priorWeightsAsCounts if \code{weights} is \code{NULL}, set weights to be equal to counts, following delta method for log2 CPM
 #' @param BPPARAM parameters for parallel evaluation
@@ -56,7 +56,7 @@
 #' @importFrom matrixStats colSums2 rowSums2
 #' @importFrom fANCOVA loess.as
 #' @export
-voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, prior.count.for.weights = prior.count, plot = FALSE, save.plot = FALSE, rescaleWeightsAfter = TRUE, scaledByLib = FALSE, priorWeightsAsCounts = FALSE, BPPARAM = SerialParam(), ...) {
+voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normalize.method = "none", span = 0.5, weights = NULL, prior.count = 0.5, prior.count.for.weights = prior.count, plot = FALSE, save.plot = TRUE, rescaleWeightsAfter = FALSE, scaledByLib = FALSE, priorWeightsAsCounts = FALSE, BPPARAM = SerialParam(), ...) {
 
   objFlt <- filterInputData(counts, formula, data, weights, useWeights = FALSE, isCounts = TRUE)
 

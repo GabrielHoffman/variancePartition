@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.15</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,8 +76,8 @@
 <span>  prior.count <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  prior.count.for.weights <span class="op">=</span> <span class="va">prior.count</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  save.plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  rescaleWeightsAfter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  save.plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rescaleWeightsAfter <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  scaledByLib <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  priorWeightsAsCounts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  BPPARAM <span class="op">=</span> <span class="fu">SerialParam</span><span class="op">(</span><span class="op">)</span>,</span>
@@ -132,7 +132,7 @@
 
 
 <dt>rescaleWeightsAfter</dt>
-<dd><p>default = TRUE, should the output weights be scaled by the input weights</p></dd>
+<dd><p>default = FALSE, should the output weights be scaled by the input weights</p></dd>
 
 
 <dt>scaledByLib</dt>
@@ -172,6 +172,11 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># library(variancePartition)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioinf.wehi.edu.au/edgeR/" class="external-link">edgeR</a></span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘edgeR’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:SingleCellExperiment’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     cpm</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartDEdata</span><span class="op">)</span></span></span>

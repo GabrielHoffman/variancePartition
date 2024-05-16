@@ -1,4 +1,9 @@
 
+
+# variancePartition 1.33.15
+ - May 16, 2024
+ - in `voomWithDreamWeights()`, default changed to `rescaleWeightsAfter = FALSE`
+
 # variancePartition 1.33.14
  - April 19, 2024
  - in `topTable()` resolve issue when specifying multiple coeffs
