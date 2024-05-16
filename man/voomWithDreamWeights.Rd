@@ -15,8 +15,8 @@ voomWithDreamWeights(
   prior.count = 0.5,
   prior.count.for.weights = prior.count,
   plot = FALSE,
-  save.plot = FALSE,
-  rescaleWeightsAfter = TRUE,
+  save.plot = TRUE,
+  rescaleWeightsAfter = FALSE,
   scaledByLib = FALSE,
   priorWeightsAsCounts = FALSE,
   BPPARAM = SerialParam(),
@@ -46,7 +46,7 @@ voomWithDreamWeights(
 
 \item{save.plot}{logical, should the coordinates and line of the plot be saved in the output?}
 
-\item{rescaleWeightsAfter}{default = TRUE, should the output weights be scaled by the input weights}
+\item{rescaleWeightsAfter}{default = FALSE, should the output weights be scaled by the input weights}
 
 \item{scaledByLib}{if \code{TRUE}, scale pseudocount by \code{lib.size}.  Else to standard constant pseudocount addition}
 

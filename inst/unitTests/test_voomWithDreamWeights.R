@@ -21,8 +21,9 @@ test_voomWithDreamWeights = function(){
 	# vobj2 = voomWithDreamWeights( dge[1:100,], form, data=metadata)
 
 	# disable scaled pseudocounts
-	dge$counts = dge$counts + 0.5
-	vobj2 = voomWithDreamWeights( dge[1:100,], form, data=metadata, prior.count=0)
+	dge$counts = dge$counts 
+	vobj2 = voomWithDreamWeights( dge[1:100,], form, data=metadata, prior.count=0.5, save.plot=FALSE)
+	vobj2$targets$sample.weights = 1
 
 	checkEquals(vobj1, vobj2)
 }
@@ -164,7 +165,7 @@ test_reweigthing_voom = function(){
 	vobj1$weights <- t(w.scale * t(vobj1$weights))
 
 	# enble rescaling by input weights
-	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count = 0)
+	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count = 0, rescaleWeightsAfter=TRUE)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# weights as matrix
@@ -175,7 +176,7 @@ test_reweigthing_voom = function(){
 					ncol = length(w), 
 					byrow = TRUE)
 	# enble rescaling by input weights
-	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=weightsMatrix, prior.count = 0)
+	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=weightsMatrix, prior.count = 0, rescaleWeightsAfter=TRUE)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 }	
 
@@ -213,7 +214,7 @@ test_voomLmFit = function(){
 	fit1 = voomLmFit2( dge, dsgn, prior.weights=w)
 	fit1$EList$genes = NULL
 
-	vobj <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count=0)
+	vobj <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count=0, save.plot=FALSE)
 	fit2 = dream(vobj, form, metadata)
 	fit2$targets = vobj$targets[,1:3]
 	fit2$EList = vobj
@@ -274,7 +275,7 @@ test_voomLmFit = function(){
 	fit1 = voomLmFit2( dge, dsgn, prior.weights=w  / mean(w))
 	fit1$EList$genes = NULL
 
-	vobj <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count=0 )
+	vobj <- voomWithDreamWeights(dge2, form, metadata, weights=w, prior.count=0, save.plot=FALSE, rescaleWeightsAfter=TRUE )
 
 	fit2 = dream(vobj, form, metadata)
 	fit2$targets = vobj$targets[,1:3]
