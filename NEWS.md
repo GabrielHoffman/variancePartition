@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 
 # variancePartition 1.33.15
  - May 16, 2024
@@ -68,6 +69,8 @@
  - Nov 2, 2023
  - move `omp_set_num_threads()` deeper in nesting
 
+=======
+>>>>>>> c357e71 (update docs)
 # variancePartition 1.31.22
  - Oct 19, 2023
  - fix handling of variables with missing data
