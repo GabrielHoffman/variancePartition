@@ -8,10 +8,10 @@
 <meta name="description" content="variancePartition">
 <title>Variance partitioning analysis • variancePartition</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Variance partitioning analysis">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Variance partitioning analysis">
 <meta property="og:description" content="variancePartition">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -22,15 +22,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-<<<<<<< HEAD
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.11</small>
-=======
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.0</small>
->>>>>>> c357e71 (update docs)
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.33.15</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,13 +83,8 @@
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-<<<<<<< HEAD
-            <h4 data-toc-skip class="date">Run on 2024-02-07
-12:08:50</h4>
-=======
-            <h4 data-toc-skip class="date">Run on 2023-10-24
-15:59:31</h4>
->>>>>>> c357e71 (update docs)
+            <h4 data-toc-skip class="date">Run on 2024-05-31
+16:11:31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/variancePartition.Rmd" class="external-link"><code>vignettes/variancePartition.Rmd</code></a></small>
       <div class="d-none name"><code>variancePartition.Rmd</code></div>
@@ -257,12 +248,12 @@ analysis.</p>
 <span><span class="co"># Figure 1a</span></span>
 <span><span class="co"># Bar plot of variance fractions for the first 10 genes</span></span>
 <span><span class="fu"><a href="../reference/plotPercentBars-method.html">plotPercentBars</a></span><span class="op">(</span><span class="va">vp</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="variancePartition_files/figure-html/simResult-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/simResult-1.png" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Figure 1b</span></span>
 <span><span class="co"># violin plot of contribution of each variable to total variance</span></span>
 <span><span class="fu"><a href="../reference/plotVarPart-method.html">plotVarPart</a></span><span class="op">(</span><span class="va">vp</span><span class="op">)</span></span></code></pre></div>
-<p><img src="variancePartition_files/figure-html/simResult-2.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/simResult-2.png" width="384" style="display: block; margin: auto;"></p>
 <p><code>variancePartition</code> includes a number of custom plots to
 visualize the results. Since <code>variancePartition</code> attributes
 the fraction of total variation attributable to each aspect of the study
@@ -331,7 +322,7 @@ Tissue (Figure 2a) or Individual (Figure 2b).</p>
 <span><span class="co"># Figure 2a</span></span>
 <span><span class="co"># plot expression stratified by Tissue</span></span>
 <span><span class="fu"><a href="../reference/plotStratify.html">plotStratify</a></span><span class="op">(</span><span class="va">Expression</span> <span class="op">~</span> <span class="va">Tissue</span>, <span class="va">GE</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">geneExpr</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="variancePartition_files/figure-html/plotStratify-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/plotStratify-1.png" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get gene with the highest variation across Individuals</span></span>
 <span><span class="co"># create data.frame with expression of gene i and Tissue</span></span>
@@ -352,7 +343,7 @@ Tissue (Figure 2a) or Individual (Figure 2b).</p>
 <span>  colorBy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  text <span class="op">=</span> <span class="va">label</span>, main <span class="op">=</span> <span class="va">main</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="variancePartition_files/figure-html/plotStratify-2.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/plotStratify-2.png" width="384" style="display: block; margin: auto;"></p>
 <p>For gene141, variation across tissues explains 52.9% of variance in
 gene expression. For gene43, variation across Individuals explains 91.4%
 of variance in gene expression.</p>
@@ -568,7 +559,7 @@ correlations values between 0 and 1</p>
 <span><span class="co"># Plot correlation matrix</span></span>
 <span><span class="co"># between all pairs of variables</span></span>
 <span><span class="fu"><a href="../reference/plotCorrMatrix.html">plotCorrMatrix</a></span><span class="op">(</span><span class="va">C</span><span class="op">)</span></span></code></pre></div>
-<p><img src="variancePartition_files/figure-html/canCorPairs-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/canCorPairs-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
@@ -708,7 +699,7 @@ cross-individual variance with in a tissue.</p>
 <span></span>
 <span><span class="co"># violin plot</span></span>
 <span><span class="fu"><a href="../reference/plotVarPart-method.html">plotVarPart</a></span><span class="op">(</span><span class="fu"><a href="../reference/sortCols-method.html">sortCols</a></span><span class="op">(</span><span class="va">varPart</span><span class="op">)</span>, label.angle <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span></code></pre></div>
-<p><img src="variancePartition_files/figure-html/withinTissue-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/withinTissue-1.png" width="384" style="display: block; margin: auto;"></p>
 <p>This analysis corresponds to a varying coefficient model, where the
 correlation between individuals varies for each tissue ]. Since the
 variation across individuals is modeled within each tissue, the total
@@ -807,7 +798,7 @@ expression variation.</p>
 <span><span class="va">vpInteraction</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel</a></span><span class="op">(</span><span class="va">geneExpr</span>, <span class="va">form</span>, <span class="va">info</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plotVarPart-method.html">plotVarPart</a></span><span class="op">(</span><span class="fu"><a href="../reference/sortCols-method.html">sortCols</a></span><span class="op">(</span><span class="va">vpInteraction</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="variancePartition_files/figure-html/vpInteraction-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/vpInteraction-1.png" width="384" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
@@ -911,7 +902,7 @@ analysis.</p>
 map to multiple transcripts. These include <code>kallisto</code> <span class="citation">(Bray et al. 2016)</span>, <code>sailfish</code> <span class="citation">(Patro, Mount, and Kingsford 2014)</span>,
 <code>salmon</code> <span class="citation">Patro, Duggal, and Kingsford
 (2015)</span>, <code>RSEM</code> <span class="citation">(Li and Dewey
-2011 )</span>and <code>cufflinks</code> <span class="citation">(Trapnell
+2011)</span>and <code>cufflinks</code> <span class="citation">(Trapnell
 et al. 2010.)</span></p>
 <div class="section level5">
 <h5 id="tximport">
@@ -1087,12 +1078,12 @@ another variable (i.e. Tissue)</p></li>
 <div class="section level4">
 <h4 id="tissue-is-major-source-of-variation">Tissue is major source of variation<a class="anchor" aria-label="anchor" href="#tissue-is-major-source-of-variation"></a>
 </h4>
-<p><img src="variancePartition_files/figure-html/siteDominant-1.png" width="768" style="display: block; margin: auto;"><img src="variancePartition_files/figure-html/cowplot-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/siteDominant-1.png" width="768" style="display: block; margin: auto;"><img src="../docs/articles/variancePartition_files/figure-html/cowplot-1.png" width="768" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
 <h4 id="individual-is-major-source-of-variation">Individual is major source of variation<a class="anchor" aria-label="anchor" href="#individual-is-major-source-of-variation"></a>
 </h4>
-<p><img src="variancePartition_files/figure-html/IndivDominant-1.png" width="768" style="display: block; margin: auto;"><img src="variancePartition_files/figure-html/cowplot2-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/IndivDominant-1.png" width="768" style="display: block; margin: auto;"><img src="../docs/articles/variancePartition_files/figure-html/cowplot2-1.png" width="768" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level3">
@@ -1413,7 +1404,7 @@ explained by sex to the total variation.</p>
 <p>Thus the fraction of variation explained reported by
 <code>variancePartition</code> reflects as different aspect of the data
 not captured by DE analysis.</p>
-<p><img src="variancePartition_files/figure-html/DE-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="../docs/articles/variancePartition_files/figure-html/DE-1.png" width="768" style="display: block; margin: auto;"></p>
 <div class="section level4">
 <h4 id="modelling-error-in-gene-expression-measurements">Modelling error in gene expression measurements<a class="anchor" aria-label="anchor" href="#modelling-error-in-gene-expression-measurements"></a>
 </h4>
@@ -1506,7 +1497,7 @@ specify the weights with the <code>weightsMatrix</code> parameter.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Anders2015" class="csl-entry">
 Anders, Simon, Paul Theodor Pyl, and Wolfgang Huber. 2015. <span>“<span class="nocase">HTSeq-A Python framework to work with high-throughput
 sequencing data</span>.”</span> <em>Bioinformatics</em> 31 (2): 166–69.
@@ -1600,13 +1591,11 @@ Biotechnology</em> 28 (5): 511–15. <a href="https://doi.org/10.1038/nbt.1621" 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p>
-<p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a>.</p>
+  <p>Developed by <a href="http://gabrielhoffman.github.io" class="external-link">Gabriel Hoffman</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
     </footer>
