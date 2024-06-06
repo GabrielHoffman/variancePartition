@@ -1,6 +1,6 @@
 
-# variancePartition 1.35.1
- - May 31, 2024
+# variancePartition 1.34.1
+ - June 6, 2024
  - version bump for BioC
 
 # variancePartition 1.33.15
