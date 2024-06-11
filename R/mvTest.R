@@ -125,16 +125,11 @@ setMethod(
     P <- vcovSqrt(fit[features, ], vobj[features, ], coef, approx = TRUE)
     Sigma <- crossprod(P)
 
-    if (shrink.cov == FALSE) shrink.cov <- "FALSE"
-    lambda <- switch(shrink.cov,
-      Schafer = estimate.lambda(P, verbose = FALSE),
-      "FALSE" = 0
-    )
+    if( shrink.cov ){
+      lambda = 0.01
 
-    # if number of features is small, don't shrink
-    # if( 2*n_features < sqrt(nu) ) lambda = 0
-
-    Sigma <- (1 - lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
+      Sigma <- (1 - lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
+    }
 
     # Meta-analyis method
     #####################
@@ -143,6 +138,8 @@ setMethod(
       if (n_features == 1) {
         # for one test, return estimated t-stat as stat
         df <- data.frame(
+          beta = beta,
+          se = Sigma[1,1],
           stat = tab$t,
           pvalue = tab$P.Value,
           n_features = 1,
@@ -155,7 +152,9 @@ setMethod(
 
         res <- LS.empirical(beta, sqrt(diag(Sigma)), cov2cor(Sigma), nu, ...)
 
-        df <- data.frame(
+        df <- data.frame(          
+          beta = res$beta,
+          se = res$se,
           stat = res$beta / res$se,
           pvalue = res$p,
           n_features = n_features,
@@ -167,6 +166,8 @@ setMethod(
       if (n_features == 1) {
         # for one test, return estimated t-stat as stat
         df <- data.frame(
+          beta = beta,
+          se = Sigma[1,1],
           stat = tab$t,
           pvalue = tab$P.Value,
           n_features = 1,
@@ -178,6 +179,8 @@ setMethod(
         res <- LS(beta, sqrt(diag(Sigma)), cov2cor(Sigma))
 
         df <- data.frame(
+          beta = res$beta,
+          se = res$se,
           stat = res$beta / res$se,
           pvalue = res$p,
           n_features = n_features,
