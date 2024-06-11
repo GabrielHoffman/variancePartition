@@ -1,4 +1,13 @@
 
+
+# variancePartition 1.35.3
+ - June 11, 2024
+ - in `mvTest()` with `shrink.cov = TRUE` uses `lambda = 0.01`
+
+# variancePartition 1.35.2
+ - June 6, 2024
+ - in `mvTest()` return `beta` and `se`
+
 # variancePartition 1.35.1
  - May 31, 2024
  - version bump for BioC
