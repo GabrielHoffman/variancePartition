@@ -129,6 +129,8 @@ setMethod(
       lambda = 0.01
 
       Sigma <- (1 - lambda) * Sigma + lambda * diag(diag(Sigma), ncol(Sigma))
+    }else{
+      lambda = 0
     }
 
     # Meta-analyis method
