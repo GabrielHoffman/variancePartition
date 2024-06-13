@@ -1,4 +1,7 @@
 
+# variancePartition 1.35.4
+ - June 13, 2024
+ - fix bug in `[.MArrayLM2` dropping residuals to a vector
 
 # variancePartition 1.35.3
  - June 11, 2024
