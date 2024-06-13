@@ -123,13 +123,13 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.33.8" id="variancepartition-1338">variancePartition 1.33.8<a class="anchor" aria-label="anchor" href="#variancepartition-1338"></a></h2>
 <ul><li>Jan 22, 2024</li>
-<li>add <code><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">BIC()</a></code> for result of <code><a href="../reference/dream-method.html">dream()</a></code> and <code>lmFit()</code>
+<li>add <code><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">BIC()</a></code> for result of <code><a href="../reference/dream-method.html">dream()</a></code> and <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.33.7" id="variancepartition-1337">variancePartition 1.33.7<a class="anchor" aria-label="anchor" href="#variancepartition-1337"></a></h2>
 <ul><li>Jan 19, 2024</li>
-<li>add <code><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik()</a></code> for result of <code><a href="../reference/dream-method.html">dream()</a></code> and <code>lmFit()</code>
+<li>add <code><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik()</a></code> for result of <code><a href="../reference/dream-method.html">dream()</a></code> and <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -184,13 +184,13 @@
 <ul><li>Oct 16, 2023</li>
 <li>handle weights properly when the linear mixed model fails for some genes</li>
 <li>
-<code>lmFit()</code> and</li>
+<code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code> and</li>
 <li>in <code>iterRows()</code> set <code>scale = FALSE</code> as default</li>
 <li>in <code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code>, scale in input weights and weights in side <code><a href="../reference/fitVarPartModel-method.html">fitVarPartModel()</a></code>
-<ul><li>get weights estimated most similar to <code>voomLmFit()</code>
+<ul><li>get weights estimated most similar to <code><a href="https://rdrr.io/pkg/edgeR/man/voomLmFit.html" class="external-link">voomLmFit()</a></code>
 </li>
 </ul></li>
-<li>in <code><a href="../reference/dream-method.html">dream()</a></code> use <code>rescaleWeights = FALSE</code> to get <code>sigma</code> estimates compatable with <code>lmFit()</code>
+<li>in <code><a href="../reference/dream-method.html">dream()</a></code> use <code>rescaleWeights = FALSE</code> to get <code>sigma</code> estimates compatable with <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -272,7 +272,7 @@
 <h2 class="pkg-version" data-toc-text="2.0.5" id="variancepartition-205">variancePartition 2.0.5<a class="anchor" aria-label="anchor" href="#variancepartition-205"></a></h2>
 <ul><li>May 31, 2023</li>
 <li>fix convergence issues</li>
-<li>fix initialization of <code>lmer()</code> fit</li>
+<li>fix initialization of <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> fit</li>
 <li>use 1 OMP thread internally, then restore to original value</li>
 </ul></div>
     <div class="section level2">
@@ -281,7 +281,7 @@
 <li>When running <code><a href="../reference/dream-method.html">dream()</a></code>, ensure model convergence using second fitting with <code>Nelder_Mead</code> to avoid edge cases where the approximate hessian from <code>lmerTest::as_lmerModLT()</code> has a negative eigenvalue</li>
 <li>fix issue in <code><a href="../reference/get_prediction-method.html">get_prediction()</a></code> returning NA values when variables modeled as categorical and levels are omitted</li>
 <li>fix issue in <code><a href="../reference/voomWithDreamWeights.html">voomWithDreamWeights()</a></code> when some genes don’t converge</li>
-<li>retry <code>lmer()</code> model fit with another optimizer after it fails convergence test.</li>
+<li>retry <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> model fit with another optimizer after it fails convergence test.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.3" id="variancepartition-203">variancePartition 2.0.3<a class="anchor" aria-label="anchor" href="#variancepartition-203"></a></h2>
@@ -509,7 +509,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.25.5" id="variancepartition-1255">variancePartition 1.25.5<a class="anchor" aria-label="anchor" href="#variancepartition-1255"></a></h2>
-<ul><li>add <code><a href="../reference/getTreat-method.html">getTreat()</a></code> to evaluate <code>treat()</code>/<code>topTreat()</code> seamlessly on results of <code><a href="../reference/dream-method.html">dream()</a></code>
+<ul><li>add <code><a href="../reference/getTreat-method.html">getTreat()</a></code> to evaluate <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">treat()</a></code>/<code><a href="https://rdrr.io/pkg/limma/man/toptable.html" class="external-link">topTreat()</a></code> seamlessly on results of <code><a href="../reference/dream-method.html">dream()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -517,7 +517,7 @@
 <ul><li>in <code><a href="../reference/dream-method.html">dream()</a></code> set default <code>ddf = "adaptive"</code>, which uses “KR” for less than 12 samples</li>
 <li>all functions default tp <code>BPPARAM=SerialParam()</code>
 </li>
-<li>add <code>eBayes()</code> to vignette for <code><a href="../reference/dream-method.html">dream()</a></code>
+<li>add <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> to vignette for <code><a href="../reference/dream-method.html">dream()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -541,7 +541,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.23.5" id="variancepartition-1235">variancePartition 1.23.5<a class="anchor" aria-label="anchor" href="#variancepartition-1235"></a></h2>
 <ul><li>use <code>RhpcBLASctl::omp_set_num_threads(1)</code> to use only 1 OpenMP thread for linear algebra within each BiocParallel process</li>
-<li>update <code><a href="../reference/dream-method.html">dream()</a></code> so <code>useWeights=FALSE</code> works with <code>lmFit()</code>
+<li>update <code><a href="../reference/dream-method.html">dream()</a></code> so <code>useWeights=FALSE</code> works with <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>
 </li>
 </ul></div>
     <div class="section level2">
