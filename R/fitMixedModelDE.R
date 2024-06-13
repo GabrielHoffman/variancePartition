@@ -496,8 +496,8 @@ assign(
     }
 
     # subset residuals and hatvalues
-    obj$residuals = obj$residuals[rownames(obj),]
-    obj$hatvalues = obj$hatvalues[rownames(obj),]
+    obj$residuals = obj$residuals[rownames(obj),,drop=FALSE]
+    obj$hatvalues = obj$hatvalues[rownames(obj),,drop=FALSE]
 
     # the F-statistic and p-value are evaluated when subsetting is applied
     # so need to apply df2 here
