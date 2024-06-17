@@ -141,7 +141,8 @@ setMethod(
         # for one test, return estimated t-stat as stat
         df <- data.frame(
           beta = beta,
-          se = sqrt(Sigma[1,1]),
+          # se = sqrt(Sigma[1,1]),
+          se = tab$logFC / tab$t,
           stat = tab$t,
           pvalue = tab$P.Value,
           n_features = 1,
@@ -169,7 +170,8 @@ setMethod(
         # for one test, return estimated t-stat as stat
         df <- data.frame(
           beta = beta,
-          se = sqrt(Sigma[1,1]),
+          # se = sqrt(Sigma[1,1]),
+          se = tab$logFC / tab$t,
           stat = tab$t,
           pvalue = tab$P.Value,
           n_features = 1,
