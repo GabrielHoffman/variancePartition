@@ -1,4 +1,9 @@
 
+
+# variancePartition 1.35.5
+ - June 17, 2024
+ - fix bug in `mvTest()` for `se` value with 1 feature
+
 # variancePartition 1.35.4
  - June 13, 2024
  - fix bug in `[.MArrayLM2` dropping residuals to a vector
