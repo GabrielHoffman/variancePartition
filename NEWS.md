@@ -1,5 +1,10 @@
 
 
+# variancePartition 1.36.1
+ - Nov 5, 2024
+ - Upgrade to Bioc 3.20
+ - update generic for `eBayes()` to be comptabile with `legacy` parameter added in `limma` v3.62.0 
+
 # variancePartition 1.35.5
  - June 17, 2024
  - fix bug in `mvTest()` for `se` value with 1 feature
