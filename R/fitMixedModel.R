@@ -227,8 +227,10 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
 
 
 filterInputData <- function(exprObj, formula, data, weights = NULL, useWeights = TRUE, isCounts = FALSE) {
-  # convert to data.frame
+  # convert to data.frame, handle case where data is a tibble
+  # rn = rownames(data)
   data <- as.data.frame(data)
+  # rownames(data) = rn
 
   # make sure form is a formula
   formula <- stats::as.formula(formula)
@@ -295,7 +297,7 @@ filterInputData <- function(exprObj, formula, data, weights = NULL, useWeights =
 
   # If samples names in exprObj (i.e. columns) don't match those in data (i.e. rows)
   if (!identical(colnames(exprObj), rownames(data))) {
-    warning("Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently.")
+    warning("Sample names of responses (i.e. columns of exprObj) do not match\nsample names of metadata (i.e. rows of data).  Recommend consistent\nnames so downstream results are labeled consistently.", immediate. = TRUE)
   }
 
   list(
