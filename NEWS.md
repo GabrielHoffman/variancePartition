@@ -3,6 +3,10 @@
  - Nov 7, 2024
  - doc fix
 
+# variancePartition 1.36.2
+ - Nov 7, 2024
+ - fix docs
+
 # variancePartition 1.36.1
  - Nov 5, 2024
  - Upgrade to Bioc 3.20
