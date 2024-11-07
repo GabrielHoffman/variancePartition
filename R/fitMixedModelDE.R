@@ -520,8 +520,8 @@ assign(
 
 setGeneric("eBayes", function(
     fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
-    trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)) {
-  eBayes(fit, proportion, stdev.coef.lim, trend, robust, winsor.tail.p)
+    trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1), legacy = NULL) {
+  eBayes(fit, proportion, stdev.coef.lim, trend, robust, winsor.tail.p, legacy)
 })
 
 
@@ -535,6 +535,7 @@ setGeneric("eBayes", function(
 #' @param trend trend
 #' @param robust robust
 #' @param winsor.tail.p winsor.tail.p
+#' @param legacy legacy
 #'
 #' @return results of eBayes using approximated residual degrees of freedom
 #'
@@ -542,11 +543,11 @@ setGeneric("eBayes", function(
 #' @rdname eBayes-method
 #' @aliases eBayes,MArrayLM2-method
 #' @importFrom limma eBayes
-#' @seealso dream rdf.merMod
+#' @seealso \code{dream()}, \code{rdf.merMod()}, \code{limma::eBayes()}
 setMethod(
   "eBayes", "MArrayLM2",
   function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
-           trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1)) {
+           trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1), legacy = NULL) {
     # limma::eBayes() uses df.residual as the residual degrees of freedom,
     # 	while dream() uses rdf.
     # For linear models these values are always equal,
@@ -562,7 +563,8 @@ setMethod(
       stdev.coef.lim = stdev.coef.lim,
       trend = trend,
       robust = robust,
-      winsor.tail.p = winsor.tail.p
+      winsor.tail.p = winsor.tail.p,
+      legacy = legacy
     )
 
     # re-set to the df.residual of the test statistics
