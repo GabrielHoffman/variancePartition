@@ -10,7 +10,8 @@
   stdev.coef.lim = c(0.1, 4),
   trend = FALSE,
   robust = FALSE,
-  winsor.tail.p = c(0.05, 0.1)
+  winsor.tail.p = c(0.05, 0.1),
+  legacy = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@
 \item{robust}{robust}
 
 \item{winsor.tail.p}{winsor.tail.p}
+
+\item{legacy}{legacy}
 }
 \value{
 results of eBayes using approximated residual degrees of freedom
@@ -33,5 +36,5 @@ results of eBayes using approximated residual degrees of freedom
 eBayes for result of linear mixed model for with \code{dream()} using residual degrees of freedom approximated with \code{rdf.merMod()}
 }
 \seealso{
-dream rdf.merMod
+\code{dream()}, \code{rdf.merMod()}, \code{limma::eBayes()}
 }
