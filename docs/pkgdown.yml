@@ -9,11 +9,7 @@ articles:
   mvtests: mvtests.html
   rnd_effects: rnd_effects.html
   variancePartition: variancePartition.html
-<<<<<<< HEAD
 last_built: 2024-11-05T20:47Z
-=======
-last_built: 2024-11-05T20:28Z
->>>>>>> 68eedb1 (Merge branch 'RELEASE_3_20' of git.bioconductor.org:packages/variancePartition into devel)
 urls:
   reference: http://DiseaseNeurogenomics.github.io/variancePartition/reference
   article: http://DiseaseNeurogenomics.github.io/variancePartition/articles
