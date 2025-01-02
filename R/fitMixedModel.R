@@ -151,6 +151,7 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
 #' @importFrom BiocParallel bpstopOnError<- bpiterate
 #' @importFrom RhpcBLASctl omp_set_num_threads omp_get_max_threads
 run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE, BPPARAM = SerialParam(), ...) {
+
   stopifnot(is(BPPARAM, "BiocParallelParam"))
 
   if (any(obj$weights < 0)) stop("All weights must be positive")
@@ -214,14 +215,23 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
     rescaleWeights = rescaleWeights,
     fxn = fxn,
     BPPARAM = BPPARAM,
-    reduce.in.order = TRUE
+    reduce.in.order = TRUE#,
+    # REDUCE = c
   )
 
+  # when REDUCE is unspecified
   list(
     succeeded = lapply(resList, function(x) x$succeeded),
     errors = unlist(lapply(resList, function(x) x$errors)),
     error.initial = NULL
   )
+
+  # when REDUCE is c
+  # if( length(resList$succeeded) == 0){
+  #   resList$succeeded[[1]] = NULL
+  # }
+  # resList$error.initial = NULL
+  # resList
 }
 
 

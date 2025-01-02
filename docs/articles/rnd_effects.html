@@ -8,8 +8,8 @@
 <title>Theory and practice of random effects • variancePartition</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Theory and practice of random effects">
 </head>
 <body>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.36.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.36.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,8 +66,8 @@
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2024-11-05
-15:31:19</h4>
+            <h4 data-toc-skip class="date">Run on 2025-01-02
+12:39:54</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/rnd_effects.Rmd" class="external-link"><code>vignettes/rnd_effects.Rmd</code></a></small>
       <div class="d-none name"><code>rnd_effects.Rmd</code></div>
@@ -161,7 +161,7 @@ most accurate. So in variancePartition the fractions are defined as:
 <pre><code>[1] 0.901</code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># using r2glmm</span></span>
-<span><span class="fu">r2beta</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/r2glmm/man/r2beta.html" class="external-link">r2beta</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <pre><code>  Effect   Rsq upper.CL lower.CL
 1  Model 0.896    0.904    0.886
 2      X 0.896    0.904    0.886</code></pre>
@@ -230,11 +230,11 @@ as the default.</p>
 </h2>
 <details><pre><code>R version 4.4.1 (2024-06-14)
 Platform: aarch64-apple-darwin23.5.0
-Running under: macOS Sonoma 14.6.1
+Running under: macOS Sonoma 14.7.1
 
 Matrix products: default
 BLAS:   /Users/gabrielhoffman/prog/R-4.4.1/lib/libRblas.dylib 
-LAPACK: /opt/homebrew/Cellar/r/4.4.0_1/lib/R/lib/libRlapack.dylib;  LAPACK version 3.12.0
+LAPACK: /opt/homebrew/Cellar/r/4.4.2_2/lib/R/lib/libRlapack.dylib;  LAPACK version 3.12.0
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -246,13 +246,13 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] knitr_1.48
+[1] knitr_1.49
 
 loaded via a namespace (and not attached):
  [1] digest_0.6.37     desc_1.4.3        R6_2.5.1          fastmap_1.2.0    
  [5] xfun_0.49         cachem_1.1.0      htmltools_0.5.8.1 rmarkdown_2.29   
  [9] lifecycle_1.0.4   cli_3.6.3         sass_0.4.9        pkgdown_2.1.1    
-[13] textshaping_0.4.0 jquerylib_0.1.4   systemfonts_1.1.0 compiler_4.4.1   
+[13] textshaping_0.4.1 jquerylib_0.1.4   systemfonts_1.1.0 compiler_4.4.1   
 [17] tools_4.4.1       ragg_1.3.3        evaluate_1.0.1    bslib_0.8.0      
 [21] yaml_2.3.10       jsonlite_1.8.9    rlang_1.1.4       fs_1.6.5         
 [25] htmlwidgets_1.6.4</code></pre>
