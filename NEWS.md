@@ -1,5 +1,4 @@
 
-
 # variancePartition 1.36.3
  - Jan 2, 2025
  - examine adding `REDUCE = c` to `bpiterate()`
