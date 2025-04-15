@@ -1,7 +1,7 @@
 Package: variancePartition
 Type: Package
 Title: Quantify and interpret drivers of variation in multilevel gene expression experiments
-Version: 1.37.2
+Version: 1.38.0
 Date: 2025-01-02
 Authors@R: person("Gabriel", "Hoffman", role=c("aut", "cre"), email="gabriel.hoffman@mssm.edu", comment=c(ORCID="0000-0002-0957-0224"))
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
