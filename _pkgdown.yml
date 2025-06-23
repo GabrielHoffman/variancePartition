@@ -8,6 +8,7 @@ authors:
 template:
   bootstrap: 5
   bootswatch: flatly
+  math-rendering: katex
 
 search:
   exclude: ['news/index.html']

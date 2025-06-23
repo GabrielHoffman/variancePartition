@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Theory and practice of random effects • variancePartition</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -20,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.36.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.37.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,8 +67,8 @@
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2025-01-02
-12:39:54</h4>
+            <h4 data-toc-skip class="date">Run on 2025-06-22
+21:05:36</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/rnd_effects.Rmd" class="external-link"><code>vignettes/rnd_effects.Rmd</code></a></small>
       <div class="d-none name"><code>rnd_effects.Rmd</code></div>
@@ -105,10 +106,9 @@ individuals. Random effects are typically treated as nuisance variables
 and integrated out, and hypothesis testing is performed on the fixed
 effect.</p>
 <p>The <code>r2glmm</code> package fits into this traditional framework,
-by computing the variance fractions for a given fixed effect as:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msubsup><mi>σ</mi><mrow><mi>f</mi><mi>i</mi><mi>x</mi><mi>e</mi><mi>d</mi></mrow><mn>2</mn></msubsup><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>σ</mi><mrow><mi>f</mi><mi>i</mi><mi>x</mi><mi>e</mi><mi>d</mi></mrow><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mrow><mi>e</mi><mi>r</mi><mi>r</mi><mi>o</mi><mi>r</mi></mrow><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{eqnarray}
+by computing the variance fractions for a given fixed effect as: <span class="math display">\begin{eqnarray}
 \sigma^2_{fixed}/ \left(\sigma^2_{fixed} + \sigma^2_{error}\right)
-\end{eqnarray}</annotation></semantics></math></p>
+\end{eqnarray}</span></p>
 <p>Importantly, the random effects are not in the denominator. The
 fraction is only determined by fixed effects and residuals.</p>
 <p>In my experience in bioinformatics, this was a problem. Making such
@@ -120,9 +120,10 @@ one across all components and 2) fixed and random effects could be
 interpreted on the same scale 3) fractions could be compared across
 studies with different designs, 4) estimates of variance fractions were
 most accurate. So in variancePartition the fractions are defined as:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msubsup><mi>σ</mi><mi>X</mi><mn>2</mn></msubsup><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>σ</mi><mrow><mi>f</mi><mi>i</mi><mi>x</mi><mi>e</mi><mi>d</mi></mrow><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mrow><mi>r</mi><mi>a</mi><mi>n</mi><mi>d</mi><mi>o</mi><mi>m</mi></mrow><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mrow><mi>e</mi><mi>r</mi><mi>r</mi><mi>o</mi><mi>r</mi></mrow><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{eqnarray}
-\sigma^2_{X}/ \left(\sigma^2_{fixed} + \sigma^2_{random} + \sigma^2_{error}\right) 
-\end{eqnarray}</annotation></semantics></math></p>
+<span class="math display">\begin{eqnarray}
+\sigma^2_{X}/ \left(\sigma^2_{fixed} + \sigma^2_{random} +
+\sigma^2_{error}\right)
+\end{eqnarray}</span></p>
 <p>just plugging the each variable in the numerator.</p>
 <p>Thus the faction evaluated by variancePartition is different than
 <code>r2glmm</code> by definition.</p>
@@ -161,7 +162,7 @@ most accurate. So in variancePartition the fractions are defined as:
 <pre><code>[1] 0.901</code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># using r2glmm</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/r2glmm/man/r2beta.html" class="external-link">r2beta</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">r2beta</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <pre><code>  Effect   Rsq upper.CL lower.CL
 1  Model 0.896    0.904    0.886
 2      X 0.896    0.904    0.886</code></pre>
@@ -228,13 +229,13 @@ as the default.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<details><pre><code>R version 4.4.1 (2024-06-14)
-Platform: aarch64-apple-darwin23.5.0
+<details><pre><code>R version 4.4.2 (2024-10-31)
+Platform: aarch64-apple-darwin23.6.0
 Running under: macOS Sonoma 14.7.1
 
 Matrix products: default
-BLAS:   /Users/gabrielhoffman/prog/R-4.4.1/lib/libRblas.dylib 
-LAPACK: /opt/homebrew/Cellar/r/4.4.2_2/lib/R/lib/libRlapack.dylib;  LAPACK version 3.12.0
+BLAS:   /Users/gabrielhoffman/prog/R-4.4.2/lib/libRblas.dylib 
+LAPACK: /opt/homebrew/Cellar/r/4.5.1/lib/R/lib/libRlapack.dylib;  LAPACK version 3.12.1
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -246,15 +247,15 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] knitr_1.49
+[1] knitr_1.50
 
 loaded via a namespace (and not attached):
- [1] digest_0.6.37     desc_1.4.3        R6_2.5.1          fastmap_1.2.0    
- [5] xfun_0.49         cachem_1.1.0      htmltools_0.5.8.1 rmarkdown_2.29   
- [9] lifecycle_1.0.4   cli_3.6.3         sass_0.4.9        pkgdown_2.1.1    
-[13] textshaping_0.4.1 jquerylib_0.1.4   systemfonts_1.1.0 compiler_4.4.1   
-[17] tools_4.4.1       ragg_1.3.3        evaluate_1.0.1    bslib_0.8.0      
-[21] yaml_2.3.10       jsonlite_1.8.9    rlang_1.1.4       fs_1.6.5         
+ [1] digest_0.6.37     desc_1.4.3        R6_2.6.1          fastmap_1.2.0    
+ [5] xfun_0.52         cachem_1.1.0      htmltools_0.5.8.1 rmarkdown_2.29   
+ [9] lifecycle_1.0.4   cli_3.6.5         sass_0.4.10       pkgdown_2.1.3    
+[13] textshaping_1.0.1 jquerylib_0.1.4   systemfonts_1.2.3 compiler_4.4.2   
+[17] tools_4.4.2       ragg_1.4.0        evaluate_1.0.4    bslib_0.9.0      
+[21] yaml_2.3.10       jsonlite_2.0.0    rlang_1.1.6       fs_1.6.6         
 [25] htmlwidgets_1.6.4</code></pre>
 </details>
 </div>
@@ -269,7 +270,7 @@ loaded via a namespace (and not attached):
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
