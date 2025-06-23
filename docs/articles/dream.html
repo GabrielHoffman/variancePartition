@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>dream analysis • variancePartition</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -20,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.36.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.37.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,8 +69,8 @@ testing with linear mixed models for repeated measures</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2025-01-02
-12:39:42</h4>
+            <h4 data-toc-skip class="date">Run on 2025-06-22
+21:05:28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/dream.Rmd" class="external-link"><code>vignettes/dream.Rmd</code></a></small>
       <div class="d-none name"><code>dream.Rmd</code></div>
@@ -365,11 +366,9 @@ hypothsis test, the degrees of freedom is different for each gene here.
 Therefore, the F-statistics are not directly comparable since they have
 different degrees of freedom. In order to be able to compare test
 statistics, we report <code>F.std</code> which is the p-value
-transformed into an F-statistic with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><msub><mi>f</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">df_1</annotation></semantics></math>
-the number of coefficients tested and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><msub><mi>f</mi><mn>2</mn></msub><mo>=</mo><mi>∞</mi></mrow><annotation encoding="application/x-tex">df_2=\infty</annotation></semantics></math>.
-This can be used for downstream analysis.</p>
+transformed into an F-statistic with <span class="math inline">df_1</span> the number of coefficients tested and
+<span class="math inline">df_2=\infty</span>. This can be used for
+downstream analysis.</p>
 </div>
 </div>
 <div class="section level3">
@@ -404,9 +403,7 @@ dream analysis.</p>
 </h3>
 <p>Here we compare p-values from from <code><a href="../reference/dream-method.html">dream()</a></code> and
 <code>duplicateCorrelation</code>. In order to understand the empircal
-difference between them, we can plot the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><msub><mo>log</mo><mn>10</mn></msub></mrow><annotation encoding="application/x-tex">-\log_{10}</annotation></semantics></math>
-p-values from each method.</p>
+difference between them, we can plot the <span class="math inline">-\log_{10}</span> p-values from each method.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compare p-values and make plot</span></span>
 <span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fitDupCor</span>, coef <span class="op">=</span> <span class="st">"Disease1"</span>, number <span class="op">=</span> <span class="cn">Inf</span>, sort.by <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span><span class="op">$</span><span class="va">P.Value</span></span>
@@ -418,47 +415,25 @@ p-values from each method.</p>
 genome-wide even though the donor contribution of a particular gene can
 vary substantially from the genome-wide trend. Using a single value
 genome-wide for the within-donor variance can reduce power and increase
-the false positive rate in a particular, reproducible way. Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>τ</mi><mi>g</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\tau^2_g</annotation></semantics></math>
-be the value of the donor component for gene
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup><annotation encoding="application/x-tex">\bar{\tau}^2</annotation></semantics></math>
-be the genome-wide mean. For genes where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>τ</mi><mi>g</mi><mn>2</mn></msubsup><mo>&gt;</mo><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\tau^2_g&gt;\bar{\tau}^2</annotation></semantics></math>,
-using
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup><annotation encoding="application/x-tex">\bar{\tau}^2</annotation></semantics></math>
-under-corrects for the donor component so that it increases the false
-positive rate compared to using
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>τ</mi><mi>g</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\tau^2_g</annotation></semantics></math>.
-Conversely, for genes where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>τ</mi><mi>g</mi><mn>2</mn></msubsup><mo>&lt;</mo><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\tau^2_g&lt;\bar{\tau}^2</annotation></semantics></math>,
-using
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup><annotation encoding="application/x-tex">\bar{\tau}^2</annotation></semantics></math>
-over-corrects for the donor component so that it decreases power.
-Increasing sample size does not overcome this issue. The dream method
-overcomes this issue by using a
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>τ</mi><mi>g</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\tau^2_g</annotation></semantics></math>.</p>
-<p>Here, the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><msub><mo>log</mo><mn>10</mn></msub></mrow><annotation encoding="application/x-tex">-\log_{10}</annotation></semantics></math>
-p-values from both methods are plotted and colored by the donor
-contribution estiamted by variancePartition. The green value indicates
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup><annotation encoding="application/x-tex">\bar{\tau}^2</annotation></semantics></math>,
-while red and blue indicate higher and lower values, respectively. When
-only one variance component is used and the contrast matrix is simple,
-the effect of using dream versus duplicateCorrelation is determined by
-the comparison of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>τ</mi><mi>g</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\tau^2_g</annotation></semantics></math>
-to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup><annotation encoding="application/x-tex">\bar{\tau}^2</annotation></semantics></math>:</p>
-<p>dream can increase the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><msub><mo>log</mo><mn>10</mn></msub></mrow><annotation encoding="application/x-tex">-\log_{10}</annotation></semantics></math>
-p-value for genes with a lower donor component
-(i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>τ</mi><mi>g</mi><mn>2</mn></msubsup><mo>&lt;</mo><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\tau^2_g&lt;\bar{\tau}^2</annotation></semantics></math>)
-and decrease
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><msub><mo>log</mo><mn>10</mn></msub></mrow><annotation encoding="application/x-tex">-\log_{10}</annotation></semantics></math>
-p-value for genes with a higher donor component
-(i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>τ</mi><mi>g</mi><mn>2</mn></msubsup><mo>&gt;</mo><msup><mover><mi>τ</mi><mo accent="true">‾</mo></mover><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\tau^2_g&gt;\bar{\tau}^2</annotation></semantics></math>)</p>
+the false positive rate in a particular, reproducible way. Let <span class="math inline">\tau^2_g</span> be the value of the donor component
+for gene <span class="math inline">g</span> and <span class="math inline">\bar{\tau}^2</span> be the genome-wide mean. For
+genes where <span class="math inline">\tau^2_g&gt;\bar{\tau}^2</span>,
+using <span class="math inline">\bar{\tau}^2</span> under-corrects for
+the donor component so that it increases the false positive rate
+compared to using <span class="math inline">\tau^2_g</span>. Conversely,
+for genes where <span class="math inline">\tau^2_g&lt;\bar{\tau}^2</span>, using <span class="math inline">\bar{\tau}^2</span> over-corrects for the donor
+component so that it decreases power. Increasing sample size does not
+overcome this issue. The dream method overcomes this issue by using a
+<span class="math inline">\tau^2_g</span>.</p>
+<p>Here, the <span class="math inline">-\log_{10}</span> p-values from
+both methods are plotted and colored by the donor contribution estiamted
+by variancePartition. The green value indicates <span class="math inline">\bar{\tau}^2</span>, while red and blue indicate
+higher and lower values, respectively. When only one variance component
+is used and the contrast matrix is simple, the effect of using dream
+versus duplicateCorrelation is determined by the comparison of <span class="math inline">\tau^2_g</span> to <span class="math inline">\bar{\tau}^2</span>:</p>
+<p>dream can increase the <span class="math inline">-\log_{10}</span>
+p-value for genes with a lower donor component (i.e. <span class="math inline">\tau^2_g&lt;\bar{\tau}^2</span>) and decrease <span class="math inline">-\log_{10}</span> p-value for genes with a higher
+donor component (i.e. <span class="math inline">\tau^2_g&gt;\bar{\tau}^2</span>)</p>
 <p>Note that using more variance components or a more complicated
 contrast matrix can make the relationship more complicated.</p>
 </div>
@@ -558,7 +533,7 @@ tools for RNA-seq read counts.</span>”</span> <em>Genome Biology</em> 15
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

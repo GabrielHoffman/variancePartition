@@ -23,7 +23,7 @@
 #'
 #' The variance implied by the link function is the variance of the corresponding distribution:
 #'
-#'  logit -> logistic distribution -> variance is pi^2/3
+#'  logit -> logistic distribution -> variance is \eqn{\pi^\frac{2}{3}}
 #'
 #'  probit -> standard normal distribution -> variance is 1
 #'
@@ -31,20 +31,20 @@
 #'
 #' For the negative binomial distribution with rate \eqn{\lambda} and shape \eqn{\theta}, the variance is \eqn{log(1 + 1/\lambda + 1/\theta)}.
 #'
-#' Variance decomposition is reviewed by Nakagawa and Schielzeth (2012), and expanded to other GLMs by Nakagawa, Johnson and Schielzeth (2017).  See McKelvey and Zavoina (1975) for early work on applying to GLMs.  Also see DeMaris (2002)
+#' Variance decomposition is reviewed by Nakagawa and Schielzeth (2012), and expanded to other GLMs by Nakagawa, et al. (2017).  See McKelvey and Zavoina (1975) for early work on applying to GLMs.  Also see DeMaris (2002).
 #'
 #' We note that Nagelkerke's pseudo R^2 evaluates the variance explained by the full model.  Instead, a variance partitioning approach evaluates the variance explained by each term in the model, so that the sum of each systematic plus random term sums to 1 (Hoffman and Schadt, 2016; Nakagawa and Schielzeth, 2012).
 #'
 #' @references{
-#'   \insertRef{nakagawa2017coefficient}{variancePartition}
+#'   \insertRef{nakagawa2017coefficient}{variancePartition} \cr \cr
 #'
-#'   \insertRef{nakagawa2013general}{variancePartition}
+#'   \insertRef{nakagawa2013general}{variancePartition}\cr \cr
 #'
-#'   \insertRef{mckelvey1975statistical}{variancePartition}
+#'   \insertRef{mckelvey1975statistical}{variancePartition}\cr \cr
 #'
-#'   \insertRef{demaris2002explained}{variancePartition}
+#'   \insertRef{demaris2002explained}{variancePartition}\cr \cr
 #'
-#'   \insertRef{hoffman2016variancepartition}{variancePartition}
+#'   \insertRef{hoffman2016variancepartition}{variancePartition}\cr \cr
 #' }
 #'
 #' @examples
