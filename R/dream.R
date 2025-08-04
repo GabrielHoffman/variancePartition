@@ -148,6 +148,14 @@ dream <- function(exprObj,
 
     attr(res2, "error.initial") <- res$error.initial
     attr(res2, "errors") <- res$errors
+
+    # check genes with NA coefs
+    x <- sum(is.na(rowSums(coef(res2))))      
+    if( x > 0 ){
+      txt <- paste("Partial NA coefficients for", x, "probe(s)")
+      warning(txt)
+    }
+
   } else {
     # run limma fixed effects models
     design <- model.matrix(objFlt$formula, objFlt$data)
@@ -189,9 +197,12 @@ create_eval_dream <- function(L, ddf, univariateContrasts) {
     # convert to result of lmerTest::lmer()
     fit <- as_lmerModLmerTest2(x)
 
+    # only retain contrasts for coefs that are estimated
+    L = L[names(fixef(fit)),]
+
     # check L
     if (!identical(rownames(L), names(fixef(fit)))) {
-      stop("Names of entries in L must match fixed effects")
+      print("Names of entries in L must match fixed effects")
     }
 
     # check that fixed effects and names of L match
@@ -275,7 +286,16 @@ eval_contrasts <- function(fit, L, ddf, kappa.tol = 1e6, pd.tol = 1e-8) {
     V <- as.matrix(vcov(fit))
   }
 
+  #  keep only contrants witn some non-zero entries
+  keep <- colSums(abs(L)) != 0
+  L <- L[,keep]
+
+  warn = getOption("warn")
+  options(warn=1)
+  suppressWarnings({
   cons <- contest(fit, t(L), ddf = ddf, joint = FALSE, confint = FALSE)
+  })
+  options(warn=warn)
 
   # extract results
   df <- cons$df
@@ -404,21 +424,46 @@ combineResults <- function(exprObj, L, resList, univariateContrasts) {
     return(ret)
   }
 
-  coefficients <- t(do.call(cbind, lapply(resList, function(x) x$ret$coefficients)))
-  rownames(coefficients) <- names(resList)
-  colnames(coefficients) <- colnames(L)
+  extract_result = function(resList, key){
 
-  df.residual <- t(do.call(cbind, lapply(resList, function(x) x$ret$df.residual)))
-  colnames(df.residual) <- colnames(L)
+    # get row names of the matrix with the most entries
+    rn = lapply(resList, function(x){
+      rownames(x$ret$coefficients)
+    })
+    rn = rn[[which.max(sapply(rn, length))]]
+
+    # extract entry in key and create a matrix across genes
+    # missing values are set to NA
+    v <- gtools::smartbind(list=lapply(resList, function(x){
+      values <- x$ret[[key]]
+      names(values) <- rownames(x$ret$coefficients)
+      t(values)
+      }))
+
+    # convert to matrix and order by rn
+    as.matrix(v)[,rn,drop=FALSE]
+  }
+
+  coefficients <- extract_result( resList, "coefficients")
+  df.residual <- extract_result( resList, "df.residual")
+  pValue <- extract_result( resList, "pValue")
+  stdev.unscaled <- extract_result( resList, "stdev.unscaled")
+
+  # coefficients <- t(do.call(cbind, lapply(resList, function(x) x$ret$coefficients))) 
+  # rownames(coefficients) <- names(resList)
+  # colnames(coefficients) <- colnames(L)
+
+  # df.residual <- t(do.call(cbind, lapply(resList, function(x) x$ret$df.residual)))
+  # colnames(df.residual) <- colnames(L)
 
   rdf <- c(do.call(cbind, lapply(resList, function(x) x$ret$rdf)))
   names(rdf) <- names(resList)
 
-  pValue <- t(do.call(cbind, lapply(resList, function(x) x$ret$pValue)))
-  colnames(pValue) <- colnames(L)
+  # pValue <- t(do.call(cbind, lapply(resList, function(x) x$ret$pValue)))
+  # colnames(pValue) <- colnames(L)
 
-  stdev.unscaled <- t(do.call(cbind, lapply(resList, function(x) x$ret$stdev.unscaled)))
-  rownames(stdev.unscaled) <- names(resList)
+  # stdev.unscaled <- t(do.call(cbind, lapply(resList, function(x) x$ret$stdev.unscaled)))
+  # rownames(stdev.unscaled) <- names(resList)
 
   residuals <- t(do.call(cbind, lapply(resList, function(x) x$ret$residuals)))
 
@@ -426,7 +471,12 @@ combineResults <- function(exprObj, L, resList, univariateContrasts) {
 
   logLik <- sapply(resList, function(x) x$logLik)
 
-  design <- resList[[1]]$ret$design
+  # Get design matrix with all coefs present
+  rn <- lapply(resList, function(x){
+    rownames(x$ret$coefficients)
+  })
+  i <- which.max(sapply(rn, length))
+  design <- resList[[i]]$ret$design
 
   Amean <- sapply(resList, function(x) x$ret$Amean)
   sigma <- sapply(resList, function(x) x$ret$sigma)

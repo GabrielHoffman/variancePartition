@@ -1,4 +1,8 @@
 
+# variancePartition 1.37.4
+ - Aug 4, 2025
+ - Handle missing expression values like in `limma::lmFit()`
+
 # variancePartition 1.37.3
  - June 22, 2025
  - update docs

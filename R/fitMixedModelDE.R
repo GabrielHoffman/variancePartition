@@ -324,10 +324,9 @@ setMethod(
   out <- fit
   out$t <- fit$coefficients / fit$stdev.unscaled / sigma
   out$p.value <- 2 * pt(abs(out$t), df = fit$df.total, lower.tail = FALSE)
-  # out$p.value.loge <- log(2) + pt(abs(out$t), df=fit$df.total, lower.tail=FALSE, log.p=TRUE )
 
   # F-test
-  if (!is.null(out$design) && is.fullrank(out$design)) {
+  if ( !is.null(out$design) && is.fullrank(out$design) ) {
     # only evaluate F-stat on real coefficients, not contrasts
     realcoef <- colnames(out)[colnames(out) %in% colnames(out$design)]
     realcoef <- realcoef[realcoef != "(Intercept)"]
@@ -336,17 +335,22 @@ setMethod(
       # this happends when only the intercept term is included
       warning("No testable fixed effects were included in the model.\n  Running topTable() will fail.")
     } else {
-      df <- rowMeans(out[, realcoef]$df.total)
+      # df <- rowMeans(out[, realcoef]$df.total)
+      df <- rowMeans(out$df.total[,realcoef,drop=FALSE])
+      i = !is.na(df)
 
-      F.stat <- classifyTestsF(out[, realcoef], df = df, fstat.only = TRUE)
-      out$F <- as.vector(F.stat)
+      F.stat <- classifyTestsF(out[i, realcoef], df = df[i], fstat.only = TRUE)
       df1 <- attr(F.stat, "df1")
       df2 <- attr(F.stat, "df2")
       if (df2[1] > 1e6) { # Work around bug in R 2.1
-        out$F.p.value <- pchisq(df1 * out$F, df1, lower.tail = FALSE)
+        F.p.value <- pchisq(df1 * c(F.stat), df1, lower.tail = FALSE)
       } else {
-        out$F.p.value <- pf(out$F, df1, df2, lower.tail = FALSE)
+        F.p.value <- pf(c(F.stat), df1, df2, lower.tail = FALSE)
       }
+      out$F <- rep( NULL, length(i))
+      out$F.p.value <- rep( NULL, length(i))
+      out$F[i] <- as.vector(F.stat)
+      out$F.p.value[i] <- F.p.value
     }
   }
 
@@ -745,7 +749,6 @@ setMethod(
     names(fstat) <- rownames(tstat)
 
     result <- matrix(0, ngenes, ntests, dimnames = dimnames(tstat))
-
     for (i in seq_len(ngenes)) {
       if (computeCorrMat) {
         if (is.null(object$cov.coefficients.list)) {
@@ -754,7 +757,9 @@ setMethod(
           C <- object$cov.coefficients.list[[i]]
         }
         # subset based on coefficient names
-        C <- C[colnames(object), colnames(object)]
+        # C <- C[colnames(object),colnames(object),drop=FALSE]
+        keep <- intersect(rownames(C), colnames(object))
+        C <- C[keep, keep,drop=FALSE]
         cor.matrix <- cov2cor(C)
       } else {
         cor.matrix <- cov2cor(cor.matrix)
