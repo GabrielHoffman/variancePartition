@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.37.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.38.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,8 +69,8 @@ testing with linear mixed models for repeated measures</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2025-08-04
-10:53:13</h4>
+            <h4 data-toc-skip class="date">Run on 2025-08-11
+15:00:29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/dream.Rmd" class="external-link"><code>vignettes/dream.Rmd</code></a></small>
       <div class="d-none name"><code>dream.Rmd</code></div>
@@ -187,7 +187,7 @@ same across all genes.</p>
 <span><span class="va">fitDupCor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit</a></span><span class="op">(</span><span class="va">vobj</span>, <span class="va">design</span>, block <span class="op">=</span> <span class="va">metadata</span><span class="op">$</span><span class="va">Individual</span>, correlation <span class="op">=</span> <span class="va">dupcor</span><span class="op">$</span><span class="va">consensus</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fit Empirical Bayes for moderated t-statistics</span></span>
-<span><span class="va">fitDupCor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fitDupCor</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fitDupCor</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/eBayes.html">eBayes</a></span><span class="op">(</span><span class="va">fitDupCor</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="dream-analysis">Dream Analysis<a class="anchor" aria-label="anchor" href="#dream-analysis"></a>
@@ -203,7 +203,7 @@ estimate precision weights</li>
 regression coefficients.<br>
 </li>
 <li>
-<code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">variancePartition::eBayes()</a></code> replaces
+<code><a href="../reference/eBayes.html">variancePartition::eBayes()</a></code> replaces
 <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">limma::eBayes()</a></code> to apply empircal Bayes shrinkage on linear
 mixed models.</li>
 <li>
@@ -212,7 +212,7 @@ mixed models.</li>
 <code><a href="../reference/dream-method.html">dream()</a></code>.</li>
 </ol>
 <p>For models with only fixed effects,
-<code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">variancePartition::eBayes()</a></code>, and
+<code><a href="../reference/eBayes.html">variancePartition::eBayes()</a></code>, and
 <code><a href="../reference/toptable-method.html">variancePartition::topTable()</a></code> work seamlessly and give
 results equivalent to the <code>limma</code> functions with the same
 name. From the user perspective, the <code><a href="../reference/dream-method.html">dream()</a></code> workflow is
@@ -234,7 +234,7 @@ handled behind the scenes.</p>
 <span><span class="co"># dream() uses the KR method for &lt;= 20 samples,</span></span>
 <span><span class="co"># otherwise it uses the Satterthwaite approximation</span></span>
 <span><span class="va">fitmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span><span class="op">)</span></span>
-<span><span class="va">fitmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fitmm</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fitmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/eBayes.html">eBayes</a></span><span class="op">(</span><span class="va">fitmm</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Examine design matrix</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fitmm</span><span class="op">$</span><span class="va">design</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
@@ -262,7 +262,7 @@ transformed into a signed z-score. This can be used for downstream
 analysis.</p>
 <p>Note that if a random effect is not specified, <code><a href="../reference/dream-method.html">dream()</a></code>
 automatically uses <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit()</a></code>, but the user must run
-<code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> afterward.</p>
+<code><a href="../reference/eBayes.html">eBayes()</a></code> afterward.</p>
 <div class="section level3">
 <h3 id="advanced-hypothesis-testing">Advanced hypothesis testing<a class="anchor" aria-label="anchor" href="#advanced-hypothesis-testing"></a>
 </h3>
@@ -294,7 +294,7 @@ confirm it is testing what you intend.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># fit dream model with contrasts</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, <span class="va">L</span><span class="op">)</span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/eBayes.html">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># get names of available coefficients and contrasts for testing</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
@@ -332,7 +332,7 @@ the contrast.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># fit dream model to evaluate contrasts</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">vobjDream</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="op">]</span>, <span class="va">form</span>, <span class="va">metadata</span>, L <span class="op">=</span> <span class="va">L2</span><span class="op">)</span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/eBayes.html">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="st">"Test1"</span>, number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                     logFC  AveExpr         t      P.Value    adj.P.Val        B</span></span>
@@ -379,7 +379,7 @@ But it is <strong>substantially</strong> more computationally
 intensive.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fitmmKR</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dream-method.html">dream</a></span><span class="op">(</span><span class="va">vobjDream</span>, <span class="va">form</span>, <span class="va">metadata</span>, ddf <span class="op">=</span> <span class="st">"Kenward-Roger"</span><span class="op">)</span></span>
-<span><span class="va">fitmmKR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="va">fitmmKR</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fitmmKR</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/eBayes.html">eBayes</a></span><span class="op">(</span><span class="va">fitmmKR</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="variancepartition-plot">variancePartition plot<a class="anchor" aria-label="anchor" href="#variancepartition-plot"></a>
