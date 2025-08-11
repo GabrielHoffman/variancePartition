@@ -1,4 +1,6 @@
 
+# variancePartition 1.39.1
+  - version bump
 
 # variancePartition 1.38.1
  - Aug 11, 2025

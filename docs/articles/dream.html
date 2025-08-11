@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.38.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.39.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,8 +69,8 @@ testing with linear mixed models for repeated measures</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2025-08-11
-15:00:29</h4>
+            <h4 data-toc-skip class="date">Run on 2025-08-19
+20:57:57</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/dream.Rmd" class="external-link"><code>vignettes/dream.Rmd</code></a></small>
       <div class="d-none name"><code>dream.Rmd</code></div>
@@ -152,7 +152,7 @@ workflow for RNA-seq. Process raw count data using limma/voom.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">varPartDEdata</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># filter genes by number of counts</span></span>
-<span><span class="va">isexpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span>
+<span><span class="va">isexpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">5</span></span>
 <span></span>
 <span><span class="co"># Standard usage of limma/voom</span></span>
 <span><span class="va">dge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">[</span><span class="va">isexpr</span>, <span class="op">]</span><span class="op">)</span></span>
@@ -246,13 +246,13 @@ handled behind the scenes.</p>
 <code class="sourceCode R"><span><span class="co"># Get results of hypothesis test on coefficients of interest</span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fitmm</span>, coef <span class="op">=</span> <span class="st">"Disease1"</span>, number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                   logFC  AveExpr        t      P.Value    adj.P.Val        B</span></span>
-<span><span class="co">## ENST00000283033.5 gene=TXNDC11 1.556233 3.567624 32.66731 1.934507e-21 1.934507e-18 38.78853</span></span>
-<span><span class="co">## ENST00000257181.9 gene=PRPF38A 1.380549 4.398270 24.57867 1.493752e-18 7.468760e-16 32.48845</span></span>
-<span><span class="co">## ENST00000525790.1 gene=TDRKH   1.508341 3.184931 19.32367 3.712012e-16 1.025502e-13 27.06758</span></span>
+<span><span class="co">## ENST00000283033.5 gene=TXNDC11 1.556233 3.567624 32.18311 2.963157e-21 2.963157e-18 38.37597</span></span>
+<span><span class="co">## ENST00000257181.9 gene=PRPF38A 1.380549 4.398270 24.31101 2.046048e-18 1.023024e-15 32.17816</span></span>
+<span><span class="co">## ENST00000525790.1 gene=TDRKH   1.508341 3.184931 19.20262 4.498201e-16 1.261794e-13 26.87813</span></span>
 <span><span class="co">##                                   z.std</span></span>
-<span><span class="co">## ENST00000283033.5 gene=TXNDC11 9.508490</span></span>
-<span><span class="co">## ENST00000257181.9 gene=PRPF38A 8.790139</span></span>
-<span><span class="co">## ENST00000525790.1 gene=TDRKH   8.147605</span></span></code></pre>
+<span><span class="co">## ENST00000283033.5 gene=TXNDC11 9.464024</span></span>
+<span><span class="co">## ENST00000257181.9 gene=PRPF38A 8.754723</span></span>
+<span><span class="co">## ENST00000525790.1 gene=TDRKH   8.124335</span></span></code></pre>
 <p>Since dream uses an estimated degrees of freedom value for each
 hypothsis test, the degrees of freedom is different for each gene here.
 Therefore, the t-statistics are not directly comparable since they have
@@ -297,20 +297,20 @@ confirm it is testing what you intend.</p>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/eBayes.html">eBayes</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># get names of available coefficients and contrasts for testing</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "compare2_1"      "compare1_0"      "DiseaseSubtype0" "DiseaseSubtype1" "DiseaseSubtype2"</span></span>
 <span><span class="co">## [6] "SexM"</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># extract results from first contrast</span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="st">"compare2_1"</span>, number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                       logFC  AveExpr         t      P.Value adj.P.Val          B</span></span>
-<span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.350356 0.0000224728 0.0224728  0.8858852</span></span>
-<span><span class="co">## ENST00000593466.1 gene=DDA1      -1.7265710 3.901579 -3.664795 0.0013569332 0.6784666 -1.5402278</span></span>
-<span><span class="co">## ENST00000200676.3 gene=CETP       1.4777422 3.723438  3.873141 0.0040308941 0.9994857 -1.8241804</span></span>
+<pre><code><span><span class="co">##                                       logFC  AveExpr         t      P.Value  adj.P.Val          B</span></span>
+<span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.336063 2.343973e-05 0.02343973  0.8221724</span></span>
+<span><span class="co">## ENST00000593466.1 gene=DDA1      -1.7265710 3.901579 -3.659542 1.378483e-03 0.68924129 -1.5680931</span></span>
+<span><span class="co">## ENST00000200676.3 gene=CETP       1.4777422 3.723438  3.865319 4.126594e-03 0.99948768 -1.8592924</span></span>
 <span><span class="co">##                                      z.std</span></span>
-<span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -4.238790</span></span>
-<span><span class="co">## ENST00000593466.1 gene=DDA1      -3.203659</span></span>
-<span><span class="co">## ENST00000200676.3 gene=CETP       2.875734</span></span></code></pre>
+<span><span class="co">## ENST00000355624.3 gene=RAB11FIP2 -4.229321</span></span>
+<span><span class="co">## ENST00000593466.1 gene=DDA1      -3.199119</span></span>
+<span><span class="co">## ENST00000200676.3 gene=CETP       2.868319</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="comparing-multiple-coefficients">Comparing multiple coefficients<a class="anchor" aria-label="anchor" href="#comparing-multiple-coefficients"></a>
@@ -336,13 +336,13 @@ the contrast.</p>
 <span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="st">"Test1"</span>, number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                     logFC  AveExpr         t      P.Value    adj.P.Val        B</span></span>
-<span><span class="co">## ENST00000418210.2 gene=TMEM64  -1.0343236 4.715367 -7.000080 3.300023e-07 3.054320e-06 8.484489</span></span>
-<span><span class="co">## ENST00000456159.1 gene=MET     -0.9830788 2.458926 -6.062227 6.108639e-07 3.054320e-06 5.836340</span></span>
-<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 -0.8954795 5.272063 -5.450341 3.957534e-06 1.319178e-05 3.997352</span></span>
+<span><span class="co">## ENST00000418210.2 gene=TMEM64  -1.0343236 4.715367 -6.874897 2.770467e-07 2.770467e-06 8.410269</span></span>
+<span><span class="co">## ENST00000456159.1 gene=MET     -0.9830788 2.458926 -6.021668 5.553855e-07 2.776928e-06 5.915610</span></span>
+<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 -0.8954795 5.272063 -5.419044 3.684288e-06 1.228096e-05 4.056947</span></span>
 <span><span class="co">##                                    z.std</span></span>
-<span><span class="co">## ENST00000418210.2 gene=TMEM64  -5.105453</span></span>
-<span><span class="co">## ENST00000456159.1 gene=MET     -4.987750</span></span>
-<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 -4.613600</span></span></code></pre>
+<span><span class="co">## ENST00000418210.2 gene=TMEM64  -5.138428</span></span>
+<span><span class="co">## ENST00000456159.1 gene=MET     -5.006119</span></span>
+<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 -4.628441</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="joint-hypothesis-test-of-multiple-coefficients">Joint hypothesis test of multiple coefficients<a class="anchor" aria-label="anchor" href="#joint-hypothesis-test-of-multiple-coefficients"></a>
@@ -354,13 +354,13 @@ be extracted using <code><a href="../reference/toptable-method.html">topTable()<
 <code class="sourceCode R"><span><span class="co"># extract results from first contrast</span></span>
 <span><span class="fu"><a href="../reference/toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DiseaseSubtype2"</span>, <span class="st">"DiseaseSubtype1"</span><span class="op">)</span>, number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                DiseaseSubtype2 DiseaseSubtype1  AveExpr        F      P.Value</span></span>
-<span><span class="co">## ENST00000418210.2 gene=TMEM64         5.301001        5.211674 4.715367 823.4480 3.966577e-23</span></span>
-<span><span class="co">## ENST00000555834.1 gene=RPS6KL1        5.662699        5.719196 5.272063 791.4321 6.389688e-23</span></span>
-<span><span class="co">## ENST00000589123.1 gene=NFIC           6.545195        6.181023 5.855335 651.9138 6.549307e-22</span></span>
+<span><span class="co">## ENST00000418210.2 gene=TMEM64         5.301001        5.211674 4.715367 794.2599 2.087246e-24</span></span>
+<span><span class="co">## ENST00000555834.1 gene=RPS6KL1        5.662699        5.719196 5.272063 782.3692 2.541435e-24</span></span>
+<span><span class="co">## ENST00000589123.1 gene=NFIC           6.545195        6.181023 5.855335 659.9594 2.333522e-23</span></span>
 <span><span class="co">##                                   adj.P.Val    F.std</span></span>
-<span><span class="co">## ENST00000418210.2 gene=TMEM64  3.194844e-22 51.58155</span></span>
-<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 3.194844e-22 51.10477</span></span>
-<span><span class="co">## ENST00000589123.1 gene=NFIC    2.183102e-21 48.77751</span></span></code></pre>
+<span><span class="co">## ENST00000418210.2 gene=TMEM64  1.270717e-23 54.52620</span></span>
+<span><span class="co">## ENST00000555834.1 gene=RPS6KL1 1.270717e-23 54.32931</span></span>
+<span><span class="co">## ENST00000589123.1 gene=NFIC    7.778406e-23 52.11208</span></span></code></pre>
 <p>Since dream uses an estimated degrees of freedom value for each
 hypothsis test, the degrees of freedom is different for each gene here.
 Therefore, the F-statistics are not directly comparable since they have
@@ -462,13 +462,12 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<details><pre><code><span><span class="co">## R version 4.3.0 (2023-04-21)</span></span>
-<span><span class="co">## Platform: x86_64-apple-darwin22.4.0 (64-bit)</span></span>
-<span><span class="co">## Running under: macOS 14.5</span></span>
+<details><pre><code><span><span class="co">## R version 4.5.1 (2025-06-13)</span></span>
+<span><span class="co">## Platform: aarch64-apple-darwin23.6.0</span></span>
+<span><span class="co">## Running under: macOS Sonoma 14.7.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
-<span><span class="co">## BLAS:   /Users/gabrielhoffman/prog/R-4.3.0/lib/libRblas.dylib </span></span>
-<span><span class="co">## LAPACK: /usr/local/Cellar/r/4.4.0_1/lib/R/lib/libRlapack.dylib;  LAPACK version 3.12.0</span></span>
+<span><span class="co">## BLAS/LAPACK: /opt/homebrew/Cellar/openblas/0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## locale:</span></span>
 <span><span class="co">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
@@ -480,34 +479,32 @@ By default `BPPARAM` and the global setttings are set the results of `bpparam()`
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] knitr_1.43                edgeR_3.42.4              variancePartition_1.33.15</span></span>
-<span><span class="co">## [4] BiocParallel_1.34.2       limma_3.56.2              ggplot2_3.4.4            </span></span>
-<span><span class="co">## [7] pander_0.6.5             </span></span>
+<span><span class="co">## [1] edgeR_4.6.3              variancePartition_1.39.1 BiocParallel_1.42.1     </span></span>
+<span><span class="co">## [4] limma_3.64.3             ggplot2_3.5.2            pander_0.6.6            </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] tidyselect_1.2.0    farver_2.1.1        dplyr_1.1.2         bitops_1.0-7       </span></span>
-<span><span class="co">##  [5] fastmap_1.1.1       digest_0.6.33       lifecycle_1.0.3     statmod_1.5.0      </span></span>
-<span><span class="co">##  [9] magrittr_2.0.3      compiler_4.3.0      rlang_1.1.1         sass_0.4.9         </span></span>
-<span><span class="co">## [13] tools_4.3.0         utf8_1.2.3          yaml_2.3.7          labeling_0.4.2     </span></span>
-<span><span class="co">## [17] htmlwidgets_1.6.2   plyr_1.8.8          KernSmooth_2.23-21  withr_2.5.0        </span></span>
-<span><span class="co">## [21] purrr_1.0.2         numDeriv_2016.8-1.1 BiocGenerics_0.46.0 desc_1.4.2         </span></span>
-<span><span class="co">## [25] grid_4.3.0          aod_1.3.2           fansi_1.0.4         caTools_1.18.2     </span></span>
-<span><span class="co">## [29] colorspace_2.1-0    scales_1.2.1        gtools_3.9.4        iterators_1.0.14   </span></span>
-<span><span class="co">## [33] MASS_7.3-60         cli_3.6.1           mvtnorm_1.2-2       rmarkdown_2.22     </span></span>
-<span><span class="co">## [37] ragg_1.2.5          generics_0.1.3      reshape2_1.4.4      minqa_1.2.5        </span></span>
-<span><span class="co">## [41] cachem_1.0.8        stringr_1.5.0       splines_4.3.0       parallel_4.3.0     </span></span>
-<span><span class="co">## [45] matrixStats_1.0.0   vctrs_0.6.3         boot_1.3-28.1       Matrix_1.6-5       </span></span>
-<span><span class="co">## [49] jsonlite_1.8.5      pbkrtest_0.5.2      systemfonts_1.0.4   locfit_1.5-9.7     </span></span>
-<span><span class="co">## [53] jquerylib_0.1.4     tidyr_1.3.1         snow_0.4-4          glue_1.6.2         </span></span>
-<span><span class="co">## [57] pkgdown_2.0.9       nloptr_2.0.3        codetools_0.2-19    stringi_1.7.12     </span></span>
-<span><span class="co">## [61] gtable_0.3.3        EnvStats_2.7.0      lme4_1.1-35.1       lmerTest_3.1-3     </span></span>
-<span><span class="co">## [65] munsell_0.5.0       tibble_3.2.1        remaCor_0.0.18      pillar_1.9.0       </span></span>
-<span><span class="co">## [69] htmltools_0.5.8.1   gplots_3.1.3        R6_2.5.1            textshaping_0.3.6  </span></span>
-<span><span class="co">## [73] Rdpack_2.4          rprojroot_2.0.3     evaluate_0.21       lattice_0.21-8     </span></span>
-<span><span class="co">## [77] Biobase_2.60.0      highr_0.10          rbibutils_2.2.13    backports_1.4.1    </span></span>
-<span><span class="co">## [81] RhpcBLASctl_0.23-42 memoise_2.0.1       broom_1.0.5         fANCOVA_0.6-1      </span></span>
-<span><span class="co">## [85] corpcor_1.6.10      bslib_0.7.0         Rcpp_1.0.11         nlme_3.1-162       </span></span>
-<span><span class="co">## [89] xfun_0.39           fs_1.6.2            pkgconfig_2.0.3</span></span></code></pre>
+<span><span class="co">##  [1] tidyselect_1.2.1    dplyr_1.1.4         farver_2.1.2        bitops_1.0-9       </span></span>
+<span><span class="co">##  [5] fastmap_1.2.0       digest_0.6.37       lifecycle_1.0.4     statmod_1.5.0      </span></span>
+<span><span class="co">##  [9] magrittr_2.0.3      compiler_4.5.1      rlang_1.1.6         sass_0.4.10        </span></span>
+<span><span class="co">## [13] tools_4.5.1         yaml_2.3.10         knitr_1.50          labeling_0.4.3     </span></span>
+<span><span class="co">## [17] htmlwidgets_1.6.4   plyr_1.8.9          RColorBrewer_1.1-3  KernSmooth_2.23-26 </span></span>
+<span><span class="co">## [21] withr_3.0.2         purrr_1.1.0         numDeriv_2016.8-1.1 BiocGenerics_0.54.0</span></span>
+<span><span class="co">## [25] desc_1.4.3          grid_4.5.1          aod_1.3.3           caTools_1.18.3     </span></span>
+<span><span class="co">## [29] scales_1.4.0        gtools_3.9.5        iterators_1.0.14    MASS_7.3-65        </span></span>
+<span><span class="co">## [33] cli_3.6.5           mvtnorm_1.3-3       rmarkdown_2.29      ragg_1.4.0         </span></span>
+<span><span class="co">## [37] reformulas_0.4.1    generics_0.1.4      reshape2_1.4.4      minqa_1.2.8        </span></span>
+<span><span class="co">## [41] cachem_1.1.0        stringr_1.5.1       splines_4.5.1       parallel_4.5.1     </span></span>
+<span><span class="co">## [45] matrixStats_1.5.0   vctrs_0.6.5         boot_1.3-31         Matrix_1.7-3       </span></span>
+<span><span class="co">## [49] jsonlite_2.0.0      pbkrtest_0.5.5      systemfonts_1.2.3   locfit_1.5-9.12    </span></span>
+<span><span class="co">## [53] jquerylib_0.1.4     tidyr_1.3.1         snow_0.4-4          glue_1.8.0         </span></span>
+<span><span class="co">## [57] nloptr_2.2.1        pkgdown_2.1.3       codetools_0.2-20    stringi_1.8.7      </span></span>
+<span><span class="co">## [61] gtable_0.3.6        EnvStats_3.1.0      lme4_1.1-37         lmerTest_3.1-3     </span></span>
+<span><span class="co">## [65] tibble_3.3.0        remaCor_0.0.20      pillar_1.11.0       htmltools_0.5.8.1  </span></span>
+<span><span class="co">## [69] gplots_3.2.0        R6_2.6.1            textshaping_1.0.1   Rdpack_2.6.4       </span></span>
+<span><span class="co">## [73] evaluate_1.0.4      lattice_0.22-7      Biobase_2.68.0      rbibutils_2.3      </span></span>
+<span><span class="co">## [77] backports_1.5.0     RhpcBLASctl_0.23-42 broom_1.0.9         fANCOVA_0.6-1      </span></span>
+<span><span class="co">## [81] corpcor_1.6.10      bslib_0.9.0         Rcpp_1.1.0          nlme_3.1-168       </span></span>
+<span><span class="co">## [85] xfun_0.52           fs_1.6.6            pkgconfig_2.0.3</span></span></code></pre>
 <p>&lt;&gt;</p>
 </details>
 </div>
