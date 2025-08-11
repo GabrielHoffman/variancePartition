@@ -522,12 +522,35 @@ assign(
 )
 
 
+# setGeneric("eBayes", function(
+#     fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
+#     trend = FALSE, span = NULL, robust = FALSE, winsor.tail.p = c(0.05, 0.1), legacy = NULL) {
+#   eBayes(fit, proportion, stdev.coef.lim, trend, span, robust, winsor.tail.p, legacy)
+# })
+
+
+#' eBayes generic for for MArrayLM and MArrayLM2
+#'
+#' eBayes for result of linear (mixed) model 
+#'
+#' @param fit fit
+#' @param ... all other args
 setGeneric("eBayes", function(
-    fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
-    trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1), legacy = NULL) {
-  eBayes(fit, proportion, stdev.coef.lim, trend, robust, winsor.tail.p, legacy)
+    fit, ...) {
+  eBayes(fit, ...)
 })
 
+#' eBayes for MArrayLM
+#'
+#' eBayes for result of linear  model for with uses \code{limma::eBayes()}
+#'
+#' @param fit fit
+#' @param ... all other args
+setMethod(
+  "eBayes", "MArrayLM", function(
+    fit, ...) {
+  limma::eBayes(fit, ...)
+})
 
 #' eBayes for MArrayLM2
 #'
@@ -537,6 +560,7 @@ setGeneric("eBayes", function(
 #' @param proportion proportion
 #' @param stdev.coef.lim stdev.coef.lim
 #' @param trend trend
+#' @param span span
 #' @param robust robust
 #' @param winsor.tail.p winsor.tail.p
 #' @param legacy legacy
@@ -551,7 +575,8 @@ setGeneric("eBayes", function(
 setMethod(
   "eBayes", "MArrayLM2",
   function(fit, proportion = 0.01, stdev.coef.lim = c(0.1, 4),
-           trend = FALSE, robust = FALSE, winsor.tail.p = c(0.05, 0.1), legacy = NULL) {
+           trend = FALSE, span = NULL, robust = FALSE, winsor.tail.p = c(0.05, 0.1), legacy = NULL) {
+
     # limma::eBayes() uses df.residual as the residual degrees of freedom,
     # 	while dream() uses rdf.
     # For linear models these values are always equal,

@@ -1,5 +1,5 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^vignettes/.*_cache/
-^vignettes/.*_files/
+^vignettes/*_cache/
+^vignettes/*_files/

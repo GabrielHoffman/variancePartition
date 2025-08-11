@@ -1,4 +1,10 @@
 
+
+# variancePartition 1.38.1
+ - Aug 11, 2025
+ - Handle change in function prototype of `limma::eBayes()`
+  - `variancePartition::eBayes()` now uses arguments `...`
+
 # variancePartition 1.37.4
  - Aug 4, 2025
  - Handle missing expression values like in `limma::lmFit()`

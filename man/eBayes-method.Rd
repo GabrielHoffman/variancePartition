@@ -9,6 +9,7 @@
   proportion = 0.01,
   stdev.coef.lim = c(0.1, 4),
   trend = FALSE,
+  span = NULL,
   robust = FALSE,
   winsor.tail.p = c(0.05, 0.1),
   legacy = NULL
@@ -22,6 +23,8 @@
 \item{stdev.coef.lim}{stdev.coef.lim}
 
 \item{trend}{trend}
+
+\item{span}{span}
 
 \item{robust}{robust}
 
