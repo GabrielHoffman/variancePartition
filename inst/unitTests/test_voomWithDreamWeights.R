@@ -14,7 +14,7 @@ test_voomWithDreamWeights = function(){
 	form <- ~ Disease 
 
 	design = model.matrix(form, metadata)
-	vobj1 = voom( dge[1:100,], design)
+	vobj1 = voom( dge[1:100,], design, adaptive.span=FALSE)
 	vobj1$targets$sample.weights = 1
 
 	# original 
@@ -129,20 +129,20 @@ test_reweigthing_voom = function(){
 	#----------------------
 
 	# no weights
-	vobj1 = voom(dge, dsgn)
+	vobj1 = voom(dge, dsgn, adaptive.span=FALSE)
 	vobj2 <- voomWithDreamWeights(dge2, form, metadata, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# constant weights 
 	#-----------------
-	vobj1 = voom(dge, dsgn, weights=w.scale)
+	vobj1 = voom(dge, dsgn, weights=w.scale, adaptive.span=FALSE)
 
 	# disable rescaling by input weights
 	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=w.scale, rescaleWeightsAfter=FALSE, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# manual rescaling of weights after voom
-	vobj1 = voom(dge, dsgn, weights=w.scale)
+	vobj1 = voom(dge, dsgn, weights=w.scale, adaptive.span=FALSE)
 	vobj1$weights <- t(w.scale * t(vobj1$weights))
 
 	# enble rescaling by input weights
@@ -154,14 +154,14 @@ test_reweigthing_voom = function(){
 	w = 1:nrow(metadata)
 	w.scale = w / mean(w)
 
-	vobj1 = voom(dge, dsgn, weights=w.scale)
+	vobj1 = voom(dge, dsgn, weights=w.scale, adaptive.span=FALSE)
 
 	# disable rescaling by input weights
 	vobj2 <- voomWithDreamWeights(dge2, form, metadata, weights=w, rescaleWeightsAfter=FALSE, prior.count = 0)
 	checkEqualsNumeric(vobj1$weights, vobj2$weights)
 
 	# manual rescaling of weights after voom
-	vobj1 = voom(dge, dsgn, weights=w.scale)
+	vobj1 = voom(dge, dsgn, weights=w.scale, adaptive.span=FALSE)
 	vobj1$weights <- t(w.scale * t(vobj1$weights))
 
 	# enble rescaling by input weights
