@@ -1,4 +1,7 @@
 
+# variancePartition 1.39.2
+  - update checks to handle `voom(...,adaptive.span)`
+
 # variancePartition 1.39.1
   - version bump
 
