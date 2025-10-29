@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.38.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.39.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,8 +67,8 @@
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2025-08-11
-15:00:37</h4>
+            <h4 data-toc-skip class="date">Run on 2025-10-29
+10:23:28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/variancePartition.Rmd" class="external-link"><code>vignettes/variancePartition.Rmd</code></a></small>
       <div class="d-none name"><code>variancePartition.Rmd</code></div>
@@ -123,26 +123,22 @@ as columns.</li>
 </ol>
 <ul>
 <li>
-<p>Count-based quantification: <code>featureCounts</code> <span class="citation">(Liao, Smyth, and Shi 2014)</span>, <code>HTSeq</code>
-<span class="citation">(Anders, Pyl, and Huber 2015)</span></p>
+<p>Count-based quantification: <code>featureCounts</code> <span class="citation">(Liao et al. 2014)</span>, <code>HTSeq</code> <span class="citation">(Anders et al. 2015)</span></p>
 <p>Counts mapping to each gene can be normalized using counts per
 million (CPM), reads per kilobase per million (RPKM) or fragments per
 kilobase per million (FPKM). These count results can be processed with
 <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">limma::voom()</a></code> <span class="citation">(Law et al.
 2014)</span> to model the precision of each observation or
-<code>DESeq2</code> <span class="citation">(Love, Huber, and Anders
+<code>DESeq2</code> <span class="citation">(Love et al.
 2014)</span>.</p>
 </li>
 <li>
-<p>Isoform quantification: <code>kallisto</code> <span class="citation">(Bray et al. 2016)</span>, <code>sailfish</code> <span class="citation">(Patro, Mount, and Kingsford 2014)</span>,
-<code>salmon</code> <span class="citation">(Patro, Duggal, and Kingsford
-2015)</span>, <code>RSEM</code> <span class="citation">(Li and Dewey
-2011)</span>, <code>cufflinks</code> <span class="citation">(Trapnell et
-al. 2010)</span></p>
+<p>Isoform quantification: <code>kallisto</code> <span class="citation">(Bray et al. 2016)</span>, <code>sailfish</code> <span class="citation">(Patro et al. 2014)</span>, <code>salmon</code> <span class="citation">(Patro et al. 2015)</span>, <code>RSEM</code> <span class="citation">(Li and Dewey 2011)</span>, <code>cufflinks</code>
+<span class="citation">(Trapnell et al. 2010)</span></p>
 <p>These perform isoform-level quantification using reads that map to
 multiple transcripts. Quantification values can be read directly into R,
 or processed with <code>ballgown</code> <span class="citation">(Frazee
-et al. 2015)</span> or <code>tximport</code> <span class="citation">(Soneson, Love, and Robinson 2015)</span>.</p>
+et al. 2015)</span> or <code>tximport</code> <span class="citation">(Soneson et al. 2015)</span>.</p>
 </li>
 <li><p>Microarray data: any standard normalization such as
 <code>rma</code> in the <code>oligo</code> <span class="citation">(Carvalho and Irizarry 2010)</span> package can be
@@ -795,16 +791,15 @@ analysis.</p>
 <div class="section level3">
 <h3 id="gene-level-counts">Gene-level counts<a class="anchor" aria-label="anchor" href="#gene-level-counts"></a>
 </h3>
-<p><code>featureCounts</code> <span class="citation">(Liao, Smyth, and
-Shi 2014)</span> and <code>HTSeq</code> <span class="citation">(Anders,
-Pyl, and Huber 2015)</span> report the number of reads mapping to each
-gene (or exon). These results are easily read into R.
-<code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">limma::voom()</a></code> and <code>DESeq2</code> are widely used for
-differential expression analysis of gene- and exon-level counts and can
-be used to process data before analysis with
-<code>variancePartition</code>. This section addresses processing and
-normalization of gene-level counts, but the analysis is the same for
-exon-level counts.</p>
+<p><code>featureCounts</code> <span class="citation">(Liao et al.
+2014)</span> and <code>HTSeq</code> <span class="citation">(Anders et
+al. 2015)</span> report the number of reads mapping to each gene (or
+exon). These results are easily read into R. <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">limma::voom()</a></code>
+and <code>DESeq2</code> are widely used for differential expression
+analysis of gene- and exon-level counts and can be used to process data
+before analysis with <code>variancePartition</code>. This section
+addresses processing and normalization of gene-level counts, but the
+analysis is the same for exon-level counts.</p>
 <div class="section level4">
 <h4 id="limmavoom">
 <code>limma::voom()</code><a class="anchor" aria-label="anchor" href="#limmavoom"></a>
@@ -883,11 +878,8 @@ analysis.</p>
 <h4 id="isoform-quantification">Isoform quantification<a class="anchor" aria-label="anchor" href="#isoform-quantification"></a>
 </h4>
 <p>Other software performs isoform-level quantification using reads that
-map to multiple transcripts. These include <code>kallisto</code> <span class="citation">(Bray et al. 2016)</span>, <code>sailfish</code> <span class="citation">(Patro, Mount, and Kingsford 2014)</span>,
-<code>salmon</code> <span class="citation">Patro, Duggal, and Kingsford
-(2015)</span>, <code>RSEM</code> <span class="citation">(Li and Dewey
-2011)</span>and <code>cufflinks</code> <span class="citation">(Trapnell
-et al. 2010.)</span></p>
+map to multiple transcripts. These include <code>kallisto</code> <span class="citation">(Bray et al. 2016)</span>, <code>sailfish</code> <span class="citation">(Patro et al. 2014)</span>, <code>salmon</code> <span class="citation">Patro et al. (2015)</span>, <code>RSEM</code> <span class="citation">(Li and Dewey 2011)</span>and <code>cufflinks</code>
+<span class="citation">(Trapnell et al. 2010.)</span></p>
 <div class="section level5">
 <h5 id="tximport">
 <code>tximport</code><a class="anchor" aria-label="anchor" href="#tximport"></a>
@@ -899,7 +891,7 @@ or transcript-level quantifications can be used directly in
 <code>variancePartition</code>.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"tximportData"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/thelovelab/tximport" class="external-link">"tximport"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"tximport"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://readr.tidyverse.org" class="external-link">"readr"</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get data from folder where tximportData is installed</span></span>
@@ -911,7 +903,7 @@ or transcript-level quantifications can be used directly in
 <span><span class="va">tx2gene</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir</span>, <span class="st">"tx2gene.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># reads results from kallisto</span></span>
-<span><span class="va">txi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tximport/man/tximport.html" class="external-link">tximport</a></span><span class="op">(</span><span class="va">files</span>,</span>
+<span><span class="va">txi</span> <span class="op">&lt;-</span> <span class="fu">tximport</span><span class="op">(</span><span class="va">files</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"kallisto"</span>, tx2gene <span class="op">=</span> <span class="va">tx2gene</span>,</span>
 <span>  countsFromAbundance <span class="op">=</span> <span class="st">"lengthScaledTPM"</span></span>
 <span><span class="op">)</span></span>
@@ -1479,7 +1471,7 @@ specify the weights with the <code>weightsMatrix</code> parameter.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Anders2015" class="csl-entry">
 Anders, Simon, Paul Theodor Pyl, and Wolfgang Huber. 2015. <span>“<span class="nocase">HTSeq-A Python framework to work with high-throughput
 sequencing data</span>.”</span> <em>Bioinformatics</em> 31 (2): 166–69.
@@ -1498,7 +1490,7 @@ quantification</span>.”</span> <em>Nature Biotechnology</em> 34: 525–27.
 <div id="ref-oligoBioc" class="csl-entry">
 Carvalho, Benilton S, and Rafael A Irizarry. 2010. <span>“A Framework
 for Oligonucleotide Microarray Preprocessing.”</span>
-<em>Bioinformatics</em> 26 (19): 2363–67. <a href="https://doi.org/10.1093/bioinformatics/btq431" class="external-link">https://doi.org/10.1093/bioinformatics/btq431</a>.
+<em>Bioinformatics</em> (Oxford, UK) 26 (19): 2363–67. <a href="https://doi.org/10.1093/bioinformatics/btq431" class="external-link">https://doi.org/10.1093/bioinformatics/btq431</a>.
 </div>
 <div id="ref-Frazee2015" class="csl-entry">
 Frazee, Alyssa C, Geo Pertea, Andrew E Jaffe, Ben Langmead, Steven L
@@ -1534,7 +1526,8 @@ RNA-seq data with DESeq2</span>.”</span> <em>Genome Biology</em> 15
 </div>
 <div id="ref-Patro2015" class="csl-entry">
 Patro, Rob, Geet Duggal, and Carl Kingsford. 2015. <span>“<span class="nocase">Accurate, fast, and model-aware transcript expression
-quantification with Salmon</span>.”</span> <em>Bioarxiv</em>. <a href="https://doi.org/10.1101/021592" class="external-link">https://doi.org/10.1101/021592</a>.
+quantification with Salmon</span>.”</span> <em>Bioarxiv</em>, ahead of
+print. <a href="https://doi.org/10.1101/021592" class="external-link">https://doi.org/10.1101/021592</a>.
 </div>
 <div id="ref-Patro2014" class="csl-entry">
 Patro, Rob, Stephen M Mount, and Carl Kingsford. 2014. <span>“<span class="nocase">Sailfish enables alignment-free isoform quantification
@@ -1542,8 +1535,8 @@ from RNA-seq reads using lightweight algorithms</span>.”</span>
 <em>Nature Biotechnology</em> 32 (5): 462–64. <a href="https://doi.org/10.1038/nbt.2862" class="external-link">https://doi.org/10.1038/nbt.2862</a>.
 </div>
 <div id="ref-Pinheiro2000" class="csl-entry">
-Pinheiro, J. C., and D. M. Bates. 2000. <em><a href="https://www.ncbi.nlm.nih.gov/pubmed/40509311" class="external-link"><span class="nocase">Mixed-Effects Models in S and S-Plus</span></a></em>. New
-York: Springer.
+Pinheiro, J. C., and D. M. Bates. 2000. <em><a href="https://www.ncbi.nlm.nih.gov/pubmed/40509311" class="external-link"><span class="nocase">Mixed-Effects Models in S and S-Plus</span></a></em>.
+Springer.
 </div>
 <div id="ref-Robinson2010c" class="csl-entry">
 Robinson, M. D., and A. Oshlack. 2010. <span>“<span class="nocase">A
@@ -1557,12 +1550,10 @@ transcript-level estimates improve gene-level inferences</span>.”</span>
 <em>F1000Research</em> 4 (0): 1521. <a href="https://doi.org/10.12688/f1000research.7563.2" class="external-link">https://doi.org/10.12688/f1000research.7563.2</a>.
 </div>
 <div id="ref-Trapnell2010" class="csl-entry">
-Trapnell, Cole, Brian a Williams, Geo Pertea, Ali Mortazavi, Gordon
-Kwan, Marijke J van Baren, Steven L Salzberg, Barbara J Wold, and Lior
-Pachter. 2010. <span>“<span class="nocase">Transcript assembly and
-quantification by RNA-Seq reveals unannotated transcripts and isoform
-switching during cell differentiation</span>.”</span> <em>Nature
-Biotechnology</em> 28 (5): 511–15. <a href="https://doi.org/10.1038/nbt.1621" class="external-link">https://doi.org/10.1038/nbt.1621</a>.
+Trapnell, Cole, Brian a Williams, Geo Pertea, et al. 2010. <span>“<span class="nocase">Transcript assembly and quantification by RNA-Seq reveals
+unannotated transcripts and isoform switching during cell
+differentiation</span>.”</span> <em>Nature Biotechnology</em> 28 (5):
+511–15. <a href="https://doi.org/10.1038/nbt.1621" class="external-link">https://doi.org/10.1038/nbt.1621</a>.
 </div>
 </div>
 </div>
