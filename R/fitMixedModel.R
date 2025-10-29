@@ -41,7 +41,7 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
   }
 
   if (.isMixedModelFormula(formula)) {
-    if (!is.null(fit.init)) {
+    if (!is.null(fit.init) & ! any(is.na(data)) ) {
       # if fit.init is passed, use refit
       # issue with stopping criteria.  fixed with new lmer() call
       fit <- refit(fit.init,
@@ -106,7 +106,8 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
   # bpiterate using an iterator
   BPPARAM <- SerialParam(stop.on.error = FALSE)
   # BPPARAM$exportglobals <- FALSE
-  res <- bptry(bplapply(exprList, run_lmm_on_gene,
+  res <- bptry(
+    bplapply(exprList, run_lmm_on_gene,
     form = form,
     data = data,
     control = control,

@@ -1,4 +1,7 @@
 
+# variancePartition 1.39.4
+  - handle `NA` values for `fitExtractVarPartModel()`
+
 # variancePartition 1.39.2
   - update checks to handle `voom(...,adaptive.span)`
 
