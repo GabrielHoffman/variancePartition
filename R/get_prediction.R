@@ -40,7 +40,8 @@
 #' @export
 #' @docType methods
 #' @rdname get_prediction-method
-#' @importFrom lme4 fixef nobars
+#' @importFrom lme4 fixef 
+#' @importFrom reformulas nobars
 #' @importFrom stats model.matrix
 setGeneric("get_prediction", function(fit, formula) {
   standardGeneric("get_prediction")
