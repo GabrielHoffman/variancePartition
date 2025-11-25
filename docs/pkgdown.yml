@@ -1,5 +1,5 @@
 pandoc: 3.8.2.1
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   additional_visualization: additional_visualization.html
@@ -9,7 +9,7 @@ articles:
   mvtests: mvtests.html
   rnd_effects: rnd_effects.html
   variancePartition: variancePartition.html
-last_built: 2025-10-29T18:09Z
+last_built: 2025-11-25T17:24Z
 urls:
   reference: http://DiseaseNeurogenomics.github.io/variancePartition/reference
   article: http://DiseaseNeurogenomics.github.io/variancePartition/articles

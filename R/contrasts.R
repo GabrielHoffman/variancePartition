@@ -221,7 +221,7 @@ makeContrastsDream <- function(formula, data, ..., contrasts = NULL, suppressWar
   e
 }
 
-#' @importFrom lme4 nobars
+#' @importFrom reformulas nobars
 .getFixefNames <- function(formula, data, ...) {
   if (!isRunableFormula(, formula, data)) {
     stop("the fixed-effects model matrix is column rank deficient")

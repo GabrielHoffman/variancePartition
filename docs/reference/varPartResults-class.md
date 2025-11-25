@@ -1,0 +1,3 @@
+# Class varPartResults
+
+Class `varPartResults`

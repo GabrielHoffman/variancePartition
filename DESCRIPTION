@@ -1,8 +1,8 @@
 Package: variancePartition
 Type: Package
 Title: Quantify and interpret drivers of variation in multilevel gene expression experiments
-Version: 1.39.4
-Date: 2025-10-29
+Version: 1.39.5
+Date: 2025-11-25
 Authors@R: person("Gabriel", "Hoffman", role=c("aut", "cre"), email="gabriel.hoffman@mssm.edu", comment=c(ORCID="0000-0002-0957-0224"))
 Maintainer: Gabriel E. Hoffman <gabriel.hoffman@mssm.edu>
 Description: Quantify and interpret multiple sources of biological and technical variation in gene expression experiments. Uses a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.  Includes dream differential expression analysis for repeated measures.
@@ -60,6 +60,7 @@ Imports:
     corpcor,
     matrixStats,
     RhpcBLASctl,
+    reformulas,
     reshape2,
     gtools,
     remaCor (>= 0.0.15),

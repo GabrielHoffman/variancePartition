@@ -1,4 +1,8 @@
 
+# variancePartition 1.39.5
+  - Nov 25, 2025
+  - move calls to `nobars()` and `findbars()` to `reformulas` package
+
 # variancePartition 1.39.4
   - handle `NA` values for `fitExtractVarPartModel()`
 

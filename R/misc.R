@@ -350,7 +350,7 @@ colinearityScore <- function(fit) {
 #'
 #' @importFrom stats as.formula
 # @importFrom lme4 lmerControl
-#' @importFrom lme4 findbars
+#' @importFrom reformulas findbars
 #' @keywords internal
 .isMixedModelFormula <- function(formula) {
   !is.null(findbars(as.formula(formula)))
@@ -383,7 +383,7 @@ hasMissingData <- function(form, info) {
 #' @param f formula
 #' @param response (FALSE) is there a response in the formula
 #'
-#' @importFrom lme4 findbars
+#' @importFrom reformulas findbars
 #' @importFrom stats reformulate
 reOnly <- function(f, response = FALSE) {
   reformulate(paste0(
