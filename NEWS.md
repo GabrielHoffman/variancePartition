@@ -3,6 +3,12 @@
   - update depends to `reformulas`
   - handle `lme4` 2.0.0
 
+# variancePartition 1.39.5
+  - Nov 25, 2025
+  - move calls to `nobars()` and `findbars()` to `reformulas` package
+
+# variancePartition 1.39.4
+  - handle `NA` values for `fitExtractVarPartModel()`
 # variancePartition 1.39.2
   - update checks to handle `voom(...,adaptive.span)`
 

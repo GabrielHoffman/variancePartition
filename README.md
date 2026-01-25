@@ -47,7 +47,7 @@ Please help speed up bug fixes by providing a 'minimal reproducible example' tha
 
 Describes extensions of `dream` including empirical Bayes moderated t-statistics for linear mixed models and applications to single cell data
 
-- [Hoffman, et al, biorxiv (2023)](https://doi.org/10.1101/2023.03.17.533005)
+- [Hoffman, et al, biorxiv (2024)](https://doi.org/10.1101/2023.03.17.533005)
 
 Describes `dream` for differential expression: 
 

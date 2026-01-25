@@ -1,0 +1,3 @@
+# Class varParFrac
+
+Class `varParFrac`

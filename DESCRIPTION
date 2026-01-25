@@ -61,6 +61,7 @@ Imports:
     reformulas,
     matrixStats,
     RhpcBLASctl,
+    reformulas,
     reshape2,
     gtools,
     remaCor (>= 0.0.15),
