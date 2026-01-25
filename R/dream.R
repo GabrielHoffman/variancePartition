@@ -346,9 +346,10 @@ as_lmerModLmerTest2 <- function(model, tol = 1e-08) {
       })
     })
   })
-  if ((is.character(devfun) && devfun == "error") || !is.function(devfun) ||
-    names(formals(devfun)[1]) != "theta") {
-    stop("Unable to extract deviance function from model fit")
+  if( (is.character(devfun) && devfun == "error") || !is.function(devfun) ){
+    if( !any(c("theta", "par") %in% names(formals(devfun)[1])) ){
+      stop("Unable to extract deviance function from model fit")
+    }
   }
   lmerTest:::as_lmerModLT(model, devfun, tol = tol)
 }

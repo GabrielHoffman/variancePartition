@@ -1,4 +1,8 @@
 
+# variancePartition 1.40.2
+  - update depends to `reformulas`
+  - handle `lme4` 2.0.0
+
 # variancePartition 1.39.2
   - update checks to handle `voom(...,adaptive.span)`
 
