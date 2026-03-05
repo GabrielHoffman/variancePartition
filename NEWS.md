@@ -1,4 +1,8 @@
 
+# variancePartition 1.41.4
+  - March 4, 2026
+  - fix failing tests for `lmer 2.0.1`
+
 # variancePartition 1.40.2
   - update depends to `reformulas`
   - handle `lme4` 2.0.0
