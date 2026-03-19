@@ -70,7 +70,7 @@ Imports:
     scales,
     Rdpack,
     rlang,
-    lme4 (>= 1.1.33),
+    lme4 (>= 2.0-1),
     grDevices,
     graphics,
     Biobase,

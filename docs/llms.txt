@@ -1,4 +1,4 @@
-  
+\
 
 `variancePartition` quantifies and interprets multiple sources of
 biological and technical variation in gene expression experiments. The
@@ -11,7 +11,7 @@ repeated measures or high dimensional batch effects.
 
 ![](reference/figures/variancePartition.png)
 
-  
+\
 
 ### Update
 
@@ -22,7 +22,7 @@ Importantly, the new version is compatible with emprical Bayes moderated
 t-statistics for linear mixed models using
 [`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md).
 
-  
+\
 
 ### Installation
 

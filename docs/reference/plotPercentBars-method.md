@@ -87,11 +87,9 @@ varPart <- fitExtractVarPartModel(geneExpr, form, info)
 
 # Bar plot for a subset of genes showing variance fractions
 plotPercentBars(varPart[1:5, ])
-#> Warning: Ignoring empty aesthetic: `width`.
 
 
 # Move the legend to the top
 plotPercentBars(varPart[1:5, ]) + theme(legend.position = "top")
-#> Warning: Ignoring empty aesthetic: `width`.
 
 ```

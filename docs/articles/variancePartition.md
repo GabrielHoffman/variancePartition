@@ -1120,7 +1120,7 @@ works seamlessly when a fixed effects model (i.e. linear model) is
 specified.
 
 Variance terms for the fixed effects are computed using the *post hoc*
-calculation  
+calculation\
 \begin{eqnarray} \hat{\sigma}^2\_{\beta_j} = \text{var}\left( X_j
 \hat{\beta}\_j\right). \end{eqnarray} For a fixed effects model, this
 corresponds to the sum of squares for each component of the model.

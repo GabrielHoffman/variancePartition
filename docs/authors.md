@@ -10,14 +10,14 @@
 Source:
 [`inst/CITATION`](https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/inst/CITATION)
 
-Hoffman GE, et al. (2023) Efficient differential expression analysis of
+Hoffman GE, et al. (2024) Efficient differential expression analysis of
 large-scale single cell transcriptomics data using dreamlet. bioRxiv
 doi:10.1101/2023.03.17.533005
 
     @Article{,
       title = {Efficient differential expression analysis of large-scale single cell transcriptomics data using dreamlet},
       author = {Gabriel E. Hoffman and et al.},
-      year = {2023},
+      year = {2024},
       journal = {bioRxiv},
       doi = {10.1101/2023.03.17.533005},
     }

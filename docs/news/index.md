@@ -1,5 +1,15 @@
 # Changelog
 
+## variancePartition 1.41.4
+
+- March 4, 2026
+- fix failing tests for `lmer 2.0.1`
+
+## variancePartition 1.40.2
+
+- update depends to `reformulas`
+- handle `lme4` 2.0.0
+
 ## variancePartition 1.39.5
 
 - Nov 25, 2025
@@ -9,9 +19,7 @@
 
 - handle `NA` values for
   [`fitExtractVarPartModel()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)
-
-## variancePartition 1.39.2
-
+  \# variancePartition 1.39.2
 - update checks to handle `voom(...,adaptive.span)`
 
 ## variancePartition 1.39.1
@@ -939,7 +947,7 @@
 - apply empirical Bayes when doing F-test
 - hypothesis testing for single coefficients is now included by default,
   so only need to specify contrast matrix if for more complicated
-  contrasts  
+  contrasts\
 - add voomWithDreamWeights() for computing observation weights using
   random effects
 - Add BiocParallel capability with BPPARAM argument

@@ -89,24 +89,24 @@ Nakagawa and Schielzeth, 2012).
 Nakagawa S, Johnson PC, Schielzeth H (2017). “The coefficient of
 determination R 2 and intra-class correlation coefficient from
 generalized linear mixed-effects models revisited and expanded.”
-*Journal of the Royal Society Interface*, **14**(134), 20170213.  
-  
+*Journal of the Royal Society Interface*, **14**(134), 20170213.\
+\
 Nakagawa S, Schielzeth H (2013). “A general and simple method for
 obtaining R2 from generalized linear mixed-effects models.” *Methods in
-ecology and evolution*, **4**(2), 133–142.  
-  
+ecology and evolution*, **4**(2), 133–142.\
+\
 McKelvey RD, Zavoina W (1975). “A statistical model for the analysis of
 ordinal level dependent variables.” *Journal of mathematical sociology*,
-**4**(1), 103–120.  
-  
+**4**(1), 103–120.\
+\
 DeMaris A (2002). “Explained variance in logistic regression: A Monte
 Carlo study of proposed measures.” *Sociological Methods & Research*,
-**31**(1), 27–74.  
-  
+**31**(1), 27–74.\
+\
 Hoffman GE, Schadt EE (2016). “variancePartition: interpreting drivers
 of variation in complex gene expression studies.” *BMC bioinformatics*,
-**17**(1), 1–13.  
-  
+**17**(1), 1–13.\
+\
 
 ## Examples
 

@@ -184,9 +184,9 @@ param <- SnowParam(4, "SOCK", progressbar = TRUE)
 fit3 <- dream(geneExpr[1:10, ], form, info, L, BPPARAM = param)
 #> iteration: 
 #> 1
-#> 2
-#> 3
-#> 4
+#> 2
+#> 3
+#> 4
 #> 
 fit3 <- eBayes(fit3)
 

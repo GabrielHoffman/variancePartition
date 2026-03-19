@@ -302,7 +302,7 @@ setMethod(
   # Flip order of columns for use with ggplot2 2.2.0
   # Nov 17, 2016
   fig <- ggplot(df, aes(x = gene, y = value, fill = variable)) +
-    geom_bar(stat = "identity", width = width) +
+    geom_bar(stat = "identity") + #, width = width) +
     theme_bw() +
     theme(
       panel.grid.major = element_blank(),

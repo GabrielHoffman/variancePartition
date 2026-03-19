@@ -65,7 +65,7 @@ form <- ~ Individual + Tissue + Batch + Age + Height
 # between all pairs of variables
 # returns absolute correlation value
 C <- canCorPairs(form, info)
-#> Warning: the ‘subbars’ function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainter to do so.
+#> Warning: the ‘subbars’ function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainer to do so.
 #> This warning is displayed once per session.
 
 # Plot correlation matrix

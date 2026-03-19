@@ -9,12 +9,12 @@ decrease false positives for RNA-seq datasets with repeated
 measurements. Dream achieves this by combining multiple statistical
 concepts into a single statistical model. The model includes:
 
-- flexible modeling of repeated measures gene expression data  
-- precision weights to model measurement error in RNA-seq counts  
-- ability to model multiple random effects  
-- random effects estimated separately for each gene  
-- hypothesis testing for fixed effects in linear mixed models  
-- small sample size hypothesis test  
+- flexible modeling of repeated measures gene expression data\
+- precision weights to model measurement error in RNA-seq counts\
+- ability to model multiple random effects\
+- random effects estimated separately for each gene\
+- hypothesis testing for fixed effects in linear mixed models\
+- small sample size hypothesis test\
 
 Dream also includes multi-threaded analysis across thousands of genes on
 a multi-core machine.
@@ -82,7 +82,7 @@ model.
     estimate precision weights
 2.  [`dream()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)
     replaces [`lmFit()`](https://rdrr.io/pkg/limma/man/lmFit.html) to
-    estimate regression coefficients.  
+    estimate regression coefficients.\
 3.  [`variancePartition::eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md)
     replaces
     [`limma::eBayes()`](https://rdrr.io/pkg/limma/man/ebayes.html) to
