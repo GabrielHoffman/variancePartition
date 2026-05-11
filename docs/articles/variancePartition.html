@@ -8,8 +8,8 @@
 <title>Variance partitioning analysis • variancePartition</title>
 <!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Variance partitioning analysis">
 </head>
@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.41.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.43.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,8 +67,8 @@
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2026-03-19
-09:17:05</h4>
+            <h4 data-toc-skip class="date">Run on 2026-07-09
+21:35:39</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/variancePartition.Rmd" class="external-link"><code>vignettes/variancePartition.Rmd</code></a></small>
       <div class="d-none name"><code>variancePartition.Rmd</code></div>
@@ -947,81 +947,6 @@ or transcript-level quantifications can be used directly in
 for more details.</p>
 </div>
 </div>
-<div class="section level4">
-<h4 id="ballgown">
-<code>ballgown</code><a class="anchor" aria-label="anchor" href="#ballgown"></a>
-</h4>
-<p>Quantifications from Cufflinks/Tablemaker and RSEM can be processed
-and read into R with the Bioconductor package <code>ballgown</code>.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"ballgown"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get data from folder where ballgown is installed</span></span>
-<span><span class="va">data_directory</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"ballgown"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Load results of Cufflinks/Tablemaker</span></span>
-<span><span class="va">bg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ballgown/man/ballgown-constructor.html" class="external-link">ballgown</a></span><span class="op">(</span></span>
-<span>  dataDir <span class="op">=</span> <span class="va">data_directory</span>, samplePattern <span class="op">=</span> <span class="st">"sample"</span>,</span>
-<span>  meas <span class="op">=</span> <span class="st">"all"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in S4Vectors:::anyMissing(runValue(x_seqnames)): 'S4Vectors:::anyMissing()' is deprecated.</span></span>
-<span><span class="co">## Use 'anyNA()' instead.</span></span>
-<span><span class="co">## See help("Deprecated")</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in S4Vectors:::anyMissing(runValue(strand(x))): 'S4Vectors:::anyMissing()' is deprecated.</span></span>
-<span><span class="co">## Use 'anyNA()' instead.</span></span>
-<span><span class="co">## See help("Deprecated")</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in S4Vectors:::anyMissing(runValue(x_seqnames)): 'S4Vectors:::anyMissing()' is deprecated.</span></span>
-<span><span class="co">## Use 'anyNA()' instead.</span></span>
-<span><span class="co">## See help("Deprecated")</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in S4Vectors:::anyMissing(runValue(strand(x))): 'S4Vectors:::anyMissing()' is deprecated.</span></span>
-<span><span class="co">## Use 'anyNA()' instead.</span></span>
-<span><span class="co">## See help("Deprecated")</span></span></code></pre>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># extract gene-level FPKM quantification</span></span>
-<span><span class="co"># Expression can be convert to log2-scale if desired</span></span>
-<span><span class="va">gene_expression</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ballgown/man/gexpr.html" class="external-link">gexpr</a></span><span class="op">(</span><span class="va">bg</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># extract transcript-level FPKM quantification</span></span>
-<span><span class="co"># Expression can be convert to log2-scale if desired</span></span>
-<span><span class="va">transcript_fpkm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ballgown/man/texpr.html" class="external-link">texpr</a></span><span class="op">(</span><span class="va">bg</span>, <span class="st">"FPKM"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># define metadata (usually read from external source)</span></span>
-<span><span class="va">info_ballgown</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  Sample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"sample%02d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span>,</span>
-<span>  Batch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span>,</span>
-<span>  Disease <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"case"</span>, <span class="st">"control"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># define formula</span></span>
-<span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Batch</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">Disease</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Run variancePartition analysis</span></span>
-<span><span class="co"># Gene-level analysis</span></span>
-<span><span class="va">varPart_gene</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel</a></span><span class="op">(</span></span>
-<span>  <span class="va">gene_expression</span>, <span class="va">form</span>,</span>
-<span>  <span class="va">info_ballgown</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in filterInputData(exprObj, formula, data, useWeights = useWeights): Sample names of responses (i.e. columns of exprObj) do not match</span></span>
-<span><span class="co">## sample names of metadata (i.e. rows of data).  Recommend consistent</span></span>
-<span><span class="co">## names so downstream results are labeled consistently.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .fitExtractVarPartModel(exprObj, formula, data, REML = REML, : Model failed for 1 responses.</span></span>
-<span><span class="co">##   See errors with attr(., 'errors')</span></span></code></pre>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Transcript-level analysis</span></span>
-<span><span class="va">varPart_transcript</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel</a></span><span class="op">(</span></span>
-<span>  <span class="va">transcript_fpkm</span>, <span class="va">form</span>,</span>
-<span>  <span class="va">info_ballgown</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in filterInputData(exprObj, formula, data, useWeights = useWeights): Sample names of responses (i.e. columns of exprObj) do not match</span></span>
-<span><span class="co">## sample names of metadata (i.e. rows of data).  Recommend consistent</span></span>
-<span><span class="co">## names so downstream results are labeled consistently.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning in .fitExtractVarPartModel(exprObj, formula, data, REML = REML, : Model failed for 2 responses.</span></span>
-<span><span class="co">##   See errors with attr(., 'errors')</span></span></code></pre>
-<p>Note that <code>ballgownrsem</code> can be used for a similar
-analysis of <code>RSEM</code> results.</p>
-<p>See <a href="http://bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html" class="external-link">tutorial</a>
-for more details.</p>
-</div>
 </div>
 <div class="section level3">
 <h3 id="compare-with-other-methods">Compare with other methods<a class="anchor" aria-label="anchor" href="#compare-with-other-methods"></a>
@@ -1587,7 +1512,7 @@ differentiation</span>.”</span> <em>Nature Biotechnology</em> 28 (5):
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

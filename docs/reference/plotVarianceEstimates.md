@@ -23,7 +23,7 @@ plotVarianceEstimates(
 - fitEB:
 
   model fit from
-  [`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md)
+  [`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)
 
 - var_true:
 

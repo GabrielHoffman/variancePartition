@@ -12,7 +12,7 @@
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/index.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/news/index.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/BIC.MArrayLM.html</loc></url>
-<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/BIC.MArrayLM2.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/BIC.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/ESS-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/MArrayLM2-class.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/VarParCIList-class.html</loc></url>
@@ -47,7 +47,7 @@
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/index.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/isRunableFormula.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/logLik.MArrayLM.html</loc></url>
-<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/logLik.MArrayLM2.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/logLik.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/makeContrastsDream.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/mvTest-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/mvTest_input-class.html</loc></url>
@@ -58,6 +58,7 @@
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotPercentBars-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotStratify.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotStratifyBy.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotTrendVP-methods.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotVarPart-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotVarianceEstimates.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/rdf.html</loc></url>
@@ -68,6 +69,7 @@
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/residuals-MArrayLM2-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/residuals-VarParFitList-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/residuals.MArrayLM2.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/residuals.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/shrinkageMetric.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/sortCols-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/subset.MArrayLM2-method.html</loc></url>
@@ -77,6 +79,7 @@
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/varPartDEdata.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/varPartData.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/varPartResults-class.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/varpart.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/vcov-MArrayLM-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/vcov-MArrayLM2-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/vcovSqrt-method.html</loc></url>

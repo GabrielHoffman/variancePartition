@@ -1,0 +1,139 @@
+---
+title: "Variance partitioning for count data"
+subtitle: "Analyze results of DESeq2 and edgeR"
+author: "Developed by [Gabriel Hoffman](http://gabrielhoffman.github.io/)"
+date: "Run on `r format(Sys.time())`"
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    toc_depth: 3
+    fig_width: 5
+bibliography: library.bib
+vignette: >
+  %\VignetteIndexEntry{7) Variance partitioning for count data with DESeq2/edgeR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
+---
+
+<!---
+cd /Users/gabrielhoffman/workspace/repos
+R
+
+rmarkdown::render('varpart.Rmd')
+
+--->
+
+```{r setup, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(
+  tidy = FALSE, cache = TRUE,
+  dev = "png",
+  package.startup.message = FALSE,
+  message = FALSE, error = FALSE, warning = TRUE
+)
+options(width = 100)
+```	
+
+<style>
+body {
+text-align: justify}
+</style>
+
+Consider a small example dataset to demonstrate variance partitioning analysis of count data using results from [DESeq2](https://bioconductor.org/packages/DESeq2/) or [edgeR](https://bioconductor.org/packages/edgeR/).  Since DEseq2 and edgeR fit fixed effects negative binomial models, the variance partitioning analysis for count data only supports fixed effects.
+
+Himes, et al (2014) performed RNA-seq on 4 human airway smooth muscle cell lines treated with dexamethasone.  The dataset is available in the [airway](https://bioconductor.org/packages/airway/) package.  The variable `cell` indicates the 4 cell lines and `dex` indicates if the sample was treated with dexamethasone.
+
+Variance partitioning analysis of the count data partitions gene expression variation into 4 components.  These include two biological sources of variance:
+
+- cell line
+- dexamethasone treatment status
+
+Running variance partitioning analysis on a negative binomial count model allows us to partition the variance not explained by specific variables into two components:
+
+- count noise due to finite sequencing depth
+- residual variance not explained by the model
+
+In this particular dataset, the gene expression variance across cell lines and dexamethasone treatment status explains most of the variance.  Due to these large bioligical effects, the fraction of gene expression variance explained by count noise and residuals is small for most genes.  In addition, the fraction of variance explained by count noise decreases for genes with high read depth.  Of course, initial filtering of genes based on number of counts removes genes with very high count noise here.
+
+Here we show analysis and results with DESeq2 and edgeR.  We note that the packages produce different parameter estimates, especially on small datasets like this one.
+
+
+```{r load data}
+library(airway)
+library(variancePartition)
+
+# Load the example dataset
+data("airway")
+```
+
+
+# DESeq2 analysis
+```{r deseq2}
+library(DESeq2)
+
+# Set up the DESeq2 design matrix based on the 'dex' (treatment) condition
+dds <- DESeqDataSet(airway, design = ~ cell + dex)
+
+# Filter low count
+keep <- rowSums(counts(dds)) >= 20
+dds <- dds[keep,]
+
+# Run the differential expression analysis
+dds <- DESeq(dds)
+
+# Variance partition analysis
+vp <- varpart(dds)
+
+# Violin plot of variance fractions
+plotVarPart(vp)
+
+# Plot count noise vs expression magnitude
+plotTrendVP( dds, vp, "CountNoise" )
+```
+
+
+# edgeR analysis
+```{r edgeR}
+library(edgeR)
+form = ~ cell + dex
+design = model.matrix(form, colData(airway))
+
+countMatrix <- assay(airway, 1)
+keep <- rowSums(countMatrix) >= 20
+
+d <- DGEList( countMatrix[keep,] )
+d <- normLibSizes(d)
+d <- estimateDisp(d, design)
+
+# Fit the NB GLMs with QL methods
+fit <- glmQLFit(d, design)
+fit <- glmQLFTest(fit)
+
+# Variance partition analysis
+vp <- varpart(fit, dispObj = d, formula = form)
+
+# Violin plot of variance fractions
+plotVarPart(vp)
+
+# Plot count noise vs expression magnitude
+plotTrendVP( dds, vp, "CountNoise" )
+```
+
+
+
+
+
+
+
+# Session info
+<details>
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
+<\details>
+
+# References
+Himes, E. B, et al. (2014). "RNA-Seq Transcriptome Profiling Identifies CRISPLD2 as a Glucocorticoid Responsive Gene that Modulates Cytokine Function in Airway Smooth Muscle Cells." PLoS ONE, 9(6), e99625. https://doi.org/10.1371/journal.pone.0099625
+
+
