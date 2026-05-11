@@ -20,7 +20,7 @@ better error handling. See
 [Changelog](http://DiseaseNeurogenomics.github.io/variancePartition/news/index.md).
 Importantly, the new version is compatible with emprical Bayes moderated
 t-statistics for linear mixed models using
-[`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md).
+[`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md).
 
 \
 

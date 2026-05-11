@@ -83,7 +83,7 @@ model.
 2.  [`dream()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)
     replaces [`lmFit()`](https://rdrr.io/pkg/limma/man/lmFit.html) to
     estimate regression coefficients.\
-3.  [`variancePartition::eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md)
+3.  [`variancePartition::eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)
     replaces
     [`limma::eBayes()`](https://rdrr.io/pkg/limma/man/ebayes.html) to
     apply empircal Bayes shrinkage on linear mixed models.
@@ -94,7 +94,7 @@ model.
     [`dream()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md).
 
 For models with only fixed effects,
-[`variancePartition::eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md),
+[`variancePartition::eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md),
 and
 [`variancePartition::topTable()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)
 work seamlessly and give results equivalent to the `limma` functions
@@ -161,7 +161,7 @@ Note that if a random effect is not specified,
 automatically uses
 [`lmFit()`](https://rdrr.io/pkg/limma/man/lmFit.html), but the user must
 run
-[`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md)
+[`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)
 afterward.
 
 ### Advanced hypothesis testing

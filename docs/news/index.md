@@ -1,5 +1,11 @@
 # Changelog
 
+## variancePartition 1.41.5
+
+- July, 2026
+- add support for variance partition analysis of results from `edgeR`
+  and `DESeq2`
+
 ## variancePartition 1.41.4
 
 - March 4, 2026
@@ -31,7 +37,7 @@
 - Aug 11, 2025
 - Handle change in function prototype of
   [`limma::eBayes()`](https://rdrr.io/pkg/limma/man/ebayes.html)
-- [`variancePartition::eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md)
+- [`variancePartition::eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)
   now uses arguments `...`
 
 ## variancePartition 1.37.4
@@ -64,7 +70,7 @@
 - Nov 5, 2024
 - Upgrade to Bioc 3.20
 - update generic for
-  [`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md)
+  [`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)
   to be comptabile with `legacy` parameter added in `limma` v3.62.0
 
 ## variancePartition 1.35.5
@@ -616,7 +622,7 @@
   samples
 - all functions default tp `BPPARAM=SerialParam()`
 - add
-  [`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes.md)
+  [`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)
   to vignette for
   [`dream()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)
 

@@ -608,61 +608,6 @@ Code to process results from `sailfish`, `salmon`, `RSEM` is very similar.
 See [tutorial](http://bioconductor.org/packages/release/bioc/vignettes/tximport/inst/doc/tximport.html) for more details.
 
 
-
-
-### `ballgown`
-
-Quantifications from Cufflinks/Tablemaker and RSEM can be processed and read into R with the Bioconductor package `ballgown`.  
-
-```{r ballgown, echo=TRUE, cache=TRUE, results='hide'}
-library("ballgown")
-
-# Get data from folder where ballgown is installed
-data_directory <- system.file("extdata", package = "ballgown")
-
-# Load results of Cufflinks/Tablemaker
-bg <- ballgown(
-  dataDir = data_directory, samplePattern = "sample",
-  meas = "all"
-)
-
-# extract gene-level FPKM quantification
-# Expression can be convert to log2-scale if desired
-gene_expression <- gexpr(bg)
-
-# extract transcript-level FPKM quantification
-# Expression can be convert to log2-scale if desired
-transcript_fpkm <- texpr(bg, "FPKM")
-
-# define metadata (usually read from external source)
-info_ballgown <- data.frame(
-  Sample = sprintf("sample%02d", 1:20),
-  Batch = rep(letters[1:4], 5),
-  Disease = c("case", "control")[c(rep(1, 10), rep(2, 10))]
-)
-
-# define formula
-form <- ~ (1 | Batch) + (1 | Disease)
-
-# Run variancePartition analysis
-# Gene-level analysis
-varPart_gene <- fitExtractVarPartModel(
-  gene_expression, form,
-  info_ballgown
-)
-
-# Transcript-level analysis
-varPart_transcript <- fitExtractVarPartModel(
-  transcript_fpkm, form,
-  info_ballgown
-)
-```
-
-Note that `ballgownrsem` can be used for a similar analysis of `RSEM` results.
-
-See [tutorial](http://bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html) for more details.
-
-
 ## Compare with other methods
 
 Characterizing drivers of variation in gene expression data has typically relied on principal components analysis (PCA) and hierarchical clustering.  Here I apply these methods to two simulated datasets to demonstrate the additional insight from an analysis with `variancePartition`.  Each simulated dataset comprises 60 experiments from 10 individuals and 3 tissues with 2 biological replicates.  In the first dataset, tissue is the major driver of variation in gene expression(Figure \@ref(fig:siteDominant)).  In the second dataset, individual is the major driver of variation in gene expression (Figures \@ref(fig:IndivDominant)).

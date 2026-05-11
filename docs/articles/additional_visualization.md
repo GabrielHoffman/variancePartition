@@ -117,7 +117,7 @@ plotCorrStructure(fit, reorder = FALSE)
     ## Running under: macOS Sonoma 14.7.1
     ## 
     ## Matrix products: default
-    ## BLAS/LAPACK: /opt/homebrew/Cellar/openblas/0.3.31_1/lib/libopenblasp-r0.3.31.dylib;  LAPACK version 3.12.0
+    ## BLAS/LAPACK: /opt/homebrew/Cellar/openblas/0.3.33/lib/libopenblasp-r0.3.33.dylib;  LAPACK version 3.12.0
     ## 
     ## locale:
     ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -129,36 +129,60 @@ plotCorrStructure(fit, reorder = FALSE)
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] variancePartition_1.41.4 BiocParallel_1.44.0      limma_3.66.0            
-    ## [4] ggplot2_4.0.2            knitr_1.51              
+    ## [1] variancePartition_1.43.5 BiocParallel_1.44.0      limma_3.66.0            
+    ## [4] ggplot2_4.0.3            knitr_1.51              
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] tidyselect_1.2.1    dplyr_1.2.0         farver_2.1.2       
-    ##  [4] S7_0.2.1            bitops_1.0-9        fastmap_1.2.0      
-    ##  [7] digest_0.6.39       lifecycle_1.0.5     statmod_1.5.1      
-    ## [10] magrittr_2.0.4      compiler_4.5.1      rlang_1.1.7        
-    ## [13] sass_0.4.10         tools_4.5.1         yaml_2.3.12        
-    ## [16] htmlwidgets_1.6.4   plyr_1.8.9          RColorBrewer_1.1-3 
-    ## [19] KernSmooth_2.23-26  withr_3.0.2         purrr_1.2.1        
-    ## [22] numDeriv_2016.8-1.1 BiocGenerics_0.56.0 desc_1.4.3         
-    ## [25] grid_4.5.1          aod_1.3.3           caTools_1.18.3     
-    ## [28] scales_1.4.0        gtools_3.9.5        iterators_1.0.14   
-    ## [31] MASS_7.3-65         dichromat_2.0-0.1   cli_3.6.5          
-    ## [34] mvtnorm_1.3-6       rmarkdown_2.30      ragg_1.5.1         
-    ## [37] reformulas_0.4.4    generics_0.1.4      otel_0.2.0         
-    ## [40] reshape2_1.4.5      minqa_1.2.8         cachem_1.1.0       
-    ## [43] stringr_1.6.0       splines_4.5.1       parallel_4.5.1     
-    ## [46] matrixStats_1.5.0   vctrs_0.7.1         boot_1.3-32        
-    ## [49] Matrix_1.7-4        jsonlite_2.0.0      pbkrtest_0.5.5     
-    ## [52] systemfonts_1.3.2   jquerylib_0.1.4     tidyr_1.3.2        
-    ## [55] glue_1.8.0          pkgdown_2.2.0       nloptr_2.2.1       
-    ## [58] codetools_0.2-20    stringi_1.8.7       gtable_0.3.6       
-    ## [61] EnvStats_3.1.0      lme4_2.0-1          lmerTest_3.2-1     
-    ## [64] tibble_3.3.1        remaCor_0.0.20      pillar_1.11.1      
-    ## [67] htmltools_0.5.9     gplots_3.3.0        R6_2.6.1           
-    ## [70] textshaping_1.0.5   Rdpack_2.6.6        evaluate_1.0.5     
-    ## [73] lattice_0.22-9      Biobase_2.70.0      rbibutils_2.4.1    
-    ## [76] backports_1.5.0     RhpcBLASctl_0.23-42 broom_1.0.12       
-    ## [79] fANCOVA_0.6-1       corpcor_1.6.10      bslib_0.10.0       
-    ## [82] Rcpp_1.1.1          nlme_3.1-168        xfun_0.56          
-    ## [85] fs_1.6.7            pkgconfig_2.0.3
+    ##   [1] Rdpack_2.6.6                bitops_1.0-9               
+    ##   [3] rlang_1.3.0                 magrittr_2.0.5             
+    ##   [5] otel_0.2.0                  matrixStats_1.5.0          
+    ##   [7] compiler_4.5.1              reshape2_1.4.5             
+    ##   [9] systemfonts_1.3.2           vctrs_0.7.3                
+    ##  [11] stringr_1.6.0               pkgconfig_2.0.3            
+    ##  [13] fastmap_1.2.0               backports_1.5.1            
+    ##  [15] XVector_0.50.0              caTools_1.18.3             
+    ##  [17] rmarkdown_2.31              nloptr_2.2.1               
+    ##  [19] ragg_1.5.2                  purrr_1.2.2                
+    ##  [21] xfun_0.59                   cachem_1.1.0               
+    ##  [23] jsonlite_2.0.0              EnvStats_3.1.0             
+    ##  [25] remaCor_0.0.20              DelayedArray_0.36.1        
+    ##  [27] broom_1.0.13                parallel_4.5.1             
+    ##  [29] R6_2.6.1                    stringi_1.8.7              
+    ##  [31] bslib_0.11.0                RColorBrewer_1.1-3         
+    ##  [33] parallelly_1.48.0           car_3.1-5                  
+    ##  [35] boot_1.3-32                 GenomicRanges_1.62.1       
+    ##  [37] jquerylib_0.1.4             numDeriv_2016.8-1.1        
+    ##  [39] Rcpp_1.1.2                  Seqinfo_1.0.0              
+    ##  [41] SummarizedExperiment_1.40.0 iterators_1.0.14           
+    ##  [43] IRanges_2.44.0              Matrix_1.7-5               
+    ##  [45] splines_4.5.1               tidyselect_1.2.1           
+    ##  [47] dichromat_2.0-0.1           abind_1.4-8                
+    ##  [49] yaml_2.3.12                 gplots_3.3.0               
+    ##  [51] codetools_0.2-20            plyr_1.8.9                 
+    ##  [53] lattice_0.22-9              tibble_3.3.1               
+    ##  [55] lmerTest_3.2-1              Biobase_2.70.0             
+    ##  [57] withr_3.0.3                 S7_0.2.2                   
+    ##  [59] evaluate_1.0.5              desc_1.4.3                 
+    ##  [61] pillar_1.11.1               MatrixGenerics_1.22.0      
+    ##  [63] carData_3.0-6               KernSmooth_2.23-26         
+    ##  [65] stats4_4.5.1                reformulas_0.4.4           
+    ##  [67] generics_0.1.4              fastglmm_0.4.10            
+    ##  [69] S4Vectors_0.48.1            scales_1.4.0               
+    ##  [71] aod_1.3.3                   minqa_1.2.8                
+    ##  [73] gtools_3.9.5                RhpcBLASctl_0.23-42        
+    ##  [75] glue_1.8.1                  tools_4.5.1                
+    ##  [77] fANCOVA_0.6-1               lme4_2.0-1                 
+    ##  [79] locfit_1.5-9.12             fs_2.1.0                   
+    ##  [81] mvtnorm_1.4-1               grid_4.5.1                 
+    ##  [83] tidyr_1.3.2                 rbibutils_2.4.1            
+    ##  [85] edgeR_4.8.2                 nlme_3.1-169               
+    ##  [87] Formula_1.2-5               cli_3.6.6                  
+    ##  [89] textshaping_1.0.5           S4Arrays_1.10.1            
+    ##  [91] dplyr_1.2.1                 corpcor_1.6.10             
+    ##  [93] gtable_0.3.6                DESeq2_1.50.2              
+    ##  [95] sass_0.4.10                 digest_0.6.39              
+    ##  [97] BiocGenerics_0.56.0         SparseArray_1.10.10        
+    ##  [99] pbkrtest_0.5.5              htmlwidgets_1.6.4          
+    ## [101] farver_2.1.2                htmltools_0.5.9            
+    ## [103] pkgdown_2.2.1               lifecycle_1.0.5            
+    ## [105] statmod_1.5.2               MASS_7.3-65

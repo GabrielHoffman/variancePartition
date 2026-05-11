@@ -1,4 +1,9 @@
-# eBayes for MArrayLM2
+# eBayes generic for for MArrayLM and MArrayLM2
+
+eBayes for result of linear (mixed) model
+
+eBayes for result of linear model for with uses
+[`limma::eBayes()`](https://rdrr.io/pkg/limma/man/ebayes.html)
 
 eBayes for result of linear mixed model for with
 [`dream()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)
@@ -8,6 +13,11 @@ using residual degrees of freedom approximated with
 ## Usage
 
 ``` r
+eBayes(fit, ...)
+
+# S4 method for class 'MArrayLM'
+eBayes(fit, ...)
+
 # S4 method for class 'MArrayLM2'
 eBayes(
   fit,
@@ -26,6 +36,10 @@ eBayes(
 - fit:
 
   fit
+
+- ...:
+
+  all other args
 
 - proportion:
 
