@@ -92,7 +92,7 @@
 #' results2 <- fitVarPartModel(sample.ExpressionSet, form, info2)
 #'
 # # Parallel processing using multiple cores with reduced memory usage
-# param <- SnowParam(4, "SOCK", progressbar=TRUE)
+# param <- SnowParam(2, "SOCK", progressbar=TRUE)
 # results2 <- fitVarPartModel( sample.ExpressionSet, form, info2, BPPARAM=param)
 #'
 #' @export

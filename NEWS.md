@@ -1,4 +1,8 @@
 
+# variancePartition 1.41.5
+  - July, 2026
+  - add support for variance partition analysis of results from `edgeR` and `DESeq2`
+
 # variancePartition 1.41.4
   - March 4, 2026
   - fix failing tests for `lmer 2.0.1`

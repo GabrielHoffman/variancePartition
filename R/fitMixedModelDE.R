@@ -28,6 +28,7 @@ setAs(from = "MArrayLM", to = "MArrayLM2", function(from) {
 #' @param ... See \code{?stats::residuals}
 #' @param type compute either response or pearson residuals
 #'
+#' @rdname residuals
 #' @rawNamespace S3method("residuals", MArrayLM2)
 #' @export
 residuals.MArrayLM2 <- function(object, y, ..., type = c("response", "pearson")) {
@@ -111,6 +112,7 @@ residuals.MArrayLM2 <- function(object, y, ..., type = c("response", "pearson"))
 #' @param ... other arguments, currently ignored
 #' @param type compute either response or pearson residuals
 #'
+#' @rdname residuals
 #' @return results of residuals
 #' @export
 setMethod(
@@ -169,6 +171,7 @@ setMethod(
 #' @param ... other arguments, currently ignored
 #' @param type compute either response or pearson residuals
 #'
+#' @rdname residuals
 #' @return results of residuals
 #' @export
 setMethod(
@@ -535,6 +538,7 @@ assign(
 #'
 #' @param fit fit
 #' @param ... all other args
+#' @rdname eBayes-method
 setGeneric("eBayes", function(
     fit, ...) {
   eBayes(fit, ...)
@@ -546,6 +550,7 @@ setGeneric("eBayes", function(
 #'
 #' @param fit fit
 #' @param ... all other args
+#' @rdname eBayes-method
 setMethod(
   "eBayes", "MArrayLM", function(
     fit, ...) {

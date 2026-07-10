@@ -3,3 +3,4 @@
 ^pkgdown$
 ^vignettes/*_cache/
 ^vignettes/*_files/
+variancePartition_cache

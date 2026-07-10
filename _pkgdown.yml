@@ -18,6 +18,10 @@ articles:
   navbar: ~
   contents: dream
 
+- title: varpart
+  navbar: ~
+  contents: varpart
+
 - title: rnd_effects
   navbar: ~
   contents: rnd_effects
@@ -41,3 +45,85 @@ articles:
   
 
 
+
+reference:
+- title: Core functions
+  contents:
+  - "dream"
+  - "eBayes"
+  - "fitExtractVarPartModel"
+  - "makeContrastsDream"
+  - "mvTest"
+  - "topTable"
+  - "varpart"
+  - "voomWithDreamWeights"
+  
+
+- title: Extract results from model fits
+  contents:
+  - "BIC.MArrayLM2"
+  - "BIC.MArrayLM"
+  - "ESS"
+  - "classifyTestsF,MArrayLM2-method"
+  - "classifyTestsF"
+  - "hatvalues,MArrayLM-method"
+  - "logLik.MArrayLM"
+  - "logLik.MArrayLM2"
+  - "rdf"
+  - "rdf.merMod"
+  - "rdf_from_matrices"
+  - "residuals,MArrayLM-method"
+  - "residuals,MArrayLM2-method"
+  - "residuals,VarParFitList-method"
+  - "residuals.MArrayLM2"
+  - "vcov,MArrayLM-method"
+  - "vcov,MArrayLM2-method"
+  - "vcovSqrt"
+
+- title: Plots
+  contents:
+  - "plotCompareP"
+  - "plotContrasts"
+  - "plotCorrMatrix"
+  - "plotCorrStructure"
+  - "plotPercentBars"
+  - "plotStratify"
+  - "plotStratifyBy"
+  - "plotTrendVP"
+  - "plotVarPart"
+  - "plotVarianceEstimates"
+
+- title: Other functions
+  contents:
+  - "applyQualityWeights" 
+  - "as.data.frame.varPartResults"
+  - "as.matrix,varPartResults-method"
+  - "augmentPriorCount"
+  - "calcVarPart"
+  - "canCorPairs"
+  - "colinearityScore"
+  - "deviation"
+  - "diffVar"
+  - "dscchisq"
+  - "extractVarPart"
+  - "fitVarPartModel"
+  - "getContrast"
+  - "getTreat"
+  - "get_prediction"
+  - "ggColorHue"
+  - "isRunableFormula"
+  - "reOnly"
+  - "shrinkageMetric"
+  - "sortCols"
+  - "varPartConfInf"
+  - "varPartDEdata"
+  - "varPartData"  
+
+- title: Classes
+  contents:
+  - "mvTest_input-class"
+  - "varParFrac-class"
+  - "varPartResults-class"
+  - "MArrayLM2-class"
+  - "VarParCIList-class"
+  - "VarParFitList-class"
