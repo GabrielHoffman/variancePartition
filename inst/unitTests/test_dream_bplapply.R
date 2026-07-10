@@ -16,7 +16,7 @@ test_dream_parallel = function(){
 	param1 = SerialParam()
 	fit1 = dream( geneExpr[1:10,], form, info, BPPARAM=param1)
 
-	param2 = SnowParam(4, "SOCK")
+	param2 = SnowParam(2, "SOCK")
 	fit2 = dream( geneExpr[1:10,], form, info, BPPARAM=param2)
 
 	checkEquals(fit1, fit2, tol=1e-4) & checkEquals(fit2, fit3, tol=1e-4)
@@ -38,7 +38,7 @@ test_fitVarPartModel_parallel = function(){
 	param1 = SerialParam()
 	vp1 = fitVarPartModel( geneExpr[1:10,], form, info, BPPARAM=param1)
 
-	param2 = SnowParam(4, "SOCK")
+	param2 = SnowParam(2, "SOCK")
 	vp2 = fitVarPartModel( geneExpr[1:10,], form, info, BPPARAM=param2)
 
 
@@ -67,7 +67,7 @@ test_fitExtractVarPartModel_parallel = function(){
 	param1 = SerialParam()
 	vp1 = fitExtractVarPartModel( geneExpr[1:10,], form, info, BPPARAM=param1)
 
-	param2 = SnowParam(4, "SOCK")
+	param2 = SnowParam(2, "SOCK")
 	vp2 = fitExtractVarPartModel( geneExpr[1:10,], form, info, BPPARAM=param2)
 
 

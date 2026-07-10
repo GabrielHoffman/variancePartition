@@ -107,8 +107,8 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' 
 #' condition <- factor(rep(1:2, each=5))
 #' 
-#' # DESeq2 model
-#' library(DEseq2)
+#' # DESeq2 model #
+#' library(DESeq2)
 #' dds <- DESeqDataSetFromMatrix(countMatrix, 
 #'   DataFrame(condition), 
 #'   ~ condition)
@@ -117,9 +117,15 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' 
 #' # Variance partition analysis
 #' vp1 <- varpart(dds)
+#' 
+#' # Plot contribution of each component
 #' plotVarPart(vp1, main="DESeq2")
 #' 
-#' # edgeR model 
+#' # Plot count noise vs expression magnitude
+#' plotTrendVP( dds, vp1, "CountNoise" )
+#'
+#'
+#' # edgeR model #
 #' library(edgeR)
 #' design <- model.matrix( ~ condition, data.frame(condition))
 #' d <- DGEList(countMatrix)
@@ -130,8 +136,13 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' 
 #' vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
 #' 
+#' # Plot contribution of each component
 #' plotVarPart(vp2, main="edgeR")
 #' 
+#' # Plot count noise vs expression magnitude
+#' plotTrendVP( dds, vp2, "CountNoise" )
+#' 
+#' @rdname varpart
 #' @export
 setGeneric("varpart", function(
   x,    
@@ -143,6 +154,7 @@ setGeneric("varpart", function(
   standardGeneric("varpart")
 )
 
+#' @rdname varpart
 #' @importFrom stats model.matrix coef
 #' @importFrom BiocGenerics sizeFactors design
 #' @importFrom DESeq2 dispersions
@@ -190,7 +202,10 @@ setMethod("varpart", signature = "DESeqDataSet",
   }
 )
 
-
+#' @param dispObj result of \code{estimateDisp()}
+#' @param formula formula used for the design matrix
+#'
+#' @rdname varpart
 #' @export
 setMethod("varpart", signature = "DGELRT", 
   function(
@@ -232,6 +247,57 @@ setMethod("varpart", signature = "DGELRT",
 )
 
 
+
+#' Plot Trend of Variance Fractions Vs Count Magnitude
+#'
+#' Plot trend of variance fractions for a specified component versus count magnitude for each gene and cell cluster
+#'
+#' @param x object returned by \code{lucida()}
+#' @param vp \code{data.frame} from \code{fitVarPart()}
+#' @param component variance component to extract from \code{vp}
+#' @param ... additional arguments
+#'
+#' @return Plot of variance fraction vs count magnitude
+#'
+#' @examples
+#' # Simulate counts
+#' set.seed(1)
+#' countMatrix <- matrix(rnbinom(n=100000, mu=20, size=3), ncol=10)
+#' rownames(countMatrix) <- paste0("gene_", seq(nrow(countMatrix)))
+#' colnames(countMatrix) <- paste0("sample_", seq(ncol(countMatrix)))
+#' 
+#' condition <- factor(rep(1:2, each=5))
+#' 
+#' # DESeq2 model #
+#' library(DESeq2)
+#' dds <- DESeqDataSetFromMatrix(countMatrix, 
+#'   DataFrame(condition), 
+#'   ~ condition)
+#' dds <- DESeq(dds)
+#' res <- results(dds)
+#' 
+#' # Variance partition analysis
+#' vp1 <- varpart(dds)
+#' 
+#' # Plot count noise vs expression magnitude
+#' plotTrendVP( dds, vp1, "CountNoise" )
+#'
+#'
+#' # edgeR model #
+#' library(edgeR)
+#' design <- model.matrix( ~ condition, data.frame(condition))
+#' d <- DGEList(countMatrix)
+#' d <- normLibSizes(d)
+#' d <- estimateDisp(d, design)
+#' fit <- glmQLFit(d, design)
+#' fit <- glmQLFTest(fit)
+#' 
+#' vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
+#' 
+#' # Plot count noise vs expression magnitude
+#' plotTrendVP( dds, vp2, "CountNoise" )
+#' 
+#' @rdname plotTrendVP-methods
 #' @export
 setGeneric(
   "plotTrendVP", 
@@ -240,6 +306,7 @@ setGeneric(
   }
 )
 
+#' @rdname plotTrendVP-methods
 #' @importFrom DESeq2 results
 #' @importFrom tibble rownames_to_column tibble
 #' @importFrom dplyr inner_join `%>%` select filter
@@ -267,7 +334,7 @@ setMethod(
     data.frame %>%
     rownames_to_column("ID") %>%
     tibble %>%
-    select(ID, baseMean) %>%
+    dplyr::select(ID, baseMean) %>%
     filter(baseMean > 0) %>%
     inner_join(vp %>% 
       rownames_to_column("ID"), by=c("ID")) %>%
@@ -283,6 +350,7 @@ setMethod(
     geom_smooth( method="nls", formula = y ~ SSlogis(x, Asym, xmid, scal), se=FALSE)
 })
 
+#' @rdname plotTrendVP-methods
 #' @importFrom edgeR topTags
 #' @export
 setMethod(
@@ -307,7 +375,7 @@ setMethod(
     data.frame %>%
     rownames_to_column("ID") %>%
     tibble %>%
-    select(ID, logCPM) %>%
+    dplyr::select(ID, logCPM) %>%
     inner_join(vp %>% 
       rownames_to_column("ID"), by=c("ID")) %>%
     ggplot(aes(logCPM, 100*!!sym(component))) +

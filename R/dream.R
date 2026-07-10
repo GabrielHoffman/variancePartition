@@ -72,7 +72,7 @@
 #' topTable(fit2, coef = "compare_3_2", number = 3)
 #'
 #' # Parallel processing using multiple cores with reduced memory usage
-#' param <- SnowParam(4, "SOCK", progressbar = TRUE)
+#' param <- SnowParam(2, "SOCK", progressbar = TRUE)
 #' fit3 <- dream(geneExpr[1:10, ], form, info, L, BPPARAM = param)
 #' fit3 <- eBayes(fit3)
 #'

@@ -10,6 +10,7 @@
 #'
 #' @rawNamespace S3method("logLik", MArrayLM2)
 #' @importFrom stats logLik
+#' @rdname logLik
 #' @export
 logLik.MArrayLM = function(object, vobj, ...){
 
@@ -42,6 +43,7 @@ logLik.MArrayLM = function(object, vobj, ...){
 #' @param object result of \code{lmFit()} or \code{dream()}
 #' @param ... See \code{?stats::logLik}
 #'
+#' @rdname logLik
 #' @rawNamespace S3method("logLik", MArrayLM)
 #' @export
 logLik.MArrayLM2 = function(object, ...){
@@ -57,6 +59,7 @@ logLik.MArrayLM2 = function(object, ...){
 #' @param vobj \code{EList} used to fit model
 #' @param ... See \code{?stats::BIC}
 #'
+#' @rdname BIC
 #' @rawNamespace S3method("BIC", MArrayLM2)
 #' @importFrom stats BIC
 #' @export
@@ -99,6 +102,7 @@ BIC.MArrayLM = function(object, vobj, ...){
 #' @param vobj \code{EList} used to fit model
 #' @param ... See \code{?stats::BIC}
 #'
+#' @rdname BIC
 #' @rawNamespace S3method("BIC", MArrayLM)
 #' @export
 BIC.MArrayLM2 = function(object, vobj, ...){
