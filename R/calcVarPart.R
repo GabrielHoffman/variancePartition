@@ -103,6 +103,7 @@ setMethod(
     if (is.null(w)) {
       w <- rep(1, nrow(fit$model))
     }
+    w <- w[!is.na(w)]
 
     # get sum of squares explained by each variable
     SS <- apply(fxeff, 2, function(x) {
