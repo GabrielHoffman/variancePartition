@@ -40,7 +40,7 @@
 #' @rdname plotVarPart-method
 setGeneric("plotVarPart",
   signature = "obj",
-  function(obj, col = c(ggColorHue(ncol(obj) - 1), "grey85"), label.angle = 20, main = "", ylab = "", convertToPercent = TRUE, ...) {
+  function(obj, col = c(ggColorHue(ncol(obj) - 1), "grey85"), label.angle = 20, main = "", ylab = "Variance explained (%)", convertToPercent = TRUE, ...) {
     standardGeneric("plotVarPart")
   }
 )
@@ -50,7 +50,8 @@ setGeneric("plotVarPart",
 #' @aliases plotVarPart,matrix-method
 setMethod(
   "plotVarPart", "matrix",
-  function(obj, col = c(ggColorHue(ncol(obj) - 1), "grey85"), label.angle = 20, main = "", ylab = "", convertToPercent = TRUE, ...) {
+  function(obj, col = c(ggColorHue(ncol(obj) - 1), "grey85"), label.angle = 20, main = "", ylab = "Variance explained (%)", convertToPercent = TRUE, ...) {
+
     .plotVarPart(obj, col, label.angle, main, ylab, convertToPercent, ...)
   }
 )
@@ -60,7 +61,8 @@ setMethod(
 #' @aliases plotVarPart,varPartResults-method
 setMethod(
   "plotVarPart", "data.frame",
-  function(obj, col = c(ggColorHue(ncol(obj) - 1), "grey85"), label.angle = 20, main = "", ylab = "", convertToPercent = TRUE, ...) {
+  function(obj, col = c(ggColorHue(ncol(obj) - 1), "grey85"), label.angle = 20, main = "", ylab = "Variance explained (%)", convertToPercent = TRUE, ...) {
+    
     .plotVarPart(obj, col, label.angle, main, ylab, convertToPercent, ...)
   }
 )

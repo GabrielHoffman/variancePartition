@@ -13,7 +13,7 @@ plotVarPart(
   col = c(ggColorHue(ncol(obj) - 1), "grey85"),
   label.angle = 20,
   main = "",
-  ylab = "",
+  ylab = "Variance explained (\%)",
   convertToPercent = TRUE,
   ...
 )
@@ -23,7 +23,7 @@ plotVarPart(
   col = c(ggColorHue(ncol(obj) - 1), "grey85"),
   label.angle = 20,
   main = "",
-  ylab = "",
+  ylab = "Variance explained (\%)",
   convertToPercent = TRUE,
   ...
 )
@@ -33,7 +33,7 @@ plotVarPart(
   col = c(ggColorHue(ncol(obj) - 1), "grey85"),
   label.angle = 20,
   main = "",
-  ylab = "",
+  ylab = "Variance explained (\%)",
   convertToPercent = TRUE,
   ...
 )

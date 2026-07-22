@@ -59,9 +59,10 @@ In this particular dataset, the gene expression variance across cell lines and d
 Here we show analysis and results with DESeq2 and edgeR.  We note that the packages produce different parameter estimates, especially on small datasets like this one.
 
 
-```{r load data}
+```{r load.data, cache=FALSE}
 library(airway)
 library(variancePartition)
+library(aplot)
 
 # Load the example dataset
 data("airway")
@@ -69,7 +70,7 @@ data("airway")
 
 
 # DESeq2 analysis
-```{r deseq2}
+```{r deseq2, fig.show = "hide", collapse=TRUE}
 library(DESeq2)
 
 # Set up the DESeq2 design matrix based on the 'dex' (treatment) condition
@@ -92,9 +93,16 @@ plotVarPart(vp)
 plotTrendVP( dds, vp, "CountNoise" )
 ```
 
+```{r fig.DEseq2, fig.height=4, fig.width=7, echo=FALSE}
+fig1 <- plotVarPart(vp)
+fig2 <- plotTrendVP( dds, vp, "CountNoise" )
+
+fig1 + theme(aspect.ratio=1) | fig2
+```
+
 
 # edgeR analysis
-```{r edgeR}
+```{r edgeR, fig.show = "hide", collapse=TRUE}
 library(edgeR)
 form = ~ cell + dex
 design = model.matrix(form, colData(airway))
@@ -117,10 +125,15 @@ vp <- varpart(fit, dispObj = d, formula = form)
 plotVarPart(vp)
 
 # Plot count noise vs expression magnitude
-plotTrendVP( dds, vp, "CountNoise" )
+plotTrendVP( fit, vp, "CountNoise" )
 ```
 
+```{r fig.edgeR, fig.height=4, fig.width=7, echo=FALSE}
+fig1 <- plotVarPart(vp)
+fig2 <- plotTrendVP( fit, vp, "CountNoise" )
 
+fig1 + theme(aspect.ratio=1) | fig2
+```
 
 
 
