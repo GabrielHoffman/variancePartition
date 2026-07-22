@@ -14,7 +14,7 @@
 
 
 ### Update
-`variancePartition` 2.0.0 includes a new implementation of the core variance partitioning analysis using `fastglmm::varpart()`.  It also supports negative binomial count models from `edgeR` and `DESeq2`.
+`variancePartition` 2.0.0 includes a new implementation of the core variance partitioning analysis using `fastglmm::varpart()`.  It also supports negative binomial count models from `edgeR` and `DESeq2`. See [variance partitioning for count data](articles/varpart.html).
 
 See [Changelog](news/index.html).  
 
