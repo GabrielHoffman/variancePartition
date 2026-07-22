@@ -5,6 +5,11 @@
 - [dream
   analysis](http://DiseaseNeurogenomics.github.io/variancePartition/articles/dream.md):
 
+### varpart
+
+- [Variance partitioning for count
+  data](http://DiseaseNeurogenomics.github.io/variancePartition/articles/varpart.md):
+
 ### rnd_effects
 
 - [Theory and practice of random

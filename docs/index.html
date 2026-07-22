@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Quantify and interpret drivers of variation in multilevel gene expression experiments • variancePartition</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="katex-auto.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
@@ -14,6 +19,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Quantify and interpret drivers of variation in multilevel gene expression experiments">
 <meta name="description" content="Quantify and interpret multiple sources of biological and technical variation in gene expression experiments. Uses a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables. Includes dream differential expression analysis for repeated measures.">
 <meta property="og:description" content="Quantify and interpret multiple sources of biological and technical variation in gene expression experiments. Uses a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables. Includes dream differential expression analysis for repeated measures.">
+<meta property="og:image" content="http://DiseaseNeurogenomics.github.io/variancePartition/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -23,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.43.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,13 +67,19 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><p><br></p>
+<p><img src="reference/figures/logo.png" align="right" alt="" width="160" style="padding-left:10px; padding-top:5px;"></p>
+<div style="text-align: justify">
 <p><code>variancePartition</code> quantifies and interprets multiple sources of biological and technical variation in gene expression experiments. The package a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables. The <code><a href="reference/dream-method.html">dream()</a></code> function performs differential expression analysis for datasets with repeated measures or high dimensional batch effects.</p>
+</div>
+<div style="height: 5px;">
+
+</div>
 <p><img src="reference/figures/variancePartition.png" align="center" alt="" style="padding-left:10px;"></p>
-<p><br></p>
 <div class="section level3">
 <h3 id="update">Update<a class="anchor" aria-label="anchor" href="#update"></a>
 </h3>
-<p>variancePartition 1.31.1 includes a major rewrite of the backend for better error handling. See <a href="news/index.html">Changelog</a>. Importantly, the new version is compatible with emprical Bayes moderated t-statistics for linear mixed models using <code><a href="reference/eBayes-method.html">eBayes()</a></code>.</p>
+<p><code>variancePartition</code> 2.0.0 includes a new implementation of the core variance partitioning analysis using <code><a href="http://gabrielhoffman.github.io/fastglmm/reference/varpart.html" class="external-link">fastglmm::varpart()</a></code>. It also supports negative binomial count models from <code>edgeR</code> and <code>DESeq2</code>.</p>
+<p>See <a href="news/index.html">Changelog</a>.</p>
 <p><br></p>
 </div>
 <div class="section level3">
@@ -104,7 +116,7 @@
 </h2>
 <p>Describes extensions of <code>dream</code> including empirical Bayes moderated t-statistics for linear mixed models and applications to single cell data</p>
 <ul>
-<li><a href="https://doi.org/10.1101/2023.03.17.533005" class="external-link">Hoffman, et al, biorxiv (2024)</a></li>
+<li><a href="https://doi.org/10.1038/s41467-026-75680-8" class="external-link">Hoffman, et al, Nature Communications (2026)</a></li>
 </ul>
 <p>Describes <code>dream</code> for differential expression:</p>
 <ul>

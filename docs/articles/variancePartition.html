@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Variance partitioning analysis • variancePartition</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.43.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +41,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/dream.html">dream analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/varpart.html">Variance partitioning for count data</a></li>
     <li><a class="dropdown-item" href="../articles/rnd_effects.html">Theory and practice of random effects</a></li>
     <li><a class="dropdown-item" href="../articles/mvtests.html">Multivariate tests</a></li>
     <li><a class="dropdown-item" href="../articles/additional_visualization.html">Additional visualizations of variance structure</a></li>
@@ -62,13 +68,12 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Variance partitioning analysis</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Variance partitioning analysis</h1>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2026-07-09
-21:35:39</h4>
+            <h4 data-toc-skip class="date">Run on 2026-07-22
+14:03:28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/variancePartition.Rmd" class="external-link"><code>vignettes/variancePartition.Rmd</code></a></small>
       <div class="d-none name"><code>variancePartition.Rmd</code></div>
@@ -335,14 +340,14 @@ of variance in gene expression.</p>
 <p>At the heart of <code>variancePartition</code>, a regression model is
 fit for each gene separately and summary statistics are extracted and
 reported to the user for visualization and downstream analysis. For a
-single model fit, <code><a href="../reference/calcVarPart-method.html">calcVarPart()</a></code> computes the fraction of
-variance explained by each variable. <code><a href="../reference/calcVarPart-method.html">calcVarPart()</a></code> is
+single model fit, <code><a href="../reference/calcVarPart.html">calcVarPart()</a></code> computes the fraction of
+variance explained by each variable. <code><a href="../reference/calcVarPart.html">calcVarPart()</a></code> is
 defined by this package, and computes these statistics from either a
 fixed effects model fit with <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> or a linear mixed model
 fit with <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lme4::lmer()</a></code>.
 <code><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel()</a></code> loops over each gene, fits the
 regression model and returns the variance fractions reported by
-<code><a href="../reference/calcVarPart-method.html">calcVarPart()</a></code>.</p>
+<code><a href="../reference/calcVarPart.html">calcVarPart()</a></code>.</p>
 <p>Fitting the regression model and extracting variance statistics can
 also be done directly:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -353,7 +358,7 @@ also be done directly:</p>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">form_test</span>, <span class="va">info</span>, REML <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># extract variance statistics</span></span>
-<span><span class="fu"><a href="../reference/calcVarPart-method.html">calcVarPart</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/calcVarPart.html">calcVarPart</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   Individual       Tissue          Age    Residuals </span></span>
 <span><span class="co">## 8.903140e-01 2.468013e-02 4.354738e-05 8.496235e-02</span></span></code></pre>
 </div>
@@ -367,7 +372,7 @@ expression of each gene. It uses a multiple regression model so that the
 effect of each variable is assessed while jointly accounting for all
 others. <a href="https://www.r-bloggers.com/2011/03/anova-%E2%80%93-type-iiiiii-ss-explained/" class="external-link">Standard
 ANOVA</a> implemented in R involves refitting the model while dropping
-terms, but is aimed at hypothesis testing. <code><a href="../reference/calcVarPart-method.html">calcVarPart()</a></code> is
+terms, but is aimed at hypothesis testing. <code><a href="../reference/calcVarPart.html">calcVarPart()</a></code> is
 aimed at estimating variance fractions. It uses a single fit of the
 linear (mixed) model and evaluates the sum of squares of each term and
 the sum of squares of the total model fit. However, we note that like
@@ -1058,7 +1063,7 @@ while <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()
 returns the variance partition statistics for each model in the list.
 <code><a href="../reference/fitExtractVarPartModel-method.html">fitExtractVarPartModel()</a></code> combines the actions of
 <code><a href="../reference/fitVarPartModel-method.html">fitVarPartModel()</a></code> and into one function call.
-<code><a href="../reference/calcVarPart-method.html">calcVarPart()</a></code> is called behind the scenes to compute
+<code><a href="../reference/calcVarPart.html">calcVarPart()</a></code> is called behind the scenes to compute
 variance fractions for both fixed and mixed effects models, but the user
 can also call this function directly on a model fit with
 <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> or <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code>.</p>

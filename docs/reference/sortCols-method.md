@@ -12,7 +12,7 @@ sortCols(
   x,
   FUN = median,
   decreasing = TRUE,
-  last = c("Residuals", "Measurement.error"),
+  last = c("Residuals", "CountNoise"),
   ...
 )
 
@@ -21,7 +21,7 @@ sortCols(
   x,
   FUN = median,
   decreasing = TRUE,
-  last = c("Residuals", "Measurement.error"),
+  last = c("Residuals", "CountNoise"),
   ...
 )
 
@@ -30,7 +30,7 @@ sortCols(
   x,
   FUN = median,
   decreasing = TRUE,
-  last = c("Residuals", "Measurement.error"),
+  last = c("Residuals", "CountNoise"),
   ...
 )
 
@@ -39,7 +39,7 @@ sortCols(
   x,
   FUN = median,
   decreasing = TRUE,
-  last = c("Residuals", "Measurement.error"),
+  last = c("Residuals", "CountNoise"),
   ...
 )
 ```

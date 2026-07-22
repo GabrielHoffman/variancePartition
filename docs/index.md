@@ -1,5 +1,7 @@
 \
 
+![](reference/figures/logo.png)
+
 `variancePartition` quantifies and interprets multiple sources of
 biological and technical variation in gene expression experiments. The
 package a linear mixed model to quantify variation in gene expression
@@ -17,7 +19,7 @@ repeated measures or high dimensional batch effects.
 
 variancePartition 1.31.1 includes a major rewrite of the backend for
 better error handling. See
-[Changelog](http://DiseaseNeurogenomics.github.io/variancePartition/news/index.md).
+[Changelog](https://diseaseneurogenomics.github.io/variancePartition/news/index.html).
 Importantly, the new version is compatible with emprical Bayes moderated
 t-statistics for linear mixed models using
 [`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md).
@@ -67,8 +69,8 @@ Describes extensions of `dream` including empirical Bayes moderated
 t-statistics for linear mixed models and applications to single cell
 data
 
-- [Hoffman, et al, biorxiv
-  (2024)](https://doi.org/10.1101/2023.03.17.533005)
+- [Hoffman, et al, Nature Communications
+  (2026)](https://doi.org/10.1038/s41467-026-75680-8)
 
 Describes `dream` for differential expression:
 

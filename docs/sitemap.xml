@@ -8,6 +8,7 @@
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/mvtests.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/rnd_effects.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/variancePartition.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/articles/varpart.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/authors.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/index.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/news/index.html</loc></url>
@@ -21,7 +22,14 @@
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/as.data.frame.varPartResults.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/as.matrix-varPartResults-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/augmentPriorCount.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart,glm-method.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart,glmer-method.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart,glmerMod-method.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart,lm-method.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart,lmerMod-method.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart,negbin-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.html</loc></url>
+<url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/canCorPairs.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/classifyTestsF-MArrayLM2-method.html</loc></url>
 <url><loc>http://DiseaseNeurogenomics.github.io/variancePartition/reference/classifyTestsF.html</loc></url>

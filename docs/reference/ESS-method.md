@@ -63,5 +63,5 @@ fit <- lmer(geneExpr[1, ] ~ (1 | Individual) + (1 | Tissue) + Age, info)
 # Effective sample size
 ESS(fit)
 #> Individual     Tissue 
-#>   27.24628   53.67295 
+#>   27.28477   53.72117 
 ```

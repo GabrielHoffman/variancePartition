@@ -130,8 +130,5 @@ plotVarPart(vp2, main="edgeR")
 
 # Plot count noise vs expression magnitude
 plotTrendVP( dds, vp2, "CountNoise" )
-#> Warning: Failed to fit group -1.
-#> Caused by error in `nls()`:
-#> ! step factor 0.000488281 reduced below 'minFactor' of 0.000976562
 
 ```

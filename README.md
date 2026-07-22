@@ -1,15 +1,23 @@
 
 <br>
 
+<img src="man/figures/logo.png" align="right" alt="" width="160" style="padding-left:10px; padding-top:5px;" />
+
+<div style="text-align: justify">
 `variancePartition` quantifies and interprets multiple sources of biological and technical variation in gene expression experiments.  The package a linear mixed model to quantify variation in gene expression attributable to individual, tissue, time point, or technical variables.  The `dream()` function performs differential expression analysis for datasets with repeated measures or high dimensional batch effects.
+</div>
+
+<div style="height: 5px;"></div>
 
 <img src="man/figures/variancePartition.png"  align="center" alt="" style="padding-left:10px;" />
 
 
-<br>
 
 ### Update
-variancePartition 1.31.1 includes a major rewrite of the backend for better error handling.  See [Changelog](news/index.html).  Importantly, the new version is compatible with emprical Bayes moderated t-statistics for linear mixed models using `eBayes()`.
+`variancePartition` 2.0.0 includes a new implementation of the core variance partitioning analysis using `fastglmm::varpart()`.  It also supports negative binomial count models from `edgeR` and `DESeq2`.
+
+See [Changelog](news/index.html).  
+
 
 <br>
 
@@ -47,7 +55,7 @@ Please help speed up bug fixes by providing a 'minimal reproducible example' tha
 
 Describes extensions of `dream` including empirical Bayes moderated t-statistics for linear mixed models and applications to single cell data
 
-- [Hoffman, et al, biorxiv (2024)](https://doi.org/10.1101/2023.03.17.533005)
+- [Hoffman, et al, Nature Communications (2026)](https://doi.org/10.1038/s41467-026-75680-8)
 
 Describes `dream` for differential expression: 
 
