@@ -126,7 +126,7 @@
   : Convert to matrix
 - [`augmentPriorCount()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/augmentPriorCount.md)
   : Augment observed read counts with prior count
-- [`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.md)
+- [`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)
   : Compute variance statistics
 - [`canCorPairs()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/canCorPairs.md)
   : canCorPairs

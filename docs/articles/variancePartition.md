@@ -270,9 +270,9 @@ variance in gene expression.
 At the heart of `variancePartition`, a regression model is fit for each
 gene separately and summary statistics are extracted and reported to the
 user for visualization and downstream analysis. For a single model fit,
-[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.md)
+[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)
 computes the fraction of variance explained by each variable.
-[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.md)
+[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)
 is defined by this package, and computes these statistics from either a
 fixed effects model fit with [`lm()`](https://rdrr.io/r/stats/lm.html)
 or a linear mixed model fit with
@@ -280,7 +280,7 @@ or a linear mixed model fit with
 [`fitExtractVarPartModel()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)
 loops over each gene, fits the regression model and returns the variance
 fractions reported by
-[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.md).
+[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md).
 
 Fitting the regression model and extracting variance statistics can also
 be done directly:
@@ -309,7 +309,7 @@ variable is assessed while jointly accounting for all others. [Standard
 ANOVA](https://www.r-bloggers.com/2011/03/anova-%E2%80%93-type-iiiiii-ss-explained/)
 implemented in R involves refitting the model while dropping terms, but
 is aimed at hypothesis testing.
-[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.md)
+[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)
 is aimed at estimating variance fractions. It uses a single fit of the
 linear (mixed) model and evaluates the sum of squares of each term and
 the sum of squares of the total model fit. However, we note that like
@@ -1062,7 +1062,7 @@ statistics for each model in the list.
 combines the actions of
 [`fitVarPartModel()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitVarPartModel-method.md)
 and into one function call.
-[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.md)
+[`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)
 is called behind the scenes to compute variance fractions for both fixed
 and mixed effects models, but the user can also call this function
 directly on a model fit with [`lm()`](https://rdrr.io/r/stats/lm.html)

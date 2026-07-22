@@ -1,7 +1,9 @@
 
-# variancePartition 1.41.5
-  - July, 2026
+# variancePartition 2.0.0
+  - July 17, 2026
+  - use `fastglmm::varpart()` for variance partitioning analysis
   - add support for variance partition analysis of results from `edgeR` and `DESeq2`
+    - including QL dispersion scale
 
 # variancePartition 1.41.4
   - March 4, 2026

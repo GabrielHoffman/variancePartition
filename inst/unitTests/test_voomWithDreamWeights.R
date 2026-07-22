@@ -2,6 +2,7 @@
 # voomWithDreamWeights
 
 library(RUnit)
+library(variancePartition)
 
 test_voomWithDreamWeights = function(){
 	library(edgeR)
@@ -50,8 +51,6 @@ test_usingWeights_fitExtractVarPartModel = function(){
 	# should NOT be equal
 	checkTrue(max(as.data.frame(vp1) - as.data.frame(vp3)) > 0)
 }
-
-
 
 
 test_usingWeights_dream_fixed = function(){

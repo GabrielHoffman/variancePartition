@@ -129,8 +129,8 @@ plotCorrStructure(fit, reorder = FALSE)
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] variancePartition_1.43.5 BiocParallel_1.44.0      limma_3.66.0            
-    ## [4] ggplot2_4.0.3            knitr_1.51              
+    ## [1] variancePartition_2.0.0 BiocParallel_1.44.0     limma_3.66.0           
+    ## [4] ggplot2_4.0.3           knitr_1.51             
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] Rdpack_2.6.6                bitops_1.0-9               
@@ -143,7 +143,7 @@ plotCorrStructure(fit, reorder = FALSE)
     ##  [15] XVector_0.50.0              caTools_1.18.3             
     ##  [17] rmarkdown_2.31              nloptr_2.2.1               
     ##  [19] ragg_1.5.2                  purrr_1.2.2                
-    ##  [21] xfun_0.59                   cachem_1.1.0               
+    ##  [21] xfun_0.60                   cachem_1.1.0               
     ##  [23] jsonlite_2.0.0              EnvStats_3.1.0             
     ##  [25] remaCor_0.0.20              DelayedArray_0.36.1        
     ##  [27] broom_1.0.13                parallel_4.5.1             
@@ -166,16 +166,16 @@ plotCorrStructure(fit, reorder = FALSE)
     ##  [61] pillar_1.11.1               MatrixGenerics_1.22.0      
     ##  [63] carData_3.0-6               KernSmooth_2.23-26         
     ##  [65] stats4_4.5.1                reformulas_0.4.4           
-    ##  [67] generics_0.1.4              fastglmm_0.4.10            
+    ##  [67] generics_0.1.4              fastglmm_0.4.11            
     ##  [69] S4Vectors_0.48.1            scales_1.4.0               
     ##  [71] aod_1.3.3                   minqa_1.2.8                
     ##  [73] gtools_3.9.5                RhpcBLASctl_0.23-42        
     ##  [75] glue_1.8.1                  tools_4.5.1                
-    ##  [77] fANCOVA_0.6-1               lme4_2.0-1                 
+    ##  [77] fANCOVA_0.6-1               lme4_2.1-0                 
     ##  [79] locfit_1.5-9.12             fs_2.1.0                   
-    ##  [81] mvtnorm_1.4-1               grid_4.5.1                 
+    ##  [81] mvtnorm_1.4-2               grid_4.5.1                 
     ##  [83] tidyr_1.3.2                 rbibutils_2.4.1            
-    ##  [85] edgeR_4.8.2                 nlme_3.1-169               
+    ##  [85] edgeR_4.8.2                 nlme_3.1-170               
     ##  [87] Formula_1.2-5               cli_3.6.6                  
     ##  [89] textshaping_1.0.5           S4Arrays_1.10.1            
     ##  [91] dplyr_1.2.1                 corpcor_1.6.10             
@@ -185,4 +185,4 @@ plotCorrStructure(fit, reorder = FALSE)
     ##  [99] pbkrtest_0.5.5              htmlwidgets_1.6.4          
     ## [101] farver_2.1.2                htmltools_0.5.9            
     ## [103] pkgdown_2.2.1               lifecycle_1.0.5            
-    ## [105] statmod_1.5.2               MASS_7.3-65
+    ## [105] statmod_1.5.2               MASS_7.3-66

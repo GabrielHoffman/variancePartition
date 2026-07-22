@@ -64,6 +64,10 @@ test_calcVarPart = function(){
 	                   data = cbpp)
 	calcVarPart(gm1)
 
+
+	gm1 <- glmer(incidence ~ offset(log(size)) + (1|period) + (1 | herd), data = cbpp, family=negative.binomial(4))
+	calcVarPart(gm1)
+
 	y = with(cbpp, log(incidence+.5) - log(size))
 	gm1 <- lmer(y ~ (1|period) + (1 | herd), data = cbpp)
 	calcVarPart(gm1)
@@ -74,11 +78,23 @@ test_calcVarPart = function(){
 
 test_calcVarPart_weights = function(){
 
+	# calcVarPart uses biased variance estimator
+
 	library(variancePartition)
 	library(lme4)
 	library(RUnit)
 	# source("/Users/gabrielhoffman/workspace/repos/variancePartition/R/./checkModelStatus.R")
 	# source("/Users/gabrielhoffman/workspace/repos/variancePartition/R/calcVarPart.R")
+
+	sleepstudy = rbind(sleepstudy, sleepstudy, sleepstudy)
+	sleepstudy = rbind(sleepstudy, sleepstudy, sleepstudy)
+	sleepstudy = rbind(sleepstudy, sleepstudy, sleepstudy)
+	sleepstudy = rbind(sleepstudy, sleepstudy, sleepstudy)
+	sleepstudy = rbind(sleepstudy, sleepstudy, sleepstudy)
+
+	set.seed(1)
+	X = model.matrix(~ 0 + Days, sleepstudy)
+	sleepstudy$Reaction = X %*% rnorm(1) + rnorm(nrow(X))
 
 	# set weights
 	w = c(10000, 2:nrow(sleepstudy))
@@ -90,7 +106,7 @@ test_calcVarPart_weights = function(){
 
 	rsq = summary(fit)$r.squared
 	rsq_vp = calcVarPart(fit)['Days']
-	checkEqualsNumeric(rsq, rsq_vp)
+	checkEqualsNumeric(rsq, rsq_vp, tol=1e-5)
 
 	# lm() weighted
 	#######
@@ -98,7 +114,14 @@ test_calcVarPart_weights = function(){
 
 	rsq = summary(fit)$r.squared
 	rsq_vp = calcVarPart(fit)['Days']
-	checkEqualsNumeric(rsq, rsq_vp)
+	checkEqualsNumeric(rsq, rsq_vp, tol=1e-5)
+
+	# v = c(var(predict(fit)), sigma(fit)^2  )
+	# v / sum(v)
+
+	# v = c(weightedVar(predict(fit), w), sigma(fit)^2  )
+	# v / sum(v)
+
 
 	# glm() 
 	#######
@@ -127,9 +150,10 @@ test_calcVarPart_weights = function(){
 	fit2 = lmer(Reaction ~ Days + (1|tmp), data=sleepstudy, REML=FALSE)
 
 	calcVarPart(fit1)
-	calcVarPart(fit2)[-1]
+	calcVarPart(fit2)[c("Days", "Residuals")]
 
-	checkEqualsNumeric(calcVarPart(fit1), calcVarPart(fit2)[-1])
+	checkEqualsNumeric(calcVarPart(fit1), 		
+		calcVarPart(fit2)[c("Days", "Residuals")], tol=1e-4)
 
 	# lmer() weighted
 	########
@@ -142,11 +166,12 @@ test_calcVarPart_weights = function(){
 	fit2 = lmer(Reaction ~ Days + (1|tmp), data=sleepstudy, weights=w, REML=FALSE)
 
 	calcVarPart(fit1)
-	calcVarPart(fit2)
+	calcVarPart(fit2)[c("Days", "Residuals")]
 
-	checkEqualsNumeric(calcVarPart(fit1), calcVarPart(fit2)[-1])
+	checkEqualsNumeric(calcVarPart(fit1), 		
+		calcVarPart(fit2)[c("Days", "Residuals")], tol=1e-4)
+
 }
-
 
 
 

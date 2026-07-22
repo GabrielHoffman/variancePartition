@@ -1,10 +1,14 @@
 # Changelog
 
-## variancePartition 1.41.5
+## variancePartition 2.0.0
 
-- July, 2026
+- July 17, 2026
+- use
+  [`fastglmm::varpart()`](http://gabrielhoffman.github.io/fastglmm/reference/varpart.md)
+  for variance partitioning analysis
 - add support for variance partition analysis of results from `edgeR`
   and `DESeq2`
+  - including QL dispersion scale
 
 ## variancePartition 1.41.4
 
@@ -282,7 +286,7 @@
 
 - August 7, 2023
 - fix bug in
-  [`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.md)
+  [`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)
   where weights was ignored in some cases
 - add additional tests to check this
 
@@ -647,7 +651,7 @@
 ## variancePartition 1.23.6
 
 - update
-  [`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart-method.md)
+  [`calcVarPart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)
   with argument `scale=TRUE` allowing the user to disable scaling to
   fractions
 

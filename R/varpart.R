@@ -42,7 +42,7 @@ var_predict_terms <- function( formula, Beta, data, design ){
 
 
 #' @importFrom fastglmm log_moments_nb_XB
-.varpart <- function(formula, design, Beta, theta, offset, method = c("exact", "approximate"), pseudocount = 1, p.tail  = 1e-4, nthreads=1){
+.varpart <- function(formula, design, Beta, theta, offset, phi = 1, method = c("exact", "approximate"), pseudocount = 1, p.tail  = 1e-4, nthreads=1){
 
   method <- match.arg(method)
 
@@ -59,6 +59,9 @@ var_predict_terms <- function( formula, Beta, data, design ){
     c       = pseudocount, 
     p_tail  = p.tail,
     nthreads= nthreads)
+
+  # scale noise variance by the QL dispersion scale
+  res$var.noise <- res$var.noise * phi
 
   # total variance
   var.total <- res$var.signal + res$var.noise
@@ -160,6 +163,8 @@ setGeneric("varpart", function(
 #' @importFrom DESeq2 dispersions
 #' @importFrom parallelly availableCores
 #' @importFrom SummarizedExperiment colData
+#' @importFrom S4Vectors mcols
+#' @importFrom SummarizedExperiment colData
 #' @export
 setMethod("varpart", signature = "DESeqDataSet", 
   function(
@@ -188,16 +193,23 @@ setMethod("varpart", signature = "DESeqDataSet",
   # keep only genes where theta is not NA
   include <- !is.na(theta)
 
+  # if QL dispersion scale was estimated with glmGamPoi
+  phi <- mcols(x)$qlDispMAP
+  if( is.null(phi) ){
+    phi <- 1
+  }
+
   .varpart(
-    formula = design(x),
-    design = design, 
-    Beta = Beta[include,,drop=FALSE],
-    theta = theta[include], 
-    offset = os, 
-    method = method,
+    formula     = design(x),
+    design      = design, 
+    Beta        = Beta[include,,drop=FALSE],
+    theta       = theta[include], 
+    offset      = os, 
+    phi         = phi,
+    method      = method,
     pseudocount = pseudocount, 
-    p.tail = p.tail,
-    nthreads = nthreads
+    p.tail      = p.tail,
+    nthreads    = nthreads
     )
   }
 )
@@ -233,15 +245,16 @@ setMethod("varpart", signature = "DGELRT",
   }
 
   .varpart(
-    formula = formula,
-    design = x$design, 
-    Beta = coef(x),
-    theta = 1 / dispObj$tagwise.dispersion, 
-    offset = c(x$offset), 
-    method = method,
+    formula     = formula,
+    design      = x$design, 
+    Beta        = coef(x),
+    theta       = 1 / dispObj$tagwise.dispersion, 
+    offset      = c(x$offset), 
+    phi         = x$s2.post, # QL dispersion scale
+    method      = method,
     pseudocount = pseudocount, 
-    p.tail = p.tail,
-    nthreads = nthreads
+    p.tail      = p.tail,
+    nthreads    = nthreads
     )
   }
 )

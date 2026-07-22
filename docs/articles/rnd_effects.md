@@ -183,7 +183,7 @@ default.
 
     loaded via a namespace (and not attached):
      [1] digest_0.6.39     desc_1.4.3        R6_2.6.1          fastmap_1.2.0    
-     [5] xfun_0.59         cachem_1.1.0      htmltools_0.5.9   rmarkdown_2.31   
+     [5] xfun_0.60         cachem_1.1.0      htmltools_0.5.9   rmarkdown_2.31   
      [9] lifecycle_1.0.5   cli_3.6.6         sass_0.4.10       pkgdown_2.2.1    
     [13] textshaping_1.0.5 jquerylib_0.1.4   systemfonts_1.3.2 compiler_4.5.1   
     [17] tools_4.5.1       ragg_1.5.2        bslib_0.11.0      evaluate_1.0.5   
