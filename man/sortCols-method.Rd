@@ -20,7 +20,7 @@ sortCols(
   x,
   FUN = median,
   decreasing = TRUE,
-  llast = c("CountNoise", "Residuals"),
+  last = c("CountNoise", "Residuals"),
   ...
 )
 

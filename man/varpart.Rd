@@ -71,7 +71,7 @@ library(DESeq2)
 dds <- DESeqDataSetFromMatrix(countMatrix, 
   DataFrame(condition), 
   ~ condition)
-dds <- DESeq(dds)
+dds <- DESeq(dds, quiet=TRUE)
 res <- results(dds)
 
 # Variance partition analysis
@@ -98,6 +98,6 @@ vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
 plotVarPart(vp2, main="edgeR") + theme(aspect.ratio=1)
 
 # Plot count noise vs expression magnitude
-plotTrendVP( dds, vp2, "CountNoise" )
+plotTrendVP( fit, vp2, "CountNoise" )
 
 }

@@ -55,7 +55,7 @@ setGeneric("sortCols",
 #' @aliases sortCols,matrix-method
 setMethod(
   "sortCols", "matrix",
-  function(x, FUN = median, decreasing = TRUE, llast = c("CountNoise", "Residuals"), ...) {
+  function(x, FUN = median, decreasing = TRUE, last = c("CountNoise", "Residuals"), ...) {
     .sortCols(x, FUN, decreasing, last, ...)
   }
 )
