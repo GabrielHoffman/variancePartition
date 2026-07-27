@@ -373,9 +373,8 @@ setMethod(
     theme_classic() +
     theme(aspect.ratio=1, 
       strip.background = element_rect("grey95")) +
-    xlab("Mean log10 counts") +
+    xlab("Mean of normalized counts") +
     scale_y_continuous(limits=c(0,100)) +
-    # geom_smooth( method="nls", formula = y ~ SSlogis(x, Asym, xmid, scal), se=FALSE, method.args = list(control = nls.control()) ) +
     ylab(ylab)
 
   # add smoothed curve
@@ -388,7 +387,7 @@ setMethod(
       data = data.frame(x = x[i], y = y[i]), 
       aes(x,y),
       color="#3366FF",
-      linewidth = 2) 
+      linewidth = 1.2) 
 })
 
 #' @rdname plotTrendVP-methods
@@ -453,7 +452,7 @@ setMethod(
       data = data.frame(x = x[i], y = y[i]), 
       aes(x,y),
       color="#3366FF",
-      linewidth = 2) 
+      linewidth = 1.2) 
 })
 
 
