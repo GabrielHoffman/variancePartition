@@ -60,6 +60,7 @@ Imports:
     RhpcBLASctl,
     reformulas,
     BiocGenerics,
+    mgcv,
     SummarizedExperiment,
     DESeq2,
     edgeR,

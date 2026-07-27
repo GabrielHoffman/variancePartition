@@ -13,7 +13,7 @@ plotTrendVP(x, vp, component, ...)
 \S4method{plotTrendVP}{DGELRT,data.frame}(x, vp, component, ...)
 }
 \arguments{
-\item{x}{object returned by \code{lucida()}}
+\item{x}{regression fits}
 
 \item{vp}{\code{data.frame} from \code{fitVarPart()}}
 
@@ -41,7 +41,7 @@ library(DESeq2)
 dds <- DESeqDataSetFromMatrix(countMatrix, 
   DataFrame(condition), 
   ~ condition)
-dds <- DESeq(dds)
+dds <- DESeq(dds, quiet=TRUE)
 res <- results(dds)
 
 # Variance partition analysis
@@ -63,6 +63,6 @@ fit <- glmQLFTest(fit)
 vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
 
 # Plot count noise vs expression magnitude
-plotTrendVP( dds, vp2, "CountNoise" )
+plotTrendVP( fit, vp2, "CountNoise" )
 
 }

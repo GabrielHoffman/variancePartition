@@ -117,7 +117,7 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' dds <- DESeqDataSetFromMatrix(countMatrix, 
 #'   DataFrame(condition), 
 #'   ~ condition)
-#' dds <- DESeq(dds)
+#' dds <- DESeq(dds, quiet=TRUE)
 #' res <- results(dds)
 #' 
 #' # Variance partition analysis
@@ -144,7 +144,7 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' plotVarPart(vp2, main="edgeR") + theme(aspect.ratio=1)
 #' 
 #' # Plot count noise vs expression magnitude
-#' plotTrendVP( dds, vp2, "CountNoise" )
+#' plotTrendVP( fit, vp2, "CountNoise" )
 #' 
 #' @rdname varpart
 #' @export
@@ -266,7 +266,7 @@ setMethod("varpart", signature = "DGELRT",
 #'
 #' Plot trend of variance fractions for a specified component versus count magnitude for each gene and cell cluster
 #'
-#' @param x object returned by \code{lucida()}
+#' @param x regression fits
 #' @param vp \code{data.frame} from \code{fitVarPart()}
 #' @param component variance component to extract from \code{vp}
 #' @param ... additional arguments
@@ -287,7 +287,7 @@ setMethod("varpart", signature = "DGELRT",
 #' dds <- DESeqDataSetFromMatrix(countMatrix, 
 #'   DataFrame(condition), 
 #'   ~ condition)
-#' dds <- DESeq(dds)
+#' dds <- DESeq(dds, quiet=TRUE)
 #' res <- results(dds)
 #' 
 #' # Variance partition analysis
@@ -309,7 +309,7 @@ setMethod("varpart", signature = "DGELRT",
 #' vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
 #' 
 #' # Plot count noise vs expression magnitude
-#' plotTrendVP( dds, vp2, "CountNoise" )
+#' plotTrendVP( fit, vp2, "CountNoise" )
 #' 
 #' @rdname plotTrendVP-methods
 #' @export
@@ -323,8 +323,10 @@ setGeneric(
 #' @rdname plotTrendVP-methods
 #' @importFrom DESeq2 results
 #' @importFrom tibble rownames_to_column tibble
-#' @importFrom dplyr inner_join `%>%` select filter
+#' @importFrom dplyr inner_join `%>%` select filter mutate
 #' @importFrom ggplot2 sym ggplot scale_x_log10 geom_smooth theme_classic
+#' @importFrom stats nls
+#' @importFrom mgcv gam
 #' @export
 setMethod(
   "plotTrendVP", c("DESeqDataSet", "data.frame"),
@@ -344,7 +346,7 @@ setMethod(
   ylab <- paste("Variance explained by", component, "(%)")
 
   # extract results
-  DESeq2::results(x) %>%
+  df <- DESeq2::results(x) %>%
     data.frame %>%
     rownames_to_column("ID") %>%
     tibble %>%
@@ -352,16 +354,41 @@ setMethod(
     filter(baseMean > 0) %>%
     inner_join(vp %>% 
       rownames_to_column("ID"), by=c("ID")) %>%
-    ggplot(aes(baseMean, 100*!!sym(component))) +
+    mutate(y = 100*!!sym(component))
+    
+  # smoothing curve
+  # use nls()
+  # if that fails use gam()
+  fit <- tryCatch({
+      nls(y ~ SSlogis(baseMean, Asym, xmid, scal), df)
+    },
+    error = function(e){
+      gam(y ~ s(baseMean), data = df)
+      })
+
+  # plot
+  fig <- df %>%
+    ggplot(aes(baseMean, y)) +
     geom_point() +
-    scale_x_log10() +
     theme_classic() +
     theme(aspect.ratio=1, 
       strip.background = element_rect("grey95")) +
     xlab("Mean log10 counts") +
     scale_y_continuous(limits=c(0,100)) +
-    ylab(ylab) +
-    geom_smooth( method="nls", formula = y ~ SSlogis(x, Asym, xmid, scal), se=FALSE)
+    # geom_smooth( method="nls", formula = y ~ SSlogis(x, Asym, xmid, scal), se=FALSE, method.args = list(control = nls.control()) ) +
+    ylab(ylab)
+
+  # add smoothed curve
+  x <- df$baseMean
+  y <- predict(fit)
+  i <- order(x)
+
+  fig +
+    geom_line(
+      data = data.frame(x = x[i], y = y[i]), 
+      aes(x,y),
+      color="#3366FF",
+      linewidth = 2) 
 })
 
 #' @rdname plotTrendVP-methods
@@ -385,20 +412,52 @@ setMethod(
   ylab <- paste("Variance explained by", component, "(%)")
 
   # extract results
-  topTags(x, n=Inf) %>%
+  df <- topTags(x, n=Inf) %>%
     data.frame %>%
     rownames_to_column("ID") %>%
     tibble %>%
     dplyr::select(ID, logCPM) %>%
     inner_join(vp %>% 
       rownames_to_column("ID"), by=c("ID")) %>%
-    ggplot(aes(logCPM, 100*!!sym(component))) +
+    mutate(y = 100*!!sym(component))
+
+  # smoothing curve
+  # use nls()
+  # if that fails use gam()
+  fit <- tryCatch({
+      nls(y ~ SSlogis(logCPM, Asym, xmid, scal), df)
+    },
+    error = function(e){
+      gam(y ~ s(logCPM), data = df)
+      })
+
+  # plot
+  fig <- df %>%
+    ggplot(aes(logCPM, y)) +
     geom_point() +
     theme_classic() +
     theme(aspect.ratio=1, 
       strip.background = element_rect("grey95")) +
     xlab("Mean log10 counts") +
     scale_y_continuous(limits=c(0,100)) +
-    geom_smooth( method="nls", formula = y ~ SSlogis(x, Asym, xmid, scal), se=FALSE) +
+    # geom_smooth( method="nls", formula = y ~ SSlogis(x, Asym, xmid, scal), se=FALSE, method.args = list(control = nls.control()) ) +
     ylab(ylab)
+
+  # add smoothed curve
+  x <- df$logCPM
+  y <- predict(fit)
+  i <- order(x)
+
+  fig +
+    geom_line(
+      data = data.frame(x = x[i], y = y[i]), 
+      aes(x,y),
+      color="#3366FF",
+      linewidth = 2) 
 })
+
+
+
+
+
+
