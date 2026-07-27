@@ -102,6 +102,8 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' @param ... other arguments
 #' 
 #' @examples
+#' library(ggplot2)
+#' 
 #' # Simulate counts
 #' set.seed(1)
 #' countMatrix <- matrix(rnbinom(n=100000, mu=20, size=3), ncol=10)
@@ -122,11 +124,10 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' vp1 <- varpart(dds)
 #' 
 #' # Plot contribution of each component
-#' plotVarPart(vp1, main="DESeq2")
+#' plotVarPart(vp1, main="DESeq2") + theme(aspect.ratio=1)
 #' 
 #' # Plot count noise vs expression magnitude
 #' plotTrendVP( dds, vp1, "CountNoise" )
-#'
 #'
 #' # edgeR model #
 #' library(edgeR)
@@ -140,7 +141,7 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
 #' 
 #' # Plot contribution of each component
-#' plotVarPart(vp2, main="edgeR")
+#' plotVarPart(vp2, main="edgeR") + theme(aspect.ratio=1)
 #' 
 #' # Plot count noise vs expression magnitude
 #' plotTrendVP( dds, vp2, "CountNoise" )
