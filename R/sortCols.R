@@ -45,7 +45,7 @@
 #' @rdname sortCols-method
 setGeneric("sortCols",
   signature = "x",
-  function(x, FUN = median, decreasing = TRUE, last = c("Residuals", "CountNoise"), ...) {
+  function(x, FUN = median, decreasing = TRUE, last = c("CountNoise", "Residuals"), ...) {
     standardGeneric("sortCols")
   }
 )
@@ -55,7 +55,7 @@ setGeneric("sortCols",
 #' @aliases sortCols,matrix-method
 setMethod(
   "sortCols", "matrix",
-  function(x, FUN = median, decreasing = TRUE, last = c("Residuals", "CountNoise"), ...) {
+  function(x, FUN = median, decreasing = TRUE, llast = c("CountNoise", "Residuals"), ...) {
     .sortCols(x, FUN, decreasing, last, ...)
   }
 )
@@ -65,7 +65,7 @@ setMethod(
 #' @aliases sortCols,data.frame-method
 setMethod(
   "sortCols", "data.frame",
-  function(x, FUN = median, decreasing = TRUE, last = c("Residuals", "CountNoise"), ...) {
+  function(x, FUN = median, decreasing = TRUE, last = c("CountNoise", "Residuals"), ...) {
     .sortCols(x, FUN, decreasing, last, ...)
   }
 )
@@ -75,7 +75,7 @@ setMethod(
 #' @aliases sortCols,varPartResults-method
 setMethod(
   "sortCols", "varPartResults",
-  function(x, FUN = median, decreasing = TRUE, last = c("Residuals", "CountNoise"), ...) {
+  function(x, FUN = median, decreasing = TRUE, last = c("CountNoise", "Residuals"), ...) {
     # df = suppressWarnings(as.data.frame(x, check.names=FALSE))
 
     df <- as.data.frame(x@.Data)
@@ -93,7 +93,7 @@ setMethod(
 )
 
 # internal driver function
-.sortCols <- function(x, FUN = median, decreasing = TRUE, last = c("Residuals", "CountNoise"), ...) {
+.sortCols <- function(x, FUN = median, decreasing = TRUE, last = c("CountNoise", "Residuals"), ...) {
   # sort by column mean
   i <- order(apply(x, 2, FUN), decreasing = decreasing)
 
