@@ -92,59 +92,13 @@ using custom plots and can be used for downstream analysis.
 
 ### Standard application
 
-``` r
-
-# load library
-library("variancePartition")
-
-# load simulated data:
-# geneExpr: matrix of gene expression values
-# info: information/metadata about each sample
-data(varPartData)
-
-# Specify variables to consider
-# Age is continuous so model it as a fixed effect
-# Individual and Tissue are both categorical,
-# so model them as random effects
-# Note the syntax used to specify random effects
-form <- ~ Age + (1 | Individual) + (1 | Tissue) + (1 | Batch)
-
-# Fit model and extract results
-# 1) fit linear mixed model on gene expression
-# If categorical variables are specified,
-#     a linear mixed model is used
-# If all variables are modeled as fixed effects,
-#       a linear model is used
-# each entry in results is a regression model fit on a single gene
-# 2) extract variance fractions from each model fit
-# for each gene, returns fraction of variation attributable
-#       to each variable
-# Interpretation: the variance explained by each variables
-# after correcting for all other variables
-# Note that geneExpr can either be a matrix,
-# and EList output by voom() in the limma package,
-# or an ExpressionSet
-varPart <- fitExtractVarPartModel(geneExpr, form, info)
-
-# sort variables (i.e. columns) by median fraction
-#       of variance explained
-vp <- sortCols(varPart)
-
-# Figure 1a
-# Bar plot of variance fractions for the first 10 genes
-plotPercentBars(vp[1:10, ])
-```
+`# load library`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`"variancePartition"`](http://bioconductor.org/packages/variancePartition)`)`` `` ``# load simulated data:`` ``# geneExpr: matrix of gene expression values`` ``# info: information/metadata about each sample`` `[`data`](https://rdrr.io/r/utils/data.html)`(``varPartData``)`` `` ``# Specify variables to consider`` ``# Age is continuous so model it as a fixed effect`` ``# Individual and Tissue are both categorical,`` ``# so model them as random effects`` ``# Note the syntax used to specify random effects`` ``form`` ``<-`` ``~`` ``Age`` ``+`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Batch``)`` `` ``# Fit model and extract results`` ``# 1) fit linear mixed model on gene expression`` ``# If categorical variables are specified,`` ``# a linear mixed model is used`` ``# If all variables are modeled as fixed effects,`` ``# a linear model is used`` ``# each entry in results is a regression model fit on a single gene`` ``# 2) extract variance fractions from each model fit`` ``# for each gene, returns fraction of variation attributable`` ``# to each variable`` ``# Interpretation: the variance explained by each variables`` ``# after correcting for all other variables`` ``# Note that geneExpr can either be a matrix,`` ``# and EList output by voom() in the limma package,`` ``# or an ExpressionSet`` ``varPart`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``geneExpr``, ``form``, ``info``)`` `` ``# sort variables (i.e. columns) by median fraction`` ``# of variance explained`` ``vp`` ``<-`` `[`sortCols`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/sortCols-method.md)`(``varPart``)`` `` ``# Figure 1a`` ``# Bar plot of variance fractions for the first 10 genes`` `[`plotPercentBars`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotPercentBars-method.md)`(``vp``[``1``:``10``, ``]``)`
 
     ## Warning in geom_bar(stat = "identity", width = width): Ignoring empty aesthetic: `width`.
 
 ![](variancePartition_files/figure-html/simResult-1.png)
 
-``` r
-
-# Figure 1b
-# violin plot of contribution of each variable to total variance
-plotVarPart(vp)
-```
+`# Figure 1b`` ``# violin plot of contribution of each variable to total variance`` `[`plotVarPart`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotVarPart-method.md)`(``vp``)`
 
 ![](variancePartition_files/figure-html/simResult-2.png)
 
@@ -165,11 +119,7 @@ returns an object that stores the variance fractions for each gene and
 each variable in the formula specified. These fractions can be accessed
 just like a `data.frame`:
 
-``` r
-
-# Access first entries
-head(varPart)
-```
+`# Access first entries`` `[`head`](https://rdrr.io/r/utils/head.html)`(``varPart``)`
 
     ##             Batch Individual     Tissue          Age  Residuals
     ## gene1 0.000157942  0.8903734 0.02468870 4.528911e-05 0.08473466
@@ -179,19 +129,11 @@ head(varPart)
     ## gene5 0.000000000  0.6997242 0.20910145 3.871487e-05 0.09113564
     ## gene6 0.002343666  0.7222283 0.16786542 2.717378e-03 0.10484521
 
-``` r
-
-# Access first entries for Individual
-head(varPart$Individual)
-```
+`# Access first entries for Individual`` `[`head`](https://rdrr.io/r/utils/head.html)`(``varPart``$``Individual``)`
 
     ## [1] 0.8903734 0.8060315 0.8901149 0.7688280 0.6997242 0.7222283
 
-``` r
-
-# sort genes based on variance explained by Individual
-head(varPart[order(varPart$Individual, decreasing = TRUE), ])
-```
+`# sort genes based on variance explained by Individual`` `[`head`](https://rdrr.io/r/utils/head.html)`(``varPart``[`[`order`](https://rdrr.io/pkg/BiocGenerics/man/order.html)`(``varPart``$``Individual``, decreasing ``=`` ``TRUE``)``, ``]``)`
 
     ##               Batch Individual      Tissue          Age  Residuals
     ## gene43  0.000000000  0.9143523 0.011737173 3.776742e-04 0.07353288
@@ -207,11 +149,7 @@ In order to save the plot to a file, use the
 [`ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html)
 function:
 
-``` r
-
-fig <- plotVarPart(vp)
-ggsave(file, fig)
-```
+`fig`` ``<-`` `[`plotVarPart`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotVarPart-method.md)`(``vp``)`` `[`ggsave`](https://ggplot2.tidyverse.org/reference/ggsave.html)`(``file``, ``fig``)`
 
 #### Plot expression stratified by other variables
 
@@ -221,43 +159,11 @@ stratified by the specified variable. In the example dataset, users can
 plot a gene expression trait stratified by Tissue (Figure 2a) or
 Individual (Figure 2b).
 
-``` r
-
-# get gene with the highest variation across Tissues
-# create data.frame with expression of gene i and Tissue
-#       type for each sample
-i <- which.max(varPart$Tissue)
-GE <- data.frame(Expression = geneExpr[i, ], Tissue = info$Tissue)
-
-# Figure 2a
-# plot expression stratified by Tissue
-plotStratify(Expression ~ Tissue, GE, main = rownames(geneExpr)[i])
-```
+`# get gene with the highest variation across Tissues`` ``# create data.frame with expression of gene i and Tissue`` ``# type for each sample`` ``i`` ``<-`` `[`which.max`](https://rdrr.io/pkg/BiocGenerics/man/which.min.html)`(``varPart``$``Tissue``)`` ``GE`` ``<-`` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(``Expression ``=`` ``geneExpr``[``i``, ``]``, Tissue ``=`` ``info``$``Tissue``)`` `` ``# Figure 2a`` ``# plot expression stratified by Tissue`` `[`plotStratify`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotStratify.md)`(``Expression`` ``~`` ``Tissue``, ``GE``, main ``=`` `[`rownames`](https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html)`(``geneExpr``)``[``i``]``)`
 
 ![](variancePartition_files/figure-html/plotStratify-1.png)
 
-``` r
-
-# get gene with the highest variation across Individuals
-# create data.frame with expression of gene i and Tissue
-#       type for each sample
-i <- which.max(varPart$Individual)
-GE <- data.frame(
-  Expression = geneExpr[i, ],
-  Individual = info$Individual
-)
-
-# Figure 2b
-# plot expression stratified by Tissue
-label <- paste("Individual:", format(varPart$Individual[i] * 100,
-  digits = 3
-), "%")
-main <- rownames(geneExpr)[i]
-plotStratify(Expression ~ Individual, GE,
-  colorBy = NULL,
-  text = label, main = main
-)
-```
+`# get gene with the highest variation across Individuals`` ``# create data.frame with expression of gene i and Tissue`` ``# type for each sample`` ``i`` ``<-`` `[`which.max`](https://rdrr.io/pkg/BiocGenerics/man/which.min.html)`(``varPart``$``Individual``)`` ``GE`` ``<-`` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(`` `` Expression ``=`` ``geneExpr``[``i``, ``]``,`` `` Individual ``=`` ``info``$``Individual`` ``)`` `` ``# Figure 2b`` ``# plot expression stratified by Tissue`` ``label`` ``<-`` `[`paste`](https://rdrr.io/pkg/BiocGenerics/man/paste.html)`(``"Individual:"``, `[`format`](https://rdrr.io/pkg/BiocGenerics/man/format.html)`(``varPart``$``Individual``[``i``]`` ``*`` ``100``,`` `` digits ``=`` ``3`` ``)``, ``"%"``)`` ``main`` ``<-`` `[`rownames`](https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html)`(``geneExpr``)``[``i``]`` `[`plotStratify`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotStratify.md)`(``Expression`` ``~`` ``Individual``, ``GE``,`` `` colorBy ``=`` ``NULL``,`` `` text ``=`` ``label``, main ``=`` ``main`` ``)`
 
 ![](variancePartition_files/figure-html/plotStratify-2.png)
 
@@ -285,17 +191,7 @@ fractions reported by
 Fitting the regression model and extracting variance statistics can also
 be done directly:
 
-``` r
-
-library("lme4")
-
-# fit regression model for the first gene
-form_test <- geneExpr[1, ] ~ Age + (1 | Individual) + (1 | Tissue)
-fit <- lmer(form_test, info, REML = FALSE)
-
-# extract variance statistics
-calcVarPart(fit)
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`"lme4"`](https://github.com/lme4/lme4/)`)`` `` ``# fit regression model for the first gene`` ``form_test`` ``<-`` ``geneExpr``[``1``, ``]`` ``~`` ``Age`` ``+`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``fit`` ``<-`` `[`lmer`](https://rdrr.io/pkg/lme4/man/lmer.html)`(``form_test``, ``info``, REML ``=`` ``FALSE``)`` `` ``# extract variance statistics`` `[`calcVarPart`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)`(``fit``)`
 
     ##   Individual       Tissue          Age    Residuals 
     ## 8.903140e-01 2.468013e-02 4.354738e-05 8.496235e-02
@@ -478,25 +374,12 @@ the standard R function cancor to compute CCA.
 returns `rho / sum(rho)` which is the fraction of the maximum possible
 correlation. Note that CCA returns correlations values between 0 and 1
 
-``` r
-
-form <- ~ Individual + Tissue + Batch + Age + Height
-
-# Compute Canonical Correlation Analysis (CCA)
-# between all pairs of variables
-# returns absolute correlation value
-C <- canCorPairs(form, info)
-```
+`form`` ``<-`` ``~`` ``Individual`` ``+`` ``Tissue`` ``+`` ``Batch`` ``+`` ``Age`` ``+`` ``Height`` `` ``# Compute Canonical Correlation Analysis (CCA)`` ``# between all pairs of variables`` ``# returns absolute correlation value`` ``C`` ``<-`` `[`canCorPairs`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/canCorPairs.md)`(``form``, ``info``)`
 
     ## Warning: the 'subbars' function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainter to do so.
     ## This warning is displayed once per session.
 
-``` r
-
-# Plot correlation matrix
-# between all pairs of variables
-plotCorrMatrix(C)
-```
+`# Plot correlation matrix`` ``# between all pairs of variables`` `[`plotCorrMatrix`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotCorrMatrix.md)`(``C``)`
 
 ![](variancePartition_files/figure-html/canCorPairs-1.png)
 
@@ -509,16 +392,7 @@ separate steps in order to examine the fit of the model for each gene.
 Thus the work of can be divided into two steps: 1) fit the regression
 model, and 2) extracting variance statistics.
 
-``` r
-
-form <- ~ Age + (1 | Individual) + (1 | Tissue) + (1 | Batch)
-
-# Fit model
-results <- fitVarPartModel(geneExpr, form, info)
-
-# Extract results
-varPart <- extractVarPart(results)
-```
+`form`` ``<-`` ``~`` ``Age`` ``+`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Batch``)`` `` ``# Fit model`` ``results`` ``<-`` `[`fitVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitVarPartModel-method.md)`(``geneExpr``, ``form``, ``info``)`` `` ``# Extract results`` ``varPart`` ``<-`` `[`extractVarPart`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/extractVarPart.md)`(``results``)`
 
 Note that storing the model fits can use a lot of memory (~10Gb with 20K
 genes and 1000 experiments). I do not recommend unless you have a
@@ -531,17 +405,9 @@ model fit from [`lm()`](https://rdrr.io/r/stats/lm.html) or
 [`lmer()`](https://rdrr.io/pkg/lme4/man/lmer.html). The results are
 stored in a `list` and can be used for downstream analysis.
 
-``` r
+`# Fit model and run summary() function on each model fit`` ``vpSummaries`` ``<-`` `[`fitVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitVarPartModel-method.md)`(``geneExpr``, ``form``, ``info``, fxn ``=`` ``summary``)`
 
-# Fit model and run summary() function on each model fit
-vpSummaries <- fitVarPartModel(geneExpr, form, info, fxn = summary)
-```
-
-``` r
-
-# Show results of summary() for the first gene
-vpSummaries[[1]]
-```
+`# Show results of summary() for the first gene`` ``vpSummaries``[[``1``]``]`
 
     ## Linear mixed model fit by maximum likelihood  ['lmerMod']
     ## Formula: y.local ~ Age + (1 | Individual) + (1 | Tissue) + (1 | Batch)
@@ -587,56 +453,22 @@ other variables become clearer.
 
 Standard analysis:
 
-``` r
-
-form <- ~ (1 | Tissue) + (1 | Individual) + (1 | Batch) + Age
-varPart <- fitExtractVarPartModel(geneExpr, form, info)
-```
+`form`` ``<-`` ``~`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Batch``)`` ``+`` ``Age`` ``varPart`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``geneExpr``, ``form``, ``info``)`
 
 Analysis on residuals:
 
-``` r
-
-library("limma")
-# subtract out effect of Batch
-fit <- lmFit(geneExpr, model.matrix(~Batch, info))
-res <- residuals(fit, geneExpr)
-
-# fit model on residuals
-form <- ~ (1 | Tissue) + (1 | Individual) + Age
-
-varPartResid <- fitExtractVarPartModel(res, form, info)
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`"limma"`](https://bioinf.wehi.edu.au/limma/)`)`` ``# subtract out effect of Batch`` ``fit`` ``<-`` `[`lmFit`](https://rdrr.io/pkg/limma/man/lmFit.html)`(``geneExpr``, `[`model.matrix`](https://rdrr.io/r/stats/model.matrix.html)`(``~``Batch``, ``info``)``)`` ``res`` ``<-`` `[`residuals`](https://rdrr.io/r/stats/residuals.html)`(``fit``, ``geneExpr``)`` `` ``# fit model on residuals`` ``form`` ``<-`` ``~`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``Age`` `` ``varPartResid`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``res``, ``form``, ``info``)`
 
 Remove batch effect with linear mixed model
 
-``` r
-
-# subtract out effect of Batch with linear mixed model
-modelFit <- fitVarPartModel(geneExpr, ~ (1 | Batch), info)
-res <- residuals(modelFit)
-
-# fit model on residuals
-form <- ~ (1 | Tissue) + (1 | Individual) + Age
-
-varPartResid <- fitExtractVarPartModel(res, form, info)
-```
+`# subtract out effect of Batch with linear mixed model`` ``modelFit`` ``<-`` `[`fitVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitVarPartModel-method.md)`(``geneExpr``, ``~`` ``(``1`` ``|`` ``Batch``)``, ``info``)`` ``res`` ``<-`` `[`residuals`](https://rdrr.io/r/stats/residuals.html)`(``modelFit``)`` `` ``# fit model on residuals`` ``form`` ``<-`` ``~`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``Age`` `` ``varPartResid`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``res``, ``form``, ``info``)`
 
 If the two-step process requires too much memory, the residuals can be
 computed more efficiently. Here, run the function inside the call to
 [`fitVarPartModel()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitVarPartModel-method.md)
 to avoid storing the large intermediate results.
 
-``` r
-
-# extract residuals directly without storing intermediate results
-residList <- fitVarPartModel(geneExpr, ~ (1 | Batch), info,
-  fxn = residuals
-)
-
-# convert list to matrix
-residMatrix <- do.call(rbind, residList)
-```
+`# extract residuals directly without storing intermediate results`` ``residList`` ``<-`` `[`fitVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitVarPartModel-method.md)`(``geneExpr``, ``~`` ``(``1`` ``|`` ``Batch``)``, ``info``,`` `` fxn ``=`` ``residuals`` ``)`` `` ``# convert list to matrix`` ``residMatrix`` ``<-`` `[`do.call`](https://rdrr.io/pkg/BiocGenerics/man/do.call.html)`(``rbind``, ``residList``)`
 
 #### Variation within multiple subsets of the data
 
@@ -651,20 +483,7 @@ will only work when there are replicates for at least some individuals
 within each tissue in order to assess cross-individual variance with in
 a tissue.
 
-``` r
-
-# specify formula to model within/between individual variance
-# separately for each tissue
-# Note that including +0 ensures each tissue is modeled explicitly
-# Otherwise, the first tissue would be used as baseline
-form <- ~ (Tissue + 0 | Individual) + Age + (1 | Tissue) + (1 | Batch)
-
-# fit model and extract variance percents
-varPart <- fitExtractVarPartModel(geneExpr, form, info, showWarnings = FALSE)
-
-# violin plot
-plotVarPart(sortCols(varPart), label.angle = 60)
-```
+`# specify formula to model within/between individual variance`` ``# separately for each tissue`` ``# Note that including +0 ensures each tissue is modeled explicitly`` ``# Otherwise, the first tissue would be used as baseline`` ``form`` ``<-`` ``~`` ``(``Tissue`` ``+`` ``0`` ``|`` ``Individual``)`` ``+`` ``Age`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Batch``)`` `` ``# fit model and extract variance percents`` ``varPart`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``geneExpr``, ``form``, ``info``, showWarnings ``=`` ``FALSE``)`` `` ``# violin plot`` `[`plotVarPart`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotVarPart-method.md)`(`[`sortCols`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/sortCols-method.md)`(``varPart``)``, label.angle ``=`` ``60``)`
 
 ![](variancePartition_files/figure-html/withinTissue-1.png)
 
@@ -702,25 +521,9 @@ Alternatively, the user can use the
 [`colinearityScore()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/colinearityScore.md)
 function to evaluate whether this is an issue for a single model fit:
 
-``` r
+`form`` ``<-`` ``~`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``Age`` ``+`` ``Height`` `` ``# fit model`` ``res`` ``<-`` `[`fitVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitVarPartModel-method.md)`(``geneExpr``[``1``:``4``, ``]``, ``form``, ``info``)`
 
-form <- ~ (1 | Individual) + (1 | Tissue) + Age + Height
-
-# fit model
-res <- fitVarPartModel(geneExpr[1:4, ], form, info)
-```
-
-``` r
-
-# evaluate the collinearity score on the first model fit
-# this reports the correlation matrix between coefficient estimates
-# for fixed effects
-# the collinearity score is the maximum absolute correlation value
-# If the collinearity score > .99 then the variance partition
-# estimates may be problematic
-# In that case, a least one variable should be omitted
-colinearityScore(res[[1]])
-```
+`# evaluate the collinearity score on the first model fit`` ``# this reports the correlation matrix between coefficient estimates`` ``# for fixed effects`` ``# the collinearity score is the maximum absolute correlation value`` ``# If the collinearity score > .99 then the variance partition`` ``# estimates may be problematic`` ``# In that case, a least one variable should be omitted`` `[`colinearityScore`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/colinearityScore.md)`(``res``[[``1``]``]``)`
 
     ## [1] 0.7774082
     ## attr(,"vcor")
@@ -735,20 +538,7 @@ colinearityScore(res[[1]])
 [`limma::voom()`](https://rdrr.io/pkg/limma/man/voom.html), but the user
 can also specify custom weights using the `weightsMatrix` argument.
 
-``` r
-
-form <- ~ (1 | Individual) + (1 | Tissue) + Age + Height
-
-# Specify custom weights
-# In this example the weights are simulated from a
-# uniform distribution and are not meaningful.
-weights <- matrix(runif(length(geneExpr)), nrow = nrow(geneExpr))
-
-# Specify custom weights
-res <- fitExtractVarPartModel(geneExpr[1:4, ], form, info,
-  weightsMatrix = weights[1:4, ]
-)
-```
+`form`` ``<-`` ``~`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``Age`` ``+`` ``Height`` `` ``# Specify custom weights`` ``# In this example the weights are simulated from a`` ``# uniform distribution and are not meaningful.`` ``weights`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`runif`](https://rdrr.io/r/stats/Uniform.html)`(`[`length`](https://rdrr.io/r/base/length.html)`(``geneExpr``)``)``, nrow ``=`` `[`nrow`](https://rdrr.io/pkg/BiocGenerics/man/nrow.html)`(``geneExpr``)``)`` `` ``# Specify custom weights`` ``res`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``geneExpr``[``1``:``4``, ``]``, ``form``, ``info``,`` `` weightsMatrix ``=`` ``weights``[``1``:``4``, ``]`` ``)`
 
 In addition, setting the `useWeights=FALSE` will suppress usage of the
 weights in all cases, i.e. when the weights are specified manually or
@@ -771,16 +561,7 @@ the two constituent variables.
 Here we fit an interaction model, but we observe that interaction
 between `Batch` and `Tissue` does not explain much expression variation.
 
-``` r
-
-form <- ~ (1 | Individual) + Age + Height + (1 | Tissue) + (1 | Batch) +
-  (1 | Batch:Tissue)
-
-# fit model
-vpInteraction <- fitExtractVarPartModel(geneExpr, form, info)
-
-plotVarPart(sortCols(vpInteraction))
-```
+`form`` ``<-`` ``~`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``Age`` ``+`` ``Height`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Batch``)`` ``+`` `` ``(``1`` ``|`` ``Batch``:``Tissue``)`` `` ``# fit model`` ``vpInteraction`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``geneExpr``, ``form``, ``info``)`` `` `[`plotVarPart`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotVarPart-method.md)`(`[`sortCols`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/sortCols-method.md)`(``vpInteraction``)``)`
 
 ![](variancePartition_files/figure-html/vpInteraction-1.png)
 
@@ -808,55 +589,14 @@ between experiments with TMM (Robinson and Oshlack 2010), estimate
 precision weights with
 [`limma::voom()`](https://rdrr.io/pkg/limma/man/voom.html).
 
-``` r
-
-library("limma")
-library("edgeR")
-
-# identify genes that pass expression cutoff
-isexpr <- rowSums(cpm(geneCounts) > 1) >= 0.5 * ncol(geneCounts)
-
-# create data structure with only expressed genes
-gExpr <- DGEList(counts = geneCounts[isexpr, ])
-
-# Perform TMM normalization
-gExpr <- calcNormFactors(gExpr)
-
-# Specify variables to be included in the voom() estimates of
-# uncertainty.
-# Recommend including variables with a small number of categories
-# that explain a substantial amount of variation
-design <- model.matrix(~Batch, info)
-
-# Estimate precision weights for each gene and sample
-# This models uncertainty in expression measurements
-vobjGenes <- voom(gExpr, design)
-
-# Define formula
-form <- ~ (1 | Individual) + (1 | Tissue) + (1 | Batch) + Age
-
-# variancePartition seamlessly deals with the result of voom()
-# by default, it seamlessly models the precision weights
-# This can be turned off with useWeights=FALSE
-varPart <- fitExtractVarPartModel(vobjGenes, form, info)
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`"limma"`](https://bioinf.wehi.edu.au/limma/)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`"edgeR"`](https://bioinf.wehi.edu.au/edgeR/)`)`` `` ``# identify genes that pass expression cutoff`` ``isexpr`` ``<-`` `[`rowSums`](https://rdrr.io/pkg/Matrix/man/colSums-methods.html)`(`[`cpm`](https://rdrr.io/pkg/edgeR/man/cpm.html)`(``geneCounts``)`` ``>`` ``1``)`` ``>=`` ``0.5`` ``*`` `[`ncol`](https://rdrr.io/pkg/BiocGenerics/man/nrow.html)`(``geneCounts``)`` `` ``# create data structure with only expressed genes`` ``gExpr`` ``<-`` `[`DGEList`](https://rdrr.io/pkg/edgeR/man/DGEList.html)`(``counts ``=`` ``geneCounts``[``isexpr``, ``]``)`` `` ``# Perform TMM normalization`` ``gExpr`` ``<-`` `[`calcNormFactors`](https://rdrr.io/pkg/edgeR/man/calcNormFactors.html)`(``gExpr``)`` `` ``# Specify variables to be included in the voom() estimates of`` ``# uncertainty.`` ``# Recommend including variables with a small number of categories`` ``# that explain a substantial amount of variation`` ``design`` ``<-`` `[`model.matrix`](https://rdrr.io/r/stats/model.matrix.html)`(``~``Batch``, ``info``)`` `` ``# Estimate precision weights for each gene and sample`` ``# This models uncertainty in expression measurements`` ``vobjGenes`` ``<-`` `[`voom`](https://rdrr.io/pkg/limma/man/voom.html)`(``gExpr``, ``design``)`` `` ``# Define formula`` ``form`` ``<-`` ``~`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Batch``)`` ``+`` ``Age`` `` ``# variancePartition seamlessly deals with the result of voom()`` ``# by default, it seamlessly models the precision weights`` ``# This can be turned off with useWeights=FALSE`` ``varPart`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``vobjGenes``, ``form``, ``info``)`
 
 #### `DESeq2`
 
 Process and normalize the gene-level counts before running
 `variancePartition` analysis.
 
-``` r
-
-library("DESeq2")
-
-# create DESeq2 object from gene-level counts and metadata
-dds <- DESeqDataSetFromMatrix(
-  countData = geneCounts,
-  colData = info,
-  design = ~1
-)
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`"DESeq2"`](https://github.com/thelovelab/DESeq2)`)`` `` ``# create DESeq2 object from gene-level counts and metadata`` ``dds`` ``<-`` `[`DESeqDataSetFromMatrix`](https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html)`(`` `` countData ``=`` ``geneCounts``,`` `` colData ``=`` ``info``,`` `` design ``=`` ``~``1`` ``)`
 
     ## Warning in S4Vectors:::anyMissing(runValue(x_seqnames)): 'S4Vectors:::anyMissing()' is deprecated.
     ## Use 'anyNA()' instead.
@@ -866,24 +606,7 @@ dds <- DESeqDataSetFromMatrix(
     ## Use 'anyNA()' instead.
     ## See help("Deprecated")
 
-``` r
-
-# Estimate library size correction scaling factors
-dds <- estimateSizeFactors(dds)
-
-# identify genes that pass expression cutoff
-isexpr <- rowSums(fpm(dds) > 1) >= 0.5 * ncol(dds)
-
-# compute log2 Fragments Per Million
-# Alternatively, fpkm(), vst() or rlog() could be used
-quantLog <- log2(fpm(dds)[isexpr, ] + 1)
-
-# Define formula
-form <- ~ (1 | Individual) + (1 | Tissue) + (1 | Batch) + Age
-
-# Run variancePartition analysis
-varPart <- fitExtractVarPartModel(quantLog, form, info)
-```
+`# Estimate library size correction scaling factors`` ``dds`` ``<-`` `[`estimateSizeFactors`](https://rdrr.io/pkg/BiocGenerics/man/dge.html)`(``dds``)`` `` ``# identify genes that pass expression cutoff`` ``isexpr`` ``<-`` `[`rowSums`](https://rdrr.io/pkg/Matrix/man/colSums-methods.html)`(`[`fpm`](https://rdrr.io/pkg/DESeq2/man/fpm.html)`(``dds``)`` ``>`` ``1``)`` ``>=`` ``0.5`` ``*`` `[`ncol`](https://rdrr.io/pkg/BiocGenerics/man/nrow.html)`(``dds``)`` `` ``# compute log2 Fragments Per Million`` ``# Alternatively, fpkm(), vst() or rlog() could be used`` ``quantLog`` ``<-`` `[`log2`](https://rdrr.io/r/base/Log.html)`(`[`fpm`](https://rdrr.io/pkg/DESeq2/man/fpm.html)`(``dds``)``[``isexpr``, ``]`` ``+`` ``1``)`` `` ``# Define formula`` ``form`` ``<-`` ``~`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Tissue``)`` ``+`` ``(``1`` ``|`` ``Batch``)`` ``+`` ``Age`` `` ``# Run variancePartition analysis`` ``varPart`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``quantLog``, ``form``, ``info``)`
 
 Note that `DESeq2` does not compute precision weights like
 [`limma::voom()`](https://rdrr.io/pkg/limma/man/voom.html), so they are
@@ -903,51 +626,7 @@ read into R and processed with the Bioconductor package `tximport`. The
 gene- or transcript-level quantifications can be used directly in
 `variancePartition`.
 
-``` r
-
-library("tximportData")
-library("tximport")
-library("readr")
-
-# Get data from folder where tximportData is installed
-dir <- system.file("extdata", package = "tximportData")
-samples <- read.table(file.path(dir, "samples.txt"), header = TRUE)
-files <- file.path(dir, "kallisto", samples$run, "abundance.tsv")
-names(files) <- paste0("sample", 1:6)
-
-tx2gene <- read.csv(file.path(dir, "tx2gene.csv"))
-
-# reads results from kallisto
-txi <- tximport(files,
-  type = "kallisto", tx2gene = tx2gene,
-  countsFromAbundance = "lengthScaledTPM"
-)
-
-# define metadata (usually read from external source)
-info_tximport <- data.frame(
-  Sample = sprintf("sample%d", 1:6),
-  Disease = c("case", "control")[c(rep(1, 3), rep(2, 3))]
-)
-
-# Extract counts from kallisto
-y <- DGEList(txi$counts)
-
-# compute library size normalization
-y <- calcNormFactors(y)
-
-# apply voom to estimate precision weights
-design <- model.matrix(~Disease, data = info_tximport)
-vobj <- voom(y, design)
-
-# define formula
-form <- ~ (1 | Disease)
-
-# Run variancePartition analysis (on only 10 genes)
-varPart_tx <- fitExtractVarPartModel(
-  vobj[1:10, ], form,
-  info_tximport
-)
-```
+[`library`](https://rdrr.io/r/base/library.html)`(``"tximportData"``)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`"tximport"`](https://github.com/thelovelab/tximport)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`"readr"`](https://readr.tidyverse.org)`)`` `` ``# Get data from folder where tximportData is installed`` ``dir`` ``<-`` `[`system.file`](https://rdrr.io/r/base/system.file.html)`(``"extdata"``, package ``=`` ``"tximportData"``)`` ``samples`` ``<-`` `[`read.table`](https://rdrr.io/r/utils/read.table.html)`(`[`file.path`](https://rdrr.io/r/base/file.path.html)`(``dir``, ``"samples.txt"``)``, header ``=`` ``TRUE``)`` ``files`` ``<-`` `[`file.path`](https://rdrr.io/r/base/file.path.html)`(``dir``, ``"kallisto"``, ``samples``$``run``, ``"abundance.tsv"``)`` `[`names`](https://rdrr.io/r/base/names.html)`(``files``)`` ``<-`` `[`paste0`](https://rdrr.io/r/base/paste.html)`(``"sample"``, ``1``:``6``)`` `` ``tx2gene`` ``<-`` `[`read.csv`](https://rdrr.io/r/utils/read.table.html)`(`[`file.path`](https://rdrr.io/r/base/file.path.html)`(``dir``, ``"tx2gene.csv"``)``)`` `` ``# reads results from kallisto`` ``txi`` ``<-`` `[`tximport`](https://rdrr.io/pkg/tximport/man/tximport.html)`(``files``,`` `` type ``=`` ``"kallisto"``, tx2gene ``=`` ``tx2gene``,`` `` countsFromAbundance ``=`` ``"lengthScaledTPM"`` ``)`` `` ``# define metadata (usually read from external source)`` ``info_tximport`` ``<-`` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(`` `` Sample ``=`` `[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"sample%d"``, ``1``:``6``)``,`` `` Disease ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"case"``, ``"control"``)``[`[`c`](https://rdrr.io/r/base/c.html)`(`[`rep`](https://rdrr.io/r/base/rep.html)`(``1``, ``3``)``, `[`rep`](https://rdrr.io/r/base/rep.html)`(``2``, ``3``)``)``]`` ``)`` `` ``# Extract counts from kallisto`` ``y`` ``<-`` `[`DGEList`](https://rdrr.io/pkg/edgeR/man/DGEList.html)`(``txi``$``counts``)`` `` ``# compute library size normalization`` ``y`` ``<-`` `[`calcNormFactors`](https://rdrr.io/pkg/edgeR/man/calcNormFactors.html)`(``y``)`` `` ``# apply voom to estimate precision weights`` ``design`` ``<-`` `[`model.matrix`](https://rdrr.io/r/stats/model.matrix.html)`(``~``Disease``, data ``=`` ``info_tximport``)`` ``vobj`` ``<-`` `[`voom`](https://rdrr.io/pkg/limma/man/voom.html)`(``y``, ``design``)`` `` ``# define formula`` ``form`` ``<-`` ``~`` ``(``1`` ``|`` ``Disease``)`` `` ``# Run variancePartition analysis (on only 10 genes)`` ``varPart_tx`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(`` `` ``vobj``[``1``:``10``, ``]``, ``form``,`` `` ``info_tximport`` ``)`
 
 Code to process results from `sailfish`, `salmon`, `RSEM` is very
 similar.

@@ -21,6 +21,8 @@ vignette: >
 cd /Users/gabrielhoffman/workspace/repos
 R
 
+# system("rm -rf varpart_cache/")
+
 rmarkdown::render('varpart.Rmd')
 
 --->
@@ -56,7 +58,7 @@ Running variance partitioning analysis on a negative binomial count model allows
 
 In this particular dataset, the gene expression variance across cell lines and dexamethasone treatment status explains most of the variance.  Due to these large bioligical effects, the fraction of gene expression variance explained by count noise and residuals is small for most genes.  In addition, the fraction of variance explained by count noise decreases for genes with high read depth.  Of course, initial filtering of genes based on number of counts removes genes with very high count noise here.
 
-Here we show analysis and results with DESeq2 and edgeR.  We note that the packages produce different parameter estimates, especially on small datasets like this one.
+Here we show analysis and results with DESeq2 and edgeR.  _We note that the packages produce different parameter estimates, especially on small datasets like this one._
 
 
 ```{r load.data, cache=FALSE}
@@ -125,12 +127,12 @@ vp <- varpart(fit, dispObj = d, formula = form)
 plotVarPart(vp)
 
 # Plot count noise vs expression magnitude
-plotTrendVP( fit, vp, "CountNoise" )
+plotTrendVP( fit, vp, "CountNoise", dispObj = d  )
 ```
 
 ```{r fig.edgeR, fig.height=4, fig.width=7, echo=FALSE}
 fig1 <- plotVarPart(vp)
-fig2 <- plotTrendVP( fit, vp, "CountNoise" )
+fig2 <- plotTrendVP( fit, vp, "CountNoise", dispObj = d  )
 
 fig1 + theme(aspect.ratio=1) | fig2
 ```

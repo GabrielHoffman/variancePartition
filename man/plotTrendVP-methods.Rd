@@ -3,6 +3,7 @@
 \name{plotTrendVP}
 \alias{plotTrendVP}
 \alias{plotTrendVP,DESeqDataSet,data.frame-method}
+\alias{plotTrendVP,DGEGLM,data.frame-method}
 \alias{plotTrendVP,DGELRT,data.frame-method}
 \title{Plot Trend of Variance Fractions Vs Count Magnitude}
 \usage{
@@ -10,7 +11,9 @@ plotTrendVP(x, vp, component, ...)
 
 \S4method{plotTrendVP}{DESeqDataSet,data.frame}(x, vp, component, ...)
 
-\S4method{plotTrendVP}{DGELRT,data.frame}(x, vp, component, ...)
+\S4method{plotTrendVP}{DGEGLM,data.frame}(x, vp, component, dispObj, ...)
+
+\S4method{plotTrendVP}{DGELRT,data.frame}(x, vp, component, dispObj, ...)
 }
 \arguments{
 \item{x}{regression fits}
@@ -20,6 +23,8 @@ plotTrendVP(x, vp, component, ...)
 \item{component}{variance component to extract from \code{vp}}
 
 \item{...}{additional arguments}
+
+\item{dispObj}{dispersion object if \code{edgeR} is used}
 }
 \value{
 Plot of variance fraction vs count magnitude
@@ -30,7 +35,10 @@ Plot trend of variance fractions for a specified component versus count magnitud
 \examples{
 # Simulate counts
 set.seed(1)
-countMatrix <- matrix(rnbinom(n=100000, mu=20, size=3), ncol=10)
+eta <- rnorm(10, 3, 1)
+mu <- exp(eta)
+
+countMatrix <- matrix(rnbinom(n=100000, mu=mu, size=3), ncol=10)
 rownames(countMatrix) <- paste0("gene_", seq(nrow(countMatrix)))
 colnames(countMatrix) <- paste0("sample_", seq(ncol(countMatrix)))
 
@@ -50,7 +58,6 @@ vp1 <- varpart(dds)
 # Plot count noise vs expression magnitude
 plotTrendVP( dds, vp1, "CountNoise" )
 
-
 # edgeR model #
 library(edgeR)
 design <- model.matrix( ~ condition, data.frame(condition))
@@ -58,11 +65,10 @@ d <- DGEList(countMatrix)
 d <- normLibSizes(d)
 d <- estimateDisp(d, design)
 fit <- glmQLFit(d, design)
-fit <- glmQLFTest(fit)
 
 vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
 
 # Plot count noise vs expression magnitude
-plotTrendVP( fit, vp2, "CountNoise" )
+plotTrendVP( fit, vp2, "CountNoise", dispObj = d )
 
 }

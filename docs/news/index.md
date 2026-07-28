@@ -1,5 +1,10 @@
 # Changelog
 
+## variancePartition 2.0.1
+
+- July 28, 2026
+- variance partition accounts for offset in count model
+
 ## variancePartition 2.0.0
 
 - July 17, 2026

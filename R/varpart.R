@@ -77,17 +77,28 @@ var_predict_terms <- function( formula, Beta, data, design ){
 
   # remove intercept since variance is zero
   eta_var <- eta_var[,colnames(eta_var) != "(Intercept)",drop=FALSE]
+
+  # account for variance due to offset
+  eta_var <- data.frame(eta_var)
+  eta_var[,'offset'] <- rep(var(offset), nrow(eta_var))
+  eta_var <- as.matrix(eta_var)
+
   gamma <- eta_var / rowSums(eta_var)
 
   if( any(is.nan(gamma)) ){
     gamma[is.nan(gamma)] <- 0
   }
 
-  data.frame(
+  # variance fractions
+  frac <- data.frame(
     rho2.signal*gamma, 
     CountNoise = rho2.noise*res$alpha,
     Residuals = rho2.noise*(1-res$alpha)
     )
+
+  # remove offset from fractions
+  i <- match("offset", colnames(frac))
+  frac[,-i,drop=FALSE] / rowSums(frac[,-i,drop=FALSE])
 }
 
 #' Variance Partitioning Analysis
@@ -220,6 +231,52 @@ setMethod("varpart", signature = "DESeqDataSet",
 #'
 #' @rdname varpart
 #' @export
+setMethod("varpart", signature = "DGEGLM", 
+  function(
+  x,    
+  method = c("exact", "approximate"),
+  pseudocount = 1,
+  p.tail = 1e-04,
+  nthreads = parallelly::availableCores(),
+  dispObj,
+  formula,
+  ...){
+  
+  method <- match.arg(method)
+
+  if( missing(dispObj) ){
+    stop("For edgeR analysis, must specify dispObj as the result of estimateDisp()")
+  }
+
+  if( missing(formula) ){
+    stop("For edgeR analysis, must specify formula used for the design matrix")
+  }
+
+  if( is.null(dispObj$tagwise.dispersion) ){
+    stop("Dispersions not estimated, use estimateDisp() first")
+  }
+
+  .varpart(
+    formula     = formula,
+    design      = x$design, 
+    Beta        = coef(x),
+    theta       = 1 / dispObj$tagwise.dispersion, 
+    offset      = c(x$offset), 
+    phi         = x$s2.post, # QL dispersion scale
+    method      = method,
+    pseudocount = pseudocount, 
+    p.tail      = p.tail,
+    nthreads    = nthreads
+    )
+  }
+)
+
+
+#' @param dispObj result of \code{estimateDisp()}
+#' @param formula formula used for the design matrix
+#'
+#' @rdname varpart
+#' @export
 setMethod("varpart", signature = "DGELRT", 
   function(
   x,    
@@ -270,13 +327,17 @@ setMethod("varpart", signature = "DGELRT",
 #' @param vp \code{data.frame} from \code{fitVarPart()}
 #' @param component variance component to extract from \code{vp}
 #' @param ... additional arguments
+#' @param dispObj dispersion object if \code{edgeR} is used
 #'
 #' @return Plot of variance fraction vs count magnitude
 #'
 #' @examples
 #' # Simulate counts
 #' set.seed(1)
-#' countMatrix <- matrix(rnbinom(n=100000, mu=20, size=3), ncol=10)
+#' eta <- rnorm(10, 3, 1)
+#' mu <- exp(eta)
+#'
+#' countMatrix <- matrix(rnbinom(n=100000, mu=mu, size=3), ncol=10)
 #' rownames(countMatrix) <- paste0("gene_", seq(nrow(countMatrix)))
 #' colnames(countMatrix) <- paste0("sample_", seq(ncol(countMatrix)))
 #' 
@@ -296,7 +357,6 @@ setMethod("varpart", signature = "DGELRT",
 #' # Plot count noise vs expression magnitude
 #' plotTrendVP( dds, vp1, "CountNoise" )
 #'
-#'
 #' # edgeR model #
 #' library(edgeR)
 #' design <- model.matrix( ~ condition, data.frame(condition))
@@ -304,12 +364,11 @@ setMethod("varpart", signature = "DGELRT",
 #' d <- normLibSizes(d)
 #' d <- estimateDisp(d, design)
 #' fit <- glmQLFit(d, design)
-#' fit <- glmQLFTest(fit)
 #' 
 #' vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
 #' 
 #' # Plot count noise vs expression magnitude
-#' plotTrendVP( fit, vp2, "CountNoise" )
+#' plotTrendVP( fit, vp2, "CountNoise", dispObj = d )
 #' 
 #' @rdname plotTrendVP-methods
 #' @export
@@ -354,48 +413,19 @@ setMethod(
     filter(baseMean > 0) %>%
     inner_join(vp %>% 
       rownames_to_column("ID"), by=c("ID")) %>%
-    mutate(y = 100*!!sym(component))
-    
-  # smoothing curve
-  # use nls()
-  # if that fails use gam()
-  fit <- tryCatch({
-      nls(y ~ SSlogis(baseMean, Asym, xmid, scal), df)
-    },
-    error = function(e){
-      gam(y ~ s(baseMean), data = df)
-      })
-
-  # plot
-  fig <- df %>%
-    ggplot(aes(baseMean, y)) +
-    geom_point() +
-    theme_classic() +
-    theme(aspect.ratio=1, 
-      strip.background = element_rect("grey95")) +
-    xlab("Mean of normalized counts") +
-    scale_y_continuous(limits=c(0,100)) +
+    mutate(y = 100*!!sym(component)) %>%
+    mutate( logX = log10(baseMean))
+  
+  .plotTrend( df ) +
     ylab(ylab)
-
-  # add smoothed curve
-  x <- df$baseMean
-  y <- predict(fit)
-  i <- order(x)
-
-  fig +
-    geom_line(
-      data = data.frame(x = x[i], y = y[i]), 
-      aes(x,y),
-      color="#3366FF",
-      linewidth = 1.2) 
 })
 
+
 #' @rdname plotTrendVP-methods
-#' @importFrom edgeR topTags
 #' @export
 setMethod(
-  "plotTrendVP", c("DGELRT", "data.frame"),
-  function(x, vp, component,...){
+  "plotTrendVP", c("DGEGLM", "data.frame"),
+  function(x, vp, component, dispObj, ...){
 
   ID <- logCPM <- NULL
 
@@ -410,41 +440,90 @@ setMethod(
 
   ylab <- paste("Variance explained by", component, "(%)")
 
-  # extract results
-  df <- topTags(x, n=Inf) %>%
-    data.frame %>%
-    rownames_to_column("ID") %>%
-    tibble %>%
-    dplyr::select(ID, logCPM) %>%
+  # df = tibble(ID = rownames(x), 
+  #   baseMean = exp(coef(x)[,"(Intercept)"] + mean(x$offset)))  %>%
+  #   inner_join(vp %>% 
+  #     rownames_to_column("ID"), by=c("ID")) %>%
+  #   mutate(y = 100*!!sym(component))%>%
+  #   mutate( logX = log10(baseMean))
+
+  df = tibble(ID = rownames(dispObj), 
+    baseMean = rowMeans(dispObj$counts))  %>%
     inner_join(vp %>% 
       rownames_to_column("ID"), by=c("ID")) %>%
-    mutate(y = 100*!!sym(component))
+    mutate(y = 100*!!sym(component))%>%
+    mutate( logX = log10(baseMean))
 
+  .plotTrend( df )  +
+    ylab(ylab)
+})
+
+
+#' @rdname plotTrendVP-methods
+#' @export
+setMethod(
+  "plotTrendVP", c("DGELRT", "data.frame"),
+  function(x, vp, component,dispObj,...){
+
+  ID <- logCPM <- NULL
+
+  if( missing(component) ){
+    stop("Must specify component")
+  }
+
+  if( ! component %in% colnames(vp) ){
+    txt <- paste0("Requested component must be column in vp")
+    stop(txt)
+  }
+
+  ylab <- paste("Variance explained by", component, "(%)")
+
+  # df = tibble(ID = rownames(x), 
+  #   baseMean = exp(coef(x)[,"(Intercept)"] + mean(x$offset)))  %>%
+  #   inner_join(vp %>% 
+  #     rownames_to_column("ID"), by=c("ID")) %>%
+  #   mutate(y = 100*!!sym(component))%>%
+  #   mutate( logX = log10(baseMean))
+
+  df = tibble(ID = rownames(dispObj), 
+    baseMean = rowMeans(dispObj$counts))  %>%
+    inner_join(vp %>% 
+      rownames_to_column("ID"), by=c("ID")) %>%
+    mutate(y = 100*!!sym(component))%>%
+    mutate( logX = log10(baseMean))
+
+  .plotTrend( df )  +
+    ylab(ylab)
+})
+
+
+.plotTrend <- function(df){
   # smoothing curve
   # use nls()
   # if that fails use gam()
   fit <- tryCatch({
-      nls(y ~ SSlogis(logCPM, Asym, xmid, scal), df)
+      nls(y ~ SSlogis(logX, Asym, xmid, scal), df)
     },
     error = function(e){
-      gam(y ~ s(logCPM), data = df)
+      gam(y ~ s(logX), data = df)
       })
 
   # plot
   fig <- df %>%
-    ggplot(aes(logCPM, y)) +
+    ggplot(aes(logX, y)) +
     geom_point() +
     theme_classic() +
     theme(aspect.ratio=1, 
       strip.background = element_rect("grey95")) +
     xlab("Mean log10 counts") +
     scale_y_continuous(limits=c(0,100)) +
-    # geom_smooth( method="nls", formula = y ~ SSlogis(x, Asym, xmid, scal), se=FALSE, method.args = list(control = nls.control()) ) +
-    ylab(ylab)
+    scale_x_continuous(labels = 10^seq(-4, 6), breaks = seq(-4, 6))
 
   # add smoothed curve
-  x <- df$logCPM
+  x <- df$logX
   y <- predict(fit)
+  y <- pmin(y, 100)
+  y <- pmax(y, 0)
   i <- order(x)
 
   fig +
@@ -453,10 +532,6 @@ setMethod(
       aes(x,y),
       color="#3366FF",
       linewidth = 1.2) 
-})
-
-
-
-
+}
 
 

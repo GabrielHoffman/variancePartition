@@ -10,95 +10,26 @@ gene-level. This is done with the function.
 
 Read in transcript counts from the package.
 
-``` r
-
-library(readr)
-library(tximport)
-library(tximportData)
-
-# specify directory
-path <- system.file("extdata", package = "tximportData")
-
-# read sample meta-data
-samples <- read.table(file.path(path, "samples.txt"), header = TRUE)
-samples.ext <- read.table(file.path(path, "samples_extended.txt"), header = TRUE, sep = "\t")
-
-# read assignment of transcripts to genes
-# remove genes on the PAR, since these are present twice
-tx2gene <- read_csv(file.path(path, "tx2gene.gencode.v27.csv"))
-tx2gene <- tx2gene[grep("PAR_Y", tx2gene$GENEID, invert = TRUE), ]
-
-# read transcript-level quatifictions
-files <- file.path(path, "salmon", samples$run, "quant.sf.gz")
-txi <- tximport(files, type = "salmon", txOut = TRUE)
-
-# Create metadata simulating two conditions
-sampleTable <- data.frame(condition = factor(rep(c("A", "B"), each = 3)))
-rownames(sampleTable) <- paste0("Sample", 1:6)
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`readr`](https://readr.tidyverse.org)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`tximport`](https://github.com/thelovelab/tximport)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(``tximportData``)`` `` ``# specify directory`` ``path`` ``<-`` `[`system.file`](https://rdrr.io/r/base/system.file.html)`(``"extdata"``, package ``=`` ``"tximportData"``)`` `` ``# read sample meta-data`` ``samples`` ``<-`` `[`read.table`](https://rdrr.io/r/utils/read.table.html)`(`[`file.path`](https://rdrr.io/r/base/file.path.html)`(``path``, ``"samples.txt"``)``, header ``=`` ``TRUE``)`` ``samples.ext`` ``<-`` `[`read.table`](https://rdrr.io/r/utils/read.table.html)`(`[`file.path`](https://rdrr.io/r/base/file.path.html)`(``path``, ``"samples_extended.txt"``)``, header ``=`` ``TRUE``, sep ``=`` ``"\t"``)`` `` ``# read assignment of transcripts to genes`` ``# remove genes on the PAR, since these are present twice`` ``tx2gene`` ``<-`` `[`read_csv`](https://readr.tidyverse.org/reference/read_delim.html)`(`[`file.path`](https://rdrr.io/r/base/file.path.html)`(``path``, ``"tx2gene.gencode.v27.csv"``)``)`` ``tx2gene`` ``<-`` ``tx2gene``[`[`grep`](https://rdrr.io/r/base/grep.html)`(``"PAR_Y"``, ``tx2gene``$``GENEID``, invert ``=`` ``TRUE``)``, ``]`` `` ``# read transcript-level quatifictions`` ``files`` ``<-`` `[`file.path`](https://rdrr.io/r/base/file.path.html)`(``path``, ``"salmon"``, ``samples``$``run``, ``"quant.sf.gz"``)`` ``txi`` ``<-`` `[`tximport`](https://rdrr.io/pkg/tximport/man/tximport.html)`(``files``, type ``=`` ``"salmon"``, txOut ``=`` ``TRUE``)`` `` ``# Create metadata simulating two conditions`` ``sampleTable`` ``<-`` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(``condition ``=`` `[`factor`](https://rdrr.io/r/base/factor.html)`(`[`rep`](https://rdrr.io/r/base/rep.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``"A"``, ``"B"``)``, each ``=`` ``3``)``)``)`` `[`rownames`](https://rdrr.io/r/base/colnames.html)`(``sampleTable``)`` ``<-`` `[`paste0`](https://rdrr.io/r/base/paste.html)`(``"Sample"``, ``1``:``6``)`
 
 ## Standard dream analysis
 
 Perform standard analysis at the transcript-level
 
-``` r
-
-library(variancePartition)
-library(edgeR)
-
-# Prepare transcript-level reads
-dge <- DGEList(txi$counts)
-design <- model.matrix(~condition, data = sampleTable)
-isexpr <- filterByExpr(dge, design)
-dge <- dge[isexpr, ]
-dge <- calcNormFactors(dge)
-
-# Estimate precision weights
-vobj <- voomWithDreamWeights(dge, ~condition, sampleTable)
-
-# Fit regression model one transcript at a time
-fit <- dream(vobj, ~condition, sampleTable)
-fit <- eBayes(fit)
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`variancePartition`](http://bioconductor.org/packages/variancePartition)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`edgeR`](https://bioinf.wehi.edu.au/edgeR/)`)`` `` ``# Prepare transcript-level reads`` ``dge`` ``<-`` `[`DGEList`](https://rdrr.io/pkg/edgeR/man/DGEList.html)`(``txi``$``counts``)`` ``design`` ``<-`` `[`model.matrix`](https://rdrr.io/r/stats/model.matrix.html)`(``~``condition``, data ``=`` ``sampleTable``)`` ``isexpr`` ``<-`` `[`filterByExpr`](https://rdrr.io/pkg/edgeR/man/filterByExpr.html)`(``dge``, ``design``)`` ``dge`` ``<-`` ``dge``[``isexpr``, ``]`` ``dge`` ``<-`` `[`calcNormFactors`](https://rdrr.io/pkg/edgeR/man/calcNormFactors.html)`(``dge``)`` `` ``# Estimate precision weights`` ``vobj`` ``<-`` `[`voomWithDreamWeights`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/voomWithDreamWeights.md)`(``dge``, ``~``condition``, ``sampleTable``)`` `` ``# Fit regression model one transcript at a time`` ``fit`` ``<-`` `[`dream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)`(``vobj``, ``~``condition``, ``sampleTable``)`` ``fit`` ``<-`` `[`eBayes`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)`(``fit``)`
 
 ## Multivariate analysis
 
 Combine the transcript-level results at the gene-level. The mapping
 between transcript and gene is stored in as a list.
 
-``` r
-
-# Prepare transcript to gene mapping
-# keep only transcripts present in vobj
-# then convert to list with key GENEID and values TXNAMEs
-keep <- tx2gene$TXNAME %in% rownames(vobj)
-tx2gene.lst <- unstack(tx2gene[keep, ])
-
-# Run multivariate test on entries in each feature set
-# Default method is "FE.empirical", but use "FE" here to reduce runtime
-res <- mvTest(fit, vobj, tx2gene.lst, coef = "conditionB", method = "FE")
-
-# truncate gene names since they have version numbers
-# ENST00000498289.5 -> ENST00000498289
-res$ID.short <- gsub("\\..+", "", res$ID)
-```
+`# Prepare transcript to gene mapping`` ``# keep only transcripts present in vobj`` ``# then convert to list with key GENEID and values TXNAMEs`` ``keep`` ``<-`` ``tx2gene``$``TXNAME`` `[`%in%`](https://rdrr.io/r/base/match.html)` `[`rownames`](https://rdrr.io/r/base/colnames.html)`(``vobj``)`` ``tx2gene.lst`` ``<-`` `[`unstack`](https://rdrr.io/r/utils/stack.html)`(``tx2gene``[``keep``, ``]``)`` `` ``# Run multivariate test on entries in each feature set`` ``# Default method is "FE.empirical", but use "FE" here to reduce runtime`` ``res`` ``<-`` `[`mvTest`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/mvTest-method.md)`(``fit``, ``vobj``, ``tx2gene.lst``, coef ``=`` ``"conditionB"``, method ``=`` ``"FE"``)`` `` ``# truncate gene names since they have version numbers`` ``# ENST00000498289.5 -> ENST00000498289`` ``res``$``ID.short`` ``<-`` `[`gsub`](https://rdrr.io/r/base/grep.html)`(``"\\..+"``, ``""``, ``res``$``ID``)`
 
 ## Gene set analysis
 
 Perform gene set analysis using on the gene-level test statistics.
 
-``` r
-
-# must have zenith > v1.0.2
-library(zenith)
-library(GSEABase)
-
-gs <- get_MSigDB("C1", to = "ENSEMBL")
-
-df_gsa <- zenithPR_gsa(res$stat, res$ID.short, gs, inter.gene.cor = .05)
-
-head(df_gsa)
-```
+`# must have zenith > v1.0.2`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`zenith`](https://DiseaseNeuroGenomics.github.io/zenith)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(``GSEABase``)`` `` ``gs`` ``<-`` `[`get_MSigDB`](http://gabrielhoffman.github.io/zenith/reference/get_MSigDB.md)`(``"C1"``, to ``=`` ``"ENSEMBL"``)`` `` ``df_gsa`` ``<-`` `[`zenithPR_gsa`](http://gabrielhoffman.github.io/zenith/reference/zenithPR_gsa.md)`(``res``$``stat``, ``res``$``ID.short``, ``gs``, inter.gene.cor ``=`` ``.05``)`` `` `[`head`](https://rdrr.io/r/utils/head.html)`(``df_gsa``)`
 
     ##          NGenes Correlation     delta       se      p.less    p.greater       PValue Direction
     ## chr7p13      28        0.05  7.144240 2.034359 0.999776828 0.0002231723 0.0004463445        Up

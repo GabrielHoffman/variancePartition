@@ -45,32 +45,7 @@ Here we demonstrate how
 [`dream()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)
 handles model fits:
 
-``` r
-
-library(variancePartition)
-data(varPartData)
-
-# Redundant formula
-# This example is an extreme example of redundancy
-# but more subtle cases often show up in real data
-form <- ~ Tissue + (1 | Tissue)
-
-fit <- dream(geneExpr[1:30, ], form, info)
-
-## Warning in dream(geneExpr[1:30, ], form, info): Model failed for 29 responses.
-##   See errors with attr(., 'errors')
-
-# Extract gene-level errors
-attr(fit, "errors")[1:2]
-
-## gene1
-## "Error in lmerTest:::as_lmerModLT(model, devfun, tol = tol): (converted from warning)
-## Model may not have converged with 1 eigenvalue close to zero: -2.0e-09\n"
-
-## gene2
-## "Error: (converted from warning) Model failed to converge
-##   with 1 negative eigenvalue: -1.5e-08\n"
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`variancePartition`](http://bioconductor.org/packages/variancePartition)`)`` `[`data`](https://rdrr.io/r/utils/data.html)`(``varPartData``)`` `` ``# Redundant formula`` ``# This example is an extreme example of redundancy`` ``# but more subtle cases often show up in real data`` ``form`` ``<-`` ``~`` ``Tissue`` ``+`` ``(``1`` ``|`` ``Tissue``)`` `` ``fit`` ``<-`` `[`dream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)`(``geneExpr``[``1``:``30``, ``]``, ``form``, ``info``)`` `` ``## Warning in dream(geneExpr[1:30, ], form, info): Model failed for 29 responses.`` ``## See errors with attr(., 'errors')`` `` ``# Extract gene-level errors`` `[`attr`](https://rdrr.io/r/base/attr.html)`(``fit``, ``"errors"``)``[``1``:``2``]`` `` ``## gene1`` ``## "Error in lmerTest:::as_lmerModLT(model, devfun, tol = tol): (converted from warning)`` ``## Model may not have converged with 1 eigenvalue close to zero: -2.0e-09\n"`` `` ``## gene2`` ``## "Error: (converted from warning) Model failed to converge`` ``## with 1 negative eigenvalue: -1.5e-08\n"`
 
 ## Shared by multiple functions
 
@@ -192,28 +167,12 @@ This situtation is indicated by the following errors:
     found that reducing the number of threads reduces the chance of
     random failures like this.
 
-    ``` r
-
-    library(BiocParallel)
-
-    # globally specify that all multithreading using bpiterate from BiocParallel
-    # should use 8 cores
-    register(SnowParam(8))
-    ```
+    [`library`](https://rdrr.io/r/base/library.html)`(`[`BiocParallel`](https://github.com/Bioconductor/BiocParallel)`)`` `` ``# globally specify that all multithreading using bpiterate from BiocParallel`` ``# should use 8 cores`` `[`register`](https://rdrr.io/pkg/BiocParallel/man/register.html)`(`[`SnowParam`](https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html)`(``8``)``)`
 
   - **Local**: set the number of theads at each function call. This
     re-initializes the parallel backend and should address the error
 
-    ``` r
-
-    fitExtractVarPartModel(..., BPPARAM = SnowParam(8))
-
-    fitVarPartModel(..., BPPARAM = SnowParam(8))
-
-    dream(..., BPPARAM = SnowParam(8))
-
-    voomWithDreamWeights(..., BPPARAM = SnowParam(8))
-    ```
+    [`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``...``, BPPARAM ``=`` `[`SnowParam`](https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html)`(``8``)``)`` `` `[`fitVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitVarPartModel-method.md)`(``...``, BPPARAM ``=`` `[`SnowParam`](https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html)`(``8``)``)`` `` `[`dream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)`(``...``, BPPARAM ``=`` `[`SnowParam`](https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html)`(``8``)``)`` `` `[`voomWithDreamWeights`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/voomWithDreamWeights.md)`(``...``, BPPARAM ``=`` `[`SnowParam`](https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html)`(``8``)``)`
 
 ## Session Info
 

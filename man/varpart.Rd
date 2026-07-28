@@ -3,6 +3,7 @@
 \name{varpart}
 \alias{varpart}
 \alias{varpart,DESeqDataSet-method}
+\alias{varpart,DGEGLM-method}
 \alias{varpart,DGELRT-method}
 \title{Variance Partitioning Analysis}
 \usage{
@@ -21,6 +22,17 @@ varpart(
   pseudocount = 1,
   p.tail = 1e-04,
   nthreads = parallelly::availableCores(),
+  ...
+)
+
+\S4method{varpart}{DGEGLM}(
+  x,
+  method = c("exact", "approximate"),
+  pseudocount = 1,
+  p.tail = 1e-04,
+  nthreads = parallelly::availableCores(),
+  dispObj,
+  formula,
   ...
 )
 

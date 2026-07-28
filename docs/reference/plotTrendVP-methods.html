@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,8 +54,11 @@
 <span><span class="co"># S4 method for class 'DESeqDataSet,data.frame'</span></span>
 <span><span class="fu">plotTrendVP</span><span class="op">(</span><span class="va">x</span>, <span class="va">vp</span>, <span class="va">component</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># S4 method for class 'DGEGLM,data.frame'</span></span>
+<span><span class="fu">plotTrendVP</span><span class="op">(</span><span class="va">x</span>, <span class="va">vp</span>, <span class="va">component</span>, <span class="va">dispObj</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># S4 method for class 'DGELRT,data.frame'</span></span>
-<span><span class="fu">plotTrendVP</span><span class="op">(</span><span class="va">x</span>, <span class="va">vp</span>, <span class="va">component</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">plotTrendVP</span><span class="op">(</span><span class="va">x</span>, <span class="va">vp</span>, <span class="va">component</span>, <span class="va">dispObj</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,6 +80,10 @@
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>additional arguments</p></dd>
 
+
+<dt id="arg-dispobj">dispObj<a class="anchor" aria-label="anchor" href="#arg-dispobj"></a></dt>
+<dd><p>dispersion object if <code>edgeR</code> is used</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -87,7 +94,10 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Simulate counts</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">countMatrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/NegBinomial.html" class="external-link">rnbinom</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">100000</span>, mu<span class="op">=</span><span class="fl">20</span>, size<span class="op">=</span><span class="fl">3</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">eta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">countMatrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/NegBinomial.html" class="external-link">rnbinom</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">100000</span>, mu<span class="op">=</span><span class="va">mu</span>, size<span class="op">=</span><span class="fl">3</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"gene_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sample_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">countMatrix</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -109,7 +119,6 @@
 <span class="r-in"><span><span class="fu">plotTrendVP</span><span class="op">(</span> <span class="va">dds</span>, <span class="va">vp1</span>, <span class="st">"CountNoise"</span> <span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotTrendVP-methods-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># edgeR model #</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioinf.wehi.edu.au/edgeR/" class="external-link">edgeR</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">condition</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -117,12 +126,11 @@
 <span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">normLibSizes</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/estimateDisp.html" class="external-link">estimateDisp</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">design</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFit.html" class="external-link">glmQLFit</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">design</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html" class="external-link">glmQLFTest</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">vp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="varpart.html">varpart</a></span><span class="op">(</span><span class="va">fit</span>, dispObj <span class="op">=</span> <span class="va">d</span>, formula <span class="op">=</span> <span class="op">~</span> <span class="va">cond</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot count noise vs expression magnitude</span></span></span>
-<span class="r-in"><span><span class="fu">plotTrendVP</span><span class="op">(</span> <span class="va">fit</span>, <span class="va">vp2</span>, <span class="st">"CountNoise"</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotTrendVP</span><span class="op">(</span> <span class="va">fit</span>, <span class="va">vp2</span>, <span class="st">"CountNoise"</span>, dispObj <span class="op">=</span> <span class="va">d</span> <span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotTrendVP-methods-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

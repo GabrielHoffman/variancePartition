@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">variancePartition</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
 <span>  control <span class="op">=</span> <span class="va">vpcontrol</span>,</span>
 <span>  hideErrorsInBackend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  REML <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  BPPARAM <span class="op">=</span> <span class="fu">SerialParam</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -180,7 +180,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> gene3 -0.2545920  0.1702122 -0.8080518 0.4202487  0.822113 -4.611374 -0.8059899</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Parallel processing using multiple cores with reduced memory usage</span></span></span>
-<span class="r-in"><span><span class="va">param</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html" class="external-link">SnowParam</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"SOCK"</span>, progressbar <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">param</span> <span class="op">&lt;-</span> <span class="fu">SnowParam</span><span class="op">(</span><span class="fl">2</span>, <span class="st">"SOCK"</span>, progressbar <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu">dream</span><span class="op">(</span><span class="va">geneExpr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="op">]</span>, <span class="va">form</span>, <span class="va">info</span>, <span class="va">L</span>, BPPARAM <span class="op">=</span> <span class="va">param</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> iteration: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 1</span>

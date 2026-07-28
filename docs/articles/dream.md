@@ -24,23 +24,7 @@ a multi-core machine.
 This tutorial assumes that the reader is familiar with the limma/voom
 workflow for RNA-seq. Process raw count data using limma/voom.
 
-``` r
-
-library("variancePartition")
-library("edgeR")
-library("BiocParallel")
-data(varPartDEdata)
-
-# filter genes by number of counts
-isexpr <- rowSums(cpm(countMatrix) > 0.1) >= 5
-
-# Standard usage of limma/voom
-dge <- DGEList(countMatrix[isexpr, ])
-dge <- calcNormFactors(dge)
-
-# make this vignette faster by analyzing a subset of genes
-dge <- dge[1:1000, ]
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`"variancePartition"`](http://bioconductor.org/packages/variancePartition)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`"edgeR"`](https://bioinf.wehi.edu.au/edgeR/)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`"BiocParallel"`](https://github.com/Bioconductor/BiocParallel)`)`` `[`data`](https://rdrr.io/r/utils/data.html)`(``varPartDEdata``)`` `` ``# filter genes by number of counts`` ``isexpr`` ``<-`` `[`rowSums`](https://rdrr.io/pkg/Matrix/man/colSums-methods.html)`(`[`cpm`](https://rdrr.io/pkg/edgeR/man/cpm.html)`(``countMatrix``)`` ``>`` ``0.1``)`` ``>=`` ``5`` `` ``# Standard usage of limma/voom`` ``dge`` ``<-`` `[`DGEList`](https://rdrr.io/pkg/edgeR/man/DGEList.html)`(``countMatrix``[``isexpr``, ``]``)`` ``dge`` ``<-`` `[`calcNormFactors`](https://rdrr.io/pkg/edgeR/man/calcNormFactors.html)`(``dge``)`` `` ``# make this vignette faster by analyzing a subset of genes`` ``dge`` ``<-`` ``dge``[``1``:``1000``, ``]`
 
 ## Limma Analysis
 
@@ -49,28 +33,7 @@ Limma has a built-in approach for analyzing repeated measures data using
 The model can handle a single random effect, and forces the magnitude of
 the random effect to be the same across all genes.
 
-``` r
-
-# apply duplicateCorrelation is two rounds
-design <- model.matrix(~Disease, metadata)
-vobj_tmp <- voom(dge, design, plot = FALSE)
-dupcor <- duplicateCorrelation(vobj_tmp, design, block = metadata$Individual)
-
-# run voom considering the duplicateCorrelation results
-# in order to compute more accurate precision weights
-# Otherwise, use the results from the first voom run
-vobj <- voom(dge, design, plot = FALSE, block = metadata$Individual, correlation = dupcor$consensus)
-
-# Estimate linear mixed model with a single variance component
-# Fit the model for each gene,
-dupcor <- duplicateCorrelation(vobj, design, block = metadata$Individual)
-
-# But this step uses only the genome-wide average for the random effect
-fitDupCor <- lmFit(vobj, design, block = metadata$Individual, correlation = dupcor$consensus)
-
-# Fit Empirical Bayes for moderated t-statistics
-fitDupCor <- eBayes(fitDupCor)
-```
+`# apply duplicateCorrelation is two rounds`` ``design`` ``<-`` `[`model.matrix`](https://rdrr.io/r/stats/model.matrix.html)`(``~``Disease``, ``metadata``)`` ``vobj_tmp`` ``<-`` `[`voom`](https://rdrr.io/pkg/limma/man/voom.html)`(``dge``, ``design``, plot ``=`` ``FALSE``)`` ``dupcor`` ``<-`` `[`duplicateCorrelation`](https://rdrr.io/pkg/limma/man/dupcor.html)`(``vobj_tmp``, ``design``, block ``=`` ``metadata``$``Individual``)`` `` ``# run voom considering the duplicateCorrelation results`` ``# in order to compute more accurate precision weights`` ``# Otherwise, use the results from the first voom run`` ``vobj`` ``<-`` `[`voom`](https://rdrr.io/pkg/limma/man/voom.html)`(``dge``, ``design``, plot ``=`` ``FALSE``, block ``=`` ``metadata``$``Individual``, correlation ``=`` ``dupcor``$``consensus``)`` `` ``# Estimate linear mixed model with a single variance component`` ``# Fit the model for each gene,`` ``dupcor`` ``<-`` `[`duplicateCorrelation`](https://rdrr.io/pkg/limma/man/dupcor.html)`(``vobj``, ``design``, block ``=`` ``metadata``$``Individual``)`` `` ``# But this step uses only the genome-wide average for the random effect`` ``fitDupCor`` ``<-`` `[`lmFit`](https://rdrr.io/pkg/limma/man/lmFit.html)`(``vobj``, ``design``, block ``=`` ``metadata``$``Individual``, correlation ``=`` ``dupcor``$``consensus``)`` `` ``# Fit Empirical Bayes for moderated t-statistics`` ``fitDupCor`` ``<-`` `[`eBayes`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)`(``fitDupCor``)`
 
 ## Dream Analysis
 
@@ -103,42 +66,16 @@ with the same name. From the user perspective, the
 workflow is the same as `limma` since the statistical differences are
 handled behind the scenes.
 
-``` r
+`# Specify parallel processing parameters`` ``# this is used implicitly by dream() to run in parallel`` ``param`` ``<-`` `[`SnowParam`](https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html)`(``4``, ``"SOCK"``, progressbar ``=`` ``TRUE``)`` `` ``# The variable to be tested must be a fixed effect`` ``form`` ``<-`` ``~`` ``Disease`` ``+`` ``(``1`` ``|`` ``Individual``)`` `` ``# estimate weights using linear mixed model of dream`` ``vobjDream`` ``<-`` `[`voomWithDreamWeights`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/voomWithDreamWeights.md)`(``dge``, ``form``, ``metadata``, BPPARAM ``=`` ``param``)`` `` ``# Fit the dream model on each gene`` ``# For the hypothesis testing, by default,`` ``# dream() uses the KR method for <= 20 samples,`` ``# otherwise it uses the Satterthwaite approximation`` ``fitmm`` ``<-`` `[`dream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)`(``vobjDream``, ``form``, ``metadata``)`` ``fitmm`` ``<-`` `[`eBayes`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)`(``fitmm``)`
 
-# Specify parallel processing parameters
-# this is used implicitly by dream() to run in parallel
-param <- SnowParam(4, "SOCK", progressbar = TRUE)
-
-# The variable to be tested must be a fixed effect
-form <- ~ Disease + (1 | Individual)
-
-# estimate weights using linear mixed model of dream
-vobjDream <- voomWithDreamWeights(dge, form, metadata, BPPARAM = param)
-
-# Fit the dream model on each gene
-# For the hypothesis testing, by default,
-# dream() uses the KR method for <= 20 samples,
-# otherwise it uses the Satterthwaite approximation
-fitmm <- dream(vobjDream, form, metadata)
-fitmm <- eBayes(fitmm)
-```
-
-``` r
-
-# Examine design matrix
-head(fitmm$design, 3)
-```
+`# Examine design matrix`` `[`head`](https://rdrr.io/r/utils/head.html)`(``fitmm``$``design``, ``3``)`
 
     ##           (Intercept) Disease1
     ## sample_01           1        0
     ## sample_02           1        0
     ## sample_03           1        0
 
-``` r
-
-# Get results of hypothesis test on coefficients of interest
-topTable(fitmm, coef = "Disease1", number = 3)
-```
+`# Get results of hypothesis test on coefficients of interest`` `[`topTable`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)`(``fitmm``, coef ``=`` ``"Disease1"``, number ``=`` ``3``)`
 
     ##                                   logFC  AveExpr        t      P.Value    adj.P.Val        B
     ## ENST00000283033.5 gene=TXNDC11 1.556233 3.567624 32.18311 2.963157e-21 2.963157e-18 38.37597
@@ -183,41 +120,16 @@ Multiple contrasts can be evaluated at the same time, in order to save
 computation time. Make sure to inspect your contrast matrix to confirm
 it is testing what you intend.
 
-``` r
-
-form <- ~ 0 + DiseaseSubtype + Sex + (1 | Individual)
-
-L <- makeContrastsDream(form, metadata,
-  contrasts = c(
-    compare2_1 = "DiseaseSubtype2 - DiseaseSubtype1",
-    compare1_0 = "DiseaseSubtype1 - DiseaseSubtype0"
-  )
-)
-
-# Visualize contrast matrix
-plotContrasts(L)
-```
+`form`` ``<-`` ``~`` ``0`` ``+`` ``DiseaseSubtype`` ``+`` ``Sex`` ``+`` ``(``1`` ``|`` ``Individual``)`` `` ``L`` ``<-`` `[`makeContrastsDream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/makeContrastsDream.md)`(``form``, ``metadata``,`` `` contrasts ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(`` `` compare2_1 ``=`` ``"DiseaseSubtype2 - DiseaseSubtype1"``,`` `` compare1_0 ``=`` ``"DiseaseSubtype1 - DiseaseSubtype0"`` `` ``)`` ``)`` `` ``# Visualize contrast matrix`` `[`plotContrasts`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotContrasts.md)`(``L``)`
 
 ![](dream_files/figure-html/contrast-1.png)
 
-``` r
-
-# fit dream model with contrasts
-fit <- dream(vobjDream, form, metadata, L)
-fit <- eBayes(fit)
-
-# get names of available coefficients and contrasts for testing
-colnames(fit)
-```
+`# fit dream model with contrasts`` ``fit`` ``<-`` `[`dream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)`(``vobjDream``, ``form``, ``metadata``, ``L``)`` ``fit`` ``<-`` `[`eBayes`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)`(``fit``)`` `` ``# get names of available coefficients and contrasts for testing`` `[`colnames`](https://rdrr.io/r/base/colnames.html)`(``fit``)`
 
     ## [1] "compare2_1"      "compare1_0"      "DiseaseSubtype0" "DiseaseSubtype1" "DiseaseSubtype2"
     ## [6] "SexM"
 
-``` r
-
-# extract results from first contrast
-topTable(fit, coef = "compare2_1", number = 3)
-```
+`# extract results from first contrast`` `[`topTable`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)`(``fit``, coef ``=`` ``"compare2_1"``, number ``=`` ``3``)`
 
     ##                                       logFC  AveExpr         t      P.Value  adj.P.Val          B
     ## ENST00000355624.3 gene=RAB11FIP2 -0.9493146 5.260280 -5.336063 2.343973e-05 0.02343973  0.8221724
@@ -236,26 +148,11 @@ coefficients. Here, consider comparing `DiseaseSubtype0` to the mean of
 `DiseaseSubtype1` and `DiseaseSubtype2`. Note you can also customize the
 name of the contrast.
 
-``` r
-
-L2 <- makeContrastsDream(form, metadata,
-  contrasts =
-    c(Test1 = "DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2")
-)
-
-plotContrasts(L2)
-```
+`L2`` ``<-`` `[`makeContrastsDream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/makeContrastsDream.md)`(``form``, ``metadata``,`` `` contrasts ``=`` `` `[`c`](https://rdrr.io/r/base/c.html)`(``Test1 ``=`` ``"DiseaseSubtype0 - (DiseaseSubtype1 + DiseaseSubtype2)/2"``)`` ``)`` `` `[`plotContrasts`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotContrasts.md)`(``L2``)`
 
 ![](dream_files/figure-html/maual.contrasts-1.png)
 
-``` r
-
-# fit dream model to evaluate contrasts
-fit <- dream(vobjDream[1:10, ], form, metadata, L = L2)
-fit <- eBayes(fit)
-
-topTable(fit, coef = "Test1", number = 3)
-```
+`# fit dream model to evaluate contrasts`` ``fit`` ``<-`` `[`dream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)`(``vobjDream``[``1``:``10``, ``]``, ``form``, ``metadata``, L ``=`` ``L2``)`` ``fit`` ``<-`` `[`eBayes`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)`(``fit``)`` `` `[`topTable`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)`(``fit``, coef ``=`` ``"Test1"``, number ``=`` ``3``)`
 
     ##                                     logFC  AveExpr         t      P.Value    adj.P.Val        B
     ## ENST00000418210.2 gene=TMEM64  -1.0343236 4.715367 -6.874897 2.770467e-07 2.770467e-06 8.410269
@@ -273,11 +170,7 @@ be performed by using an F-test. Just like in limma, the results can be
 extracted using
 [`topTable()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)
 
-``` r
-
-# extract results from first contrast
-topTable(fit, coef = c("DiseaseSubtype2", "DiseaseSubtype1"), number = 3)
-```
+`# extract results from first contrast`` `[`topTable`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)`(``fit``, coef ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"DiseaseSubtype2"``, ``"DiseaseSubtype1"``)``, number ``=`` ``3``)`
 
     ##                                DiseaseSubtype2 DiseaseSubtype1  AveExpr        F      P.Value
     ## ENST00000418210.2 gene=TMEM64         5.301001        5.211674 4.715367 794.2599 2.087246e-24
@@ -301,11 +194,7 @@ This can be used for downstream analysis.
 For small datasets, the Kenward-Roger method can be more powerful. But
 it is **substantially** more computationally intensive.
 
-``` r
-
-fitmmKR <- dream(vobjDream, form, metadata, ddf = "Kenward-Roger")
-fitmmKR <- eBayes(fitmmKR)
-```
+`fitmmKR`` ``<-`` `[`dream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)`(``vobjDream``, ``form``, ``metadata``, ddf ``=`` ``"Kenward-Roger"``)`` ``fitmmKR`` ``<-`` `[`eBayes`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md)`(``fitmmKR``)`
 
 ### variancePartition plot
 
@@ -314,16 +203,7 @@ framework. A variancePartition analysis can indicate important variables
 that should be included as fixed or random effects in the dream
 analysis.
 
-``` r
-
-# Note: this could be run with either vobj from voom()
-# or vobjDream from voomWithDreamWeights()
-# The resuylts are similar
-form <- ~ (1 | Individual) + (1 | Disease)
-vp <- fitExtractVarPartModel(vobj, form, metadata)
-
-plotVarPart(sortCols(vp))
-```
+`# Note: this could be run with either vobj from voom()`` ``# or vobjDream from voomWithDreamWeights()`` ``# The resuylts are similar`` ``form`` ``<-`` ``~`` ``(``1`` ``|`` ``Individual``)`` ``+`` ``(``1`` ``|`` ``Disease``)`` ``vp`` ``<-`` `[`fitExtractVarPartModel`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/fitExtractVarPartModel-method.md)`(``vobj``, ``form``, ``metadata``)`` `` `[`plotVarPart`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotVarPart-method.md)`(`[`sortCols`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/sortCols-method.md)`(``vp``)``)`
 
 ![](dream_files/figure-html/vp-1.png)
 
@@ -335,14 +215,7 @@ and `duplicateCorrelation`. In order to understand the empircal
 difference between them, we can plot the -\log\_{10} p-values from each
 method.
 
-``` r
-
-# Compare p-values and make plot
-p1 <- topTable(fitDupCor, coef = "Disease1", number = Inf, sort.by = "none")$P.Value
-p2 <- topTable(fitmm, number = Inf, sort.by = "none")$P.Value
-
-plotCompareP(p1, p2, vp$Individual, dupcor$consensus)
-```
+`# Compare p-values and make plot`` ``p1`` ``<-`` `[`topTable`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)`(``fitDupCor``, coef ``=`` ``"Disease1"``, number ``=`` ``Inf``, sort.by ``=`` ``"none"``)``$``P.Value`` ``p2`` ``<-`` `[`topTable`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)`(``fitmm``, number ``=`` ``Inf``, sort.by ``=`` ``"none"``)``$``P.Value`` `` `[`plotCompareP`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/plotCompareP-method.md)`(``p1``, ``p2``, ``vp``$``Individual``, ``dupcor``$``consensus``)`
 
 ![](dream_files/figure-html/define-1.png)
 
@@ -388,13 +261,7 @@ to manage the parallelization.
 
 - Specify parameters with the BPPARAM argument.
 
-``` r
-
-# Request 4 cores, and enable the progress bar
-# This is the ideal for Linux, OS X and Windows
-param <- SnowParam(4, "SOCK", progressbar = TRUE)
-fitmm <- dream(vobjDream, form, metadata, BPPARAM = param)
-```
+`# Request 4 cores, and enable the progress bar`` ``# This is the ideal for Linux, OS X and Windows`` ``param`` ``<-`` `[`SnowParam`](https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html)`(``4``, ``"SOCK"``, progressbar ``=`` ``TRUE``)`` ``fitmm`` ``<-`` `[`dream`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/dream-method.md)`(``vobjDream``, ``form``, ``metadata``, BPPARAM ``=`` ``param``)`
 
 By default `BPPARAM = SerialParam()`.
 

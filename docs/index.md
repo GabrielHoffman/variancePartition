@@ -13,16 +13,17 @@ repeated measures or high dimensional batch effects.
 
 ![](reference/figures/variancePartition.png)
 
-\
-
 ### Update
 
-variancePartition 1.31.1 includes a major rewrite of the backend for
-better error handling. See
-[Changelog](https://diseaseneurogenomics.github.io/variancePartition/news/index.html).
-Importantly, the new version is compatible with emprical Bayes moderated
-t-statistics for linear mixed models using
-[`eBayes()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/eBayes-method.md).
+`variancePartition` 2.0.0 includes a new implementation of the core
+variance partitioning analysis using
+[`fastglmm::varpart()`](http://gabrielhoffman.github.io/fastglmm/reference/varpart.md).
+It also supports negative binomial count models from `edgeR` and
+`DESeq2`. See [variance partitioning for count
+data](http://DiseaseNeurogenomics.github.io/variancePartition/articles/varpart.md).
+
+See
+[Changelog](http://DiseaseNeurogenomics.github.io/variancePartition/news/index.md).
 
 \
 
@@ -30,17 +31,11 @@ t-statistics for linear mixed models using
 
 #### Latest features from GitHub
 
-``` r
-
-devtools::install_github("DiseaseNeuroGenomics/variancePartition")
-```
+`devtools``::`[`install_github`](https://devtools.r-lib.org/reference/install-deprecated.html)`(``"DiseaseNeuroGenomics/variancePartition"``)`
 
 #### Stable release from Bioconductor
 
-``` r
-
-BiocManager::install("variancePartition")
-```
+`BiocManager``::`[`install`](https://bioconductor.github.io/BiocManager/reference/install.html)`(``"variancePartition"``)`
 
 ### Notes
 

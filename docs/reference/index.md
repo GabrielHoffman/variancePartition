@@ -150,6 +150,8 @@
   : Compute predicted value of formula for linear (mixed) model
 - [`ggColorHue()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/ggColorHue.md)
   : Default colors for ggplot
+- [`idealized()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/idealized.md)
+  : Idealized Variance Fractions
 - [`isRunableFormula()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/isRunableFormula.md)
   : Test if formula is full rank on this dataset
 - [`reOnly()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/reOnly.md)

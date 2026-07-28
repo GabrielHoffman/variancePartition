@@ -48,51 +48,16 @@ Thus the faction evaluated by variancePartition is different than
 
 Here is some code explicitly demonstrating this difference:
 
-``` r
-
-library("variancePartition")
-library("lme4")
-library("r2glmm")
-
-set.seed(1)
-
-N <- 1000
-beta <- 3
-alpha <- c(1, 5, 7)
-
-# generate 1 fixed variable and 1 random variable with 3 levels
-data <- data.frame(X = rnorm(N), Subject = sample(c("A", "B", "C"), 100, replace = TRUE))
-
-# simulate variable
-# y = X\beta + Subject\alpha + \sigma^2
-data$y <- data$X * beta + model.matrix(~ data$Subject) %*% alpha + rnorm(N, 0, 1)
-
-# fit model
-fit <- lmer(y ~ X + (1 | Subject), data, REML = FALSE)
-
-# calculate variance fraction using variancePartition
-# include the total sum in the denominator
-frac <- calcVarPart(fit)
-frac
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`"variancePartition"`](http://bioconductor.org/packages/variancePartition)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`"lme4"`](https://github.com/lme4/lme4/)`)`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`"r2glmm"`](https://github.com/bcjaeger/r2glmm)`)`` `` `[`set.seed`](https://rdrr.io/r/base/Random.html)`(``1``)`` `` ``N`` ``<-`` ``1000`` ``beta`` ``<-`` ``3`` ``alpha`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``1``, ``5``, ``7``)`` `` ``# generate 1 fixed variable and 1 random variable with 3 levels`` ``data`` ``<-`` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(``X ``=`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``N``)``, Subject ``=`` `[`sample`](https://rdrr.io/r/base/sample.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``"A"``, ``"B"``, ``"C"``)``, ``100``, replace ``=`` ``TRUE``)``)`` `` ``# simulate variable`` ``# y = X\beta + Subject\alpha + \sigma^2`` ``data``$``y`` ``<-`` ``data``$``X`` ``*`` ``beta`` ``+`` `[`model.matrix`](https://rdrr.io/r/stats/model.matrix.html)`(``~`` ``data``$``Subject``)`` `[`%*%`](https://rdrr.io/r/base/matmult.html)` ``alpha`` ``+`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``N``, ``0``, ``1``)`` `` ``# fit model`` ``fit`` ``<-`` `[`lmer`](https://rdrr.io/pkg/lme4/man/lmer.html)`(``y`` ``~`` ``X`` ``+`` ``(``1`` ``|`` ``Subject``)``, ``data``, REML ``=`` ``FALSE``)`` `` ``# calculate variance fraction using variancePartition`` ``# include the total sum in the denominator`` ``frac`` ``<-`` `[`calcVarPart`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/calcVarPart.md)`(``fit``)`` ``frac`
 
       Subject         X Residuals 
        0.4505    0.4952    0.0543 
 
-``` r
-
-# the variance fraction excluding the random effect from the denominator
-# is the same as from r2glmm
-frac[["X"]] / (frac[["X"]] + frac[["Residuals"]])
-```
+`# the variance fraction excluding the random effect from the denominator`` ``# is the same as from r2glmm`` ``frac``[[``"X"``]``]`` ``/`` ``(``frac``[[``"X"``]``]`` ``+`` ``frac``[[``"Residuals"``]``]``)`
 
     [1] 0.901
 
-``` r
-
-# using r2glmm
-r2beta(fit)
-```
+`# using r2glmm`` `[`r2beta`](https://rdrr.io/pkg/r2glmm/man/r2beta.html)`(``fit``)`
 
       Effect   Rsq upper.CL lower.CL
     1  Model 0.896    0.904    0.886
@@ -167,7 +132,7 @@ default.
     Running under: macOS Sonoma 14.7.1
 
     Matrix products: default
-    BLAS/LAPACK: /opt/homebrew/Cellar/openblas/0.3.33/lib/libopenblasp-r0.3.33.dylib;  LAPACK version 3.12.0
+    BLAS/LAPACK: /opt/homebrew/Cellar/openblas/0.3.34/lib/libopenblasp-r0.3.34.dylib;  LAPACK version 3.12.0
 
     locale:
     [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
