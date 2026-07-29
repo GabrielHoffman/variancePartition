@@ -511,7 +511,7 @@ setMethod(
   # plot
   fig <- df %>%
     ggplot(aes(logX, y)) +
-    geom_point() +
+    geom_point(alpha = .2) +
     theme_classic() +
     theme(aspect.ratio=1, 
       strip.background = element_rect("grey95")) +
