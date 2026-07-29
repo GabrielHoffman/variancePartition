@@ -11,8 +11,11 @@ plotTrendVP(x, vp, component, ...)
 # S4 method for class 'DESeqDataSet,data.frame'
 plotTrendVP(x, vp, component, ...)
 
+# S4 method for class 'DGEGLM,data.frame'
+plotTrendVP(x, vp, component, dispObj, ...)
+
 # S4 method for class 'DGELRT,data.frame'
-plotTrendVP(x, vp, component, ...)
+plotTrendVP(x, vp, component, dispObj, ...)
 ```
 
 ## Arguments
@@ -33,6 +36,10 @@ plotTrendVP(x, vp, component, ...)
 
   additional arguments
 
+- dispObj:
+
+  dispersion object if `edgeR` is used
+
 ## Value
 
 Plot of variance fraction vs count magnitude
@@ -42,7 +49,10 @@ Plot of variance fraction vs count magnitude
 ``` r
 # Simulate counts
 set.seed(1)
-countMatrix <- matrix(rnbinom(n=100000, mu=20, size=3), ncol=10)
+eta <- rnorm(10, 3, 1)
+mu <- exp(eta)
+
+countMatrix <- matrix(rnbinom(n=100000, mu=mu, size=3), ncol=10)
 rownames(countMatrix) <- paste0("gene_", seq(nrow(countMatrix)))
 colnames(countMatrix) <- paste0("sample_", seq(ncol(countMatrix)))
 
@@ -64,7 +74,6 @@ vp1 <- varpart(dds)
 plotTrendVP( dds, vp1, "CountNoise" )
 
 
-
 # edgeR model #
 library(edgeR)
 design <- model.matrix( ~ condition, data.frame(condition))
@@ -72,11 +81,11 @@ d <- DGEList(countMatrix)
 d <- normLibSizes(d)
 d <- estimateDisp(d, design)
 fit <- glmQLFit(d, design)
-fit <- glmQLFTest(fit)
 
 vp2 <- varpart(fit, dispObj = d, formula = ~ cond)
+#> Error in .local(fit, method, pseudocount, p.tail, ...): object 'x' not found
 
 # Plot count noise vs expression magnitude
-plotTrendVP( fit, vp2, "CountNoise" )
-
+plotTrendVP( fit, vp2, "CountNoise", dispObj = d )
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'vp' in selecting a method for function 'plotTrendVP': object 'vp2' not found
 ```

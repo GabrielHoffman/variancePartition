@@ -74,8 +74,8 @@ and edgeR</h3>
                         <h4 data-toc-skip class="author">Developed by <a href="http://gabrielhoffman.github.io/" class="external-link">Gabriel Hoffman</a>
 </h4>
             
-            <h4 data-toc-skip class="date">Run on 2026-07-28
-16:33:05</h4>
+            <h4 data-toc-skip class="date">Run on 2026-07-29
+10:13:27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DiseaseNeuroGenomics/variancePartition/blob/HEAD/vignettes/varpart.Rmd" class="external-link"><code>vignettes/varpart.Rmd</code></a></small>
       <div class="d-none name"><code>varpart.Rmd</code></div>
@@ -87,7 +87,7 @@ and edgeR</h3>
 cd /Users/gabrielhoffman/workspace/repos
 R
 
-# rm -rf varpart_cache/
+# system("rm -rf varpart_cache/")
 
 rmarkdown::render('varpart.Rmd')
 
@@ -148,14 +148,14 @@ small datasets like this one.</em></p>
 <span><span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html" class="external-link">DESeqDataSet</a></span><span class="op">(</span><span class="va">airway</span>, design <span class="op">=</span> <span class="op">~</span> <span class="va">cell</span> <span class="op">+</span> <span class="va">dex</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Filter low count</span></span>
-<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu">counts</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">20</span></span>
+<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">20</span></span>
 <span><span class="va">dds</span> <span class="op">&lt;-</span> <span class="va">dds</span><span class="op">[</span><span class="va">keep</span>,<span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Run the differential expression analysis</span></span>
 <span><span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeq.html" class="external-link">DESeq</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Variance partition analysis</span></span>
-<span><span class="va">vp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/varpart.html">varpart</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></span>
+<span><span class="va">vp</span> <span class="op">&lt;-</span> <span class="fu">varpart</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Violin plot of variance fractions</span></span>
 <span><span class="fu"><a href="../reference/plotVarPart-method.html">plotVarPart</a></span><span class="op">(</span><span class="va">vp</span><span class="op">)</span></span>
@@ -184,7 +184,7 @@ small datasets like this one.</em></p>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html" class="external-link">glmQLFTest</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Variance partition analysis</span></span>
-<span><span class="va">vp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/varpart.html">varpart</a></span><span class="op">(</span><span class="va">fit</span>, dispObj <span class="op">=</span> <span class="va">d</span>, formula <span class="op">=</span> <span class="va">form</span><span class="op">)</span></span>
+<span><span class="va">vp</span> <span class="op">&lt;-</span> <span class="fu">varpart</span><span class="op">(</span><span class="va">fit</span>, dispObj <span class="op">=</span> <span class="va">d</span>, formula <span class="op">=</span> <span class="va">form</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Violin plot of variance fractions</span></span>
 <span><span class="fu"><a href="../reference/plotVarPart-method.html">plotVarPart</a></span><span class="op">(</span><span class="va">vp</span><span class="op">)</span></span>

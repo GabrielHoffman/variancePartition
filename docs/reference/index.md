@@ -23,7 +23,9 @@
 - [`topTable()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/toptable-method.md)
   : Table of Top Genes from Linear Model Fit
 
-- [`varpart()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/varpart.md)
+- [`varpart(`*`<DESeqDataSet>`*`)`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/varpart.md)
+  [`varpart(`*`<DGEGLM>`*`)`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/varpart.md)
+  [`varpart(`*`<DGELRT>`*`)`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/varpart.md)
   : Variance Partitioning Analysis
 
 - [`voomWithDreamWeights()`](http://DiseaseNeurogenomics.github.io/variancePartition/reference/voomWithDreamWeights.md)

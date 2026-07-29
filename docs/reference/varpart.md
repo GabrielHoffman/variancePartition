@@ -1,12 +1,14 @@
 # Variance Partitioning Analysis
 
-Variance partitioning analysis on each gene
+Variance partitioning analysis on each gene from regression models fit
+with `edgeR` and `DESeq2`
 
 ## Usage
 
 ``` r
+# S4 method for class 'DESeqDataSet'
 varpart(
-  x,
+  fit,
   method = c("exact", "approximate"),
   pseudocount = 1,
   p.tail = 1e-04,
@@ -14,19 +16,21 @@ varpart(
   ...
 )
 
-# S4 method for class 'DESeqDataSet'
+# S4 method for class 'DGEGLM'
 varpart(
-  x,
+  fit,
   method = c("exact", "approximate"),
   pseudocount = 1,
   p.tail = 1e-04,
   nthreads = parallelly::availableCores(),
+  dispObj,
+  formula,
   ...
 )
 
 # S4 method for class 'DGELRT'
 varpart(
-  x,
+  fit,
   method = c("exact", "approximate"),
   pseudocount = 1,
   p.tail = 1e-04,
@@ -39,7 +43,7 @@ varpart(
 
 ## Arguments
 
-- x:
+- fit:
 
   regression model fit
 
@@ -75,6 +79,10 @@ varpart(
 
   formula used for the design matrix
 
+## See also
+
+[`fastglmm::varpart()`](http://gabrielhoffman.github.io/fastglmm/reference/varpart.md)
+
 ## Examples
 
 ``` r
@@ -82,7 +90,10 @@ library(ggplot2)
 
 # Simulate counts
 set.seed(1)
-countMatrix <- matrix(rnbinom(n=100000, mu=20, size=3), ncol=10)
+eta <- rnorm(10, 3, 1)
+mu <- exp(eta)
+
+countMatrix <- matrix(rnbinom(n=100000, mu=mu, size=3), ncol=10)
 rownames(countMatrix) <- paste0("gene_", seq(nrow(countMatrix)))
 colnames(countMatrix) <- paste0("sample_", seq(ncol(countMatrix)))
 
@@ -124,6 +135,6 @@ plotVarPart(vp2, main="edgeR") + theme(aspect.ratio=1)
 
 
 # Plot count noise vs expression magnitude
-plotTrendVP( fit, vp2, "CountNoise" )
+plotTrendVP( fit, vp2, "CountNoise", dispObj = d )
 
 ```

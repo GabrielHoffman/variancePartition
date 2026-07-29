@@ -140,11 +140,17 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># fit differential variance model</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">diffVar</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in residuals.MArrayLM(fit):</span> argument "y" is missing, with no default</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># extract results for differential variance based on Disease</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="toptable-method.html">topTable</a></span><span class="op">(</span><span class="va">res</span>, coef <span class="op">=</span> <span class="st">"Disease1"</span>, number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'fit' in selecting a method for function 'topTable': object 'res' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                    logFC   AveExpr         t      P.Value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000325884.1 gene=ASCL3  -0.3412386 0.2331510 -4.861381 5.876367e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000309971.4 gene=GLE1   -0.7335446 0.5318544 -4.656878 9.887849e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000410040.1 gene=IL18R1 -0.4331105 0.3614958 -4.611809 1.109038e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                adj.P.Val        B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000325884.1 gene=ASCL3  0.03134491 1.851675</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000309971.4 gene=GLE1   0.03134491 1.387689</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENST00000410040.1 gene=IL18R1 0.03134491 1.285258</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Box plot of top hit</span></span></span>
 <span class="r-in"><span><span class="co"># Since ASCL3 has a negative logFC,</span></span></span>

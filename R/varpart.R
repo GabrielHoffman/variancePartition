@@ -103,9 +103,9 @@ var_predict_terms <- function( formula, Beta, data, design ){
 
 #' Variance Partitioning Analysis
 #'
-#' Variance partitioning analysis on each gene
+#' Variance partitioning analysis on each gene from regression models fit with \code{edgeR} and \code{DESeq2}
 #' 
-#' @param x regression model fit  
+#' @param fit regression model fit  
 #' @param method select method for count models:  \code{"exact"} or \code{"approximate"} for faster approximation
 #' @param pseudocount pseudocount used for \code{"exact"} and \code{"approximate"} methods for count models
 #' @param p.tail probability threashold for evaluating expectations for \code{"exact"} methods for count models
@@ -117,7 +117,10 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' 
 #' # Simulate counts
 #' set.seed(1)
-#' countMatrix <- matrix(rnbinom(n=100000, mu=20, size=3), ncol=10)
+#' eta <- rnorm(10, 3, 1)
+#' mu <- exp(eta)
+#'
+#' countMatrix <- matrix(rnbinom(n=100000, mu=mu, size=3), ncol=10)
 #' rownames(countMatrix) <- paste0("gene_", seq(nrow(countMatrix)))
 #' colnames(countMatrix) <- paste0("sample_", seq(ncol(countMatrix)))
 #' 
@@ -155,21 +158,11 @@ var_predict_terms <- function( formula, Beta, data, design ){
 #' plotVarPart(vp2, main="edgeR") + theme(aspect.ratio=1)
 #' 
 #' # Plot count noise vs expression magnitude
-#' plotTrendVP( fit, vp2, "CountNoise" )
+#' plotTrendVP( fit, vp2, "CountNoise", dispObj = d )
 #' 
+#' @seealso \code{fastglmm::varpart()}
 #' @rdname varpart
-#' @export
-setGeneric("varpart", function(
-  x,    
-  method = c("exact", "approximate"),
-  pseudocount = 1,
-  p.tail = 1e-04,
-  nthreads = parallelly::availableCores(),
-  ...)  
-  standardGeneric("varpart")
-)
-
-#' @rdname varpart
+#' @importFrom fastglmm varpart
 #' @importFrom stats model.matrix coef
 #' @importFrom BiocGenerics sizeFactors design
 #' @importFrom DESeq2 dispersions
@@ -180,7 +173,7 @@ setGeneric("varpart", function(
 #' @export
 setMethod("varpart", signature = "DESeqDataSet", 
   function(
-  x,    
+  fit,    
   method = c("exact", "approximate"),
   pseudocount = 1,
   p.tail = 1e-04,
@@ -190,29 +183,29 @@ setMethod("varpart", signature = "DESeqDataSet",
   method <- match.arg(method)
 
   # get overdispersion parameter
-  theta <- 1 / dispersions(x)
+  theta <- 1 / dispersions(fit)
 
   # create design matrix
-  design <- model.matrix(design(x), colData(x))
+  design <- model.matrix(design(fit), colData(fit))
 
   # Extract the beta coefficients (log2 fold changes)
   #  scale by log(2) to convert to natural log 
-  Beta <- coef(x) * log(2)
+  Beta <- coef(fit) * log(2)
 
   # get library size offset
-  os <- log(sizeFactors(x))
+  os <- log(sizeFactors(fit))
 
   # keep only genes where theta is not NA
   include <- !is.na(theta)
 
   # if QL dispersion scale was estimated with glmGamPoi
-  phi <- mcols(x)$qlDispMAP
+  phi <- mcols(fit)$qlDispMAP
   if( is.null(phi) ){
     phi <- 1
   }
 
   .varpart(
-    formula     = design(x),
+    formula     = design(fit),
     design      = design, 
     Beta        = Beta[include,,drop=FALSE],
     theta       = theta[include], 
@@ -233,7 +226,7 @@ setMethod("varpart", signature = "DESeqDataSet",
 #' @export
 setMethod("varpart", signature = "DGEGLM", 
   function(
-  x,    
+  fit,    
   method = c("exact", "approximate"),
   pseudocount = 1,
   p.tail = 1e-04,
@@ -258,11 +251,11 @@ setMethod("varpart", signature = "DGEGLM",
 
   .varpart(
     formula     = formula,
-    design      = x$design, 
-    Beta        = coef(x),
+    design      = fit$design, 
+    Beta        = coef(fit),
     theta       = 1 / dispObj$tagwise.dispersion, 
-    offset      = c(x$offset), 
-    phi         = x$s2.post, # QL dispersion scale
+    offset      = c(fit$offset), 
+    phi         = fit$s2.post, # QL dispersion scale
     method      = method,
     pseudocount = pseudocount, 
     p.tail      = p.tail,
@@ -279,7 +272,7 @@ setMethod("varpart", signature = "DGEGLM",
 #' @export
 setMethod("varpart", signature = "DGELRT", 
   function(
-  x,    
+  fit,    
   method = c("exact", "approximate"),
   pseudocount = 1,
   p.tail = 1e-04,
@@ -304,11 +297,11 @@ setMethod("varpart", signature = "DGELRT",
 
   .varpart(
     formula     = formula,
-    design      = x$design, 
-    Beta        = coef(x),
+    design      = fit$design, 
+    Beta        = coef(fit),
     theta       = 1 / dispObj$tagwise.dispersion, 
-    offset      = c(x$offset), 
-    phi         = x$s2.post, # QL dispersion scale
+    offset      = c(fit$offset), 
+    phi         = fit$s2.post, # QL dispersion scale
     method      = method,
     pseudocount = pseudocount, 
     p.tail      = p.tail,
@@ -391,7 +384,7 @@ setMethod(
   "plotTrendVP", c("DESeqDataSet", "data.frame"),
   function(x, vp, component,...){
 
-  ID <- baseMean <- NULL
+  ID <- baseMean <- logX <- NULL
 
   if( missing(component) ){
     stop("Must specify component")
@@ -427,7 +420,7 @@ setMethod(
   "plotTrendVP", c("DGEGLM", "data.frame"),
   function(x, vp, component, dispObj, ...){
 
-  ID <- logCPM <- NULL
+  ID <- baseMean <- logX <- NULL
 
   if( missing(component) ){
     stop("Must specify component")
@@ -465,7 +458,7 @@ setMethod(
   "plotTrendVP", c("DGELRT", "data.frame"),
   function(x, vp, component,dispObj,...){
 
-  ID <- logCPM <- NULL
+  ID <- baseMean <- logX <- NULL
 
   if( missing(component) ){
     stop("Must specify component")
@@ -498,6 +491,9 @@ setMethod(
 
 
 .plotTrend <- function(df){
+
+  logX <- NULL 
+  
   # smoothing curve
   # use nls()
   # if that fails use gam()

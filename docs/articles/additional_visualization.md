@@ -131,14 +131,14 @@ summing individual and tissue correlation matricies is shown in Figure
     ##  [81] locfit_1.5-9.12             mvtnorm_1.4-2              
     ##  [83] fs_2.1.0                    grid_4.5.1                 
     ##  [85] tidyr_1.3.2                 rbibutils_2.4.1            
-    ##  [87] edgeR_4.8.2                 nlme_3.1-170               
-    ##  [89] Formula_1.2-5               cli_3.6.6                  
-    ##  [91] textshaping_1.0.5           S4Arrays_1.10.1            
-    ##  [93] dplyr_1.2.1                 corpcor_1.6.10             
-    ##  [95] gtable_0.3.6                DESeq2_1.50.2              
-    ##  [97] sass_0.4.10                 digest_0.6.39              
-    ##  [99] BiocGenerics_0.56.0         SparseArray_1.10.10        
-    ## [101] pbkrtest_0.5.5              htmlwidgets_1.6.4          
-    ## [103] farver_2.1.2                htmltools_0.5.9            
-    ## [105] pkgdown_2.2.1               lifecycle_1.0.5            
-    ## [107] statmod_1.5.2               MASS_7.3-66
+    ##  [87] nlme_3.1-170                Formula_1.2-5              
+    ##  [89] cli_3.6.6                   textshaping_1.0.5          
+    ##  [91] S4Arrays_1.10.1             dplyr_1.2.1                
+    ##  [93] corpcor_1.6.10              gtable_0.3.6               
+    ##  [95] DESeq2_1.50.2               sass_0.4.10                
+    ##  [97] digest_0.6.39               BiocGenerics_0.56.0        
+    ##  [99] SparseArray_1.10.10         pbkrtest_0.5.5             
+    ## [101] htmlwidgets_1.6.4           farver_2.1.2               
+    ## [103] htmltools_0.5.9             pkgdown_2.2.1              
+    ## [105] lifecycle_1.0.5             statmod_1.5.2              
+    ## [107] MASS_7.3-66
