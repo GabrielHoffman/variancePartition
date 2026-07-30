@@ -151,7 +151,7 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
 
 #' @importFrom BiocParallel bpstopOnError<- bpiterate
 #' @importFrom RhpcBLASctl omp_set_num_threads omp_get_max_threads
-run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE, BPPARAM = SerialParam(), ...) {
+run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, useInitialFit = TRUE, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE, na.action = stats::na.exclude, BPPARAM = SerialParam(), ...) {
 
   stopifnot(is(BPPARAM, "BiocParallelParam"))
 
@@ -208,7 +208,7 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
     form = form,
     data = data,
     control = control,
-    na.action = stats::na.exclude,
+    na.action = na.action,
     REML = REML,
     fit.init = fit.init,
     dreamCheck = dreamCheck,

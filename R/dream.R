@@ -12,6 +12,7 @@
 #' @param hideErrorsInBackend default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")}
 #' @param BPPARAM parameters for parallel evaluation
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.
+#' @param na.action a function which indicates what should happen when the data contain `NA’s.
 #' @param ... Additional arguments for \code{lmer()} or \code{lm()}
 #'
 #' @return
@@ -105,6 +106,7 @@ dream <- function(exprObj,
                   control = vpcontrol,
                   hideErrorsInBackend = FALSE,
                   REML = TRUE,
+                  na.action = stats::na.exclude,
                   BPPARAM = SerialParam(),
                   ...) {
   ddf <- match.arg(ddf)
@@ -130,7 +132,8 @@ dream <- function(exprObj,
       dreamCheck = TRUE,
       useInitialFit = FALSE,
       # rescaleWeights = FALSE,
-      ...
+      ...,
+      na.action = na.action
     )
 
     if (!is.null(res$error.initial) & !hideErrorsInBackend) {
