@@ -1,4 +1,8 @@
 
+# variancePartition 1.41.5
+  - July 30, 2026
+  - bug fix for data with `NA`s
+
 # variancePartition 1.41.4
   - March 4, 2026
   - fix failing tests for `lmer 2.0.1`

@@ -14,6 +14,7 @@ dream(
   control = vpcontrol,
   hideErrorsInBackend = FALSE,
   REML = TRUE,
+  na.action = stats::na.exclude,
   BPPARAM = SerialParam(),
   ...
 )
@@ -36,6 +37,8 @@ dream(
 \item{hideErrorsInBackend}{default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")}}
 
 \item{REML}{use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.}
+
+\item{na.action}{a function which indicates what should happen when the data contain ‘NA’s.}
 
 \item{BPPARAM}{parameters for parallel evaluation}
 

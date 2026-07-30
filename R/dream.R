@@ -10,10 +10,11 @@
 #' @param useWeights if TRUE, analysis uses heteroskedastic error estimates from \code{voom()}.  Value is ignored unless exprObj is an \code{EList()} from \code{voom()} or \code{weightsMatrix} is specified
 #' @param control control settings for \code{lmer()}
 #' @param hideErrorsInBackend default FALSE.  If TRUE, hide errors in \code{attr(.,"errors")} and \code{attr(.,"error.initial")}
+#' @param na.action a function which indicates what should happen when the data contain ‘NA’s.
 #' @param BPPARAM parameters for parallel evaluation
 #' @param REML use restricted maximum likelihood to fit linear mixed model. default is TRUE.  See Details.
 #' @param ... Additional arguments for \code{lmer()} or \code{lm()}
-#'
+#' 
 #' @return
 #' MArrayLM2 object (just like MArrayLM from limma), and the directly estimated p-value (without eBayes)
 #'
@@ -105,6 +106,7 @@ dream <- function(exprObj,
                   control = vpcontrol,
                   hideErrorsInBackend = FALSE,
                   REML = TRUE,
+                  na.action = stats::na.exclude,
                   BPPARAM = SerialParam(),
                   ...) {
   ddf <- match.arg(ddf)
@@ -129,6 +131,7 @@ dream <- function(exprObj,
       BPPARAM = BPPARAM,
       dreamCheck = TRUE,
       useInitialFit = FALSE,
+      na.action = na.action,
       # rescaleWeights = FALSE,
       ...
     )
