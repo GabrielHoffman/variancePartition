@@ -320,6 +320,7 @@ getVarianceComponents <- function(fit) {
   if (is.null(w)) {
     w <- rep(1, nrow(fit$model))
   }
+  w <- w[!is.na(w)]
 
   # get random effects estimates
   varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)

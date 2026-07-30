@@ -145,7 +145,7 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
   list(
     succeeded = res[!failedJobs],
     errors = errorText
-  ) 
+  )
 }
 
 
