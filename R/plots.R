@@ -122,12 +122,13 @@ setMethod(
 
   # violin plot
   fig <- ggplot(data = data, aes(x = variable, y = value)) +
-    geom_violin(scale = "width", aes(fill = factor(variable))) +
+    geom_violin(scale = "width", aes(fill = factor(variable)), color = NA) +
     ylab(ylab) +
     xlab("") +
     ylim(ylim) +
     theme_bw() +
-    geom_boxplot(width = 0.07, fill = "grey", outlier.colour = "black") +
+    # geom_boxplot(width = 0.07, fill = "grey", outlier.colour = "black") +
+    geom_boxplot(aes(fill=factor(variable)), width = 0.07, outlier.shape = 21, outlier.stroke=0) +
     scale_fill_manual(values = col) +
     theme(legend.position = "none") +
     theme(plot.title = element_text(hjust = 0.5)) +
