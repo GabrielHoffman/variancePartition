@@ -74,10 +74,11 @@ BIC.MArrayLM = function(object, vobj, ...){
 	# df = object$rank + 1
 
 	values = sapply(seq(nrow(object)), function(i){
-		obj = list(residuals = object$residuals[i,,drop=TRUE], 
-			rank = object$rank, 
-			weights = vobj$weights[i,,drop=TRUE])
-		
+		obj <- data.frame(
+			residuals = object$residuals[i, , drop = TRUE],
+			weights = vobj$weights[i, , drop = TRUE]
+		)
+		obj <- c(as.list(na.omit(obj)), rank = object$rank)
 		class(obj) = "lm"
 
 		BIC(obj)

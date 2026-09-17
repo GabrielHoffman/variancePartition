@@ -172,7 +172,9 @@ rdf.merMod <- function(model, method = c("linear", "quadratic")) {
   }
 
   if (method == "linear") {
-    sqrtW <- Diagonal(x = sqrt(weights(model, type = "prior")))
+    # from lme4:::hatvalues.merMod
+    # weights() will restore NA values if na.action = na.exclude, need to drop them for now and restore at the end
+    sqrtW <- Diagonal(x = na.omit(sqrt(weights(model, type = "prior"))))
 
     # Pass Bioconductor check
     L <- Lambdat <- Zt <- RX <- X <- RZX <- NULL

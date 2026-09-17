@@ -52,8 +52,8 @@ setGeneric("get_prediction", function(fit, formula) {
 #' @rdname get_prediction-method
 #' @aliases get_prediction,lmerMod-method
 setMethod("get_prediction", "lmerMod", function(fit, formula) {
-  # initialize to zeros
-  pred_fixed <- pred_rand <- rep(0, length(fit@resp$y))
+  # initialize to NA
+  pred_fixed <- pred_rand <- rep(NA_real_, length(fit@resp$y))
 
   # if a random effect is specified
   if (!is.null(findbars(formula))) {
@@ -62,8 +62,8 @@ setMethod("get_prediction", "lmerMod", function(fit, formula) {
     # Get sum of BLUP's for the specified random effects
 
     ran_form <- reOnly(formula)
-
-    pred_rand <- predict(fit, re.form = ran_form, random.only = TRUE)
+    # explicitely specify na.action as na.omit to make sure that neither pred_rand and pred_fixed are padded for NA, then pad for NA before returning
+    pred_rand <- predict(fit, re.form = ran_form, random.only = TRUE, na.action = na.omit)
   }
 
   # FIXED
@@ -90,7 +90,11 @@ setMethod("get_prediction", "lmerMod", function(fit, formula) {
 
   # combine
   y_pred <- pred_rand + pred_fixed
-  names(y_pred) <- rownames(dsgn)
+  nas <- attr(fit@frame, "na.action")
+  if (!is.null(nas)) {
+    attr(nas, "class") <- "exclude"
+    y_pred <- naresid(nas, y_pred)
+  }
   y_pred
 })
 
@@ -105,5 +109,10 @@ setMethod("get_prediction", "lm", function(fit, formula) {
   y_pred <- as.numeric(dsgn %*% beta)
   names(y_pred) <- rownames(dsgn)
 
+  nas <- fit$na.action
+  if (!is.null(nas)) {
+    attr(nas, "class") <- "exclude"
+    y_pred <- naresid(nas, y_pred)
+  }
   y_pred
 })

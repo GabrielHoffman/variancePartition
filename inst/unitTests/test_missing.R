@@ -2,7 +2,6 @@
 # test when some expression values are missing
 
 test_missing = function(){
-
   library(variancePartition)
   library(RUnit)
 
@@ -25,11 +24,11 @@ test_missing = function(){
   expr["Gene2", group_C_samples] <- NA
    
   form <- ~ group 
-  fit1 <- variancePartition::dream(expr, form, metadata)
-  fit1 <- variancePartition::eBayes(fit1)
+  fit1 <- dream(expr, form, metadata)
+  fit1 <- eBayes(fit1)
 
   form <- ~ group + (1|subject)
-  fit2 <- variancePartition::dream(expr, form, metadata)
+  fit2 <- dream(expr, form, metadata)
   fit2 <- eBayes(fit2)
 
   tab1 = topTable(fit1, coef="groupC", sort.by="none", number=Inf)

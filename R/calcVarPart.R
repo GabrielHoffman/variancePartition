@@ -103,7 +103,7 @@ setMethod(
     if (is.null(w)) {
       w <- rep(1, nrow(fit$model))
     }
-    w <- w[!is.na(w)]
+    w <- na.omit(w)
 
     # get sum of squares explained by each variable
     SS <- apply(fxeff, 2, function(x) {
@@ -242,7 +242,7 @@ getDistrVar <- function(fit) {
 # evaluate GLM's
 cvp_glm <- function(fit, returnFractions = TRUE, ...) {
   # get weights
-  w <- weights(fit)
+  w <- na.omit(weights(fit))
   if (is.null(w)) {
     w <- rep(1, nrow(fit$model))
   }
@@ -317,10 +317,7 @@ cvp_glmm <- function(fit, returnFractions = TRUE, ...) {
 #' @importFrom lme4 VarCorr fixef
 getVarianceComponents <- function(fit) {
   # get weights
-  w <- weights(fit)
-  if (is.null(w)) {
-    w <- rep(1, nrow(fit$model))
-  }
+  w <- na.omit(weights(fit))
 
   # get random effects estimates
   varComp <- lapply(lme4::VarCorr(fit), function(fit) attr(fit, "stddev")^2)

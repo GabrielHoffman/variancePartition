@@ -38,8 +38,11 @@ setMethod(
     # With *unweighted* fixed effect model, hat values don't depend on response
     # But weights do affect the hat values
     # Compute hat values for each response
+    weights[is.na(vobj$E)] <- 0
     hv <- lapply(seq(nrow(vobj)), function(j) {
       X <- sqrt(weights[j, ]) * model$design
+      # Drop zero columns (e.g., fully missing factor level), since they are unidentifiable
+      X <- X[, colSums(X != 0) > 0, drop = FALSE]
 
       # compure full H matrix
       # H = X %*% solve(crossprod(X), t(X))

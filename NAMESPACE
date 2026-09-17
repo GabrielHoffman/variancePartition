@@ -78,128 +78,164 @@ exportMethods(vcovSqrt)
 import(Rdpack)
 import(ggplot2)
 import(limma)
-importFrom(Biobase,ExpressionSet)
-importFrom(Biobase,exprs)
-importFrom(BiocParallel,"bpstopOnError<-")
-importFrom(BiocParallel,SerialParam)
-importFrom(BiocParallel,bpiterate)
-importFrom(BiocParallel,bplapply)
-importFrom(BiocParallel,bpok)
-importFrom(BiocParallel,bptry)
+importFrom(Biobase,
+  ExpressionSet,
+  exprs
+)
+importFrom(BiocParallel,
+  "bpstopOnError<-",
+  SerialParam,
+  bpiterate,
+  bplapply,
+  bpok,
+  bptry
+)
 importFrom(MASS,ginv)
-importFrom(Matrix,Diagonal)
-importFrom(Matrix,bdiag)
-importFrom(Matrix,crossprod)
-importFrom(Matrix,diag)
-importFrom(Matrix,drop0)
-importFrom(Matrix,solve)
-importFrom(Matrix,sparseMatrix)
-importFrom(Matrix,t)
-importFrom(Matrix,tcrossprod)
-importFrom(RhpcBLASctl,omp_get_max_threads)
-importFrom(RhpcBLASctl,omp_set_num_threads)
+importFrom(Matrix,
+  Diagonal,
+  bdiag,
+  crossprod,
+  diag,
+  drop0,
+  solve,
+  sparseMatrix,
+  t,
+  tcrossprod
+)
+importFrom(RhpcBLASctl,
+  omp_get_max_threads,
+  omp_set_num_threads
+)
 importFrom(aod,negbin)
 importFrom(corpcor,estimate.lambda)
 importFrom(fANCOVA,loess.as)
 importFrom(gplots,heatmap.2)
-importFrom(grDevices,colorRampPalette)
-importFrom(grDevices,hcl)
-importFrom(graphics,abline)
-importFrom(graphics,axis)
-importFrom(graphics,hist)
-importFrom(graphics,image)
-importFrom(graphics,layout)
-importFrom(graphics,lines)
-importFrom(graphics,mtext)
-importFrom(graphics,par)
-importFrom(graphics,plot)
-importFrom(graphics,plot.new)
-importFrom(graphics,rect)
-importFrom(graphics,text)
-importFrom(graphics,title)
-importFrom(iterators,icount)
-importFrom(iterators,iter)
-importFrom(iterators,nextElem)
-importFrom(limma,asMatrixWeights)
-importFrom(limma,eBayes)
-importFrom(lme4,VarCorr)
-importFrom(lme4,bootMer)
-importFrom(lme4,fixef)
-importFrom(lme4,getME)
-importFrom(lme4,isGLMM)
-importFrom(lme4,isSingular)
-importFrom(lme4,lFormula)
-importFrom(lme4,lmer)
-importFrom(lme4,lmerControl)
-importFrom(lme4,refit)
-importFrom(lme4,subbars)
-importFrom(lmerTest,as_lmerModLmerTest)
-importFrom(lmerTest,contest)
-importFrom(matrixStats,colSums2)
-importFrom(matrixStats,rowSums2)
-importFrom(methods,as)
-importFrom(methods,is)
-importFrom(methods,new)
-importFrom(pbkrtest,get_SigmaG)
-importFrom(pbkrtest,vcovAdj.lmerMod)
-importFrom(reformulas,findbars)
-importFrom(reformulas,nobars)
-importFrom(remaCor,LS)
-importFrom(remaCor,LS.empirical)
-importFrom(remaCor,RE2C)
-importFrom(remaCor,hotelling)
+importFrom(grDevices,
+  colorRampPalette,
+  hcl
+)
+importFrom(graphics,
+  abline,
+  axis,
+  hist,
+  image,
+  layout,
+  lines,
+  mtext,
+  par,
+  plot,
+  plot.new,
+  rect,
+  text,
+  title
+)
+importFrom(iterators,
+  icount,
+  iter,
+  nextElem
+)
+importFrom(limma,
+  asMatrixWeights,
+  eBayes
+)
+importFrom(lme4,
+  VarCorr,
+  bootMer,
+  fixef,
+  getME,
+  isGLMM,
+  isSingular,
+  lFormula,
+  lmer,
+  lmerControl,
+  refit,
+  subbars
+)
+importFrom(lmerTest,
+  as_lmerModLmerTest,
+  contest
+)
+importFrom(matrixStats,
+  colSums2,
+  rowSums2
+)
+importFrom(methods,
+  as,
+  is,
+  new
+)
+importFrom(pbkrtest,
+  get_SigmaG,
+  vcovAdj.lmerMod
+)
+importFrom(reformulas,
+  findbars,
+  nobars
+)
+importFrom(remaCor,
+  LS,
+  LS.empirical,
+  RE2C,
+  hotelling
+)
 importFrom(reshape2,melt)
-importFrom(rlang,caller_env)
-importFrom(rlang,enexprs)
-importFrom(rlang,eval_tidy)
-importFrom(rlang,new_environment)
-importFrom(rlang,parse_expr)
+importFrom(rlang,
+  caller_env,
+  enexprs,
+  eval_tidy,
+  new_environment,
+  parse_expr
+)
 importFrom(scales,rescale)
-importFrom(stats,BIC)
-importFrom(stats,anova)
-importFrom(stats,approxfun)
-importFrom(stats,as.dendrogram)
-importFrom(stats,as.dist)
-importFrom(stats,as.formula)
-importFrom(stats,cancor)
-importFrom(stats,coef)
-importFrom(stats,coefficients)
-importFrom(stats,cov2cor)
-importFrom(stats,density)
-importFrom(stats,dgamma)
-importFrom(stats,dist)
-importFrom(stats,family)
-importFrom(stats,fitted.values)
-importFrom(stats,formula)
-importFrom(stats,getCall)
-importFrom(stats,hatvalues)
-importFrom(stats,hclust)
-importFrom(stats,lm)
-importFrom(stats,logLik)
-importFrom(stats,median)
-importFrom(stats,model.matrix)
-importFrom(stats,model.matrix.lm)
-importFrom(stats,order.dendrogram)
-importFrom(stats,p.adjust)
-importFrom(stats,pchisq)
-importFrom(stats,pf)
-importFrom(stats,predict)
-importFrom(stats,pt)
-importFrom(stats,qf)
-importFrom(stats,qnorm)
-importFrom(stats,qt)
-importFrom(stats,quantile)
-importFrom(stats,reformulate)
-importFrom(stats,reorder)
-importFrom(stats,residuals)
-importFrom(stats,runif)
-importFrom(stats,sd)
-importFrom(stats,sigma)
-importFrom(stats,terms)
-importFrom(stats,update)
-importFrom(stats,var)
-importFrom(stats,vcov)
-importFrom(stats,weighted.mean)
-importFrom(stats,weights)
-importFrom(utils,combn)
-importFrom(utils,object.size)
+importFrom(stats,
+  BIC,
+  anova,
+  approxfun,
+  as.dendrogram,
+  as.dist,
+  as.formula,
+  cancor,
+  coef,
+  coefficients,
+  cov2cor,
+  density,
+  dgamma,
+  dist,
+  family,
+  fitted.values,
+  formula,
+  getCall,
+  hatvalues,
+  hclust,
+  lm,
+  logLik,
+  median,
+  model.matrix,
+  model.matrix.lm,
+  order.dendrogram,
+  p.adjust,
+  pchisq,
+  pf,
+  predict,
+  pt,
+  qf,
+  qnorm,
+  qt,
+  quantile,
+  reformulate,
+  reorder,
+  residuals,
+  runif,
+  sd,
+  sigma,
+  terms,
+  update,
+  var,
+  vcov,
+  weighted.mean,
+  weights
+)
+importFrom(utils,
+  combn,
+  object.size
+)

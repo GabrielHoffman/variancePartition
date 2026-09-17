@@ -1,24 +1,22 @@
 ## default control for lmer fits
 vpcontrol <- lme4::lmerControl(
   calc.derivs = FALSE,
-  check.rankX = "stop.deficient",
-  check.conv.singular =
-    lme4::.makeCC("ignore", tol = 1e-4)
+  check.rankX = "silent.drop.cols",
+  check.conv.singular = lme4::.makeCC("ignore", tol = 1e-4)
 )
 
 vpcontrol.NM <- lme4::lmerControl(
   optimizer = "Nelder_Mead",
   calc.derivs = FALSE,
-  check.rankX = "stop.deficient",
-  check.conv.singular =
-    lme4::.makeCC("ignore", tol = 1e-4)
+  check.rankX = "silent.drop.cols",
+  check.conv.singular = lme4::.makeCC("ignore", tol = 1e-4)
 )
 
 
 
 #' @importFrom lme4 lmer refit
 #' @importFrom stats update
-run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE) {
+run_lmm_on_gene <- function(obj, formula, data, control, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE) {
   # if sparseMatrix, convert to matrix
   if (is(obj$E, "dgCMatrix")) {
     obj$E <- as.matrix(obj$E)
@@ -41,7 +39,7 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
   }
 
   if (.isMixedModelFormula(formula)) {
-    if (!is.null(fit.init) & ! any(is.na(data)) ) {
+    if (!is.null(fit.init) & !(anyNA(data$y.local) || anyNA(data$w.local))) {
       # if fit.init is passed, use refit
       # issue with stopping criteria.  fixed with new lmer() call
       fit <- refit(fit.init,
@@ -54,7 +52,8 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
       fit <- lmer(form.local, data,
         weights = w.local,
         control = control,
-        na.action = na.action,
+        # na.omit is prefered because merMod internals do not include NA values but functions such as predict would pad for NA values -> resolve mismatch and align everything manually
+        na.action = na.omit,
         REML = REML
       )
     }
@@ -69,9 +68,12 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
     # convergence
     fit <- refit(fit, control = control)
   } else {
-    fit <- lm(form.local, data,
+    fit <- lm(
+      form.local,
+      data,
       weights = w.local,
-      na.action = na.action
+      # na.omit is prefered because merMod internals do not include NA values but functions such as predict would pad for NA values -> resolve mismatch and align everything manually
+      na.action = na.omit
     )
   }
 
@@ -87,7 +89,7 @@ run_lmm_on_gene <- function(obj, formula, data, control, na.action, REML, fxn, f
 
 # run analysis on each batch
 #' @importFrom BiocParallel bpstopOnError<- bptry bplapply SerialParam
-run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE) {
+run_lmm_on_batch <- function(obj, form, data, control, REML, fxn, fit.init = NULL, dreamCheck = FALSE, varTol = 1e-5, rescaleWeights=TRUE) {
   # create list with one gene per entry
   exprList <- lapply(seq(nrow(obj)), function(j) {
     new("EList", list(
@@ -111,7 +113,6 @@ run_lmm_on_batch <- function(obj, form, data, control, na.action, REML, fxn, fit
     form = form,
     data = data,
     control = control,
-    na.action = na.action,
     REML = REML,
     fxn = fxn,
     fit.init = fit.init,
@@ -170,7 +171,6 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
     {
       run_lmm_on_gene(it.init(), form, data,
         control = control,
-        na.action = stats::na.exclude,
         REML = REML,
         fxn = identity,
         dreamCheck = dreamCheck
@@ -208,7 +208,6 @@ run_lmm <- function(obj, form, data, control = vpcontrol, fxn, REML = FALSE, use
     form = form,
     data = data,
     control = control,
-    na.action = stats::na.exclude,
     REML = REML,
     fit.init = fit.init,
     dreamCheck = dreamCheck,

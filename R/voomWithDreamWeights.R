@@ -134,9 +134,9 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
   }
   rownames(weightsMatrix) <- rownames(y)
   
-  # rescale input weights to have mean 1 
+  # rescale input weights to have mean 1
   # before scaling output weights
-  weightsMatrix <- weightsMatrix / rowMeans(weightsMatrix)  
+  weightsMatrix <- weightsMatrix / rowMeans(weightsMatrix, na.rm = TRUE)  
 
   # put weights into EList
   obj <- new("EList", list(E = y, weights = weightsMatrix))
@@ -246,6 +246,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
 
   # 	Apply trend to individual observations
   w <- 1 / f(fitted.logcount)^4
+  w[is.na(w)] <- 0 # 0 weights at missing observations, as in limma
   dim(w) <- dim(fitted.logcount)
 
   # 	Output
@@ -263,7 +264,7 @@ voomWithDreamWeights <- function(counts, formula, data, lib.size = NULL, normali
     w <- weightsMatrix[keepGenes,,drop=FALSE]
 
     out$weights <- w * out$weights
-    out$targets$sample.weights <- colMeans(weightsMatrix)
+    out$targets$sample.weights <- colMeans(weightsMatrix, na.rm = TRUE)
   }
   
   # remove rownames to be compatible with voom()

@@ -197,7 +197,7 @@ eval_vcov_sqrt <- function(resids, X, W, rdf, coef, contrasts, approx) {
   }
 
   # scale weights to have mean 1 for each column
-  W <- sweep(W, 2, colMeans(W), "/")
+  W <- sweep(W, 2, colMeans(W, na.rm = TRUE), "/")
 
   # pre-compute square root of W
   sqrtW <- sqrt(W)
@@ -270,7 +270,7 @@ eval_vcov_sqrt_approx <- function(resids, W, ccl, X, coef, contrasts) {
   m <- ncol(resids)
 
   # residual correlation
-  scale_res <- scale(resids * sqrt(W)) / sqrt(nrow(resids) - 1)
+  scale_res <- scale(resids * sqrt(W)) / sqrt(colSums(!is.na(resids)) - 1)
 
   res <- lapply(seq(m), function(i) {
     a <- scale_res[, i, drop = FALSE]

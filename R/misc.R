@@ -199,23 +199,23 @@ setMethod(
   "residuals", "VarParFitList",
   function(object, ...) {
     # extract residuals
-    res <- lapply(object, function(fit) {
-      residuals(fit)
-    })
+    res <- lapply(object, residuals)
 
-    resMatrix <- matrix(NA, nrow = length(res), ncol = length(res[[1]]))
-    colnames(resMatrix) <- names(res[[1]])
-
-    # fill non-missing entries with residuals
-    for (j in 1:nrow(resMatrix)) {
-      resMatrix[j, ] <- res[[j]]
-    }
-
-    # get total number of samples
-    n_samples <- sapply(res, length)
-
-    if (max(n_samples) - min(n_samples) > 0) {
-      stop("Samples were dropped from model fit.  Either expression data or metadata contained NA values")
+    # using negation here so that second expression doesn't always need to be run
+    if (
+      !all(sapply(res[-1], length) == length(res[[1]])) |
+      !all(lapply(res[-1], names) |> sapply(\(x) identical(x, names(res[[1]]))))
+    ) {
+      warning("Expression data contained NA values. Residuals were aligned but row order has likely changed.")
+      res <- lapply(seq_along(res), \(x) {
+        setNames(as.data.frame(res[[x]]), names(res)[[x]])
+      })
+      resMatrix <- Reduce(
+        \(x, y) merge(x, y, all = T, by = 0) |> transform(row.names = Row.names, Row.names = NULL),
+        x = res
+      ) |> t()
+    } else {
+      resMatrix <- do.call(rbind, res)
     }
 
     # identify which samples were omitted
@@ -259,33 +259,9 @@ setMethod(
     # }
     # colnames(resMatrix) = sampleNames
 
-    return(as.matrix(resMatrix))
+    return(resMatrix)
   }
 )
-
-setGeneric("getOmitted",
-  signature = "fit",
-  function(fit, ...) {
-    standardGeneric("getOmitted")
-  }
-)
-
-setMethod(
-  "getOmitted", "lm",
-  function(fit, ...) {
-    fit$na.action
-  }
-)
-
-setMethod(
-  "getOmitted", "lmerMod",
-  function(fit, ...) {
-    attr(fit@frame, "na.action")
-  }
-)
-
-
-
 
 #' Collinearity score
 #'
