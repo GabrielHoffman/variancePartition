@@ -21,7 +21,7 @@ vignette: >
 
 cd /Users/gabrielhoffman/workspace/repos/variancePartition/vignettes
 
-rmarkdown::render('multivariate_tests.Rmd')
+rmarkdown::render('mvtests.Rmd')
 
 --->
 
@@ -47,6 +47,8 @@ Results from the univariate regressions performed using \code{dream()} can be co
 
 # Import transcript-level counts
 Read in transcript counts from the \code{tximportData} package.
+
+_NOTE_: this works with \code{tximportData} version <= 1.40.0. It fails as of Nov 2, 2026.
 ```{r import}
 library(readr)
 library(tximport)
@@ -75,7 +77,7 @@ rownames(sampleTable) <- paste0("Sample", 1:6)
 
 # Standard dream analysis
 Perform standard \code{dream()} analysis at the transcript-level
-```{r dream}
+```{r dream, eval = FALSE}
 library(variancePartition)
 library(edgeR)
 
@@ -96,7 +98,7 @@ fit <- eBayes(fit)
 
 # Multivariate analysis
 Combine the transcript-level results at the gene-level.  The mapping between transcript and gene is stored in \code{tx2gene.lst} as a list.
-```{r mvTest}
+```{r mvTest, eval = FALSE}
 # Prepare transcript to gene mapping
 # keep only transcripts present in vobj
 # then convert to list with key GENEID and values TXNAMEs
@@ -114,7 +116,7 @@ res$ID.short <- gsub("\\..+", "", res$ID)
 
 # Gene set analysis
 Perform gene set analysis using \code{zenith} on the gene-level test statistics.
-```{r zenith}
+```{r zenith, eval = FALSE}
 # must have zenith > v1.0.2
 library(zenith)
 library(GSEABase)
